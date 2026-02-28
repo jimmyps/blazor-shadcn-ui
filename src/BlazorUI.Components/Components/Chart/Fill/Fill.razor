@@ -5,7 +5,7 @@
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private IFillParent? Parent { get; set; }
+    [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets the fill color.
@@ -40,6 +40,17 @@
     
     protected override void OnInitialized()
     {
-        Parent?.RegisterFill(this);
+        // Register with parent series
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterFill(this);
+            }
+            catch
+            {
+                // Parent doesn't support Fill
+            }
+        }
     }
 }

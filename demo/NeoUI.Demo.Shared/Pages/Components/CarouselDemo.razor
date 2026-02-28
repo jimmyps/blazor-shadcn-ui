@@ -1,0 +1,254 @@
+@page "/components/carousel"
+
+<PageTitle>Carousel - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Carousel"
+        Description="A slideshow component with animations, touch gestures, and keyboard navigation." />
+
+    <DemoSection
+        Title="Default"
+        Description="A basic carousel with navigation arrows.">
+        <DemoBlock Code="@_defaultCode">
+            <div class="flex justify-center">
+                <div class="w-full max-w-xs">
+                    <Carousel>
+                        @foreach (var i in Enumerable.Range(1, 5))
+                        {
+                            <CarouselItem>
+                                <div class="p-1">
+                                    <Card>
+                                        <CardContent Class="flex h-[150px] items-center justify-center p-6">
+                                            <span class="text-4xl font-semibold">@i</span>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        }
+                    </Carousel>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Indicators"
+        Description="Carousel with dot indicators showing the current slide.">
+        <DemoBlock Code="@_withIndicatorsCode">
+            <div class="flex justify-center">
+                <div class="w-full max-w-xs">
+                    <Carousel ShowIndicators="true">
+                        @foreach (var i in Enumerable.Range(1, 5))
+                        {
+                            <CarouselItem>
+                                <div class="p-1">
+                                    <Card>
+                                        <CardContent Class="flex h-[150px] items-center justify-center p-6">
+                                            <span class="text-4xl font-semibold">@i</span>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        }
+                    </Carousel>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Auto-Play"
+        Description="Carousel that automatically advances every 3 seconds.">
+        <DemoBlock Code="@_autoPlayCode">
+            <div class="flex justify-center">
+                <div class="w-full max-w-xs">
+                    <Carousel AutoPlay="true" AutoPlayInterval="3000" Loop="true" ShowIndicators="true">
+                        @foreach (var i in Enumerable.Range(1, 5))
+                        {
+                            <CarouselItem>
+                                <div class="p-1">
+                                    <Card>
+                                        <CardContent Class="flex h-[150px] items-center justify-center p-6">
+                                            <span class="text-4xl font-semibold">@i</span>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        }
+                    </Carousel>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Loop Mode"
+        Description="Infinite loop carousel — navigate past the last slide to return to the first.">
+        <DemoBlock Code="@_loopCode">
+            <div class="flex justify-center">
+                <div class="w-full max-w-xs">
+                    <Carousel Loop="true">
+                        @foreach (var i in Enumerable.Range(1, 5))
+                        {
+                            <CarouselItem>
+                                <div class="p-1">
+                                    <Card>
+                                        <CardContent Class="flex h-[150px] items-center justify-center p-6">
+                                            <span class="text-4xl font-semibold">@i</span>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        }
+                    </Carousel>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Multiple Slides"
+        Description="Show multiple slides at once (3 slides per view).">
+        <DemoBlock Code="@_multipleCode">
+            <div class="flex justify-center">
+                <div class="w-full max-w-xs">
+                    <Carousel SlidesPerView="3" Gap="2">
+                        @foreach (var i in Enumerable.Range(1, 10))
+                        {
+                            <CarouselItem Class="p-1 basis-[33%]">
+                                <Card>
+                                    <CardContent Class="flex h-[150px] items-center justify-center p-4">
+                                        <span class="text-3xl font-semibold">@i</span>
+                                    </CardContent>
+                                </Card>
+                            </CarouselItem>
+                        }
+                    </Carousel>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Vertical Carousel"
+        Description="Navigate vertically instead of horizontally.">
+        <DemoBlock Code="@_verticalCode">
+            <div class="flex justify-center">
+                <div class="w-full max-w-xs py-12">
+                    <Carousel Orientation="CarouselOrientation.Vertical" ShowIndicators="true" ContentClass="max-h-[160px]">
+                        @foreach (var i in Enumerable.Range(1, 5))
+                        {
+                            <CarouselItem>
+                                <div class="p-1">
+                                    <Card>
+                                        <CardContent Class="flex h-[150px] items-center justify-center p-4">
+                                            <span class="text-4xl font-semibold">@i</span>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        }
+                    </Carousel>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Image Gallery"
+        Description="Carousel with images and captions.">
+        <DemoBlock Code="@_galleryCode">
+            <div class="flex justify-center">
+                <div class="w-full max-w-lg">
+                    <Carousel ShowIndicators="true" OnSlideChange="HandleSlideChange">
+                        @foreach (var image in galleryImages)
+                        {
+                            <CarouselItem>
+                                <div class="p-1">
+                                    <Card>
+                                        <CardContent Class="flex flex-col items-center justify-center p-6 space-y-4">
+                                            <div class="w-full h-40 bg-muted rounded-lg flex items-center justify-center">
+                                                <span class="text-6xl">@image.Icon</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <h3 class="text-xl font-semibold">@image.Title</h3>
+                                                <p class="text-sm text-muted-foreground">@image.Description</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        }
+                    </Carousel>
+                    <p class="text-sm text-muted-foreground text-center mt-4">
+                        Current slide: @(currentSlideIndex + 1) of @galleryImages.Count
+                    </p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Without Navigation"
+        Description="Carousel without navigation arrows (swipe or drag only).">
+        <DemoBlock Code="@_noNavCode">
+            <ChildContent>
+                <div class="flex justify-center">
+                    <div class="w-full max-w-xs">
+                        <Carousel ShowNavigation="false" ShowIndicators="true" EnableDrag="true">
+                            @foreach (var i in Enumerable.Range(1, 5))
+                            {
+                                <CarouselItem>
+                                    <div class="p-1">
+                                        <Card>
+                                            <CardContent Class="flex h-[150px] items-center justify-center p-6">
+                                                <span class="text-4xl font-semibold">@i</span>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            }
+                        </Carousel>
+                    </div>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <p class="text-sm text-muted-foreground text-center">Swipe or drag to navigate</p>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_carouselProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private int currentSlideIndex = 0;
+
+    private readonly List<GalleryImage> galleryImages = new()
+    {
+        new GalleryImage { Icon = "🌄", Title = "Mountain Sunrise", Description = "Beautiful morning view" },
+        new GalleryImage { Icon = "🏖️", Title = "Beach Paradise", Description = "Tropical getaway" },
+        new GalleryImage { Icon = "🌃", Title = "City Lights", Description = "Urban skyline at night" },
+        new GalleryImage { Icon = "🌲", Title = "Forest Trail", Description = "Nature hiking path" },
+        new GalleryImage { Icon = "🏔️", Title = "Snow Peaks", Description = "Winter wonderland" }
+    };
+
+    private void HandleSlideChange(int index)
+    {
+        currentSlideIndex = index;
+    }
+
+    private class GalleryImage
+    {
+        public string Icon { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+
+}

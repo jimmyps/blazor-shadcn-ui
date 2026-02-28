@@ -1,0 +1,230 @@
+@page "/components/date-picker"
+
+<PageTitle>Date Picker - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Date Picker"
+        Description="Date selection with a calendar in a popover. Pick a single date or a date range with full keyboard navigation." />
+
+    <DemoSection
+        Title="Default"
+        Description="A basic date picker with calendar icon.">
+        <DemoBlock Code="@_defaultCode">
+            <div class="flex flex-col gap-4">
+                <DatePicker @bind-SelectedDate="selectedDate1" />
+                <p class="text-sm text-muted-foreground">Selected: @(selectedDate1?.ToString("D") ?? "None")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Dropdown Icon"
+        Description="Date picker with chevron-down icon on the right, no calendar icon on the left.">
+        <DemoBlock Code="@_dropdownIconCode">
+            <div class="flex flex-col gap-4">
+                <DatePicker @bind-SelectedDate="selectedDate1b"
+                           ShowIcon="false"
+                           ShowDropdownIcon="true" />
+                <p class="text-sm text-muted-foreground">Selected: @(selectedDate1b?.ToString("D") ?? "None")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Date Range Picker"
+        Description="Select a date range with start and end dates displayed side-by-side.">
+        <DemoBlock Code="@_dateRangeCode">
+            <div class="flex flex-col gap-4">
+                <DateRangePicker @bind-StartDate="startDate"
+                                @bind-EndDate="endDate"
+                                Placeholder="Select date range" />
+                <p class="text-sm text-muted-foreground">
+                    From: @(startDate?.ToString("D") ?? "None")
+                    <br />
+                    To: @(endDate?.ToString("D") ?? "None")
+                </p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Date Constraints"
+        Description="Limit selection to a specific date range.">
+        <DemoBlock Code="@_constraintsCode">
+            <div class="flex flex-col gap-4">
+                <DatePicker @bind-SelectedDate="selectedDate2"
+                           MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                           MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(3))"
+                           Placeholder="Pick a date (next 3 months)" />
+                <p class="text-sm text-muted-foreground">Selected: @(selectedDate2?.ToString("D") ?? "None")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disable Weekends"
+        Description="Disable specific dates with a custom function.">
+        <DemoBlock Code="@_disableWeekendsCode">
+            <div class="flex flex-col gap-4">
+                <DatePicker @bind-SelectedDate="selectedDate3"
+                           IsDateDisabled="IsWeekend"
+                           Placeholder="Pick a weekday" />
+                <p class="text-sm text-muted-foreground">Selected: @(selectedDate3?.ToString("D") ?? "None")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Format"
+        Description="Display date with a custom format string.">
+        <DemoBlock Code="@_customFormatCode">
+            <div class="flex flex-col gap-4">
+                <DatePicker @bind-SelectedDate="selectedDate4"
+                           DateFormat="yyyy-MM-dd"
+                           Placeholder="YYYY-MM-DD" />
+                <p class="text-sm text-muted-foreground">Selected: @(selectedDate4?.ToString("yyyy-MM-dd") ?? "None")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Dropdown Mode"
+        Description="Use dropdown selects for quick month and year navigation.">
+        <DemoBlock Code="@_dropdownModeCode">
+            <div class="flex flex-col gap-4">
+                <DatePicker @bind-SelectedDate="selectedDate5"
+                           CaptionLayout="CalendarCaptionLayout.Dropdown"
+                           Placeholder="Pick a date" />
+                <p class="text-sm text-muted-foreground">Selected: @(selectedDate5?.ToString("D") ?? "None")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="In a Form"
+        Description="DatePicker integrated with form fields.">
+        <DemoBlock Code="@_formCode">
+            <div class="flex flex-col gap-4 max-w-sm">
+                <Field>
+                    <FieldLabel>Date of Birth</FieldLabel>
+                    <DatePicker @bind-SelectedDate="dateOfBirth"
+                               MaxDate="DateOnly.FromDateTime(DateTime.Today)"
+                               Placeholder="Select your birth date" />
+                    <FieldDescription>We use this to verify your age.</FieldDescription>
+                </Field>
+                <p class="text-sm text-muted-foreground">Selected: @(dateOfBirth?.ToString("D") ?? "None")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Travel Dates"
+        Description="Date range picker with custom labels for travel booking.">
+        <DemoBlock Code="@_travelDatesCode">
+            <div class="flex flex-col gap-4">
+                <DateRangePicker @bind-StartDate="checkIn"
+                                @bind-EndDate="checkOut"
+                                StartDateLabel="Check-in"
+                                EndDateLabel="Check-out"
+                                MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                                Placeholder="Select travel dates" />
+                <p class="text-sm text-muted-foreground">
+                    Check-in: @(checkIn?.ToString("D") ?? "None")
+                    <br />
+                    Check-out: @(checkOut?.ToString("D") ?? "None")
+                    @if (checkIn.HasValue && checkOut.HasValue)
+                    {
+                        var nights = checkOut.Value.DayNumber - checkIn.Value.DayNumber;
+                        <br />
+                        <span class="font-medium">@nights night@(nights != 1 ? "s" : "")</span>
+                    }
+                </p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Date and Time Picker"
+        Description="Combine date and time selection in a single input scenario.">
+        <DemoBlock Code="@_dateTimeCode">
+            <div class="flex flex-col gap-4 max-w-sm">
+                <Field>
+                    <FieldLabel>Appointment Date &amp; Time</FieldLabel>
+                    <div class="flex gap-2">
+                        <div class="flex-1">
+                            <DatePicker @bind-SelectedDate="appointmentDate"
+                                       MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                                       Placeholder="Select date"
+                                       ShowIcon="false"
+                                       ShowDropdownIcon="true" />
+                        </div>
+                        <div class="flex-1">
+                            <TimePicker @bind-SelectedTime="appointmentTime"
+                                       MinuteStep="15"
+                                       Placeholder="Select time"
+                                       ShowIcon="false" />
+                        </div>
+                    </div>
+                    <FieldDescription>Choose your preferred appointment slot.</FieldDescription>
+                </Field>
+                <p class="text-sm text-muted-foreground">
+                    @if (appointmentDate.HasValue && appointmentTime.HasValue)
+                    {
+                        var dateTime = new DateTime(appointmentDate.Value.Year, appointmentDate.Value.Month, appointmentDate.Value.Day,
+                                                    appointmentTime.Value.Hour, appointmentTime.Value.Minute, 0);
+                        <span class="font-medium">Scheduled: @dateTime.ToString("dddd, MMMM d, yyyy 'at' h:mm tt")</span>
+                    }
+                    else
+                    {
+                        <span>No appointment scheduled</span>
+                    }
+                </p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disabled State"
+        Description="A disabled date picker.">
+        <DemoBlock Code="@_disabledCode">
+            <DatePicker @bind-SelectedDate="selectedDate6"
+                       Disabled="true"
+                       Placeholder="Disabled picker" />
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_datePickerProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private DateOnly? selectedDate1;
+    private DateOnly? selectedDate1b;
+    private DateOnly? selectedDate2;
+    private DateOnly? selectedDate3;
+    private DateOnly? selectedDate4;
+    private DateOnly? selectedDate5;
+    private DateOnly? selectedDate6;
+    private DateOnly? dateOfBirth;
+
+    private DateOnly? startDate;
+    private DateOnly? endDate;
+
+    private DateOnly? checkIn;
+    private DateOnly? checkOut;
+
+    private DateOnly? appointmentDate;
+    private TimeOnly? appointmentTime;
+
+    private bool IsWeekend(DateOnly date)
+    {
+        return date.DayOfWeek == DayOfWeek.Saturday ||
+               date.DayOfWeek == DayOfWeek.Sunday;
+    }
+
+}

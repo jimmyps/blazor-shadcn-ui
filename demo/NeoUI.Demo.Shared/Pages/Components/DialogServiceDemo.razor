@@ -1,0 +1,214 @@
+@page "/components/dialog-service"
+@inject DialogService Dialog
+
+<PageTitle>Dialog Service - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Dialog Service"
+        Description="Programmatic dialogs, alerts, and confirmations with async/await API." />
+
+    <DemoSection
+        Title="Quick Actions"
+        Description="Common dialog patterns with one-liner API.">
+        <DemoBlock Code="@_quickActionsCode">
+            <ChildContent>
+                <div class="flex flex-wrap gap-2">
+                    <Button Variant="ButtonVariant.Destructive" OnClick="ShowDeleteConfirmation">
+                        <LucideIcon Name="trash-2" Size="16" Class="mr-2" />
+                        Delete Item
+                    </Button>
+                    <Button Variant="ButtonVariant.Destructive" OnClick="ShowRemoveConfirmation">
+                        <LucideIcon Name="unlink" Size="16" Class="mr-2" />
+                        Remove Item
+                    </Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="ShowWarning">
+                        <LucideIcon Name="alert-triangle" Size="16" Class="mr-2" />
+                        Warning
+                    </Button>
+                    <Button Variant="ButtonVariant.Default" OnClick="ShowInfo">
+                        <LucideIcon Name="info" Size="16" Class="mr-2" />
+                        Info
+                    </Button>
+                    <Button Variant="ButtonVariant.Default" OnClick="ShowSuccess">
+                        <LucideIcon Name="check-circle" Size="16" Class="mr-2" />
+                        Success
+                    </Button>
+                    <Button Variant="ButtonVariant.Destructive" OnClick="ShowError">
+                        <LucideIcon Name="alert-circle" Size="16" Class="mr-2" />
+                        Error
+                    </Button>
+                </div>
+                @if (!string.IsNullOrEmpty(_lastResult))
+                {
+                    <Alert Variant="AlertVariant.Default" Class="mt-4">
+                        <AlertDescription>@_lastResult</AlertDescription>
+                    </Alert>
+                }
+            </ChildContent>
+            <AdditionalContent>
+                <p class="text-sm text-muted-foreground">Click any button above to trigger a dialog. The result will appear below the buttons.</p>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Dialogs"
+        Description="Advanced configurations with DialogOptions.">
+        <DemoBlock Code="@_customDialogsCode">
+            <div class="flex flex-wrap gap-2">
+                <Button Variant="ButtonVariant.Outline" OnClick="ShowYesNo">
+                    Yes/No Dialog
+                </Button>
+                <Button Variant="ButtonVariant.Outline" OnClick="ShowThreeWay">
+                    Three-Way Choice
+                </Button>
+                <Button Variant="ButtonVariant.Outline" OnClick="ShowCustom">
+                    Custom Dialog
+                </Button>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Architecture"
+        Description="DialogService uses the AlertDialog component wrapped in DialogHost. Add DialogHost once in your root layout to enable dialogs throughout your app.">
+        <DemoBlock Code="@_architectureCode">
+            <ChildContent>
+                <div class="space-y-4 text-sm text-muted-foreground">
+                    <p>Add <code class="bg-muted px-1.5 py-0.5 rounded text-xs">DialogHost</code> to your <code class="bg-muted px-1.5 py-0.5 rounded text-xs">MainLayout.razor</code> or <code class="bg-muted px-1.5 py-0.5 rounded text-xs">App.razor</code>:</p>
+                    <p>Register <code class="bg-muted px-1.5 py-0.5 rounded text-xs">DialogService</code> in <code class="bg-muted px-1.5 py-0.5 rounded text-xs">Program.cs</code>:</p>
+                    <pre class="bg-muted p-3 rounded-md text-xs overflow-x-auto"><code>builder.Services.AddScoped&lt;DialogService&gt;();</code></pre>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <ul class="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                    <li>Consistent dialog interface across all pages and components</li>
+                    <li>No need to manage dialog state in each component</li>
+                    <li>Single DialogHost handles all dialogs — no duplicate overlays</li>
+                    <li>Built on top of accessible AlertDialog primitive</li>
+                    <li>Async/await API makes dialog flows easy to read</li>
+                </ul>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_dialogServiceProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string? _lastResult;
+
+    private async Task ShowDeleteConfirmation()
+    {
+        var confirmed = await Dialog.ConfirmDeleteAsync(
+            "User Account",
+            "This will permanently delete the user and all associated data. This action cannot be undone."
+        );
+        _lastResult = confirmed ? "✅ User confirmed deletion" : "❌ User cancelled deletion";
+    }
+
+    private async Task ShowRemoveConfirmation()
+    {
+        var confirmed = await Dialog.ConfirmRemoveAsync(
+            "External Login",
+            "You will need to re-link it if you want to use it again for authentication."
+        );
+        _lastResult = confirmed ? "✅ User confirmed removal" : "❌ User cancelled removal";
+    }
+
+    private async Task ShowWarning()
+    {
+        var confirmed = await Dialog.WarnAsync(
+            "Unsaved Changes",
+            "You have unsaved changes. Are you sure you want to leave this page?"
+        );
+        _lastResult = confirmed ? "✅ User chose to continue" : "❌ User stayed on page";
+    }
+
+    private async Task ShowInfo()
+    {
+        await Dialog.AlertAsync(
+            "Information",
+            "Your session will expire in 5 minutes. Please save your work.",
+            icon: "info"
+        );
+        _lastResult = "ℹ️ Info alert shown";
+    }
+
+    private async Task ShowSuccess()
+    {
+        await Dialog.SuccessAsync(
+            "Changes Saved",
+            "Your changes have been saved successfully!"
+        );
+        _lastResult = "✅ Success message shown";
+    }
+
+    private async Task ShowError()
+    {
+        await Dialog.ErrorAsync(
+            "Error Occurred",
+            "Failed to save changes. Please try again or contact support."
+        );
+        _lastResult = "❌ Error message shown";
+    }
+
+    private async Task ShowYesNo()
+    {
+        var result = await Dialog.ShowAsync(new DialogOptions
+        {
+            Title = "Confirm Action",
+            Message = "Do you want to proceed with this action?",
+            Icon = "help-circle",
+            Variant = DialogVariant.Default,
+            Buttons = DialogButtons.YesNo,
+            ConfirmText = "Yes",
+            CancelText = "No"
+        });
+        _lastResult = result == DialogResult.Confirmed ? "✅ User selected Yes" : "❌ User selected No";
+    }
+
+    private async Task ShowThreeWay()
+    {
+        var result = await Dialog.ShowAsync(new DialogOptions
+        {
+            Title = "Save Changes?",
+            Message = "Do you want to save your changes before closing?",
+            Icon = "save",
+            Variant = DialogVariant.Warning,
+            Buttons = DialogButtons.YesNoCancel,
+            ConfirmText = "Save",
+            CancelText = "Don't Save",
+            AlternateText = "Cancel"
+        });
+        _lastResult = result switch
+        {
+            DialogResult.Confirmed => "💾 User chose to Save",
+            DialogResult.Cancelled => "🗑️ User chose Don't Save",
+            DialogResult.Alternate => "❌ User chose Cancel",
+            _ => "Unknown"
+        };
+    }
+
+    private async Task ShowCustom()
+    {
+        var result = await Dialog.ShowAsync(new DialogOptions
+        {
+            Title = "Custom Dialog",
+            Message = "This is a custom dialog with specific styling and buttons.",
+            Icon = "star",
+            Variant = DialogVariant.Success,
+            Buttons = DialogButtons.OkCancel,
+            ConfirmText = "Awesome!",
+            CancelText = "Maybe Later"
+        });
+        _lastResult = result == DialogResult.Confirmed ? "🌟 User clicked Awesome!" : "⏰ User clicked Maybe Later";
+    }
+
+}

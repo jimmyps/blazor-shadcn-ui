@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);RZ1042</NoWarn>
+    <RootNamespace>NeoUI.Demo.Shared</RootNamespace>
+    <AssemblyName>NeoUI.Demo.Shared</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\NeoUI.Blazor\NeoUI.Blazor.csproj" />
+    <ProjectReference Include="..\..\src\NeoUI.Blazor.Primitives\NeoUI.Blazor.Primitives.csproj" />
+    <ProjectReference Include="..\..\src\NeoUI.Icons.Lucide\NeoUI.Icons.Lucide.csproj" />
+    <ProjectReference Include="..\..\src\NeoUI.Icons.Heroicons\NeoUI.Icons.Heroicons.csproj" />
+    <ProjectReference Include="..\..\src\NeoUI.Icons.Feather\NeoUI.Icons.Feather.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ColorCode.HTML" Version="2.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Remove="package.json" />
+    <Content Remove="package-lock.json" />
+    <Content Remove="node_modules\**" />
+  </ItemGroup>
+
+  <!-- Restore npm packages if node_modules is missing -->
+  <Target Name="NpmInstall" BeforeTargets="BeforeBuild" Condition="!Exists('$(MSBuildProjectDirectory)\node_modules')">
+    <Message Text="Restoring npm packages..." Importance="high" />
+    <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <!-- Build Tailwind CSS via npm -->
+  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" DependsOnTargets="NpmInstall">
+    <Message Text="Building Tailwind CSS..." Importance="high" />
+    <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+</Project>

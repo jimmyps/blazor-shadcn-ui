@@ -8,10 +8,10 @@ permissions:
   contents: read
 env:
   AZURE_WEBAPP_NAME: blazoruidemo20251223130817
-  AZURE_WEBAPP_PACKAGE_PATH: demo\BlazorUI.Demo\published
+  AZURE_WEBAPP_PACKAGE_PATH: demo\NeoUI.Demo\published
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 10.0.x
-  WORKING_DIRECTORY: demo\BlazorUI.Demo
+  WORKING_DIRECTORY: demo\NeoUI.Demo
   AZURE_WEBAPP_SLOT_NAME: staging
 jobs:
   build:
@@ -22,16 +22,16 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
-    - name:  Download Tailwind CLI
-      shell: pwsh
-      run: |
-        $toolsDir = "tools"
-        if (-not (Test-Path $toolsDir)) {
-          New-Item -ItemType Directory -Path $toolsDir
-        }
-        $tailwindUrl = "https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-windows-x64.exe"
-        $tailwindPath = Join-Path $toolsDir "tailwindcss.exe"
-        Invoke-WebRequest -Uri $tailwindUrl -OutFile $tailwindPath
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    - name: Install Tailwind CSS (npm)
+      run: npm install
+      working-directory: demo\NeoUI.Demo.Shared
+    - name: Build CSS
+      run: npm run build:css
+      working-directory: demo\NeoUI.Demo.Shared
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build

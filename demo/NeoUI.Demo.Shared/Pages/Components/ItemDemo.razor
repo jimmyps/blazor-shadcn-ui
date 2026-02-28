@@ -1,0 +1,322 @@
+@page "/components/item"
+
+<PageTitle>Item - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Item"
+        Description="A flexible, composable component for building list items with media, content, and actions." />
+
+    <DemoSection
+        Title="Basic Item"
+        Description="A simple item with title, description, and an action button.">
+        <DemoBlock Code="@_basicCode">
+            <Item Variant="ItemVariant.Outline">
+                <ItemContent>
+                    <ItemTitle>Basic Item</ItemTitle>
+                    <ItemDescription>
+                        A simple item with title and description.
+                    </ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Action</Button>
+                </ItemActions>
+            </Item>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Notification List"
+        Description="Items displaying notifications with icons, titles, descriptions, and timestamps.">
+        <DemoBlock Code="@_notificationCode">
+            <ItemGroup>
+                <Item Variant="ItemVariant.Default">
+                    <ItemMedia Variant="ItemMediaVariant.Icon">
+                        <LucideIcon Name="circle-check" Size="18" Class="text-green-600" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Successfully saved</ItemTitle>
+                        <ItemDescription>Your changes have been saved to the database.</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <span class="text-xs text-muted-foreground">2m ago</span>
+                    </ItemActions>
+                </Item>
+                <ItemSeparator />
+                <Item Variant="ItemVariant.Default">
+                    <ItemMedia Variant="ItemMediaVariant.Icon">
+                        <LucideIcon Name="info" Size="18" Class="text-blue-600" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>New update available</ItemTitle>
+                        <ItemDescription>Version 2.0 is now available for download.</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <span class="text-xs text-muted-foreground">1h ago</span>
+                    </ItemActions>
+                </Item>
+                <ItemSeparator />
+                <Item Variant="ItemVariant.Default">
+                    <ItemMedia Variant="ItemMediaVariant.Icon">
+                        <LucideIcon Name="circle-alert" Size="18" Class="text-yellow-600" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Warning: Storage limit</ItemTitle>
+                        <ItemDescription>You're approaching your storage limit. Consider upgrading your plan.</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <span class="text-xs text-muted-foreground">3h ago</span>
+                    </ItemActions>
+                </Item>
+                <ItemSeparator />
+                <Item Variant="ItemVariant.Default">
+                    <ItemMedia Variant="ItemMediaVariant.Icon">
+                        <LucideIcon Name="circle-x" Size="18" Class="text-red-600" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Error: Failed to sync</ItemTitle>
+                        <ItemDescription>Could not sync your data. Please check your connection.</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <span class="text-xs text-muted-foreground">1d ago</span>
+                    </ItemActions>
+                </Item>
+            </ItemGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Settings Items"
+        Description="Clickable settings rows with icons and descriptions using AsChild to render as links.">
+        <DemoBlock Code="@_settingsCode">
+            <ItemGroup>
+                <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#profile">
+                    <ItemMedia>
+                        <LucideIcon Name="user" Size="18" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Profile Settings</ItemTitle>
+                    </ItemContent>
+                    <ItemActions>
+                        <LucideIcon Name="chevron-right" Size="16" />
+                    </ItemActions>
+                </Item>
+                <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#notifications">
+                    <ItemMedia>
+                        <LucideIcon Name="bell" Size="18" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Notification Settings</ItemTitle>
+                    </ItemContent>
+                    <ItemActions>
+                        <LucideIcon Name="chevron-right" Size="16" />
+                    </ItemActions>
+                </Item>
+                <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#security">
+                    <ItemMedia>
+                        <LucideIcon Name="shield" Size="18" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Security &amp; Privacy</ItemTitle>
+                    </ItemContent>
+                    <ItemActions>
+                        <LucideIcon Name="chevron-right" Size="16" />
+                    </ItemActions>
+                </Item>
+                <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm" AsChild="a" Href="#billing">
+                    <ItemMedia>
+                        <LucideIcon Name="credit-card" Size="18" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Billing &amp; Plans</ItemTitle>
+                    </ItemContent>
+                    <ItemActions>
+                        <LucideIcon Name="chevron-right" Size="16" />
+                    </ItemActions>
+                </Item>
+            </ItemGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="User Profile Cards"
+        Description="User items with avatars, names, roles, and action buttons.">
+        <DemoBlock Code="@_userProfileCode">
+            <ItemGroup>
+                <Item Variant="ItemVariant.Outline">
+                    <ItemMedia Variant="ItemMediaVariant.Image">
+                        <Avatar>
+                            <AvatarFallback>JD</AvatarFallback>
+                        </Avatar>
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>
+                            John Doe
+                            <Badge Variant="BadgeVariant.Default">Admin</Badge>
+                        </ItemTitle>
+                        <ItemDescription>john.doe@example.com</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</Button>
+                    </ItemActions>
+                </Item>
+                <Item Variant="ItemVariant.Outline">
+                    <ItemMedia Variant="ItemMediaVariant.Image">
+                        <Avatar>
+                            <AvatarFallback>SM</AvatarFallback>
+                        </Avatar>
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>
+                            Sarah Miller
+                            <Badge Variant="BadgeVariant.Secondary">Editor</Badge>
+                        </ItemTitle>
+                        <ItemDescription>sarah.miller@example.com</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</Button>
+                    </ItemActions>
+                </Item>
+                <Item Variant="ItemVariant.Outline">
+                    <ItemMedia Variant="ItemMediaVariant.Image">
+                        <Avatar>
+                            <AvatarFallback>MJ</AvatarFallback>
+                        </Avatar>
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>
+                            Mike Johnson
+                            <Badge Variant="BadgeVariant.Outline">Viewer</Badge>
+                        </ItemTitle>
+                        <ItemDescription>mike.johnson@example.com</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View Profile</Button>
+                    </ItemActions>
+                </Item>
+            </ItemGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Variants"
+        Description="Three visual variants: Default, Outline, and Muted.">
+        <DemoBlock Code="@_variantsCode">
+            <div class="space-y-3">
+                <Item Variant="ItemVariant.Default">
+                    <ItemContent>
+                        <ItemTitle>Default Variant</ItemTitle>
+                        <ItemDescription>Hover to see the subtle background effect.</ItemDescription>
+                    </ItemContent>
+                </Item>
+                <Item Variant="ItemVariant.Outline">
+                    <ItemContent>
+                        <ItemTitle>Outline Variant</ItemTitle>
+                        <ItemDescription>Has a border and background on hover.</ItemDescription>
+                    </ItemContent>
+                </Item>
+                <Item Variant="ItemVariant.Muted">
+                    <ItemContent>
+                        <ItemTitle>Muted Variant</ItemTitle>
+                        <ItemDescription>Subtle background color with darker hover state.</ItemDescription>
+                    </ItemContent>
+                </Item>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Sizes"
+        Description="Two size options: Default and Small.">
+        <DemoBlock Code="@_sizesCode">
+            <div class="space-y-3">
+                <Item Variant="ItemVariant.Outline" Size="ItemSize.Default">
+                    <ItemContent>
+                        <ItemTitle>Default Size</ItemTitle>
+                        <ItemDescription>Standard padding for most use cases.</ItemDescription>
+                    </ItemContent>
+                </Item>
+                <Item Variant="ItemVariant.Outline" Size="ItemSize.Sm">
+                    <ItemContent>
+                        <ItemTitle>Small Size</ItemTitle>
+                        <ItemDescription>Compact padding for dense layouts.</ItemDescription>
+                    </ItemContent>
+                </Item>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Polymorphic Rendering (AsChild)"
+        Description="Items can render as different HTML elements using the AsChild parameter.">
+        <DemoBlock Code="@_asChildCode">
+            <div class="space-y-3">
+                <Item Variant="ItemVariant.Outline" AsChild="a" Href="https://github.com" target="_blank">
+                    <ItemMedia>
+                        <LucideIcon Name="github" Size="18" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>View on GitHub</ItemTitle>
+                        <ItemDescription>Opens in a new tab</ItemDescription>
+                    </ItemContent>
+                    <ItemActions>
+                        <LucideIcon Name="external-link" Size="16" />
+                    </ItemActions>
+                </Item>
+                <Item Variant="ItemVariant.Outline" AsChild="button" @onclick="@(() => {})">
+                    <ItemMedia>
+                        <LucideIcon Name="star" Size="18" />
+                    </ItemMedia>
+                    <ItemContent>
+                        <ItemTitle>Mark as Favorite</ItemTitle>
+                        <ItemDescription>Click to toggle favorite status</ItemDescription>
+                    </ItemContent>
+                </Item>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Complex Layout"
+        Description="Using ItemHeader and ItemFooter for advanced layouts.">
+        <DemoBlock Code="@_complexLayoutCode">
+            <Item Variant="ItemVariant.Outline" Class="flex-wrap">
+                <ItemMedia Variant="ItemMediaVariant.Image">
+                    <Avatar>
+                        <AvatarFallback>TR</AvatarFallback>
+                    </Avatar>
+                </ItemMedia>
+                <ItemContent>
+                    <ItemTitle>Task Report</ItemTitle>
+                    <ItemDescription>Monthly summary of completed tasks and projects.</ItemDescription>
+                </ItemContent>
+                <ItemActions>
+                    <Badge Variant="BadgeVariant.Default">New</Badge>
+                </ItemActions>
+                <ItemFooter Class="mt-3">
+                    <div class="flex gap-2">
+                        <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small">Download PDF</Button>
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">Share</Button>
+                    </div>
+                    <span class="text-xs text-muted-foreground">Generated today</span>
+                </ItemFooter>
+            </Item>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="API Reference"
+        Description="Item component parameters and their types.">
+        <DemoPropsTable Rows="_itemProps" />
+    </DemoSection>
+
+    <DemoSection
+        Title="Sub-component API"
+        Description="Parameters for ItemContent, ItemMedia, ItemActions, ItemHeader, and ItemFooter.">
+        <DemoPropsTable Rows="_subComponentProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>

@@ -1,0 +1,115 @@
+@page "/components/aspectratio"
+
+<PageTitle>Aspect Ratio - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Aspect Ratio"
+        Description="Displays content within a desired ratio. Commonly used for images, videos, and cards." />
+
+    <DemoSection
+        Title="16:9 Ratio (Video)"
+        Description="Standard widescreen video aspect ratio.">
+        <DemoBlock Code="@_videoCode">
+            <div class="w-[450px]">
+                <AspectRatio Ratio="16.0/9.0" Class="bg-muted rounded-md overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80"
+                         alt="Photo by Drew Beamer"
+                         class="w-full h-full object-cover" />
+                </AspectRatio>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="1:1 Ratio (Square)"
+        Description="Perfect for profile pictures and avatars.">
+        <DemoBlock Code="@_squareCode">
+            <div class="w-[200px]">
+                <AspectRatio Ratio="1" Class="bg-muted rounded-full overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&dpr=2&q=80"
+                         alt="Avatar"
+                         class="w-full h-full object-cover" />
+                </AspectRatio>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="4:3 Ratio (Classic)"
+        Description="Traditional photography aspect ratio.">
+        <DemoBlock Code="@_classicCode">
+            <div class="w-[400px]">
+                <AspectRatio Ratio="4.0/3.0" Class="bg-muted rounded-md overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&dpr=2&q=80"
+                         alt="Photo by David Marcu"
+                         class="w-full h-full object-cover" />
+                </AspectRatio>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="21:9 Ultra Wide"
+        Description="Cinematic ultra-wide ratio for hero banners.">
+        <DemoBlock Code="@_ultraWideCode">
+            <div class="w-full">
+                <AspectRatio Ratio="21.0/9.0" Class="bg-muted rounded-lg overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-primary/20 to-primary/40">
+                        <span class="text-2xl font-bold">21:9 Ultra Wide Banner</span>
+                    </div>
+                </AspectRatio>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Placeholder Content"
+        Description="Use with any content, not just images.">
+        <DemoBlock Code="@_placeholderCode">
+            <ChildContent>
+                <div class="grid grid-cols-3 gap-4 w-full">
+                    <AspectRatio Ratio="1" Class="bg-muted rounded-md">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm text-muted-foreground">1:1</span>
+                        </div>
+                    </AspectRatio>
+                    <AspectRatio Ratio="4.0/3.0" Class="bg-muted rounded-md">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm text-muted-foreground">4:3</span>
+                        </div>
+                    </AspectRatio>
+                    <AspectRatio Ratio="16.0/9.0" Class="bg-muted rounded-md">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="text-sm text-muted-foreground">16:9</span>
+                        </div>
+                    </AspectRatio>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    <li>Uses the native CSS <code class="text-xs bg-muted px-1 py-0.5 rounded">aspect-ratio</code> property</li>
+                    <li>Accepts any numeric ratio as a <code class="text-xs bg-muted px-1 py-0.5 rounded">double</code> (width / height)</li>
+                    <li>Child content is positioned absolutely within the container</li>
+                    <li>Works with any child content — images, videos, or custom markup</li>
+                </ul>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Uses native CSS aspect-ratio property</li>
+            <li>Accepts any numeric ratio as double (width / height)</li>
+            <li>Content is positioned absolutely within the container</li>
+            <li>Works with any child content (images, videos, placeholders)</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_aspectRatioProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>

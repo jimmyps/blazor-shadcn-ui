@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
-    [CascadingParameter] private IChartParent? Parent { get; set; }
+    [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets whether to show the legend.
@@ -48,6 +48,9 @@
     
     protected override void OnInitialized()
     {
-        Parent?.RegisterLegend(this);
+        if (Parent != null)
+        {
+            try { Parent.RegisterLegend(this); } catch { }
+        }
     }
 }

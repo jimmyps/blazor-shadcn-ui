@@ -1,0 +1,21 @@
+/* Blue Primary Color Theme - OKLCH Color Space */
+
+@layer base {
+  :root.primary-blue {
+    --primary: oklch(0.4880 0.2430 264.3760);
+    --primary-foreground: oklch(0.9850 0.0030 264.5420);
+    --ring: oklch(0.4880 0.2430 264.3760);
+    --sidebar-primary: oklch(0.4880 0.2430 264.3760);
+    --sidebar-primary-foreground: oklch(0.9850 0.0030 264.5420);
+    --sidebar-ring: oklch(0.4880 0.2430 264.3760);
+  }
+
+  :root.primary-blue.dark {
+    --primary: oklch(0.6890 0.1810 254.6040);
+    --primary-foreground: oklch(0.2050 0.0120 252.5460);
+    --ring: oklch(0.6890 0.1810 254.6040);
+    --sidebar-primary: oklch(0.6890 0.1810 254.6040);
+    --sidebar-primary-foreground: oklch(0.2050 0.0120 252.5460);
+    --sidebar-ring: oklch(0.6890 0.1810 254.6040);
+  }
+}

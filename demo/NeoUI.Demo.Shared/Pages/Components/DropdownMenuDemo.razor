@@ -1,0 +1,996 @@
+@page "/components/dropdown-menu"
+@inject IKeyboardShortcutService KeyboardShortcuts
+@implements IAsyncDisposable
+
+<PageTitle>Dropdown Menu - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Dropdown Menu"
+        Description="Displays a menu of actions or options triggered by a button." />
+
+    <!-- Basic Dropdown Menu -->
+    <DemoSection
+        Title="Basic Dropdown Menu"
+        Description="A simple dropdown menu with items.">
+        <DemoBlock Code="@_basicCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        Open Menu
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem OnClick="@(() => HandleBasicAction("Profile"))">Profile</DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleBasicAction("Settings"))">Settings</DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleBasicAction("Billing"))">Billing</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(basicAction))
+                {
+                    <p class="text-sm">Last action: <strong>@basicAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- With Icons -->
+    <DemoSection
+        Title="With Icons"
+        Description="Add Lucide icons to menu items for better visual hierarchy.">
+        <DemoBlock Code="@_iconsCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        <LucideIcon Name="settings" Size="16" Class="mr-2" />
+                        Settings
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("Profile"))">
+                            <LucideIcon Name="user" Size="16" Class="mr-2" />
+                            Profile
+                        </DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("Settings"))">
+                            <LucideIcon Name="settings" Size="16" Class="mr-2" />
+                            Settings
+                        </DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("Keyboard"))">
+                            <LucideIcon Name="keyboard" Size="16" Class="mr-2" />
+                            Keyboard shortcuts
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("Team"))">
+                            <LucideIcon Name="users" Size="16" Class="mr-2" />
+                            Team
+                        </DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("New Team"))">
+                            <LucideIcon Name="user-plus" Size="16" Class="mr-2" />
+                            Invite users
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("GitHub"))">
+                            <LucideIcon Name="github" Size="16" Class="mr-2" />
+                            GitHub
+                        </DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("Support"))">
+                            <LucideIcon Name="life-buoy" Size="16" Class="mr-2" />
+                            Support
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleIconsAction("Log out"))">
+                            <LucideIcon Name="log-out" Size="16" Class="mr-2" />
+                            Log out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(iconsAction))
+                {
+                    <p class="text-sm">Last action: <strong>@iconsAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- With Labels and Separators -->
+    <DemoSection
+        Title="With Labels and Separators"
+        Description="Organize menu items with labels and visual separators.">
+        <DemoBlock Code="@_labelsCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        My Account
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleLabelsAction("Profile"))">Profile</DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleLabelsAction("Billing"))">Billing</DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleLabelsAction("Settings"))">Settings</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleLabelsAction("Logout"))">Logout</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(labelsAction))
+                {
+                    <p class="text-sm">Last action: <strong>@labelsAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Grouped Items -->
+    <DemoSection
+        Title="Grouped Items"
+        Description="Group related menu items together.">
+        <DemoBlock Code="@_groupsCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        Actions
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>File Operations</DropdownMenuLabel>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem OnClick="@(() => HandleGroupsAction("New File"))">New File</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleGroupsAction("Open"))">Open</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleGroupsAction("Save"))">Save</DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Edit Operations</DropdownMenuLabel>
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem OnClick="@(() => HandleGroupsAction("Cut"))">Cut</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleGroupsAction("Copy"))">Copy</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleGroupsAction("Paste"))">Paste</DropdownMenuItem>
+                        </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(groupsAction))
+                {
+                    <p class="text-sm">Last action: <strong>@groupsAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- With Keyboard Shortcuts (visual only) -->
+    <DemoSection
+        Title="With Keyboard Shortcuts"
+        Description="Display keyboard shortcuts alongside menu items (visual only).">
+        <DemoBlock Code="@_shortcutsCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        File Menu
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("New"))">
+                            New
+                            <DropdownMenuShortcut>⌘N</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Open"))">
+                            Open
+                            <DropdownMenuShortcut>⌘O</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Save"))">
+                            Save
+                            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleShortcutsAction("Print"))">
+                            Print
+                            <DropdownMenuShortcut>⌘P</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(shortcutsAction))
+                {
+                    <p class="text-sm">Last action: <strong>@shortcutsAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Functional Keyboard Shortcuts -->
+    <DemoSection
+        Title="Functional Keyboard Shortcuts"
+        Description="Keyboard shortcuts that actually work! Press the shortcut keys anywhere on this page (even when the menu is closed) to trigger the action.">
+        <DemoBlock Code="@_functionalShortcutsCode">
+            <ChildContent>
+                <div class="flex items-start gap-4">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger Class="@buttonOutlineClass">
+                            File Menu
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("New File"))">
+                                New File
+                                <DropdownMenuShortcut>Ctrl+Shift+N</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("Open"))">
+                                Open
+                                <DropdownMenuShortcut>Ctrl+O</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("Save"))">
+                                Save
+                                <DropdownMenuShortcut>Ctrl+S</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem OnClick="@(() => HandleFunctionalShortcutsAction("Save As"))">
+                                Save As...
+                                <DropdownMenuShortcut>Ctrl+Shift+S</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    @if (!string.IsNullOrEmpty(functionalShortcutsAction))
+                    {
+                        <div class="flex items-center gap-2 p-3 bg-primary/10 text-primary rounded-md animate-pulse">
+                            <LucideIcon Name="check-circle" Size="16" />
+                            <span>Shortcut triggered: <strong>@functionalShortcutsAction</strong></span>
+                        </div>
+                    }
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <div class="mt-4 p-4 bg-muted rounded-lg">
+                    <p class="font-medium mb-3">Try these shortcuts (even with the menu closed):</p>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div class="flex items-center gap-2">
+                            <Kbd>Ctrl+Shift+N</Kbd> <span class="text-muted-foreground">New File</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Kbd>Ctrl+O</Kbd> <span class="text-muted-foreground">Open</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Kbd>Ctrl+S</Kbd> <span class="text-muted-foreground">Save</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <Kbd>Ctrl+Shift+S</Kbd> <span class="text-muted-foreground">Save As</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-muted p-4 rounded-md">
+                    <p class="text-sm font-medium mb-2">Usage with KeyboardShortcutService:</p>
+                    <pre class="text-sm overflow-x-auto"><code>@@inject IKeyboardShortcutService KeyboardShortcuts
+@@implements IAsyncDisposable
+
+@@code {
+    private IDisposable? _shortcutNew;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _shortcutNew = await KeyboardShortcuts.RegisterAsync(
+                "Ctrl+Shift+N", HandleNewFile);
+        }
+    }
+
+    private Task HandleNewFile()
+    {
+        // Handle the shortcut action
+        return Task.CompletedTask;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _shortcutNew?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+}</code></pre>
+                </div>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Alignment Options -->
+    <DemoSection
+        Title="Alignment Options"
+        Description="Control how the dropdown aligns relative to its trigger (Start, Center, End). Test with small icon buttons to see alignment clearly.">
+        <DemoBlock Code="@_alignmentCode">
+            <div class="flex flex-wrap gap-4 items-start">
+                <div class="flex flex-col gap-2 items-start">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger Class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10" aria-label="Start aligned menu">
+                            <LucideIcon Name="menu" Size="16" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent Align="@PopoverAlign.Start">
+                            <DropdownMenuLabel>Start Alignment</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("start", "Item 1"))">Item 1</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("start", "Item 2"))">Item 2</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("start", "Item 3"))">Item 3</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    @if (GetMenuAction("start") != null)
+                    {
+                        <p class="text-sm">Start: <strong>@GetMenuAction("start")</strong></p>
+                    }
+                </div>
+
+                <div class="flex flex-col gap-2 items-start">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger Class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10" aria-label="Center aligned menu">
+                            <LucideIcon Name="menu" Size="16" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent Align="@PopoverAlign.Center">
+                            <DropdownMenuLabel>Center Alignment</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("center", "Item 1"))">Item 1</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("center", "Item 2"))">Item 2</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("center", "Item 3"))">Item 3</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    @if (GetMenuAction("center") != null)
+                    {
+                        <p class="text-sm">Center: <strong>@GetMenuAction("center")</strong></p>
+                    }
+                </div>
+
+                <div class="flex flex-col gap-2 items-start">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger Class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10" aria-label="End aligned menu">
+                            <LucideIcon Name="menu" Size="16" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent Align="@PopoverAlign.End">
+                            <DropdownMenuLabel>End Alignment</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("end", "Item 1"))">Item 1</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("end", "Item 2"))">Item 2</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleMenuAction("end", "Item 3"))">Item 3</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    @if (GetMenuAction("end") != null)
+                    {
+                        <p class="text-sm">End: <strong>@GetMenuAction("end")</strong></p>
+                    }
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Disabled Items -->
+    <DemoSection
+        Title="Disabled Items"
+        Description="Menu items can be disabled to prevent interaction.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        Edit Menu
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem OnClick="@(() => HandleDisabledAction("Cut"))">Cut</DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleDisabledAction("Copy"))">Copy</DropdownMenuItem>
+                        <DropdownMenuItem Disabled="true" OnClick="@(() => HandleDisabledAction("Paste"))">Paste (Disabled)</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleDisabledAction("Select All"))">Select All</DropdownMenuItem>
+                        <DropdownMenuItem Disabled="true" OnClick="@(() => HandleDisabledAction("Delete"))">Delete (Disabled)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(disabledAction))
+                {
+                    <p class="text-sm">Last action: <strong>@disabledAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- AsChild Pattern -->
+    <DemoSection
+        Title="AsChild Pattern"
+        Description="Use AsChild to compose triggers with your own styled Button components.">
+        <DemoBlock Code="@_asChildCode">
+            <ChildContent>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Without AsChild -->
+                    <div class="space-y-3 p-4 border rounded-lg">
+                        <h3 class="text-lg font-medium">Without AsChild</h3>
+                        <p class="text-sm text-muted-foreground">
+                            DropdownMenuTrigger renders its own button with inline classes.
+                        </p>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger Class="@buttonOutlineClass">
+                                Open Menu
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem>Profile</DropdownMenuItem>
+                                <DropdownMenuItem>Settings</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+
+                    <!-- With AsChild -->
+                    <div class="space-y-3 p-4 border rounded-lg">
+                        <h3 class="text-lg font-medium">With AsChild</h3>
+                        <p class="text-sm text-muted-foreground">
+                            Button component receives trigger behavior via TriggerContext.
+                        </p>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger AsChild>
+                                <Button Variant="ButtonVariant.Outline">
+                                    Actions
+                                    <LucideIcon Name="chevron-down" Size="16" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    <LucideIcon Name="pencil" Size="16" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <LucideIcon Name="copy" Size="16" />
+                                    Duplicate
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem Class="text-destructive">
+                                    <LucideIcon Name="trash-2" Size="16" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <div class="bg-muted p-4 rounded-md mt-4">
+                    <p class="text-sm font-medium mb-2">Code Example:</p>
+                    <pre class="text-sm overflow-x-auto"><code>&lt;DropdownMenu&gt;
+    &lt;DropdownMenuTrigger AsChild&gt;
+        &lt;Button Variant="ButtonVariant.Outline"&gt;
+            Actions
+            &lt;LucideIcon Name="chevron-down" Size="16" /&gt;
+        &lt;/Button&gt;
+    &lt;/DropdownMenuTrigger&gt;
+    &lt;DropdownMenuContent&gt;
+        &lt;DropdownMenuItem&gt;Edit&lt;/DropdownMenuItem&gt;
+        &lt;DropdownMenuItem&gt;Delete&lt;/DropdownMenuItem&gt;
+    &lt;/DropdownMenuContent&gt;
+&lt;/DropdownMenu&gt;</code></pre>
+                </div>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Complex Example -->
+    <DemoSection
+        Title="Complex Example"
+        Description="Combining all features: labels, separators, groups, shortcuts, and disabled items.">
+        <DemoBlock Code="@_complexCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        Complete Menu
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-56">
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem OnClick="@(() => HandleComplexAction("Profile"))">
+                                Profile
+                                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleComplexAction("Billing"))">
+                                Billing
+                                <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleComplexAction("Settings"))">
+                                Settings
+                                <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem Disabled="true" OnClick="@(() => HandleComplexAction("Keyboard shortcuts"))">
+                                Keyboard shortcuts
+                                <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                            <DropdownMenuItem OnClick="@(() => HandleComplexAction("Team"))">Team</DropdownMenuItem>
+                            <DropdownMenuItem OnClick="@(() => HandleComplexAction("Invite users"))">
+                                Invite users
+                                <DropdownMenuShortcut>⌘I</DropdownMenuShortcut>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleComplexAction("GitHub"))">GitHub</DropdownMenuItem>
+                        <DropdownMenuItem Disabled="true" OnClick="@(() => HandleComplexAction("Support"))">Support</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleComplexAction("Log out"))">
+                            Log out
+                            <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(complexAction))
+                {
+                    <p class="text-sm">Last action: <strong>@complexAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Checkbox Items -->
+    <DemoSection
+        Title="Checkbox Items"
+        Description="Menu items that toggle a boolean state. Useful for preferences and settings.">
+        <DemoBlock Code="@_checkboxCode">
+            <div class="flex items-start gap-4">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        View Options
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuCheckboxItem @bind-Checked="@showStatusBar">
+                            Status Bar
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem @bind-Checked="@showActivityBar">
+                            Activity Bar
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem @bind-Checked="@showPanel" Disabled="true">
+                            Panel (Disabled)
+                        </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <div class="text-sm space-y-1">
+                    <p>Status Bar: <strong>@(showStatusBar ? "Visible" : "Hidden")</strong></p>
+                    <p>Activity Bar: <strong>@(showActivityBar ? "Visible" : "Hidden")</strong></p>
+                    <p>Panel: <strong>@(showPanel ? "Visible" : "Hidden")</strong></p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Radio Items -->
+    <DemoSection
+        Title="Radio Items"
+        Description="A group of menu items where only one can be selected at a time.">
+        <DemoBlock Code="@_radioCode">
+            <div class="flex items-start gap-4">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        Select Position
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuRadioGroup TValue="string" @bind-Value="@position">
+                            <DropdownMenuRadioItem TValue="string" Value="@("top")">Top</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem TValue="string" Value="@("bottom")">Bottom</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem TValue="string" Value="@("right")">Right</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <p class="text-sm">Selected position: <strong>@position</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Submenus -->
+    <DemoSection
+        Title="Submenus"
+        Description="Nested menus for organizing complex options. Hover or use arrow keys to open submenus.">
+        <DemoBlock Code="@_submenuCode">
+            <div class="flex items-start gap-2">
+                <DropdownMenu>
+                    <DropdownMenuTrigger Class="@buttonOutlineClass">
+                        Share
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-56">
+                        <DropdownMenuItem OnClick="@(() => HandleSubmenuAction("Email"))">
+                            Email
+                        </DropdownMenuItem>
+                        <DropdownMenuItem OnClick="@(() => HandleSubmenuAction("Message"))">
+                            Message
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
+                                Invite users
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem OnClick="@(() => HandleSubmenuAction("Invite: Email"))">
+                                    Email
+                                </DropdownMenuItem>
+                                <DropdownMenuItem OnClick="@(() => HandleSubmenuAction("Invite: Message"))">
+                                    Message
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem OnClick="@(() => HandleSubmenuAction("Invite: More..."))">
+                                    More...
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="@(() => HandleSubmenuAction("Copy Link"))">
+                            Copy Link
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                @if (!string.IsNullOrEmpty(submenuAction))
+                {
+                    <p class="text-sm">Last action: <strong>@submenuAction</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- API Reference -->
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_dropdownMenuProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    // Common button class for trigger styling (shadcn/ui outline variant)
+    private const string buttonOutlineClass = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2";
+
+    // Independent state for each menu section
+    private string? basicAction;
+    private string? iconsAction;
+    private string? labelsAction;
+    private string? groupsAction;
+    private string? shortcutsAction;
+    private string? functionalShortcutsAction;
+    private string? disabledAction;
+    private string? complexAction;
+    private string? submenuAction;
+    private Dictionary<string, string?> menuActions = new();
+
+    // Checkbox state
+    private bool showStatusBar = true;
+    private bool showActivityBar = true;
+    private bool showPanel = false;
+
+    // Radio state
+    private string? position = "bottom";
+
+    // Keyboard shortcut registrations
+    private IDisposable? _shortcutNew;
+    private IDisposable? _shortcutOpen;
+    private IDisposable? _shortcutSave;
+    private IDisposable? _shortcutSaveAs;
+    private CancellationTokenSource? _clearCts;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Register keyboard shortcuts
+            _shortcutNew = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+N", () => HandleShortcutAsync("New File"));
+            _shortcutOpen = await KeyboardShortcuts.RegisterAsync("Ctrl+O", () => HandleShortcutAsync("Open"));
+            _shortcutSave = await KeyboardShortcuts.RegisterAsync("Ctrl+S", () => HandleShortcutAsync("Save"));
+            _shortcutSaveAs = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+S", () => HandleShortcutAsync("Save As"));
+        }
+    }
+
+    private async Task HandleShortcutAsync(string action)
+    {
+        functionalShortcutsAction = action;
+        await InvokeAsync(StateHasChanged);
+
+        // Cancel any previous clear timer
+        _clearCts?.Cancel();
+        _clearCts = new CancellationTokenSource();
+
+        // Clear after 2 seconds
+        try
+        {
+            await Task.Delay(2000, _clearCts.Token);
+            functionalShortcutsAction = null;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (TaskCanceledException)
+        {
+            // Timer was cancelled, ignore
+        }
+    }
+
+    // Individual handlers for each section
+    private void HandleBasicAction(string action) => basicAction = action;
+    private void HandleIconsAction(string action) => iconsAction = action;
+    private void HandleLabelsAction(string action) => labelsAction = action;
+    private void HandleGroupsAction(string action) => groupsAction = action;
+    private void HandleShortcutsAction(string action) => shortcutsAction = action;
+    private void HandleFunctionalShortcutsAction(string action) => _ = HandleShortcutAsync(action);
+    private void HandleDisabledAction(string action) => disabledAction = action;
+    private void HandleComplexAction(string action) => complexAction = action;
+    private void HandleSubmenuAction(string action) => submenuAction = action;
+
+    // Alignment section uses dictionary approach
+    private void HandleMenuAction(string menuName, string action)
+    {
+        menuActions[menuName] = action;
+    }
+
+    private string? GetMenuAction(string menuName)
+    {
+        return menuActions.TryGetValue(menuName, out var action) ? action : null;
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _clearCts?.Cancel();
+        _clearCts?.Dispose();
+        _shortcutNew?.Dispose();
+        _shortcutOpen?.Dispose();
+        _shortcutSave?.Dispose();
+        _shortcutSaveAs?.Dispose();
+        return ValueTask.CompletedTask;
+    }
+
+    private static readonly IReadOnlyList<DemoPropRow> _dropdownMenuProps =
+    [
+        new("ChildContent",  "RenderFragment?",  "null",   "Trigger and content elements for the dropdown."),
+        new("AsChild",       "bool",             "false",  "On DropdownMenuTrigger: merges trigger behavior onto the child element."),
+        new("Align",         "PopoverAlign",     "Start",  "On DropdownMenuContent: alignment relative to trigger. Options: Start, Center, End."),
+        new("Class",         "string?",          "null",   "Additional CSS classes for the component."),
+        new("Disabled",      "bool",             "false",  "On DropdownMenuItem: prevents interaction when true."),
+        new("OnClick",       "EventCallback",    "—",      "On DropdownMenuItem: callback when item is clicked."),
+        new("Checked",       "bool",             "false",  "On DropdownMenuCheckboxItem: the checked state. Use @bind-Checked."),
+        new("Value",         "TValue",           "—",      "On DropdownMenuRadioItem: the value this item represents."),
+    ];
+
+    private const string _basicCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuItem OnClick="HandleProfile">Profile</DropdownMenuItem>
+                <DropdownMenuItem OnClick="HandleSettings">Settings</DropdownMenuItem>
+                <DropdownMenuItem OnClick="HandleBilling">Billing</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _iconsCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>
+                <LucideIcon Name="settings" Size="16" Class="mr-2" />
+                Settings
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                    <LucideIcon Name="user" Size="16" Class="mr-2" />
+                    Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <LucideIcon Name="log-out" Size="16" Class="mr-2" />
+                    Log out
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _labelsCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>My Account</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem>Billing</DropdownMenuItem>
+                <DropdownMenuItem>Settings</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _groupsCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>Actions</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>File Operations</DropdownMenuLabel>
+                <DropdownMenuGroup>
+                    <DropdownMenuItem>New File</DropdownMenuItem>
+                    <DropdownMenuItem>Open</DropdownMenuItem>
+                    <DropdownMenuItem>Save</DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Edit Operations</DropdownMenuLabel>
+                <DropdownMenuGroup>
+                    <DropdownMenuItem>Cut</DropdownMenuItem>
+                    <DropdownMenuItem>Copy</DropdownMenuItem>
+                    <DropdownMenuItem>Paste</DropdownMenuItem>
+                </DropdownMenuGroup>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _shortcutsCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>File Menu</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuItem>
+                    New <DropdownMenuShortcut>\u2318N</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    Open <DropdownMenuShortcut>\u2318O</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    Save <DropdownMenuShortcut>\u2318S</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                    Print <DropdownMenuShortcut>\u2318P</DropdownMenuShortcut>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _functionalShortcutsCode =
+        """
+        @inject IKeyboardShortcutService KeyboardShortcuts
+        @implements IAsyncDisposable
+
+        <DropdownMenu>
+            <DropdownMenuTrigger>File Menu</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuItem OnClick="HandleNewFile">
+                    New File <DropdownMenuShortcut>Ctrl+Shift+N</DropdownMenuShortcut>
+                </DropdownMenuItem>
+                <DropdownMenuItem OnClick="HandleSave">
+                    Save <DropdownMenuShortcut>Ctrl+S</DropdownMenuShortcut>
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+
+        @code {
+            private IDisposable? _shortcutNew;
+
+            protected override async Task OnAfterRenderAsync(bool firstRender)
+            {
+                if (firstRender)
+                    _shortcutNew = await KeyboardShortcuts.RegisterAsync("Ctrl+Shift+N", HandleNewFile);
+            }
+
+            private Task HandleNewFile() { /* ... */ return Task.CompletedTask; }
+
+            public ValueTask DisposeAsync() { _shortcutNew?.Dispose(); return ValueTask.CompletedTask; }
+        }
+        """;
+
+    private const string _alignmentCode =
+        """
+        <!-- Start alignment (default) -->
+        <DropdownMenuContent Align="@PopoverAlign.Start">...</DropdownMenuContent>
+
+        <!-- Center alignment -->
+        <DropdownMenuContent Align="@PopoverAlign.Center">...</DropdownMenuContent>
+
+        <!-- End alignment -->
+        <DropdownMenuContent Align="@PopoverAlign.End">...</DropdownMenuContent>
+        """;
+
+    private const string _disabledCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>Edit Menu</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuItem>Cut</DropdownMenuItem>
+                <DropdownMenuItem>Copy</DropdownMenuItem>
+                <DropdownMenuItem Disabled="true">Paste (Disabled)</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Select All</DropdownMenuItem>
+                <DropdownMenuItem Disabled="true">Delete (Disabled)</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _asChildCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger AsChild>
+                <Button Variant="ButtonVariant.Outline">
+                    Actions
+                    <LucideIcon Name="chevron-down" Size="16" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem Class="text-destructive">Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _complexCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>Complete Menu</DropdownMenuTrigger>
+            <DropdownMenuContent Class="w-56">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                    <DropdownMenuItem>Profile <DropdownMenuShortcut>\u21e7\u2318P</DropdownMenuShortcut></DropdownMenuItem>
+                    <DropdownMenuItem>Billing <DropdownMenuShortcut>\u2318B</DropdownMenuShortcut></DropdownMenuItem>
+                    <DropdownMenuItem>Settings <DropdownMenuShortcut>\u2318S</DropdownMenuShortcut></DropdownMenuItem>
+                    <DropdownMenuItem Disabled="true">Keyboard shortcuts <DropdownMenuShortcut>\u2318K</DropdownMenuShortcut></DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                    <DropdownMenuItem>Team</DropdownMenuItem>
+                    <DropdownMenuItem>Invite users <DropdownMenuShortcut>\u2318I</DropdownMenuShortcut></DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>GitHub</DropdownMenuItem>
+                <DropdownMenuItem Disabled="true">Support</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Log out <DropdownMenuShortcut>\u21e7\u2318Q</DropdownMenuShortcut></DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _checkboxCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>View Options</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem @bind-Checked="showStatusBar">Status Bar</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem @bind-Checked="showActivityBar">Activity Bar</DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem @bind-Checked="showPanel" Disabled="true">Panel (Disabled)</DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _radioCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>Select Position</DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>Panel Position</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup TValue="string" @bind-Value="position">
+                    <DropdownMenuRadioItem TValue="string" Value="@("top")">Top</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem TValue="string" Value="@("bottom")">Bottom</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem TValue="string" Value="@("right")">Right</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+
+    private const string _submenuCode =
+        """
+        <DropdownMenu>
+            <DropdownMenuTrigger>Share</DropdownMenuTrigger>
+            <DropdownMenuContent Class="w-56">
+                <DropdownMenuItem>Email</DropdownMenuItem>
+                <DropdownMenuItem>Message</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Invite users</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                        <DropdownMenuItem>Email</DropdownMenuItem>
+                        <DropdownMenuItem>Message</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>More...</DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Copy Link</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        """;
+}

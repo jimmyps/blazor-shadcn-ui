@@ -7,8 +7,7 @@
 <BlazorUI.Primitives.Tooltip.TooltipContent class="@CssClass"
                                                   Side="@Side"
                                                   Align="@Align"
-                                                  Offset="@Offset"
-                                                  Strategy="@Strategy">
+                                                  Offset="@Offset">
     @ChildContent
 </BlazorUI.Primitives.Tooltip.TooltipContent>
 
@@ -48,13 +47,6 @@
     /// </summary>
     [Parameter]
     public int Offset { get; set; } = 8;
-
-    /// <summary>
-    /// Positioning strategy: "absolute" (default) or "fixed".
-    /// Use "fixed" when the tooltip needs to escape parent stacking contexts.
-    /// </summary>
-    [Parameter]
-    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
 
     /// <summary>
     /// Gets the effective side for CSS class computation.

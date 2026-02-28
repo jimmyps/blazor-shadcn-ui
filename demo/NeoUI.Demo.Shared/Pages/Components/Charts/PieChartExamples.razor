@@ -1,0 +1,254 @@
+@page "/components/chart/pie"
+@using NeoUI.Blazor.Charts
+
+<PageTitle>Pie Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Pie Chart"
+        Description="Pie and donut charts for part-to-whole comparisons. Supports rose charts, label lines, inner radius, pad angles, and custom start/end angles." />
+
+    <DemoSection
+        Title="Interactive"
+        Description="A live pie chart with month filtering.">
+        <DemoBlock Code="@_interactiveCode">
+            <div class="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                    <div class="grid flex-1 gap-1">
+                        <p class="text-xl font-semibold">Pie Chart — Interactive</p>
+                                        <p class="text-sm text-muted-foreground">Showing browser usage statistics for @(monthDescriptions.TryGetValue(selectedMonth, out var description) ? description.ToLower() : "January")</p>
+                                    </div>
+                                    <Select @bind-Value="@selectedMonth" Class="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                                        <SelectTrigger>
+                                            <SelectValue Placeholder="January" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            @foreach (var month in monthDescriptions)
+                                            {
+                                                <SelectItem Value="@month.Key" Text="@month.Value">@month.Value</SelectItem>
+                                            }
+                                        </SelectContent>
+                                    </Select>
+            </div>
+            <ChartContainer Height="250" Class="w-full">
+                <PieChart Data="@FilteredBrowserData">
+                    <ChartTooltip />
+                    <Legend Show="false" />
+                    <Pie DataKey="value" NameKey="name" Color="var(--chart-1)">
+                        <LabelList Color="var(--muted-foreground)" />
+                    </Pie>
+                </PieChart>
+            </ChartContainer>
+
+                        </DemoBlock>
+                    </DemoSection>
+
+                    <DemoSection Title="Variants" Description="Core pie chart configurations.">
+                        <div class="grid gap-6 md:grid-cols-2">
+
+                            <DemoBlock Code="@_simpleCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name">
+                                            <LabelList Show="false" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_donutCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" InnerRadius="30%">
+                                            <LabelList Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_ringCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" InnerRadius="60%" EmphasisScaleSize="10">
+                                            <LabelList Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_roseCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" RoseType="radius">
+                                            <LabelList Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_withLabelsCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                                            <LabelList Position="LabelPosition.Outside" Formatter="{b}: {c}%" FontSize="10" Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_customLabelsCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                                            <LabelList Position="LabelPosition.Outside" Formatter="function(params) { return params.name + '\n' + params.value + '%'; }" FontSize="9" Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_labelLinesCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                                            <LabelList Position="LabelPosition.Outside" Formatter="{b}" FontSize="10" Color="var(--muted-foreground)" />
+                                            <LabelLine Length="10" Length2="15" Smooth="true" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_labelListCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" ShowLabel="true">
+                                            <LabelList Position="LabelPosition.Inside" Formatter="{c}%" FontSize="11" Color="var(--color-white)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_withLegendCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend VerticalAlign="LegendVerticalAlign.Bottom" Align="LegendAlign.Center" />
+                                        <Pie DataKey="value" NameKey="name" OuterRadius="40%" Center="@(new string[] {"50%", "40%"})">
+                                            <LabelList Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_sliceSpacingCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" PadAngle="5">
+                                            <LabelList Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                            <DemoBlock Code="@_semiCircleCode">
+                                <ChartContainer Height="200">
+                                    <PieChart Data="@browserData">
+                                        <ChartTooltip />
+                                        <Legend Show="false" />
+                                        <Pie DataKey="value" NameKey="name" StartAngle="180" EndAngle="360" InnerRadius="50%">
+                                            <LabelList Color="var(--muted-foreground)" />
+                                        </Pie>
+                                    </PieChart>
+                                </ChartContainer>
+                            </DemoBlock>
+
+                        </div>
+                    </DemoSection>
+
+                    <DemoSection Title="API Reference">
+                        <DemoPropsTable Rows="@_pieChartProps" />
+                    </DemoSection>
+
+                    <DemoPageSubNav />
+
+                </div>
+
+@code {
+private string selectedMonth = "jan";
+
+// Month descriptions for display
+private Dictionary<string, string> monthDescriptions = new()
+{
+    { "jan", "January" },
+    { "feb", "February" },
+    { "mar", "March" }
+};
+
+// Monthly browser usage statistics
+    private List<BrowserMonthData> browserMonthlyData = new()
+    {
+        // January
+        new() { month = "jan", name = "Chrome", value = 45 },
+        new() { month = "jan", name = "Firefox", value = 25 },
+        new() { month = "jan", name = "Safari", value = 15 },
+        new() { month = "jan", name = "Edge", value = 10 },
+        new() { month = "jan", name = "Other", value = 5 },
+        
+        // February - Larger values to show significant change in interactive demo
+        new() { month = "feb", name = "Chrome", value = 58 },
+        new() { month = "feb", name = "Firefox", value = 43 },
+        new() { month = "feb", name = "Safari", value = 26 },
+        new() { month = "feb", name = "Edge", value = 19 },
+        new() { month = "feb", name = "Other", value = 14 },
+        
+        // March - Even larger values to show progressive increase
+        new() { month = "mar", name = "Chrome", value = 77 },
+        new() { month = "mar", name = "Firefox", value = 64 },
+        new() { month = "mar", name = "Safari", value = 37 },
+        new() { month = "mar", name = "Edge", value = 28 },
+        new() { month = "mar", name = "Other", value = 34 }
+    };
+
+    private List<BrowserData> browserData => FilteredBrowserData;
+
+    private List<BrowserData> FilteredBrowserData
+    {
+        get
+        {
+            return browserMonthlyData
+                .Where(x => x.month == selectedMonth)
+                .Select(x => new BrowserData { name = x.name, value = x.value })
+                .ToList();
+        }
+    }
+
+    public class BrowserMonthData
+    {
+        public string month { get; set; } = "";
+        public string name { get; set; } = "";
+        public int value { get; set; }
+    }
+
+    public class BrowserData
+    {
+        public string name { get; set; } = "";
+        public int value { get; set; }
+    }
+}

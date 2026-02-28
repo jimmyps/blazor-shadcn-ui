@@ -1,0 +1,79 @@
+@page "/components/spinner"
+
+<PageTitle>Spinner - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Spinner"
+        Description="A loading indicator that shows a spinning animation." />
+
+    <DemoSection
+        Title="Sizes"
+        Description="Available in three sizes: small, medium (default), and large.">
+        <DemoBlock Code="@_sizesCode">
+            <div class="flex items-center gap-8">
+                <div class="flex flex-col items-center gap-2">
+                    <Spinner Size="SpinnerSize.Small" />
+                    <span class="text-sm text-muted-foreground">Small</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <Spinner Size="SpinnerSize.Medium" />
+                    <span class="text-sm text-muted-foreground">Medium</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <Spinner Size="SpinnerSize.Large" />
+                    <span class="text-sm text-muted-foreground">Large</span>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Usage Examples"
+        Description="Common use cases for loading spinners.">
+        <DemoBlock Code="@_usageCode">
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Button Loading State</h3>
+                    <div class="flex gap-4">
+                        <button disabled class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2">
+                            <Spinner Size="SpinnerSize.Small" />
+                            Loading...
+                        </button>
+                        <button disabled class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2">
+                            <Spinner Size="SpinnerSize.Small" />
+                            Please wait
+                        </button>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Inline Loading</h3>
+                    <div class="flex items-center gap-2">
+                        <Spinner Size="SpinnerSize.Small" />
+                        <span class="text-sm">Fetching latest data...</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Card Loading</h3>
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                        <div class="flex flex-col items-center justify-center gap-4 py-8">
+                            <Spinner />
+                            <p class="text-sm text-muted-foreground">Loading content...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Accessibility"
+        Description="Spinners should be accompanied by descriptive text or ARIA labels to inform users about the loading state." />
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_spinnerProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>

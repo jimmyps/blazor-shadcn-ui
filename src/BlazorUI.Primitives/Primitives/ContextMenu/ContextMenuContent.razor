@@ -9,9 +9,9 @@
     Uses FloatingPortal with X/Y coordinates for positioning at mouse location.
 *@
 
-@* Both overlay and FloatingPortal are conditionally rendered (ForceMount=false). *@
 @if (Context.IsOpen)
 {
+    @* Overlay rendered separately, outside the FloatingPortal *@
     <div class="@OverlayClass"
          style="@GetOverlayStyle()"
          @oncontextmenu="HandleOverlayClose"
@@ -19,13 +19,12 @@
          data-state="open">
     </div>
 
-    <FloatingPortal IsOpen="@Context.IsOpen"
+    <FloatingPortal IsOpen="true"
                     X="@Context.X"
                     Y="@Context.Y"
                     PortalId="@_portalId"
-                    ForceMount="false"
                     Offset="@ViewportPadding"
-                    Strategy="PositioningStrategy.Fixed"
+                    Strategy="fixed"
                     ZIndex="@ZIndex"
                     OnReady="@HandleFloatingReady">
         @RenderContextMenuContent()
@@ -39,7 +38,8 @@ private ContextMenuContext Context { get; set; } = null!;
 private ElementReference _contentRef;
 private IJSObjectReference? _clickOutsideModule;
 private IJSObjectReference? _clickOutsideCleanup;
-private IJSObjectReference? _menuKeyboardModule;
+private IJSObjectReference? _keyboardNavModule;
+private IJSObjectReference? _keyboardNavCleanup;
 private IJSObjectReference? _scrollLockModule;
 private IJSObjectReference? _scrollLockCleanup;
 private DotNetObjectReference<ContextMenuContent>? _dotNetRef;
@@ -47,6 +47,7 @@ private string _portalId = "";
 
 // Track menu items for keyboard navigation (consistent with DropdownMenu/Menubar pattern)
 private readonly List<IContextMenuItem> _menuItems = new();
+private int _focusedItemIndex = -1;
 
     /// <summary>
     /// The content to render inside the menu.
@@ -149,6 +150,16 @@ private readonly List<IContextMenuItem> _menuItems = new();
         {
             await SetupScrollLockAsync();
         }
+
+        // Focus the content for keyboard navigation
+        try
+        {
+            await _contentRef.FocusAsync();
+        }
+        catch
+        {
+            // Focus may fail in some scenarios
+        }
     }
 
     private RenderFragment RenderContextMenuContent() => __builder =>
@@ -157,6 +168,7 @@ private readonly List<IContextMenuItem> _menuItems = new();
              id="@Context.ContentId"
              role="menu"
              tabindex="-1"
+             @onkeydown="HandleKeyDown"
              @attributes="AdditionalAttributes"
              aria-labelledby="@Context.TriggerId"
              data-state="open">
@@ -180,13 +192,9 @@ private readonly List<IContextMenuItem> _menuItems = new();
             _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
                 "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside");
         }
-        catch (JSDisconnectedException)
+        catch (Exception ex)
         {
-            // Expected during circuit disconnect in Blazor Server
-        }
-        catch (InvalidOperationException)
-        {
-            // JS interop not available during prerendering
+            Console.WriteLine($"Failed to set up click-outside: {ex.Message}");
         }
     }
 
@@ -194,21 +202,17 @@ private readonly List<IContextMenuItem> _menuItems = new();
     {
         try
         {
-            _menuKeyboardModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/menu-keyboard.js");
+            _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
 
             _dotNetRef ??= DotNetObjectReference.Create(this);
 
-            await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, Context.ContentId,
-                new { mode = "vertical", loop = Loop, initialFocus = "container" });
+            _keyboardNavCleanup = await _keyboardNavModule.InvokeAsync<IJSObjectReference>(
+                "setupKeyboardNav", _contentRef, _dotNetRef);
         }
-        catch (JSDisconnectedException)
+        catch (Exception ex)
         {
-            // Expected during circuit disconnect in Blazor Server
-        }
-        catch (InvalidOperationException)
-        {
-            // JS interop not available during prerendering
+            Console.WriteLine($"Failed to set up keyboard navigation: {ex.Message}");
         }
     }
 
@@ -222,13 +226,9 @@ private readonly List<IContextMenuItem> _menuItems = new();
             _scrollLockCleanup = await _scrollLockModule.InvokeAsync<IJSObjectReference>(
                 "lockBodyScroll");
         }
-        catch (JSDisconnectedException)
+        catch (Exception ex)
         {
-            // Expected during circuit disconnect in Blazor Server
-        }
-        catch (InvalidOperationException)
-        {
-            // JS interop not available during prerendering
+            Console.WriteLine($"Failed to set up scroll lock: {ex.Message}");
         }
     }
 
@@ -261,14 +261,45 @@ private readonly List<IContextMenuItem> _menuItems = new();
         }
     }
 
-    [JSInvokable]
-    public Task JsOnEscapeKey()
+    private async Task HandleKeyDown(KeyboardEventArgs args)
     {
-        if (CloseOnEscape)
+        if (args.Key == "Escape")
         {
-            Context.Close();
+            if (CloseOnEscape)
+            {
+                Context.Close();
+            }
+            return;
         }
-        return Task.CompletedTask;
+
+        // Arrow navigation - use JS to navigate in DOM order
+        if (_keyboardNavModule == null) return;
+
+        try
+        {
+            switch (args.Key)
+            {
+                case "ArrowDown":
+                    await _keyboardNavModule.InvokeVoidAsync("navigateNext", _contentRef, Loop);
+                    break;
+
+                case "ArrowUp":
+                    await _keyboardNavModule.InvokeVoidAsync("navigatePrevious", _contentRef, Loop);
+                    break;
+
+                case "Home":
+                    await _keyboardNavModule.InvokeVoidAsync("navigateFirst", _contentRef);
+                    break;
+
+                case "End":
+                    await _keyboardNavModule.InvokeVoidAsync("navigateLast", _contentRef);
+                    break;
+            }
+        }
+        catch
+        {
+            // Ignore navigation errors
+        }
     }
 
     private string GetOverlayStyle()
@@ -302,18 +333,51 @@ private readonly List<IContextMenuItem> _menuItems = new();
     /// </summary>
     internal async Task FocusContainerAsync()
     {
-        try
+        if (_keyboardNavModule != null)
         {
-            await _contentRef.FocusAsync();
+            try
+            {
+                var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", _contentRef);
+                if (!focused)
+                {
+                    // Fallback to C# focus
+                    await _contentRef.FocusAsync();
+                }
+                _focusedItemIndex = -1;
+            }
+            catch
+            {
+                // Fallback to C# focus
+                try
+                {
+                    await _contentRef.FocusAsync();
+                    _focusedItemIndex = -1;
+                }
+                catch
+                {
+                    // Focus failed
+                }
+            }
         }
-        catch
+        else
         {
-            // Focus failed
+            // JS module not loaded, use C# focus
+            try
+            {
+                await _contentRef.FocusAsync();
+                _focusedItemIndex = -1;
+            }
+            catch
+            {
+                // Focus failed
+            }
         }
     }
 
     private async Task CleanupAsync()
     {
+        _focusedItemIndex = -1;
+
         if (_clickOutsideCleanup != null)
         {
             try
@@ -321,19 +385,33 @@ private readonly List<IContextMenuItem> _menuItems = new();
                 await _clickOutsideCleanup.InvokeVoidAsync("dispose");
                 await _clickOutsideCleanup.DisposeAsync();
             }
-            catch (JSDisconnectedException) { }
-            catch (ObjectDisposedException) { }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
             _clickOutsideCleanup = null;
         }
 
-        if (_menuKeyboardModule != null)
+        if (_keyboardNavCleanup != null)
         {
             try
             {
-                await _menuKeyboardModule.InvokeVoidAsync("dispose", Context.ContentId);
+                await _keyboardNavCleanup.InvokeVoidAsync("dispose");
+                await _keyboardNavCleanup.DisposeAsync();
             }
-            catch (JSDisconnectedException) { }
-            catch (ObjectDisposedException) { }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _keyboardNavCleanup = null;
         }
 
         // Unlock body scroll
@@ -344,8 +422,14 @@ private readonly List<IContextMenuItem> _menuItems = new();
                 await _scrollLockCleanup.InvokeVoidAsync("apply");
                 await _scrollLockCleanup.DisposeAsync();
             }
-            catch (JSDisconnectedException) { }
-            catch (ObjectDisposedException) { }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
             _scrollLockCleanup = null;
         }
 
@@ -355,20 +439,32 @@ private readonly List<IContextMenuItem> _menuItems = new();
             {
                 await _clickOutsideModule.DisposeAsync();
             }
-            catch (JSDisconnectedException) { }
-            catch (ObjectDisposedException) { }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
             _clickOutsideModule = null;
         }
 
-        if (_menuKeyboardModule != null)
+        if (_keyboardNavModule != null)
         {
             try
             {
-                await _menuKeyboardModule.DisposeAsync();
+                await _keyboardNavModule.DisposeAsync();
             }
-            catch (JSDisconnectedException) { }
-            catch (ObjectDisposedException) { }
-            _menuKeyboardModule = null;
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
+            _keyboardNavModule = null;
         }
 
         if (_scrollLockModule != null)
@@ -377,8 +473,14 @@ private readonly List<IContextMenuItem> _menuItems = new();
             {
                 await _scrollLockModule.DisposeAsync();
             }
-            catch (JSDisconnectedException) { }
-            catch (ObjectDisposedException) { }
+            catch (JSDisconnectedException)
+            {
+                // Expected during circuit disconnection, ignore
+            }
+            catch (ObjectDisposedException)
+            {
+                // Already disposed, ignore
+            }
             _scrollLockModule = null;
         }
 

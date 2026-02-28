@@ -1,0 +1,135 @@
+@page "/primitives/hover-card"
+<PageTitle>HoverCard Primitive - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <DemoPageHeader
+        Title="HoverCard Primitive"
+        Description="Headless, unstyled hover card primitive with positioning and delay controls." />
+
+    <DemoSection Title="AsChild Pattern" Description="Use AsChild to compose triggers with your own styled elements.">
+        <DemoBlock Code="@_asChildCode">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-3 p-4 border rounded-lg">
+                    <h3 class="text-lg font-medium">Without AsChild</h3>
+                    <p class="text-sm text-muted-foreground">HoverCardTriggerPrimitive renders its own div element.</p>
+                    <HoverCardPrimitive>
+                        <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</HoverCardTriggerPrimitive>
+                        <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                            <p class="text-sm">Without AsChild hover card</p>
+                        </HoverCardContentPrimitive>
+                    </HoverCardPrimitive>
+                </div>
+
+                <div class="space-y-3 p-4 border rounded-lg">
+                    <h3 class="text-lg font-medium">With AsChild</h3>
+                    <p class="text-sm text-muted-foreground">Button receives hover/focus behavior via TriggerContext.</p>
+                    <HoverCardPrimitive>
+                        <HoverCardTriggerPrimitive AsChild>
+                            <Button Variant="ButtonVariant.Link">@@johndoe</Button>
+                        </HoverCardTriggerPrimitive>
+                        <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                            <div class="flex gap-3">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-700"></div>
+                                <div>
+                                    <div class="font-semibold">John Doe</div>
+                                    <p class="text-xs text-muted-foreground">Software Developer</p>
+                                </div>
+                            </div>
+                        </HoverCardContentPrimitive>
+                    </HoverCardPrimitive>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Basic Usage" Description="Hover over the trigger to show the hover card. Content appears after a delay.">
+        <DemoBlock Code="@_basicCode">
+            <div class="flex items-center gap-4">
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Hover me</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[280px]">
+                        <div class="font-semibold mb-2">Hover Card Content</div>
+                        <p class="text-sm text-muted-foreground">This content appears when you hover over the trigger.</p>
+                    </HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Custom Delays" Description="Control the open and close delays in milliseconds.">
+        <DemoBlock Code="@_delayCode">
+            <div class="flex items-center gap-8">
+                <HoverCardPrimitive OpenDelay="200" CloseDelay="100">
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Quick (200ms)</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        <p class="text-sm">Opens quickly with 200ms delay.</p>
+                    </HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+
+                <HoverCardPrimitive OpenDelay="1000" CloseDelay="500">
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Slow (1000ms)</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive class="bg-popover text-popover-foreground border border-border rounded-lg p-4 shadow-lg w-[250px]">
+                        <p class="text-sm">Opens slowly with 1000ms delay.</p>
+                    </HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Positioning" Description="Control where the hover card appears relative to the trigger.">
+        <DemoBlock Code="@_positionCode">
+            <div class="flex flex-wrap items-center gap-4">
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Top</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive Side="@PopoverSide.Top" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">Positioned at top</HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+                <HoverCardPrimitive>
+                    <HoverCardTriggerPrimitive class="px-4 py-2 border rounded cursor-pointer">Right</HoverCardTriggerPrimitive>
+                    <HoverCardContentPrimitive Side="@PopoverSide.Right" class="bg-popover text-popover-foreground border border-border rounded-lg p-3 shadow-lg">Positioned at right</HoverCardContentPrimitive>
+                </HoverCardPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Accessibility Features" Description="Interaction and ARIA support.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>
+                    Hover/focus open behavior, delayed close behavior, <code class="text-xs bg-muted px-1 rounded">role=&quot;dialog&quot;</code>, and <code class="text-xs bg-muted px-1 rounded">aria-describedby</code> support.
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
+
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use HoverCard Primitive</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Building a custom design system</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Need complete control over styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Want to apply your own CSS framework</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-600 dark:text-green-400">✓</span><span>Creating unique visual designs</span></li>
+                </ul>
+            </div>
+            <div class="rounded-lg border p-4 space-y-3">
+                <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                <ul class="space-y-2 text-sm text-muted-foreground">
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Want shadcn/ui design out of the box</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Need quick implementation</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Like the default styling</span></li>
+                    <li class="flex items-start gap-2"><span class="text-blue-600 dark:text-blue-400">●</span><span>Prefer convention over configuration</span></li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+
+
+}

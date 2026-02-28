@@ -1,0 +1,124 @@
+@page "/components/slider"
+
+<PageTitle>Slider - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Slider"
+        Description="An input where the user selects a value from within a given range." />
+
+    <DemoSection
+        Title="Basic"
+        Description="A simple slider with default settings.">
+        <DemoBlock Code="@_basicCode">
+            <div class="space-y-2">
+                <Slider @bind-Value="basicValue" />
+                <p class="text-sm text-muted-foreground">Value: @basicValue</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Range"
+        Description="Set custom minimum and maximum values.">
+        <DemoBlock Code="@_rangeCode">
+            <div class="space-y-2">
+                <Slider @bind-Value="rangeValue" Min="0" Max="200" />
+                <p class="text-sm text-muted-foreground">Value: @rangeValue (0–200)</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Step Increment"
+        Description="Control the granularity with the step property.">
+        <DemoBlock Code="@_stepCode">
+            <div class="space-y-2">
+                <Slider @bind-Value="stepValue" Min="0" Max="100" Step="5" />
+                <p class="text-sm text-muted-foreground">Value: @stepValue (increments of 5)</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disabled"
+        Description="A disabled slider cannot be interacted with.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="space-y-2">
+                <Slider Value="50" Disabled="true" />
+                <p class="text-sm text-muted-foreground">Value: 50 (disabled)</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Usage Examples"
+        Description="Common use cases for sliders.">
+        <DemoBlock Code="@_usageCode">
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Volume Control</h3>
+                    <div class="flex items-center gap-4">
+                        <LucideIcon Name="volume-2" Class="h-5 w-5" />
+                        <Slider @bind-Value="volumeValue" Min="0" Max="100" Class="flex-1" />
+                        <span class="text-sm w-12 text-right">@volumeValue%</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Price Filter</h3>
+                    <div class="space-y-2">
+                        <Slider @bind-Value="priceValue" Min="0" Max="1000" Step="10" />
+                        <p class="text-sm text-muted-foreground">Maximum price: $@priceValue</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Quality Setting</h3>
+                    <div class="space-y-2">
+                        <Slider @bind-Value="qualityValue" Min="1" Max="5" Step="1" />
+                        <p class="text-sm text-muted-foreground">@GetQualityLabel(qualityValue)</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Brightness</h3>
+                    <div class="flex items-center gap-4">
+                        <LucideIcon Name="sun" Class="h-5 w-5" />
+                        <Slider @bind-Value="brightnessValue" Min="0" Max="100" Class="flex-1" />
+                        <span class="text-sm w-12 text-right">@brightnessValue%</span>
+                    </div>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Accessibility"
+        Description="The Slider uses the native HTML range input which provides built-in keyboard navigation (arrow keys) and screen reader support." />
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_sliderProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private double basicValue = 50;
+    private double rangeValue = 100;
+    private double stepValue = 50;
+    private double volumeValue = 75;
+    private double priceValue = 500;
+    private double qualityValue = 3;
+    private double brightnessValue = 80;
+
+    private string GetQualityLabel(double value) => value switch
+    {
+        1 => "Very Low Quality",
+        2 => "Low Quality",
+        3 => "Medium Quality",
+        4 => "High Quality",
+        5 => "Very High Quality",
+        _ => "Unknown"
+    };
+
+}

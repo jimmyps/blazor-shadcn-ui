@@ -10,15 +10,14 @@
 
 @if (SubContext.IsOpen && SubContext.TriggerElement.HasValue)
 {
-    <FloatingPortal IsOpen="@SubContext.IsOpen"
+    <FloatingPortal IsOpen="true"
                     AnchorElement="@SubContext.TriggerElement"
                     PortalId="@_portalId"
                     ParentPortalId="@GetParentPortalId()"
-                    ForceMount="false"
                     Side="PopoverSide.Right"
                     Align="PopoverAlign.Start"
                     Offset="@Offset"
-                    Strategy="PositioningStrategy.Fixed"
+                    Strategy="fixed"
                     ZIndex="@EffectiveZIndex"
                     OnReady="@HandleFloatingReady">
         @RenderSubMenuContent()
@@ -40,9 +39,8 @@ private MenubarMenuContext? MenubarMenuContext { get; set; }
 
 private ElementReference _contentRef;
 private string _portalId = "";
-private string _instanceId = "";
-private IJSObjectReference? _menuKeyboardModule;
-private DotNetObjectReference<MenubarSubContent>? _dotNetRef;
+private IJSObjectReference? _keyboardNavModule;
+private IJSObjectReference? _keyboardNavCleanup;
 
 // Track menu items for keyboard navigation (still needed for registration)
 private readonly List<IMenubarItem> _menuItems = new();
@@ -95,7 +93,6 @@ private readonly List<IMenubarItem> _menuItems = new();
         }
 
         _portalId = $"menubar-submenu-{SubContext.GetHashCode()}";
-        _instanceId = $"menubar-sub-{SubContext.GetHashCode()}";
         SubContext.OnStateChanged += HandleContextStateChanged;
     }
 
@@ -118,6 +115,8 @@ private readonly List<IMenubarItem> _menuItems = new();
         <div @ref="_contentRef"
              role="menu"
              tabindex="-1"
+             @onkeydown="HandleKeyDown"
+             @onkeydown:stopPropagation="true"
              @onmouseleave="HandleMouseLeave"
              @attributes="AdditionalAttributes"
              data-state="open">
@@ -137,29 +136,86 @@ private readonly List<IMenubarItem> _menuItems = new();
 
     private async Task HandleFloatingReady()
     {
-        // Set up JavaScript keyboard navigation with submenu mode
+        // Set up JavaScript keyboard navigation
         await SetupKeyboardNavAsync();
+
+        // Focus the submenu content using our helper method
+        await FocusElementAsync(_contentRef, "submenu content");
     }
 
     private async Task SetupKeyboardNavAsync()
     {
         try
         {
-            _menuKeyboardModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/menu-keyboard.js");
+            _keyboardNavModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-nav.js");
 
-            _dotNetRef ??= DotNetObjectReference.Create(this);
+            _keyboardNavCleanup = await _keyboardNavModule.InvokeAsync<IJSObjectReference>(
+                "setupKeyboardNav", _contentRef, (object?)null);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to set up keyboard navigation: {ex.Message}");
+        }
+    }
 
-            await _menuKeyboardModule.InvokeVoidAsync("initialize", _contentRef, _dotNetRef, _instanceId,
-                new { mode = "submenu", loop = true, initialFocus = "container" });
-        }
-        catch (JSDisconnectedException)
+    /// <summary>
+    /// Focuses an element using JavaScript with fallback to C# focus.
+    /// Uses double requestAnimationFrame for reliable focus timing.
+    /// </summary>
+    /// <param name="element">The element to focus</param>
+    /// <param name="elementName">Name for logging purposes</param>
+    /// <returns>True if focus succeeded, false otherwise</returns>
+    private async Task<bool> FocusElementAsync(ElementReference element, string elementName = "element")
+    {
+        if (_keyboardNavModule == null)
         {
-            // Expected during circuit disconnect in Blazor Server
+            // Fallback to C# if JS module not loaded
+            try
+            {
+                await element.FocusAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
-        catch (InvalidOperationException)
+
+        try
         {
-            // JS interop not available during prerendering
+            var focused = await _keyboardNavModule.InvokeAsync<bool>("focusElement", element);
+            if (!focused)
+            {
+                Console.WriteLine($"Warning: Failed to focus {elementName}");
+                
+                // Fallback to C# focus
+                try
+                {
+                    await element.FocusAsync();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to focus {elementName}: {ex.Message}");
+            
+            // Fallback to C# focus
+            try
+            {
+                await element.FocusAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 
@@ -168,34 +224,76 @@ private readonly List<IMenubarItem> _menuItems = new();
         InvokeAsync(StateHasChanged);
     }
 
-    [JSInvokable]
-    public Task JsOnEscapeKey()
+    private async void HandleKeyDown(KeyboardEventArgs args)
     {
-        if (CloseOnEscape)
+        switch (args.Key)
         {
-            // Close ALL menus including root when Escape is pressed
-            MenuContext?.CloseMenu();
-        }
-        return Task.CompletedTask;
-    }
+            case "Escape":
+                if (CloseOnEscape)
+                {
+                    // Close ALL menus including root when Escape is pressed
+                    MenuContext?.CloseMenu();
+                }
+                break;
 
-    [JSInvokable]
-    public async Task JsOnCloseSubMenu()
-    {
-        // Close this submenu and return focus to trigger
-        SubContext.Close();
+            case "ArrowLeft":
+                // Close submenu and return focus to trigger
+                SubContext.Close();
+                
+                // Restore focus to the trigger element
+                if (SubContext.TriggerElement.HasValue)
+                {
+                    await FocusElementAsync(SubContext.TriggerElement.Value, "parent trigger");
+                }
+                break;
 
-        // Restore focus to the trigger element
-        if (SubContext.TriggerElement.HasValue)
-        {
-            try
-            {
-                await SubContext.TriggerElement.Value.FocusAsync();
-            }
-            catch
-            {
-                // Focus failed
-            }
+            case "ArrowDown":
+                // Use JS keyboard nav module
+                if (_keyboardNavModule != null)
+                {
+                    try
+                    {
+                        await _keyboardNavModule.InvokeVoidAsync("navigateNext", _contentRef, true);
+                    }
+                    catch { }
+                }
+                break;
+
+            case "ArrowUp":
+                // Use JS keyboard nav module
+                if (_keyboardNavModule != null)
+                {
+                    try
+                    {
+                        await _keyboardNavModule.InvokeVoidAsync("navigatePrevious", _contentRef, true);
+                    }
+                    catch { }
+                }
+                break;
+
+            case "Home":
+                // Use JS keyboard nav module
+                if (_keyboardNavModule != null)
+                {
+                    try
+                    {
+                        await _keyboardNavModule.InvokeVoidAsync("navigateFirst", _contentRef);
+                    }
+                    catch { }
+                }
+                break;
+
+            case "End":
+                // Use JS keyboard nav module
+                if (_keyboardNavModule != null)
+                {
+                    try
+                    {
+                        await _keyboardNavModule.InvokeVoidAsync("navigateLast", _contentRef);
+                    }
+                    catch { }
+                }
+                break;
         }
     }
 
@@ -211,25 +309,27 @@ private readonly List<IMenubarItem> _menuItems = new();
     {
         SubContext.OnStateChanged -= HandleContextStateChanged;
 
-        // Clean up menu keyboard module
-        if (_menuKeyboardModule != null)
+        // Clean up keyboard nav
+        if (_keyboardNavCleanup != null)
         {
             try
             {
-                await _menuKeyboardModule.InvokeVoidAsync("dispose", _instanceId);
+                await _keyboardNavCleanup.InvokeVoidAsync("dispose");
+                await _keyboardNavCleanup.DisposeAsync();
             }
             catch { }
-
-            try
-            {
-                await _menuKeyboardModule.DisposeAsync();
-            }
-            catch { }
-            _menuKeyboardModule = null;
+            _keyboardNavCleanup = null;
         }
 
-        _dotNetRef?.Dispose();
-        _dotNetRef = null;
+        if (_keyboardNavModule != null)
+        {
+            try
+            {
+                await _keyboardNavModule.DisposeAsync();
+            }
+            catch { }
+            _keyboardNavModule = null;
+        }
     }
 
     /// <summary>
@@ -256,13 +356,6 @@ private readonly List<IMenubarItem> _menuItems = new();
     /// </summary>
     internal async Task FocusContainerAsync()
     {
-        try
-        {
-            await _contentRef.FocusAsync();
-        }
-        catch
-        {
-            // Focus failed
-        }
+        await FocusElementAsync(_contentRef, "submenu container");
     }
 }

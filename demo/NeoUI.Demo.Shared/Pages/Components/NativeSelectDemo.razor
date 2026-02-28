@@ -1,0 +1,132 @@
+@page "/components/native-select"
+
+<PageTitle>Native Select - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Native Select"
+        Description="A styled wrapper around the browser's native select element." />
+
+    <DemoSection
+        Title="Basic Example"
+        Description="A simple native select with options.">
+        <DemoBlock Code="@_basicCode">
+            <div class="space-y-2">
+                <div class="w-[280px]">
+                    <NativeSelect TValue="string" @bind-Value="_selectedFruit" Placeholder="Select a fruit">
+                        <option value="apple">Apple</option>
+                        <option value="banana">Banana</option>
+                        <option value="orange">Orange</option>
+                        <option value="grape">Grape</option>
+                    </NativeSelect>
+                </div>
+                <p class="text-sm text-muted-foreground">Selected: @(_selectedFruit ?? "none")</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Placeholder"
+        Description="Select with a placeholder option.">
+        <DemoBlock Code="@_placeholderCode">
+            <div class="w-[280px]">
+                <NativeSelect TValue="string" @bind-Value="_selectedCountry" Placeholder="Choose your country">
+                    <option value="us">United States</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="ca">Canada</option>
+                    <option value="au">Australia</option>
+                    <option value="de">Germany</option>
+                    <option value="fr">France</option>
+                </NativeSelect>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Sizes"
+        Description="Native select comes in small, default, and large sizes.">
+        <DemoBlock Code="@_sizesCode">
+            <div class="flex flex-col gap-4 w-[280px]">
+                <NativeSelect TValue="string" Size="NativeSelectSize.Small" Placeholder="Small">
+                    <option value="1">Option 1</option>
+                    <option value="2">Option 2</option>
+                </NativeSelect>
+                <NativeSelect TValue="string" Size="NativeSelectSize.Default" Placeholder="Default">
+                    <option value="1">Option 1</option>
+                    <option value="2">Option 2</option>
+                </NativeSelect>
+                <NativeSelect TValue="string" Size="NativeSelectSize.Large" Placeholder="Large">
+                    <option value="1">Option 1</option>
+                    <option value="2">Option 2</option>
+                </NativeSelect>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disabled"
+        Description="A disabled native select cannot be interacted with.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="w-[280px]">
+                <NativeSelect TValue="string" Disabled="true" Placeholder="Disabled select">
+                    <option value="1">Option 1</option>
+                    <option value="2">Option 2</option>
+                </NativeSelect>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Option Groups"
+        Description="Native select supports option groups for organized choices.">
+        <DemoBlock Code="@_groupsCode">
+            <div class="w-[280px]">
+                <NativeSelect TValue="string" @bind-Value="_selectedCar" Placeholder="Select a car">
+                    <optgroup label="Swedish Cars">
+                        <option value="volvo">Volvo</option>
+                        <option value="saab">Saab</option>
+                    </optgroup>
+                    <optgroup label="German Cars">
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                        <option value="bmw">BMW</option>
+                    </optgroup>
+                </NativeSelect>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Numeric Values"
+        Description="Native select supports generic value types including numeric values.">
+        <DemoBlock Code="@_numericCode">
+            <div class="space-y-2">
+                <div class="w-[280px]">
+                    <NativeSelect TValue="int" @bind-Value="_selectedNumber" Placeholder="Select a number">
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                        <option value="4">Four</option>
+                        <option value="5">Five</option>
+                    </NativeSelect>
+                </div>
+                <p class="text-sm text-muted-foreground">Selected number: @_selectedNumber</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_nativeSelectProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string? _selectedFruit;
+    private string? _selectedCountry;
+    private string? _selectedCar;
+    private int _selectedNumber;
+
+}

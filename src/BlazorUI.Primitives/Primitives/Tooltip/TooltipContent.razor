@@ -17,9 +17,8 @@
                     Side="@EffectiveSide"
                     Align="@EffectiveAlign"
                     Offset="@Offset"
-                    ForceMount="false"
-                    Strategy="@Strategy"
-                    ZIndex="ZIndexLevels.TooltipContent"
+                    Strategy="absolute"
+                    ZIndex="50"
                     OnReady="@HandleFloatingReady">
         @RenderTooltipContent()
     </FloatingPortal>
@@ -63,13 +62,6 @@
     /// </summary>
     [Parameter]
     public int Offset { get; set; } = 8;
-
-    /// <summary>
-    /// Positioning strategy: "absolute" (default) or "fixed".
-    /// Use "fixed" when the tooltip needs to escape parent stacking contexts.
-    /// </summary>
-    [Parameter]
-    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
 
     private string _portalId = "";
 

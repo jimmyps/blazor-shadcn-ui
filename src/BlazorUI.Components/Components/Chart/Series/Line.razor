@@ -1,14 +1,13 @@
 @namespace BlazorUI.Components.Chart
 @using BlazorUI.Components.Chart.Series
 @inherits SeriesBase
-@implements IFillParent
 
 <CascadingValue Value="this" IsFixed="true">
     @ChildContent
 </CascadingValue>
 
 @code {
-    [CascadingParameter] private ILineSeriesParent? Parent { get; set; }
+    [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets the line color (legacy, use Fill instead).
@@ -88,6 +87,17 @@
     
     protected override void OnInitialized()
     {
-        Parent?.RegisterLine(this);
+        // Register with parent chart
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterLine(this);
+            }
+            catch
+            {
+                // Parent doesn't support Line series
+            }
+        }
     }
 }

@@ -1,0 +1,188 @@
+@using Microsoft.AspNetCore.Components
+@inject IKeyboardShortcutService KeyboardShortcuts
+@inject NavigationManager NavigationManager
+
+@* Spotlight Command Palette - Global search and command interface *@
+<Dialog @bind-Open="_isOpen">
+    <DialogContent 
+        ShowClose="true" UseCustomAnimations="true"
+        Class="!inset-0 !w-screen !h-screen !max-w-none !translate-x-0 !translate-y-0 sm:!inset-auto sm:!w-full sm:!h-auto sm:!max-w-lg sm:!left-[50%] sm:!translate-x-[-50%] sm:!top-[20vh] sm:!translate-y-0 border-border/40 p-0 !rounded-none sm:!rounded-2xl shadow-xl gap-0 overflow-hidden duration-500 dialog-panel dialog-animated"
+        OverlayClass="bg-background/70 backdrop-blur backdrop-saturate-150 dialog-overlay dialog-animated">
+        
+        <HeightAnimation Config="@_heightAnimationConfig" Enabled="@_isOpen">
+            <CommandContent OnValueChange="@HandleSelect">
+                <CommandInput 
+                    Placeholder="Type a command or search..." SearchInterval="300" AutoFocus="true"
+                    Class="border-0 border-b border-border/40 rounded-none focus-visible:ring-0" />
+                
+                <CommandList Class="max-h-[calc(100vh-4rem)] md:max-h-[350px] scrollbar-thin">
+                    <CommandEmpty>
+                        <div class="flex flex-col items-center gap-2 py-6 text-muted-foreground">
+                            <LucideIcon Name="search-x" Size="32" />
+                            <p class="text-sm">No results found.</p>
+                        </div>
+                    </CommandEmpty>
+                    
+                    <CommandGroup Heading="Navigation">
+                        <CommandItem Value="">
+                            <LucideIcon Name="house" Size="16" Class="mr-2" />
+                            <span>Home</span>
+                        </CommandItem>
+                        <CommandItem Value="components">
+                            <LucideIcon Name="layout-grid" Size="16" Class="mr-2" />
+                            <span>Components</span>
+                        </CommandItem>
+                        <CommandItem Value="primitives">
+                            <LucideIcon Name="box" Size="16" Class="mr-2" />
+                            <span>Primitives</span>
+                        </CommandItem>
+                        <CommandItem Value="architecture">
+                            <LucideIcon Name="git-branch" Size="16" Class="mr-2" />
+                            <span>Architecture</span>
+                        </CommandItem>
+                    </CommandGroup>
+                    
+                    <CommandSeparator />
+
+                    <CommandVirtualizedGroup TItem="ComponentRegistryEntry"
+                            Heading="Components"
+                            Items="@_sortedComponents"
+                            ItemValue="@(entry => entry.Route)"
+                            ItemSearchText="@(entry => entry.Title)"
+                            MaxDisplayCount="0">
+                        <ItemTemplate Context="entry">
+                            <LucideIcon Name="@entry.Icon" Size="16" Class="mr-2 text-primary" />
+                            @entry.Title
+                            <span class="ml-auto text-xs text-muted-foreground">Styled</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+                    
+                    <CommandSeparator />
+
+                    <CommandVirtualizedGroup TItem="ComponentRegistryEntry"
+                            Heading="Primitives"
+                            Items="@_sortedPrimitives"
+                            ItemValue="@(entry => entry.Route)"
+                            ItemSearchText="@(entry => entry.Title)"
+                            MaxDisplayCount="0">
+                        <ItemTemplate Context="entry">
+                            <LucideIcon Name="@entry.Icon" Size="16" Class="mr-2 text-muted-foreground" />
+                            @entry.Title
+                            <span class="ml-auto text-xs text-muted-foreground">Headless</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+
+                    <CommandVirtualizedGroup TItem="string"
+                        Heading="Lucide Icons"
+                        Items="AllLucideIcons"
+                        ItemValue="@(name => $"/icons/lucide?search={name}")"
+                        ItemSearchText="@(name => name)"
+                        MaxDisplayCount="0"
+                        EnableLazyLoading="true">
+                        <ItemTemplate Context="iconName">
+                            <LucideIcon Name="@iconName" Size="16" Class="mr-2 text-blue-500" />
+                            @FormatIconName(iconName)
+                            <span class="ml-auto text-xs text-muted-foreground">Lucide</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+
+                    <CommandSeparator />
+
+                    <CommandVirtualizedGroup TItem="string"
+                        Heading="Heroicons"
+                        Items="AllHeroIcons"
+                        ItemValue="@(name => $"/icons/heroicons?search={name}")"
+                        ItemSearchText="@(name => name)"
+                        MaxDisplayCount="0"
+                        EnableLazyLoading="true">
+                        <ItemTemplate Context="iconName">
+                            <HeroIcon Name="@iconName" Size="16" Class="mr-2 text-indigo-500" />
+                            @FormatIconName(iconName)
+                            <span class="ml-auto text-xs text-muted-foreground">Heroicons</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+
+                    <CommandSeparator />
+
+                    <CommandVirtualizedGroup TItem="string"
+                        Heading="Feather Icons"
+                        Items="AllFeatherIcons"
+                        ItemValue="@(name => $"/icons/feather?search={name}")"
+                        ItemSearchText="@(name => name)"
+                        MaxDisplayCount="0"
+                        EnableLazyLoading="true">
+                        <ItemTemplate Context="iconName">
+                            <FeatherIcon Name="@iconName" Size="16" Class="mr-2 text-cyan-500" />
+                            @FormatIconName(iconName)
+                            <span class="ml-auto text-xs text-muted-foreground">Feather</span>
+                        </ItemTemplate>
+                    </CommandVirtualizedGroup>
+
+                </CommandList>
+            </CommandContent>
+        </HeightAnimation>
+    </DialogContent>
+</Dialog>
+
+@code {
+    private bool _isOpen = false;
+    private readonly HeightAnimationConfig _heightAnimationConfig = new()
+    {
+        ContentSelector = "[role=\"listbox\"]",
+        InputSelector = "[data-command-input-wrapper]",
+        IncludeInputHeight = true
+    };
+
+    /// <summary>
+    /// Opens the spotlight command palette.
+    /// </summary>
+    public void Open()
+    {
+        _isOpen = true;
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Closes the spotlight command palette.
+    /// </summary>
+    public void Close()
+    {
+        _isOpen = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Register keyboard shortcut (Ctrl+K / Cmd+K)
+            await KeyboardShortcuts.RegisterAsync("Ctrl+K", async () =>
+            {
+                _isOpen = !_isOpen;
+                await InvokeAsync(StateHasChanged);
+            });
+        }
+    }
+
+    private void HandleSelect(string value)
+    {
+        _isOpen = false;
+        
+        // Navigate based on the selected value
+        NavigationManager.NavigateTo(value);
+    }
+
+    private static string FormatIconName(string iconName)
+    {
+        return string.Join(" ", iconName.Split('-').Select(word =>
+            char.ToUpper(word[0]) + word.Substring(1)));
+    }
+    
+    private static readonly IReadOnlyList<ComponentRegistryEntry> _sortedComponents =
+        ComponentRegistry.Components.Where(e => !e.IsSubPage || e.Category.Id == "charts" ).OrderBy(e => e.Title).ToList().AsReadOnly();
+    private static readonly IReadOnlyList<ComponentRegistryEntry> _sortedPrimitives =
+        ComponentRegistry.Primitives.OrderBy(e => e.Title).ToList().AsReadOnly();
+
+    private static readonly string[] AllLucideIcons = LucideIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
+    private static readonly string[] AllHeroIcons = HeroIconData.GetAvailableIcons(HeroIconVariant.Outline).OrderBy(x => x).ToArray();
+    private static readonly string[] AllFeatherIcons = FeatherIconData.GetAvailableIcons().OrderBy(x => x).ToArray();
+}

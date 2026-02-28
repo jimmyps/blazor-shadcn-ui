@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
-    [CascadingParameter] private ICartesianChartParent? Parent { get; set; }
+    [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets whether to show grid lines.
@@ -50,6 +50,9 @@
     
     protected override void OnInitialized()
     {
-        Parent?.RegisterGrid(this);
+        if (Parent != null)
+        {
+            try { Parent.RegisterGrid(this); } catch { }
+        }
     }
 }

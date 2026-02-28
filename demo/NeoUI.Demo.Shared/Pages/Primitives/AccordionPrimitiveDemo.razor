@@ -1,0 +1,133 @@
+@page "/primitives/accordion"
+
+<PageTitle>Accordion Primitive - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Accordion Primitive"
+        Description="Headless, unstyled accordion primitive with full keyboard navigation and accessibility support." />
+
+    <DemoSection
+        Title="Basic Headless Primitive"
+        Description="The most basic accordion with no styling. Demonstrates the raw, headless behavior.">
+        <DemoBlock Code="@_basicCode">
+            <AccordionPrimitive DefaultValue="@(new HashSet<string> { "item-1" })" class="border rounded max-w-md">
+                <AccordionItemPrimitive Value="item-1" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                        Is it accessible?
+                    </AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">
+                        Yes. It adheres to the WAI-ARIA design pattern with full keyboard navigation support.
+                    </AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+                <AccordionItemPrimitive Value="item-2" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                        Is it styled?
+                    </AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">
+                        No. It's a headless primitive that provides behavior without any styling.
+                    </AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+                <AccordionItemPrimitive Value="item-3" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                        Can it be animated?
+                    </AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">
+                        Yes! You can animate the open/close transition using CSS or JavaScript.
+                    </AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+            </AccordionPrimitive>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Controlled State"
+        Description="Control which items are open programmatically via two-way binding.">
+        <DemoBlock Code="@_controlledCode">
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <button @onclick="OpenFirstItem" class="px-3 py-2 border rounded text-sm">Open Item 1</button>
+                    <button @onclick="OpenSecondItem" class="px-3 py-2 border rounded text-sm">Open Item 2</button>
+                    <button @onclick="CloseAll" class="px-3 py-2 border rounded text-sm">Close All</button>
+                </div>
+                <p class="text-sm text-muted-foreground">Open items: <strong>@string.Join(", ", controlledValue)</strong></p>
+                <AccordionPrimitive @bind-Value="controlledValue" Type="AccordionType.Single" CollapsiblePrimitive="true" class="border rounded max-w-md">
+                    <AccordionItemPrimitive Value="controlled-1" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                            Controlled Item 1
+                        </AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
+                            This item's state is controlled externally.
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
+                    <AccordionItemPrimitive Value="controlled-2" class="border-b last:border-0">
+                        <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">
+                            Controlled Item 2
+                        </AccordionTriggerPrimitive>
+                        <AccordionContentPrimitive class="p-4 pt-0">
+                            Use the buttons above to control which item is open.
+                        </AccordionContentPrimitive>
+                    </AccordionItemPrimitive>
+                </AccordionPrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Single Mode (Collapsible)"
+        Description="In single mode with collapsible enabled, clicking an open item closes it, leaving all items closed.">
+        <DemoBlock Code="@_singleCode">
+            <AccordionPrimitive Type="AccordionType.Single" CollapsiblePrimitive="true" class="border rounded max-w-md">
+                <AccordionItemPrimitive Value="item-1" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Item 1</AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">Content 1 - Click again to collapse.</AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+                <AccordionItemPrimitive Value="item-2" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Item 2</AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">Content 2 - Click again to collapse.</AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+            </AccordionPrimitive>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Multiple Mode"
+        Description="In multiple mode, multiple items can be open at the same time.">
+        <DemoBlock Code="@_multipleCode">
+            <AccordionPrimitive Type="AccordionType.Multiple" class="border rounded max-w-md" DefaultValue="@(new HashSet<string> { "multiple-1" })">
+                <AccordionItemPrimitive Value="multiple-1" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">First Section</AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">This can be open alongside other sections.</AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+                <AccordionItemPrimitive Value="multiple-2" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Second Section</AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">Open both sections at once to see them together.</AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+                <AccordionItemPrimitive Value="multiple-3" class="border-b last:border-0">
+                    <AccordionTriggerPrimitive class="w-full p-4 text-left cursor-pointer hover:bg-muted/50">Third Section</AccordionTriggerPrimitive>
+                    <AccordionContentPrimitive class="p-4 pt-0">All three can be open simultaneously in multiple mode.</AccordionContentPrimitive>
+                </AccordionItemPrimitive>
+            </AccordionPrimitive>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Accessibility"
+        Description="Follows WAI-ARIA patterns: role=&quot;region&quot;, aria-expanded, aria-controls, aria-labelledby, and aria-disabled are all automatically applied." />
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_accordionProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    private HashSet<string> controlledValue = new();
+
+    private void OpenFirstItem() => controlledValue = new HashSet<string> { "controlled-1" };
+    private void OpenSecondItem() => controlledValue = new HashSet<string> { "controlled-2" };
+    private void CloseAll() => controlledValue = new HashSet<string>();
+}

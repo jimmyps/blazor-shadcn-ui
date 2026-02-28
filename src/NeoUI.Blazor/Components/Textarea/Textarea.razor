@@ -1,0 +1,27 @@
+@namespace NeoUI.Blazor
+
+<textarea
+    id="@EffectiveId"
+    name="@EffectiveName"
+    class="@CssClass"
+    value="@Value"
+    placeholder="@Placeholder"
+    disabled="@Disabled"
+    required="@Required"
+    readonly="@Readonly"
+    autocomplete="@Autocomplete"
+    maxlength="@MaxLength"
+    minlength="@MinLength"
+    rows="@Rows"
+    cols="@Cols"
+    wrap="@Wrap"
+    inputmode="@InputMode"
+    autofocus="@Autofocus"
+    spellcheck="@(Spellcheck?.ToString().ToLower())"
+    aria-label="@AriaLabel"
+    aria-describedby="@AriaDescribedBy"
+    aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
+    data-slot="textarea-control"></textarea>
+
+
+

@@ -1,0 +1,708 @@
+@page "/components/command"
+
+<PageTitle>Command - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Command"
+        Description="Fast, composable, unstyled command menu for Blazor." />
+
+    <DemoSection
+        Title="Spotlight Command Palette"
+        Description="A beautiful, production-ready command palette with glassmorphism effect inspired by kokonutui.com and Fumadocs. Features smooth animations, backdrop blur, and global ⌘K / Ctrl+K support.">
+        <DemoBlock Code="@_spotlightCode">
+            <div class="flex flex-col gap-4">
+                <div
+                    aria-label="Press Cmd+K or Ctrl+K to open command palette"
+                    class="group flex items-center gap-3 w-full max-w-md px-4 py-2.5 text-sm text-muted-foreground bg-background border border-border/40 rounded-lg shadow-sm">
+                    <LucideIcon Name="search" Size="16" Class="text-muted-foreground" />
+                    <span class="flex-1 text-left">Press the keyboard shortcut to search...</span>
+                    <div class="flex items-center gap-1">
+                        <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">⌘</kbd>
+                        <kbd class="px-2 py-1 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
+                    </div>
+                </div>
+                <div class="rounded-lg border bg-muted/20 p-4 text-sm">
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="keyboard" Size="16" />
+                        Features:
+                    </h3>
+                    <ul class="space-y-1 text-muted-foreground ml-6 list-disc">
+                        <li>Global keyboard shortcut: <kbd class="px-1.5 py-0.5 text-xs bg-muted rounded">⌘K</kbd> / <kbd class="px-1.5 py-0.5 text-xs bg-muted rounded">Ctrl+K</kbd></li>
+                        <li>Glassmorphism with backdrop-blur and subtle transparency</li>
+                        <li>Smooth height animations for list changes</li>
+                        <li>Elegant fade-in/fade-out transitions</li>
+                        <li>Works across all pages in the demo site</li>
+                        <li>Built with Dialog and Command primitives only</li>
+                    </ul>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Height Animation Component"
+        Description="The Spotlight Command Palette above uses the reusable HeightAnimation component to provide smooth transitions when content height changes. This component can be used with any dynamic content.">
+        <DemoBlock Code="@_heightAnimCode">
+            <div class="rounded-lg border bg-muted/20 p-4 text-sm space-y-4">
+                <div>
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="settings" Size="16" />
+                        Customizable CSS Variables:
+                    </h3>
+                    <ul class="space-y-1 text-muted-foreground ml-6 list-disc">
+                        <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-duration</code>: Animation duration (default: 200ms)</li>
+                        <li><code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">--height-animation-timing</code>: Timing function (default: cubic-bezier(0.4, 0, 0.2, 1))</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="code" Size="16" />
+                        Usage Example:
+                    </h3>
+                    <pre class="bg-background p-3 rounded text-xs overflow-x-auto"><code>&lt;HeightAnimation Config="@@_config"&gt;
+    &lt;Command&gt;
+        &lt;CommandInput /&gt;
+        &lt;CommandList&gt;
+            &lt;!-- Dynamic content --&gt;
+        &lt;/CommandList&gt;
+    &lt;/Command&gt;
+&lt;/HeightAnimation&gt;
+
+@@code {
+    private HeightAnimationConfig _config = new() {
+        ContentSelector = "[role=\"listbox\"]",
+        InputSelector = "[data-command-input-wrapper]"
+    };
+}</code></pre>
+                </div>
+                <div>
+                    <h3 class="font-medium mb-2 flex items-center gap-2">
+                        <LucideIcon Name="palette" Size="16" />
+                        Custom Animation Timing:
+                    </h3>
+                    <pre class="bg-background p-3 rounded text-xs overflow-x-auto"><code>.fast-animation {
+    --height-animation-duration: 150ms;
+}
+
+.bounce-animation {
+    --height-animation-timing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}</code></pre>
+                </div>
+            </div>
+            <div class="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4 text-sm mt-4">
+                <div class="flex items-start gap-2">
+                    <LucideIcon Name="info" Size="16" Class="mt-0.5 text-blue-500" />
+                    <div>
+                        <p class="font-medium text-blue-900 dark:text-blue-100">Components that benefit from HeightAnimation</p>
+                        <ul class="mt-2 space-y-1 text-blue-900/80 dark:text-blue-100/80 ml-4 list-disc">
+                            <li>Command palette with filtering</li>
+                            <li>Combobox with dynamic options</li>
+                            <li>Select dropdowns with search</li>
+                            <li>Collapsible content sections</li>
+                            <li>Any component with content that changes height dynamically</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Command Palette (Overlay)"
+        Description="A full command palette activated with a keyboard shortcut.">
+        <DemoBlock Code="@_paletteCode">
+            <div class="flex flex-col gap-4">
+                <div class="flex gap-4 items-center">
+                    <Button Variant="ButtonVariant.Outline" @onclick="OpenPalette">
+                        <LucideIcon Name="search" Size="16" Class="mr-2" />
+                        Search commands...
+                        <kbd class="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 ml-4">
+                            <span class="text-xs">⌘</span>K
+                        </kbd>
+                    </Button>
+                </div>
+                @if (!string.IsNullOrEmpty(paletteSelectedValue))
+                {
+                    <p class="text-sm">Last selected: <strong>@paletteSelectedValue</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @if (isPaletteOpen)
+    {
+        <div class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" @onclick="ClosePalette">
+            <div class="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%]" @onclick="StopClick">
+                <div class="overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md">
+                    <CommandContent OnValueChange="HandlePaletteValueChange">
+                        <CommandInput Placeholder="Type a command or search..." />
+                        <CommandList>
+                            <CommandEmpty>No results found.</CommandEmpty>
+                            <CommandGroup Heading="Suggestions">
+                                <CommandItem Value="calendar">
+                                    <LucideIcon Name="calendar" Size="16" Class="mr-2" /> Calendar
+                                </CommandItem>
+                                <CommandItem Value="emoji">
+                                    <LucideIcon Name="smile" Size="16" Class="mr-2" /> Search Emoji
+                                </CommandItem>
+                                <CommandItem Value="calculator">
+                                    <LucideIcon Name="calculator" Size="16" Class="mr-2" /> Calculator
+                                </CommandItem>
+                            </CommandGroup>
+                            <CommandSeparator />
+                            <CommandGroup Heading="Settings">
+                                <CommandItem Value="profile">
+                                    <LucideIcon Name="user" Size="16" Class="mr-2" /> Profile
+                                    <CommandShortcut>⌘P</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="billing">
+                                    <LucideIcon Name="credit-card" Size="16" Class="mr-2" /> Billing
+                                    <CommandShortcut>⌘B</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="settings">
+                                    <LucideIcon Name="settings" Size="16" Class="mr-2" /> Settings
+                                    <CommandShortcut>⌘S</CommandShortcut>
+                                </CommandItem>
+                            </CommandGroup>
+                        </CommandList>
+                    </CommandContent>
+                </div>
+            </div>
+        </div>
+    }
+
+    <DemoSection
+        Title="Basic Command Menu"
+        Description="Embedded command menu with search and items.">
+        <DemoBlock Code="@_basicCode">
+            <div class="rounded-lg border bg-background shadow-md w-full max-w-sm">
+                <CommandContent OnValueChange="HandleBasicValueChange">
+                    <CommandInput Placeholder="Type a command or search..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup Heading="Suggestions">
+                            <CommandItem Value="calendar">
+                                <LucideIcon Name="calendar" Size="16" Class="mr-2" /> Calendar
+                            </CommandItem>
+                            <CommandItem Value="emoji">
+                                <LucideIcon Name="smile" Size="16" Class="mr-2" /> Search Emoji
+                            </CommandItem>
+                            <CommandItem Value="calculator">
+                                <LucideIcon Name="calculator" Size="16" Class="mr-2" /> Calculator
+                            </CommandItem>
+                        </CommandGroup>
+                        <CommandSeparator />
+                        <CommandGroup Heading="Settings">
+                            <CommandItem Value="profile">
+                                <LucideIcon Name="user" Size="16" Class="mr-2" /> Profile
+                            </CommandItem>
+                            <CommandItem Value="billing">
+                                <LucideIcon Name="credit-card" Size="16" Class="mr-2" /> Billing
+                            </CommandItem>
+                            <CommandItem Value="settings">
+                                <LucideIcon Name="settings" Size="16" Class="mr-2" /> Settings
+                            </CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandContent>
+            </div>
+            @if (!string.IsNullOrEmpty(basicSelectedValue))
+            {
+                <p class="mt-2 text-sm">Selected: <strong>@basicSelectedValue</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Grouped Commands"
+        Description="Organize commands into logical groups with headings.">
+        <DemoBlock Code="@_groupedCode">
+            <div class="rounded-lg border bg-background shadow-md w-full max-w-sm">
+                <CommandContent OnValueChange="HandleGroupedValueChange">
+                    <CommandInput Placeholder="Search..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup Heading="Navigation">
+                            <CommandItem Value="home">
+                                <LucideIcon Name="house" Size="16" Class="mr-2" /> Home
+                            </CommandItem>
+                            <CommandItem Value="dashboard">
+                                <LucideIcon Name="layout-dashboard" Size="16" Class="mr-2" /> Dashboard
+                            </CommandItem>
+                            <CommandItem Value="projects">
+                                <LucideIcon Name="folder" Size="16" Class="mr-2" /> Projects
+                            </CommandItem>
+                        </CommandGroup>
+                        <CommandSeparator />
+                        <CommandGroup Heading="Account">
+                            <CommandItem Value="account-settings">
+                                <LucideIcon Name="settings" Size="16" Class="mr-2" /> Account Settings
+                            </CommandItem>
+                            <CommandItem Value="notifications">
+                                <LucideIcon Name="bell" Size="16" Class="mr-2" /> Notifications
+                            </CommandItem>
+                            <CommandItem Value="logout">
+                                <LucideIcon Name="log-out" Size="16" Class="mr-2" /> Logout
+                            </CommandItem>
+                        </CommandGroup>
+                        <CommandSeparator />
+                        <CommandGroup Heading="Actions">
+                            <CommandItem Value="new-doc">
+                                <LucideIcon Name="file-plus" Size="16" Class="mr-2" /> New Document
+                            </CommandItem>
+                            <CommandItem Value="import">
+                                <LucideIcon Name="upload" Size="16" Class="mr-2" /> Import
+                            </CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandContent>
+            </div>
+            @if (!string.IsNullOrEmpty(groupedSelectedValue))
+            {
+                <p class="mt-2 text-sm">Selected: <strong>@groupedSelectedValue</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Keyboard Shortcuts"
+        Description="Show keyboard shortcuts alongside commands.">
+        <DemoBlock Code="@_shortcutsCode">
+            <div class="rounded-lg border bg-background shadow-md w-full max-w-sm">
+                <CommandContent OnValueChange="HandleShortcutsValueChange">
+                    <CommandInput Placeholder="Search commands..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup Heading="File">
+                            <CommandItem Value="new-file">
+                                <LucideIcon Name="file" Size="16" Class="mr-2" /> New File
+                                <CommandShortcut>⌘N</CommandShortcut>
+                            </CommandItem>
+                            <CommandItem Value="open-file">
+                                <LucideIcon Name="folder-open" Size="16" Class="mr-2" /> Open File
+                                <CommandShortcut>⌘O</CommandShortcut>
+                            </CommandItem>
+                            <CommandItem Value="save-file">
+                                <LucideIcon Name="save" Size="16" Class="mr-2" /> Save
+                                <CommandShortcut>⌘S</CommandShortcut>
+                            </CommandItem>
+                        </CommandGroup>
+                        <CommandSeparator />
+                        <CommandGroup Heading="Edit">
+                            <CommandItem Value="undo">
+                                <LucideIcon Name="undo" Size="16" Class="mr-2" /> Undo
+                                <CommandShortcut>⌘Z</CommandShortcut>
+                            </CommandItem>
+                            <CommandItem Value="redo">
+                                <LucideIcon Name="redo" Size="16" Class="mr-2" /> Redo
+                                <CommandShortcut>⌘⇧Z</CommandShortcut>
+                            </CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandContent>
+            </div>
+            @if (!string.IsNullOrEmpty(shortcutsSelectedValue))
+            {
+                <p class="mt-2 text-sm">Selected: <strong>@shortcutsSelectedValue</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disabled Items"
+        Description="Disable specific items that are currently unavailable.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="rounded-lg border bg-background shadow-md w-full max-w-sm">
+                <CommandContent OnValueChange="HandleDisabledValueChange">
+                    <CommandInput Placeholder="Search..." />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup Heading="Actions">
+                            <CommandItem Value="edit">
+                                <LucideIcon Name="pencil" Size="16" Class="mr-2" /> Edit
+                            </CommandItem>
+                            <CommandItem Value="copy">
+                                <LucideIcon Name="copy" Size="16" Class="mr-2" /> Copy
+                            </CommandItem>
+                            <CommandItem Value="paste" Disabled="true">
+                                <LucideIcon Name="clipboard" Size="16" Class="mr-2" /> Paste (unavailable)
+                            </CommandItem>
+                            <CommandItem Value="delete" Disabled="true">
+                                <LucideIcon Name="trash-2" Size="16" Class="mr-2" /> Delete (unavailable)
+                            </CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandContent>
+            </div>
+            @if (!string.IsNullOrEmpty(disabledSelectedValue))
+            {
+                <p class="mt-2 text-sm">Selected: <strong>@disabledSelectedValue</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Empty State"
+        Description="Show a custom message when no results match.">
+        <DemoBlock Code="@_emptyCode">
+            <div class="rounded-lg border bg-background shadow-md w-full max-w-sm">
+                <CommandContent>
+                    <CommandInput Placeholder="Type something that won't match..." />
+                    <CommandList>
+                        <CommandEmpty>
+                            <div class="flex flex-col items-center gap-2 py-6">
+                                <LucideIcon Name="search-x" Size="32" Class="text-muted-foreground" />
+                                <p class="text-sm font-medium">No results found</p>
+                                <p class="text-xs text-muted-foreground">Try a different search term</p>
+                            </div>
+                        </CommandEmpty>
+                        <CommandGroup Heading="No matches here">
+                            <CommandItem Value="impossible-to-find-zzz">Hidden item</CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandContent>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Complex Example"
+        Description="Combining all features: groups, icons, shortcuts, and disabled items.">
+        <DemoBlock Code="@_complexCode">
+            <div class="flex flex-col gap-2">
+                <div class="rounded-lg border bg-background shadow-md w-full max-w-lg">
+                    <CommandContent OnValueChange="HandleComplexValueChange">
+                        <CommandInput Placeholder="Type a command or search..." />
+                        <CommandList>
+                            <CommandEmpty>No results found.</CommandEmpty>
+                            <CommandGroup Heading="Suggestions">
+                                <CommandItem Value="calendar">
+                                    <LucideIcon Name="calendar" Size="16" Class="mr-2" /> Calendar
+                                </CommandItem>
+                                <CommandItem Value="search-emoji">
+                                    <LucideIcon Name="smile" Size="16" Class="mr-2" /> Search Emoji
+                                </CommandItem>
+                                <CommandItem Value="calculator">
+                                    <LucideIcon Name="calculator" Size="16" Class="mr-2" /> Calculator
+                                </CommandItem>
+                            </CommandGroup>
+                            <CommandSeparator />
+                            <CommandGroup Heading="File">
+                                <CommandItem Value="new-file">
+                                    <LucideIcon Name="file-plus" Size="16" Class="mr-2" /> New File
+                                    <CommandShortcut>⌘N</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="open-file">
+                                    <LucideIcon Name="folder-open" Size="16" Class="mr-2" /> Open File
+                                    <CommandShortcut>⌘O</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="save-file">
+                                    <LucideIcon Name="save" Size="16" Class="mr-2" /> Save File
+                                    <CommandShortcut>⌘S</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="save-as" Disabled="true">
+                                    <LucideIcon Name="save" Size="16" Class="mr-2" /> Save As... (Disabled)
+                                    <CommandShortcut>⇧⌘S</CommandShortcut>
+                                </CommandItem>
+                            </CommandGroup>
+                            <CommandSeparator />
+                            <CommandGroup Heading="Settings">
+                                <CommandItem Value="profile">
+                                    <LucideIcon Name="user" Size="16" Class="mr-2" /> Profile
+                                    <CommandShortcut>⌘P</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="billing">
+                                    <LucideIcon Name="credit-card" Size="16" Class="mr-2" /> Billing
+                                    <CommandShortcut>⌘B</CommandShortcut>
+                                </CommandItem>
+                                <CommandItem Value="settings">
+                                    <LucideIcon Name="settings" Size="16" Class="mr-2" /> Settings
+                                    <CommandShortcut>⌘,</CommandShortcut>
+                                </CommandItem>
+                            </CommandGroup>
+                        </CommandList>
+                    </CommandContent>
+                </div>
+                @if (!string.IsNullOrEmpty(complexSelectedValue))
+                {
+                    <p class="mt-2 text-sm">Selected: <strong>@complexSelectedValue</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Lazy Loading (Large Lists)"
+        Description="Efficiently handle large datasets with lazy loading. Items are loaded on-demand as you scroll.">
+        <DemoBlock Code="@_lazyCode">
+            <div class="flex flex-col gap-2">
+                <div class="rounded-lg border bg-background shadow-md w-full max-w-md">
+                    <CommandContent OnValueChange="HandleLazyValueChange">
+                        <CommandInput Placeholder="@($"Search {TotalIconCount} icons...")" />
+                        <CommandList Class="max-h-[300px]">
+                            <CommandEmpty>No icons found.</CommandEmpty>
+                            <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                                Heading="Lucide"
+                                Items="_lucideIcons"
+                                ItemValue="@(icon => icon.Name)"
+                                ItemSearchText="@(icon => icon.Name)"
+                                EnableLazyLoading="true">
+                                <ItemTemplate Context="icon">
+                                    <LucideIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                                    <span class="flex-1">@icon.Name</span>
+                                    <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
+                                </ItemTemplate>
+                            </CommandVirtualizedGroup>
+                            <CommandSeparator />
+                            <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                                Heading="Feather"
+                                Items="_featherIcons"
+                                ItemValue="@(icon => icon.Name)"
+                                ItemSearchText="@(icon => icon.Name)"
+                                EnableLazyLoading="true">
+                                <ItemTemplate Context="icon">
+                                    <FeatherIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                                    <span class="flex-1">@icon.Name</span>
+                                    <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
+                                </ItemTemplate>
+                            </CommandVirtualizedGroup>
+                            <CommandSeparator />
+                            <CommandVirtualizedGroup TItem="(string Name, int Index)"
+                                Heading="Heroicons"
+                                Items="_heroIcons"
+                                ItemValue="@(icon => icon.Name)"
+                                ItemSearchText="@(icon => icon.Name)"
+                                EnableLazyLoading="true">
+                                <ItemTemplate Context="icon">
+                                    <HeroIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                                    <span class="flex-1">@icon.Name</span>
+                                    <span class="text-xs text-muted-foreground ml-2">#@icon.Index</span>
+                                </ItemTemplate>
+                            </CommandVirtualizedGroup>
+                        </CommandList>
+                    </CommandContent>
+                </div>
+                @if (!string.IsNullOrEmpty(lazySelectedValue))
+                {
+                    <p class="mt-2 text-sm">Selected: <strong>@lazySelectedValue</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Keyboard Navigation"
+        Description="Use arrow keys to navigate items, Enter to select, and Escape to close the palette." />
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_commandProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    // Icon data for lazy loading demo
+    private static readonly (string Name, int Index)[] _lucideIcons = LucideIconData.GetAvailableIcons()
+        .Select((name, index) => (name, index))
+        .ToArray();
+    private static readonly (string Name, int Index)[] _featherIcons = FeatherIconData.GetAvailableIcons()
+        .Select((name, index) => (name, index))
+        .ToArray();
+    private static readonly (string Name, int Index)[] _heroIcons = HeroIconData.GetAvailableIcons(HeroIconVariant.Outline)
+        .Select((name, index) => (name, index))
+        .ToArray();
+    private static int TotalIconCount => _lucideIcons.Length + _featherIcons.Length + _heroIcons.Length;
+
+    private bool isPaletteOpen = false;
+    private string? paletteSelectedValue;
+    private string? basicSelectedValue;
+    private string? groupedSelectedValue;
+    private string? shortcutsSelectedValue;
+    private string? disabledSelectedValue;
+    private string? complexSelectedValue;
+    private string? lazySelectedValue;
+
+    private void OpenPalette() => isPaletteOpen = true;
+    private void ClosePalette() => isPaletteOpen = false;
+    private void StopClick(MouseEventArgs e) { /* stop propagation handled by ordering */ }
+
+    private void HandlePaletteValueChange(string value)
+    {
+        paletteSelectedValue = value;
+        isPaletteOpen = false;
+    }
+
+    private void HandleBasicValueChange(string value) => basicSelectedValue = value;
+    private void HandleGroupedValueChange(string value) => groupedSelectedValue = value;
+    private void HandleShortcutsValueChange(string value) => shortcutsSelectedValue = value;
+    private void HandleDisabledValueChange(string value) => disabledSelectedValue = value;
+    private void HandleComplexValueChange(string value) => complexSelectedValue = value;
+    private void HandleLazyValueChange(string value) => lazySelectedValue = value;
+
+    private static readonly IReadOnlyList<DemoPropRow> _commandProps =
+    [
+        new("OnValueChange", "EventCallback&lt;string&gt;", "—",    "Callback invoked when a command item is selected."),
+        new("ChildContent",  "RenderFragment?",            "null",  "CommandInput and CommandList elements."),
+        new("Disabled",      "bool",                       "false", "On CommandItem: prevents selection when true."),
+        new("Value",         "string",                     "—",     "On CommandItem: the value passed to OnValueChange."),
+        new("Heading",       "string?",                    "null",  "On CommandGroup: heading text for the group."),
+        new("Placeholder",   "string?",                    "null",  "On CommandInput: placeholder text."),
+    ];
+
+    private const string _spotlightCode = """
+        <!-- The SpotlightCommandPalette is registered globally in MainLayout.
+             It opens with ⌘K / Ctrl+K anywhere in the app. -->
+        <HeightAnimation Config="@_config">
+            <Command>
+                <CommandInput />
+                <CommandList>
+                    <!-- Dynamic content -->
+                </CommandList>
+            </Command>
+        </HeightAnimation>
+
+        @code {
+            private HeightAnimationConfig _config = new() {
+                ContentSelector = "[role=\"listbox\"]",
+                InputSelector = "[data-command-input-wrapper]"
+            };
+        }
+        """;
+
+    private const string _heightAnimCode = """
+        <HeightAnimation Config="@_config">
+            <Command>
+                <CommandInput />
+                <CommandList>
+                    <!-- content changes height dynamically -->
+                </CommandList>
+            </Command>
+        </HeightAnimation>
+        """;
+
+    private const string _complexCode = """
+        <CommandContent OnValueChange="HandleValueChange">
+            <CommandInput Placeholder="Type a command or search..." />
+            <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup Heading="Suggestions">
+                    <CommandItem Value="calendar">
+                        <LucideIcon Name="calendar" Size="16" Class="mr-2" /> Calendar
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup Heading="File">
+                    <CommandItem Value="new-file">
+                        <LucideIcon Name="file-plus" Size="16" Class="mr-2" /> New File
+                        <CommandShortcut>⌘N</CommandShortcut>
+                    </CommandItem>
+                    <CommandItem Value="save-as" Disabled="true">
+                        Save As... (Disabled)
+                        <CommandShortcut>⇧⌘S</CommandShortcut>
+                    </CommandItem>
+                </CommandGroup>
+            </CommandList>
+        </CommandContent>
+        """;
+
+    private const string _lazyCode = """
+        <CommandVirtualizedGroup TItem="(string Name, int Index)"
+            Heading="Lucide"
+            Items="_lucideIcons"
+            ItemValue="@(icon => icon.Name)"
+            ItemSearchText="@(icon => icon.Name)"
+            EnableLazyLoading="true">
+            <ItemTemplate Context="icon">
+                <LucideIcon Name="@icon.Name" Size="16" Class="mr-2" />
+                <span>@icon.Name</span>
+            </ItemTemplate>
+        </CommandVirtualizedGroup>
+        """;
+
+    private const string _paletteCode = """
+        <!-- Trigger button -->
+        <Button Variant="ButtonVariant.Outline" @onclick="OpenPalette">
+            Search commands... <kbd>⌘K</kbd>
+        </Button>
+
+        <!-- Overlay (outside DemoBlock) -->
+        @if (isPaletteOpen)
+        {
+            <div class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" @onclick="ClosePalette">
+                <div class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
+                    <div class="overflow-hidden rounded-md border bg-popover shadow-md">
+                        <CommandContent OnValueChange="HandleSelect">
+                            <CommandInput Placeholder="Type a command or search..." />
+                            <CommandList>
+                                <CommandEmpty>No results found.</CommandEmpty>
+                                <CommandGroup Heading="Suggestions">
+                                    <CommandItem Value="calendar">Calendar</CommandItem>
+                                </CommandGroup>
+                            </CommandList>
+                        </CommandContent>
+                    </div>
+                </div>
+            </div>
+        }
+        """;
+
+    private const string _basicCode = """
+        <div class="rounded-lg border bg-background shadow-md w-full max-w-sm">
+            <CommandContent OnValueChange="HandleValueChange">
+                <CommandInput Placeholder="Type a command or search..." />
+                <CommandList>
+                    <CommandEmpty>No results found.</CommandEmpty>
+                    <CommandGroup Heading="Suggestions">
+                        <CommandItem Value="calendar">
+                            <LucideIcon Name="calendar" Size="16" Class="mr-2" /> Calendar
+                        </CommandItem>
+                    </CommandGroup>
+                </CommandList>
+            </CommandContent>
+        </div>
+        """;
+
+    private const string _groupedCode = """
+        <CommandContent>
+            <CommandInput Placeholder="Search..." />
+            <CommandList>
+                <CommandGroup Heading="Navigation">
+                    <CommandItem Value="home">Home</CommandItem>
+                    <CommandItem Value="dashboard">Dashboard</CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup Heading="Account">
+                    <CommandItem Value="settings">Settings</CommandItem>
+                    <CommandItem Value="logout">Logout</CommandItem>
+                </CommandGroup>
+            </CommandList>
+        </CommandContent>
+        """;
+
+    private const string _shortcutsCode = """
+        <CommandItem Value="new-file">
+            <LucideIcon Name="file" Size="16" Class="mr-2" /> New File
+            <CommandShortcut>⌘N</CommandShortcut>
+        </CommandItem>
+        """;
+
+    private const string _disabledCode = """
+        <CommandItem Value="paste" Disabled="true">
+            <LucideIcon Name="clipboard" Size="16" Class="mr-2" /> Paste (unavailable)
+        </CommandItem>
+        """;
+
+    private const string _emptyCode = """
+        <CommandEmpty>
+            <div class="flex flex-col items-center gap-2 py-6">
+                <LucideIcon Name="search-x" Size="32" Class="text-muted-foreground" />
+                <p class="text-sm font-medium">No results found</p>
+                <p class="text-xs text-muted-foreground">Try a different search term</p>
+            </div>
+        </CommandEmpty>
+        """;
+}

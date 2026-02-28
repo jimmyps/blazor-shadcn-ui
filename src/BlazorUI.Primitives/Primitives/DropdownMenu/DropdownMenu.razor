@@ -59,13 +59,6 @@
     [Parameter]
     public string Dir { get; set; } = "ltr";
 
-    /// <summary>
-    /// Default CSS classes to apply to all DropdownMenuItem children.
-    /// Cascaded via the context so items can merge it with their own classes.
-    /// </summary>
-    [Parameter]
-    public string? ItemClass { get; set; }
-
     protected override void OnInitialized()
     {
         // Initialize controllable state
@@ -91,9 +84,6 @@
             _state.ControlledValue = Open.Value;
             _context.State.IsOpen = Open.Value;
         }
-
-        // Sync ItemClass to context
-        _context.ItemClass = ItemClass;
     }
 
     private void HandleContextStateChanged()

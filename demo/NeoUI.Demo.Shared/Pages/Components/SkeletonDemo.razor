@@ -1,0 +1,226 @@
+@page "/components/skeleton"
+
+<PageTitle>Skeleton - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Skeleton"
+        Description="Use to show a placeholder while content is loading." />
+
+    <DemoSection
+        Title="Basic Usage"
+        Description="Simple skeleton placeholders with different dimensions.">
+        <DemoBlock Code="@_basicCode">
+            <div class="flex flex-col space-y-3">
+                <Skeleton Class="h-4 w-[250px]" />
+                <Skeleton Class="h-4 w-[200px]" />
+                <Skeleton Class="h-4 w-[150px]" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Shape Variants"
+        Description="Rectangular (default) and circular shapes for different content types.">
+        <DemoBlock Code="@_shapesCode">
+            <div class="flex items-center gap-8">
+                <div class="space-y-2">
+                    <p class="text-sm font-medium">Rectangular</p>
+                    <Skeleton Shape="SkeletonShape.Rectangular" Class="h-12 w-12" />
+                </div>
+                <div class="space-y-2">
+                    <p class="text-sm font-medium">Circular</p>
+                    <Skeleton Shape="SkeletonShape.Circular" Class="h-12 w-12" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Card Loading State"
+        Description="Skeleton placeholder for a card component.">
+        <DemoBlock Code="@_cardCode">
+            <div class="max-w-sm border rounded-lg p-6 space-y-4">
+                <div class="flex items-center space-x-4">
+                    <Skeleton Shape="SkeletonShape.Circular" Class="h-12 w-12" />
+                    <div class="space-y-2 flex-1">
+                        <Skeleton Class="h-4 w-[150px]" />
+                        <Skeleton Class="h-4 w-[100px]" />
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <Skeleton Class="h-4 w-full" />
+                    <Skeleton Class="h-4 w-full" />
+                    <Skeleton Class="h-4 w-3/4" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="List Loading State"
+        Description="Skeleton placeholders for list items.">
+        <DemoBlock Code="@_listCode">
+            <div class="max-w-md border rounded-lg divide-y">
+                @for (int i = 0; i < 4; i++)
+                {
+                    <div class="p-4 flex items-center space-x-4">
+                        <Skeleton Shape="SkeletonShape.Circular" Class="h-10 w-10" />
+                        <div class="space-y-2 flex-1">
+                            <Skeleton Class="h-4 w-[200px]" />
+                            <Skeleton Class="h-3 w-[150px]" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Avatar Placeholders"
+        Description="Different sizes of circular skeletons for avatar loading states.">
+        <DemoBlock Code="@_avatarsCode">
+            <div class="flex items-center gap-6">
+                <div class="space-y-2">
+                    <p class="text-xs text-muted-foreground text-center">Small</p>
+                    <Skeleton Shape="SkeletonShape.Circular" Class="h-8 w-8" />
+                </div>
+                <div class="space-y-2">
+                    <p class="text-xs text-muted-foreground text-center">Medium</p>
+                    <Skeleton Shape="SkeletonShape.Circular" Class="h-12 w-12" />
+                </div>
+                <div class="space-y-2">
+                    <p class="text-xs text-muted-foreground text-center">Large</p>
+                    <Skeleton Shape="SkeletonShape.Circular" Class="h-16 w-16" />
+                </div>
+                <div class="space-y-2">
+                    <p class="text-xs text-muted-foreground text-center">XL</p>
+                    <Skeleton Shape="SkeletonShape.Circular" Class="h-24 w-24" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Profile Card Loading"
+        Description="Complex loading state with mixed skeleton shapes.">
+        <DemoBlock Code="@_profileCode">
+            <div class="max-w-md border rounded-lg p-6 space-y-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <Skeleton Shape="SkeletonShape.Circular" Class="h-16 w-16" />
+                        <div class="space-y-2">
+                            <Skeleton Class="h-5 w-[120px]" />
+                            <Skeleton Class="h-4 w-[100px]" />
+                        </div>
+                    </div>
+                    <Skeleton Class="h-8 w-20 rounded-full" />
+                </div>
+                <Separator />
+                <div class="grid grid-cols-3 gap-4">
+                    @for (int i = 0; i < 3; i++)
+                    {
+                        <div class="space-y-2 text-center">
+                            <Skeleton Class="h-6 w-full" />
+                            <Skeleton Class="h-3 w-3/4 mx-auto" />
+                        </div>
+                    }
+                </div>
+                <Separator />
+                <div class="space-y-2">
+                    <Skeleton Class="h-4 w-full" />
+                    <Skeleton Class="h-4 w-full" />
+                    <Skeleton Class="h-4 w-2/3" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Table Loading State"
+        Description="Skeleton placeholders for table rows and columns.">
+        <DemoBlock Code="@_tableCode">
+            <div class="border rounded-lg overflow-hidden">
+                <div class="border-b bg-muted/50 px-6 py-3 flex gap-4">
+                    <Skeleton Class="h-4 w-[150px]" />
+                    <Skeleton Class="h-4 w-[100px]" />
+                    <Skeleton Class="h-4 w-[120px]" />
+                    <Skeleton Class="h-4 w-[80px]" />
+                </div>
+                @for (int i = 0; i < 5; i++)
+                {
+                    <div class="px-6 py-4 flex gap-4 border-b last:border-b-0">
+                        <Skeleton Class="h-4 w-[150px]" />
+                        <Skeleton Class="h-4 w-[100px]" />
+                        <Skeleton Class="h-4 w-[120px]" />
+                        <Skeleton Class="h-4 w-[80px]" />
+                    </div>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Form Loading State"
+        Description="Skeleton placeholders for form fields.">
+        <DemoBlock Code="@_formCode">
+            <div class="max-w-md border rounded-lg p-6 space-y-6">
+                @for (int i = 0; i < 3; i++)
+                {
+                    <div class="space-y-2">
+                        <Skeleton Class="h-4 w-[100px]" />
+                        <Skeleton Class="h-10 w-full" />
+                    </div>
+                }
+                <div class="flex gap-3">
+                    <Skeleton Class="h-10 w-24" />
+                    <Skeleton Class="h-10 w-24" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Image Gallery Loading"
+        Description="Skeleton placeholders for image grid layouts.">
+        <DemoBlock Code="@_imageGalleryCode">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @for (int i = 0; i < 8; i++)
+                {
+                    <Skeleton Class="h-[200px] w-full" />
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Styling"
+        Description="Override styles with the Class parameter for different effects.">
+        <DemoBlock Code="@_customStylingCode">
+            <div class="flex flex-col space-y-4">
+                <Skeleton Class="h-32 w-full rounded-xl" />
+                <Skeleton Class="h-4 w-full rounded-none" />
+                <Skeleton Shape="SkeletonShape.Circular" Class="h-20 w-20" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Best Practices"
+        Description="Guidelines for using skeleton loading states effectively.">
+        <div class="border rounded-lg p-6 space-y-3 bg-muted/50">
+            <p class="text-sm">✓ <strong>Match content dimensions:</strong> Skeleton should approximate the size of the actual content.</p>
+            <p class="text-sm">✓ <strong>Use appropriate shapes:</strong> Circular for avatars, rectangular for text and images.</p>
+            <p class="text-sm">✓ <strong>Maintain layout:</strong> Prevent layout shifts by using skeleton placeholders that match content structure.</p>
+            <p class="text-sm">✓ <strong>Progressive disclosure:</strong> Show skeletons only for slow-loading content (&gt;300ms).</p>
+            <p class="text-sm">✓ <strong>Keep it simple:</strong> Avoid overly complex skeleton patterns that distract users.</p>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_skeletonProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>

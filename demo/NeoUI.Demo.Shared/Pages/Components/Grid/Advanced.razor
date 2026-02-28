@@ -1,0 +1,38 @@
+@page "/components/datagrid/advanced"
+@using NeoUI.Demo.Shared.Data
+
+<PageTitle>Grid Components - Advanced Examples</PageTitle>
+
+<div class="space-y-8">
+    <DemoSection Title="Flexible Column Sizing"
+                 Description="Responsive columns using flex sizing with MinWidth constraints that adapt to container width.">
+        <DemoBlock Code="@_flexColumnCode">
+            <DataGrid Items="@orders.Take(15).ToList()">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" MinWidth="150px" />
+                    <DataGridColumn Field="Status" Header="Status" Width="120px" />
+                    <DataGridColumn Field="Amount" Header="Amount" Width="120px" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" MinWidth="150px" />
+                    <DataGridColumn Field="ShipTo" Header="Ship To" MinWidth="150px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+        <div class="text-sm text-muted-foreground">
+            Resize your browser window to see columns with MinWidth adapt proportionally while fixed-width columns stay constant.
+        </div>
+    </DemoSection>
+</div>
+
+<DemoPageSubNav ParentSlug="datagrid" />
+
+@code {
+    private List<Order> orders = new();
+
+    protected override void OnInitialized()
+    {
+        orders = GridDemoData.GenerateOrders(50);
+    }
+
+    }
+

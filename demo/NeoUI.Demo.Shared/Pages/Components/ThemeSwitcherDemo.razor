@@ -1,0 +1,205 @@
+@page "/components/theme-switcher"
+@inject ThemeService ThemeService
+@implements IDisposable
+
+<PageTitle>Theme Switcher - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Theme Switcher"
+        Description="An all-in-one popover panel that lets users pick a base color scheme and a primary accent color at runtime, with changes persisted across sessions via localStorage." />
+
+    <DemoSection
+        Title="Demo"
+        Description="Click the circle button to open the theme panel. Changes apply immediately across the whole demo site.">
+        <DemoBlock Code="@_demoCode">
+            <div class="flex items-center gap-6">
+                <ThemeSwitcher Align="PopoverAlign.Start" />
+                <div class="space-y-0.5">
+                    <p class="text-sm font-medium">Current theme</p>
+                    <p class="text-sm text-muted-foreground">
+                        Base: <span class="font-mono text-foreground">@ThemeService.CurrentBaseColor</span>
+                        &nbsp;/&nbsp;
+                        Primary: <span class="font-mono text-foreground">@ThemeService.CurrentPrimaryColor</span>
+                    </p>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="DarkModeToggle"
+        Description="A companion component bundled in the same namespace. It uses the same ThemeService and is already embedded inside ThemeSwitcher's popover header, but can also be placed standalone anywhere in your layout.">
+        <DemoBlock Code="@_darkModeToggleCode">
+            <ChildContent>
+                <div class="flex items-center gap-4">
+                    <DarkModeToggle />
+                    <p class="text-sm text-muted-foreground">Dark mode: <span class="font-mono text-foreground">@(ThemeService.IsDarkMode ? "on" : "off")</span></p>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <div class="rounded-lg border bg-muted/50 p-4">
+                    <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor
+
+&lt;DarkModeToggle /&gt;</code></pre>
+                </div>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Usage"
+        Description="Minimal usage — drop it anywhere in your layout.">
+        <div class="space-y-4">
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor
+
+&lt;ThemeSwitcher /&gt;</code></pre>
+            </div>
+            <p class="text-sm text-muted-foreground">
+                Typical placement is in a top-bar or sidebar footer alongside
+                <code class="text-sm bg-muted px-1 py-0.5 rounded">DarkModeToggle</code>:
+            </p>
+            <div class="rounded-lg border bg-muted/50 p-4">
+                <pre class="text-sm overflow-x-auto"><code>&lt;header class="flex items-center gap-2"&gt;
+    &lt;ThemeSwitcher /&gt;
+    &lt;DarkModeToggle /&gt;
+&lt;/header&gt;</code></pre>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection
+        Title="Customisation"
+        Description="Use TriggerClass and PopoverContentClass to tailor the trigger button and panel without subclassing.">
+        <DemoBlock Code="@_customisationCode">
+            <div class="flex flex-wrap items-center gap-4">
+                <ThemeSwitcher Align="PopoverAlign.Start" TriggerClass="rounded-full ring-2 ring-primary ring-offset-2 ring-offset-background" />
+                <ThemeSwitcher Align="PopoverAlign.Start" PopoverContentClass="!w-72" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Fixed Positioning"
+        Description="By default Strategy is Fixed so the popover correctly escapes any CSS stacking context (e.g. sidebars with overflow: hidden or transform). Switch to Absolute if you embed the switcher in regular document flow where fixed positioning causes layout shifts.">
+        <div class="rounded-lg border bg-muted/50 p-4">
+            <pre class="text-sm overflow-x-auto"><code>@@using NeoUI.Blazor   @* for PositioningStrategy *@
+
+&lt;ThemeSwitcher Strategy="PositioningStrategy.Absolute" /&gt;</code></pre>
+        </div>
+    </DemoSection>
+
+    <DemoSection
+        Title="API Reference"
+        Description="ThemeSwitcher component parameters and their types.">
+        <DemoPropsTable Rows="_themeSwitcherProps" />
+    </DemoSection>
+
+    <DemoSection
+        Title="ThemeService"
+        Description="Inject ThemeService directly if you need to read or change the theme programmatically without rendering the switcher UI.">
+        <DemoPropsTable Rows="_themeServiceProps" />
+    </DemoSection>
+
+    <DemoSection
+        Title="App.razor Setup"
+        Description="Add the following to the &lt;head&gt; of App.razor (Blazor Web) or index.html (Blazor WASM):">
+        <div class="space-y-6">
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">1 — Core stylesheet</h3>
+                <p class="text-sm text-muted-foreground">The main NeoUI stylesheet provides all component styles and CSS variables.</p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_coreStylesheetCode</code></pre>
+                    <DemoCopyButton Text="@_coreStylesheetCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">2 — Base color stylesheets</h3>
+                <p class="text-sm text-muted-foreground">
+                    Each base color scheme is a separate CSS file.
+                    <strong>In production include only the ones you actually offer to users</strong> — if your app only uses Zinc, ship only <code class="text-sm bg-muted px-1 py-0.5 rounded">zinc.css</code>.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_baseColorsCode</code></pre>
+                    <DemoCopyButton Text="@_baseColorsCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">3 — Primary color stylesheets</h3>
+                <p class="text-sm text-muted-foreground">
+                    Same rule applies — only include the accent colors your app exposes. Omitting unused files reduces the CSS bundle size.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_primaryColorsCode</code></pre>
+                    <DemoCopyButton Text="@_primaryColorsCode" Class="absolute top-2 right-2" />
+                </div>
+                <Alert Variant="AlertVariant.Warning">
+                    <Icon>
+                        <LucideIcon Name="triangle-alert" Class="h-4 w-4" />
+                    </Icon>
+                    <ChildContent>
+                        <AlertTitle>Production tip — trim unused theme files</AlertTitle>
+                        <AlertDescription>
+                            If your application only allows a fixed set of themes (e.g. Zinc base + Blue or Green accent),
+                            include only those CSS files. Each file is small but shipping all 22 stylesheets adds unnecessary
+                            weight for apps with a locked-down theme palette.
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">4 — Theme JavaScript</h3>
+                <p class="text-sm text-muted-foreground">
+                    The theme script must load <em>before</em> Blazor initializes to avoid a flash of unstyled content (FOUC).
+                    Place both tags at the end of <code class="text-sm bg-muted px-1 py-0.5 rounded">&lt;head&gt;</code>, after the stylesheets.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_themeJsCode</code></pre>
+                    <DemoCopyButton Text="@_themeJsCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-base font-semibold">5 — Service registration</h3>
+                <p class="text-sm text-muted-foreground">
+                    <code class="text-sm bg-muted px-1 py-0.5 rounded">ThemeService</code> is registered automatically when you call
+                    <code class="text-sm bg-muted px-1 py-0.5 rounded">AddNeoUIComponents()</code> in
+                    <code class="text-sm bg-muted px-1 py-0.5 rounded">Program.cs</code>.
+                </p>
+                <div class="relative rounded-lg border bg-muted/50 overflow-hidden">
+                    <pre class="text-sm overflow-x-auto p-4"><code>@_serviceRegistrationCode</code></pre>
+                    <DemoCopyButton Text="@_serviceRegistrationCode" Class="absolute top-2 right-2" />
+                </div>
+            </div>
+
+        </div>
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+        ThemeService.OnThemeChanged += HandleThemeChanged;
+    }
+
+    private void HandleThemeChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ThemeService.OnThemeChanged -= HandleThemeChanged;
+    }
+
+}

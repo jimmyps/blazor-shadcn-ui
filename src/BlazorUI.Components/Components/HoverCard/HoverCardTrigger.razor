@@ -1,5 +1,4 @@
 @namespace BlazorUI.Components.HoverCard
-@using BlazorUI.Components.Utilities
 @using BlazorUI.Primitives.HoverCard
 
 @*
@@ -32,5 +31,5 @@
     [Parameter]
     public string? Class { get; set; }
 
-    private string CssClass => ClassNames.cn(Class);
+    private string CssClass => $"{Class}".Trim();
 }

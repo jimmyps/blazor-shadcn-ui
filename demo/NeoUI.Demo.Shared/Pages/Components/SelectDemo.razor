@@ -1,0 +1,143 @@
+@page "/components/select"
+
+<PageTitle>Select - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Select"
+        Description="Displays a list of options for the user to pick from—triggered by a button." />
+
+    <DemoSection
+        Title="Basic Select"
+        Description="A simple select with a list of options.">
+        <DemoBlock Code="@_basicCode">
+            <div class="flex items-center gap-4">
+                <Select @bind-Value="selectedFruit" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select a fruit" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem Value="@("apple")" Text="Apple" TValue="string">Apple</SelectItem>
+                        <SelectItem Value="@("banana")" Text="Banana" TValue="string">Banana</SelectItem>
+                        <SelectItem Value="@("blueberry")" Text="Blueberry" TValue="string">Blueberry</SelectItem>
+                        <SelectItem Value="@("grapes")" Text="Grapes" TValue="string">Grapes</SelectItem>
+                        <SelectItem Value="@("pineapple")" Text="Pineapple" TValue="string">Pineapple</SelectItem>
+                    </SelectContent>
+                </Select>
+                @if (!string.IsNullOrEmpty(selectedFruit))
+                {
+                    <p class="text-sm">Selected: <strong>@selectedFruit</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Grouped Options"
+        Description="Organize related items into labeled groups.">
+        <DemoBlock Code="@_groupedCode">
+            <div class="flex items-center gap-4">
+                <Select @bind-Value="selectedAnimal" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select an animal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Mammals</SelectLabel>
+                            <SelectItem Value="@("cat")" Text="Cat" TValue="string">Cat</SelectItem>
+                            <SelectItem Value="@("dog")" Text="Dog" TValue="string">Dog</SelectItem>
+                            <SelectItem Value="@("elephant")" Text="Elephant" TValue="string">Elephant</SelectItem>
+                        </SelectGroup>
+                        <SelectGroup>
+                            <SelectLabel>Birds</SelectLabel>
+                            <SelectItem Value="@("eagle")" Text="Eagle" TValue="string">Eagle</SelectItem>
+                            <SelectItem Value="@("parrot")" Text="Parrot" TValue="string">Parrot</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+                @if (!string.IsNullOrEmpty(selectedAnimal))
+                {
+                    <p class="text-sm">Selected: <strong>@selectedAnimal</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Scrollable Long List"
+        Description="Handle many options with automatic scrolling (max-h-60).">
+        <DemoBlock Code="@_scrollableCode">
+            <div class="flex items-center gap-4">
+                <Select @bind-Value="selectedCountry" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select a country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        @foreach (var country in countries)
+                        {
+                            <SelectItem Value="@country" TValue="string">@country</SelectItem>
+                        }
+                    </SelectContent>
+                </Select>
+                @if (!string.IsNullOrEmpty(selectedCountry))
+                {
+                    <p class="text-sm">Selected: <strong>@selectedCountry</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Generic Type Support"
+        Description="Select component supports generic types (int, enum, custom types).">
+        <DemoBlock Code="@_genericCode">
+            <div class="flex items-center gap-4">
+                <Select @bind-Value="selectedNumber" TValue="int" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select a number" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem Value="1" Text="One" TValue="int">One</SelectItem>
+                        <SelectItem Value="2" Text="Two" TValue="int">Two</SelectItem>
+                        <SelectItem Value="3" Text="Three" TValue="int">Three</SelectItem>
+                        <SelectItem Value="4" Text="Four" TValue="int">Four</SelectItem>
+                        <SelectItem Value="5" Text="Five" TValue="int">Five</SelectItem>
+                    </SelectContent>
+                </Select>
+                @if (selectedNumber > 0)
+                {
+                    <p class="text-sm">Selected: <strong>@selectedNumber</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_selectProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string? selectedFruit;
+    private string? selectedAnimal;
+    private string? selectedCountry;
+    private int selectedNumber;
+
+    private readonly string[] countries = new[]
+    {
+        "Afghanistan", "Albania", "Algeria", "Andorra", "Angola",
+        "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+        "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus",
+        "Belgium", "Belize", "Benin", "Bhutan", "Bolivia",
+        "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria",
+        "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada",
+        "Cape Verde", "Central African Republic", "Chad", "Chile", "China",
+        "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia",
+        "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti",
+        "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt"
+    };
+
+}

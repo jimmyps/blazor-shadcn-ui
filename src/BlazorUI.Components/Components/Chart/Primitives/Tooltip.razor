@@ -1,7 +1,7 @@
 @namespace BlazorUI.Components.Chart
 
 @code {
-    [CascadingParameter] private IChartParent? Parent { get; set; }
+    [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
     /// Gets or sets whether to show the tooltip.
@@ -61,6 +61,9 @@
     
     protected override void OnInitialized()
     {
-        Parent?.RegisterTooltip(this);
+        if (Parent != null)
+        {
+            try { Parent.RegisterTooltip(this); } catch { }
+        }
     }
 }

@@ -1,0 +1,13 @@
+@namespace NeoUI.Blazor.Charts
+
+<div class="chart-header">
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>
+    /// Gets or sets the child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

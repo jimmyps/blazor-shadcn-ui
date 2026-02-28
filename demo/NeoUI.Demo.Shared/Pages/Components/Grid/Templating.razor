@@ -1,0 +1,217 @@
+@page "/components/datagrid/templating"
+@using NeoUI.Blazor.Attributes
+@using NeoUI.Demo.Shared.Data
+@inject IToastService Toasts
+
+<PageTitle>Grid Components - Templating Examples</PageTitle>
+
+<div class="space-y-8">
+    <DemoSection Title="DataFormatString - Simple Formatting"
+                 Description="Use &lt;code class=&quot;px-1.5 py-0.5 rounded bg-muted text-sm&quot;&gt;DataFormatString&lt;/code&gt; for simple formatting without templates. Supports standard .NET format strings like &quot;C&quot; (currency), &quot;N2&quot; (number with 2 decimals), &quot;P&quot; (percentage), and &quot;d&quot; (short date).">
+        <DemoBlock Code="@_dataFormatCode">
+            <DataGrid Items="@orders.Take(15).ToList()">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" DataFormatString="N0" />
+                    <DataGridColumn Field="Customer" Header="Customer" />
+                    <DataGridColumn Field="Amount" Header="Amount" Width="140px" DataFormatString="C" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" Width="140px" DataFormatString="d" />
+                    <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+        <div class="rounded-lg border bg-muted/20 p-4">
+            <p class="text-sm font-medium mb-2">Format Examples:</p>
+            <ul class="text-sm space-y-1 text-muted-foreground">
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="C"</code> → Currency: $1,234.56</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="N0"</code> → Integer: 1,234</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="N2"</code> → Number: 1,234.56</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="P2"</code> → Percentage: 45.67%</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="d"</code> → Short date: 12/31/2024</li>
+                <li><code class="px-1.5 py-0.5 rounded bg-background">DataFormatString="D"</code> → Long date: Tuesday, December 31, 2024</li>
+            </ul>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Custom Cell Templates"
+                 Description="Custom cell rendering using Badge for status and formatted currency for amounts. For simple formatting, consider using &lt;code class=&quot;px-1.5 py-0.5 rounded bg-muted text-sm&quot;&gt;DataFormatString&lt;/code&gt; instead.">
+        <DemoBlock Code="@_cellTemplateCode">
+            <DataGrid Items="@orders">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" />
+                    <DataGridColumn Field="Status" Header="Status" Width="130px">
+                        <CellTemplate Context="order">
+                            <Badge Variant="@GetStatusVariant(order.Status)">
+                                @order.Status
+                            </Badge>
+                        </CellTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="Amount" Header="Amount" Width="140px">
+                        <CellTemplate Context="order">
+                            <span class="font-mono font-medium">@order.Amount.ToString("C")</span>
+                        </CellTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="OrderDate" Header="Order Date" Width="140px">
+                        <CellTemplate Context="order">
+                            <span class="text-sm text-muted-foreground">@order.OrderDate.ToString("MMM dd, yyyy")</span>
+                        </CellTemplate>
+                    </DataGridColumn>
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Custom Header Templates"
+                 Description="Custom header rendering with icons for enhanced visual hierarchy.">
+        <DemoBlock Code="@_headerTemplateCode">
+            <DataGrid Items="@orders.Take(10).ToList()">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer">
+                        <HeaderTemplate>
+                            <div class="flex items-center gap-2">
+                                <LucideIcon Name="user" Size="16" />
+                                <span>Customer</span>
+                            </div>
+                        </HeaderTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="Amount" Header="Amount" Width="140px">
+                        <HeaderTemplate>
+                            <div class="flex items-center gap-2">
+                                <LucideIcon Name="dollar-sign" Size="16" />
+                                <span>Amount</span>
+                            </div>
+                        </HeaderTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="Status" Header="Status" Width="130px">
+                        <HeaderTemplate>
+                            <div class="flex items-center gap-2">
+                                <LucideIcon Name="package" Size="16" />
+                                <span>Status</span>
+                            </div>
+                        </HeaderTemplate>
+                    </DataGridColumn>
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Row Actions"
+                 Description="Action buttons that trigger C# methods via data-action attributes. Uses Blazor components with automatic event binding.">
+        <DemoBlock Code="@_rowActionsCode">
+            <DataGrid Items="@orders.Take(10).ToList()" ActionHost="this">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" />
+                    <DataGridColumn Field="Status" Header="Status" Width="120px">
+                        <CellTemplate Context="order">
+                            <Badge Variant="@GetStatusVariant(order.Status)">
+                                @order.Status
+                            </Badge>
+                        </CellTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="Amount" Header="Amount" Width="120px">
+                        <CellTemplate Context="order">
+                            <span class="font-mono">@order.Amount.ToString("C")</span>
+                        </CellTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Id="actions" Header="Actions" Width="140px">
+                        <CellTemplate Context="order">
+                            <div class="flex items-center gap-1">
+                                <Button Variant="ButtonVariant.Ghost" 
+                                        Size="ButtonSize.Icon"
+                                        data-action="Edit"
+                                        title="@($"Edit order #{order.Id}")">
+                                    <LucideIcon Name="pencil" Size="16" />
+                                </Button>
+                                <Button Variant="ButtonVariant.Ghost" 
+                                        Size="ButtonSize.Icon"
+                                        data-action="Delete"
+                                        title="@($"Delete order #{order.Id}")"
+                                        Class="text-destructive hover:text-destructive">
+                                    <LucideIcon Name="trash-2" Size="16" />
+                                </Button>
+                            </div>
+                        </CellTemplate>
+                    </DataGridColumn>
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Conditional Styling"
+                 Description="Dynamic CSS classes applied based on data values (high-value orders in green, cancelled in red).">
+        <DemoBlock Code="@_conditionalStylingCode">
+            <DataGrid Items="@orders.Take(15).ToList()">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" />
+                    <DataGridColumn Field="Amount" Header="Amount" Width="140px">
+                        <CellTemplate Context="order">
+                            <span class="@GetAmountClass(order.Amount)">
+                                @order.Amount.ToString("C")
+                            </span>
+                        </CellTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Field="Status" Header="Status" Width="130px">
+                        <CellTemplate Context="order">
+                            <span class="@GetStatusClass(order.Status)">
+                                @order.Status
+                            </span>
+                        </CellTemplate>
+                    </DataGridColumn>
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
+</div>
+
+<DemoPageSubNav ParentSlug="datagrid" />
+
+@code {
+    private List<Order> orders = new();
+
+    protected override void OnInitialized()
+    {
+        orders = GridDemoData.GenerateOrders(100);
+    }
+
+    private BadgeVariant GetStatusVariant(OrderStatus status) => status switch
+    {
+        OrderStatus.Delivered => BadgeVariant.Default,
+        OrderStatus.Shipped => BadgeVariant.Secondary,
+        OrderStatus.Processing => BadgeVariant.Outline,
+        OrderStatus.Pending => BadgeVariant.Outline,
+        OrderStatus.Cancelled => BadgeVariant.Destructive,
+        _ => BadgeVariant.Default
+    };
+
+    private string GetAmountClass(decimal amount)
+    {
+        return amount > 5000 ? "font-bold text-green-600 dark:text-green-400" : "font-mono";
+    }
+
+    private string GetStatusClass(OrderStatus status)
+    {
+        return status == OrderStatus.Cancelled 
+            ? "text-destructive font-medium" 
+            : status == OrderStatus.Delivered 
+                ? "text-green-600 dark:text-green-400 font-medium" 
+                : "";
+    }
+
+    // ✅ Auto-discovered actions - just add [DataGridAction]!
+    [DataGridAction]
+    private void Edit(Order order)
+    {
+        Toasts.Show($"Editing order #{order.Id}", $"Customer: {order.Customer}");
+    }
+
+    [DataGridAction]
+    private void Delete(Order order)
+    {
+        Toasts.Error("Delete Order", $"Order #{order.Id} from {order.Customer} would be deleted.");
+    }
+
+    }
+

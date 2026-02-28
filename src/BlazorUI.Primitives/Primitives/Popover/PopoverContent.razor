@@ -10,19 +10,21 @@
     Maintains Popover-specific behavior: click-outside, escape key, ARIA attributes.
 *@
 
-<FloatingPortal IsOpen="@Context.IsOpen"
-                AnchorElement="@Context.State.TriggerElement"
-                PortalId="@_portalId"
-                ForceMount="@ForceMount"
-                Side="@Side"
-                Align="@Align"
-                Offset="@Offset"
-                MatchAnchorWidth="@MatchTriggerWidth"
-                Strategy="@Strategy"
-                ZIndex="@ZIndex"
-                OnReady="@HandleFloatingReady">
-    @RenderPopoverContent()
-</FloatingPortal>
+@if (Context.IsOpen && Context.State.TriggerElement.HasValue)
+{
+    <FloatingPortal IsOpen="true"
+                    AnchorElement="@Context.State.TriggerElement"
+                    PortalId="@_portalId"
+                    Side="@Side"
+                    Align="@Align"
+                    Offset="@Offset"
+                    MatchAnchorWidth="@MatchTriggerWidth"
+                    Strategy="@Strategy"
+                    ZIndex="@ZIndex"
+                    OnReady="@HandleFloatingReady">
+        @RenderPopoverContent()
+    </FloatingPortal>
+}
 
 @code {
     [CascadingParameter]
@@ -83,21 +85,12 @@
     public bool MatchTriggerWidth { get; set; } = false;
 
     /// <summary>
-    /// Whether to keep the portal mounted in the DOM when the popover is closed.
-    /// When <c>true</c>, JS toggles visibility instead of unmounting — JS handlers stay warm
-    /// across open/close cycles and CSS exit animations work correctly.
-    /// Default is <c>false</c>; the Components-layer <see cref="PopoverContent"/> sets this to <c>true</c>.
+    /// CSS positioning strategy: "absolute" or "fixed".
+    /// Use "fixed" for dropdowns that need to escape stacking contexts.
+    /// Default is "absolute".
     /// </summary>
     [Parameter]
-    public bool ForceMount { get; set; } = false;
-
-    /// <summary>
-    /// CSS positioning strategy.
-    /// Use <see cref="PositioningStrategy.Fixed"/> for popovers that need to escape stacking contexts.
-    /// Default is <see cref="PositioningStrategy.Absolute"/>.
-    /// </summary>
-    [Parameter]
-    public PositioningStrategy Strategy { get; set; } = PositioningStrategy.Absolute;
+    public string Strategy { get; set; } = "absolute";
 
     /// <summary>
     /// CSS z-index value for the popover content.
@@ -127,7 +120,6 @@
 
     private IJSObjectReference? _clickOutsideModule;
     private IJSObjectReference? _clickOutsideCleanup;
-    private IJSObjectReference? _dialogModule;
     private DotNetObjectReference<PopoverContent>? _dotNetRef;
     private bool _disposed = false;
     private string _portalId = "";
@@ -152,9 +144,9 @@
         <div id="@Context.ContentId"
              role="group"
              tabindex="-1"
-             data-autofocus
+             @onkeydown="HandleKeyDown"
              @attributes="AdditionalAttributes"
-             data-state="@(Context.IsOpen ? "open" : "closed")">
+             data-state="open">
             @ChildContent
         </div>
     };
@@ -165,12 +157,6 @@
         if (CloseOnClickOutside)
         {
             await SetupClickOutsideAsync();
-        }
-
-        // Set up JS-based Escape key handling (avoids C# roundtrip for every keydown)
-        if (CloseOnEscape || OnEscapeKeyDown.HasDelegate)
-        {
-            await SetupEscapeKeyAsync();
         }
 
         // Notify subscribers that content is ready (for focus management, etc.)
@@ -231,14 +217,10 @@
     {
         if (!Context.IsOpen)
         {
+            // Popover closed, clean up
             await InvokeAsync(async () =>
             {
-                // With ForceMount the portal stays alive; handlers survive close/reopen.
-                // Only clean up when the portal actually unmounts (ForceMount=false).
-                if (!ForceMount)
-                {
-                    await CleanupAsync();
-                }
+                await CleanupAsync();
                 StateHasChanged();
             });
         }
@@ -248,43 +230,21 @@
         }
     }
 
-    private async Task SetupEscapeKeyAsync()
+    private async Task HandleKeyDown(KeyboardEventArgs args)
     {
-        try
+        if (args.Key == "Escape")
         {
-            _dialogModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/dialog.js");
+            // Invoke custom handler if provided
+            if (OnEscapeKeyDown.HasDelegate)
+            {
+                await OnEscapeKeyDown.InvokeAsync(args);
+            }
 
-            _dotNetRef ??= DotNetObjectReference.Create(this);
-
-            await _dialogModule.InvokeVoidAsync("initializeKeyboardHandler",
-                Context.ContentId, CloseOnEscape, _dotNetRef);
-        }
-        catch (JSDisconnectedException)
-        {
-            // Expected during circuit disconnect in Blazor Server
-        }
-        catch (InvalidOperationException)
-        {
-            // JS interop not available during prerendering
-        }
-    }
-
-    [JSInvokable]
-    public async Task HandleEscapeKey()
-    {
-        if (_disposed) return;
-
-        // Invoke custom handler if provided
-        if (OnEscapeKeyDown.HasDelegate)
-        {
-            await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
-        }
-
-        // Close popover if configured
-        if (CloseOnEscape)
-        {
-            Context.Close();
+            // Close popover if configured
+            if (CloseOnEscape)
+            {
+                Context.Close();
+            }
         }
     }
 
@@ -305,19 +265,6 @@
             _clickOutsideCleanup = null;
         }
 
-        // Remove Escape key handler
-        if (_dialogModule != null)
-        {
-            try
-            {
-                await _dialogModule.InvokeVoidAsync("disposeKeyboardHandler", Context.ContentId);
-            }
-            catch
-            {
-                // Cleanup may already be disposed
-            }
-        }
-
         // Dispose DotNetObjectReference to prevent stale callbacks
         if (_dotNetRef != null)
         {
@@ -336,11 +283,6 @@
         if (_clickOutsideModule != null)
         {
             await _clickOutsideModule.DisposeAsync();
-        }
-
-        if (_dialogModule != null)
-        {
-            await _dialogModule.DisposeAsync();
         }
 
         _dotNetRef?.Dispose();

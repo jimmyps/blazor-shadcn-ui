@@ -1,5 +1,4 @@
-@namespace BlazorUI.Components.Menubar
-@using BlazorUI.Components.Utilities
+﻿@namespace BlazorUI.Components.Menubar
 @using BlazorUI.Primitives.Menubar
 
 @* Styled MenubarTrigger - wrapper with shadcn Tailwind classes *@
@@ -27,9 +26,15 @@
     [Parameter]
     public bool Disabled { get; set; } = false;
 
-    private string CssClass => ClassNames.cn(
-        "flex cursor-default select-none items-center rounded-sm px-3 py-1.5 text-sm font-medium outline-none",
-        "focus:bg-accent focus:text-accent-foreground",
-        "data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
-        Class);
+    private string CssClass
+    {
+        get
+        {
+            var baseClasses = "flex cursor-default select-none items-center rounded-sm px-3 py-1.5 " +
+                            "text-sm font-medium outline-none " +
+                            "focus:bg-accent focus:text-accent-foreground " +
+                            "data-[state=open]:bg-accent data-[state=open]:text-accent-foreground";
+            return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
+        }
+    }
 }

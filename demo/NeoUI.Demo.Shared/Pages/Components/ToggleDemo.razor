@@ -1,0 +1,101 @@
+@page "/components/toggle"
+
+<PageTitle>Toggle - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Toggle"
+        Description="A two-state button that can be either on or off." />
+
+    <DemoSection
+        Title="Basic"
+        Description="A simple toggle button that tracks its pressed state.">
+        <DemoBlock Code="@_basicCode">
+            <div class="space-y-2">
+                <Toggle @bind-Pressed="isPressed">
+                    <LucideIcon Name="bold" Class="h-4 w-4" />
+                </Toggle>
+                <p class="text-sm text-muted-foreground">Pressed: @isPressed</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Variants"
+        Description="Default and outline visual styles.">
+        <DemoBlock Code="@_variantsCode">
+            <div class="flex gap-4">
+                <Toggle Variant="ToggleVariant.Default">Default</Toggle>
+                <Toggle Variant="ToggleVariant.Outline">Outline</Toggle>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Sizes"
+        Description="Small, default, and large size options.">
+        <DemoBlock Code="@_sizesCode">
+            <div class="flex gap-4 items-center">
+                <Toggle Size="ToggleSize.Small">Small</Toggle>
+                <Toggle Size="ToggleSize.Default">Default</Toggle>
+                <Toggle Size="ToggleSize.Large">Large</Toggle>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Toggle Group - Single"
+        Description="Only one item can be active at a time.">
+        <DemoBlock Code="@_singleGroupCode">
+            <div class="space-y-2">
+                <ToggleGroup Type="ToggleGroupType.Single" @bind-Value="alignment">
+                    <ToggleGroupItem Value="left">
+                        <LucideIcon Name="align-left" Class="h-4 w-4" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem Value="center">
+                        <LucideIcon Name="align-center" Class="h-4 w-4" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem Value="right">
+                        <LucideIcon Name="align-right" Class="h-4 w-4" />
+                    </ToggleGroupItem>
+                </ToggleGroup>
+                <p class="text-sm text-muted-foreground">Selected: @alignment</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Toggle Group - Multiple"
+        Description="Multiple items can be active simultaneously.">
+        <DemoBlock Code="@_multipleGroupCode">
+            <div class="space-y-2">
+                <ToggleGroup Type="ToggleGroupType.Multiple" @bind-Values="styles">
+                    <ToggleGroupItem Value="bold">
+                        <LucideIcon Name="bold" Class="h-4 w-4" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem Value="italic">
+                        <LucideIcon Name="italic" Class="h-4 w-4" />
+                    </ToggleGroupItem>
+                    <ToggleGroupItem Value="underline">
+                        <LucideIcon Name="underline" Class="h-4 w-4" />
+                    </ToggleGroupItem>
+                </ToggleGroup>
+                <p class="text-sm text-muted-foreground">Selected: @string.Join(", ", styles ?? new List<string>())</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_toggleProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private bool isPressed = false;
+    private string? alignment = "left";
+    private List<string>? styles = new();
+
+}

@@ -1,0 +1,288 @@
+@page "/components/fileupload"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>FileUpload - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="FileUpload"
+        Description="A file upload component with drag-and-drop support, validation, and image previews." />
+
+    <!-- Single File Upload -->
+    <DemoSection
+        Title="Single File Upload"
+        Description="Basic single file upload with drag-and-drop support.">
+        <DemoBlock Code="@_singleFileCode">
+            <FileUpload @bind-Files="singleFile"
+                        Multiple="false"
+                        DropZoneText="Drop a file here or click to browse" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Multiple File Upload -->
+    <DemoSection
+        Title="Multiple File Upload"
+        Description="Upload multiple files at once with file list display.">
+        <DemoBlock Code="@_multipleFilesCode">
+            <FileUpload @bind-Files="multipleFiles"
+                        Multiple="true"
+                        DropZoneText="Drop files here or click to browse" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Image Upload with Previews -->
+    <DemoSection
+        Title="Image Upload with Previews"
+        Description="Upload images with thumbnail previews.">
+        <DemoBlock Code="@_imageUploadCode">
+            <FileUpload @bind-Files="imageFiles"
+                        Multiple="true"
+                        Accept="image/*"
+                        ShowPreview="true"
+                        DropZoneText="Drop images here or click to browse" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Document Upload -->
+    <DemoSection
+        Title="Document Upload"
+        Description="Upload PDF and Word documents only.">
+        <DemoBlock Code="@_documentUploadCode">
+            <FileUpload @bind-Files="documentFiles"
+                        Multiple="true"
+                        Accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                        ShowPreview="false"
+                        DropZoneText="Drop PDF or Word documents here" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- File Size Limit -->
+    <DemoSection
+        Title="File Size Limit"
+        Description="Upload files with a maximum size of 2MB.">
+        <DemoBlock Code="@_fileSizeLimitCode">
+            <FileUpload @bind-Files="sizeLimitFiles"
+                        Multiple="true"
+                        MaxFileSize="2097152"
+                        DropZoneText="Drop files here (max 2MB each)" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- File Count Limit -->
+    <DemoSection
+        Title="File Count Limit"
+        Description="Upload up to 3 files maximum.">
+        <DemoBlock Code="@_fileCountLimitCode">
+            <FileUpload @bind-Files="countLimitFiles"
+                        Multiple="true"
+                        MaxFiles="3"
+                        DropZoneText="Drop up to 3 files here" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Without Upload Progress -->
+    <DemoSection
+        Title="Without Upload Progress"
+        Description="File upload without progress indicator.">
+        <DemoBlock Code="@_noProgressCode">
+            <FileUpload @bind-Files="noProgressFiles"
+                        Multiple="true"
+                        ShowProgress="false"
+                        DropZoneText="Drop files here" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Disabled State -->
+    <DemoSection
+        Title="Disabled State"
+        Description="Disabled file upload component.">
+        <DemoBlock Code="@_disabledCode">
+            <FileUpload @bind-Files="disabledFiles"
+                        Disabled="true"
+                        DropZoneText="Upload disabled" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Form Integration with Validation -->
+    <DemoSection
+        Title="Form Integration with Validation"
+        Description="File upload integrated with Blazor's EditForm and validation.">
+        <DemoBlock Code="@_formIntegrationCode">
+            <EditForm Model="@uploadForm" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Profile Picture</label>
+                        <FileUpload @bind-Files="uploadForm.ProfilePicture"
+                                    Multiple="false"
+                                    Accept="image/*"
+                                    MaxFileSize="5242880"
+                                    ShowValidationError="true"
+                                    ValueExpression="@(() => uploadForm.ProfilePicture)"
+                                    DropZoneText="Upload your profile picture" />
+                        <ValidationMessage For="@(() => uploadForm.ProfilePicture)" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Documents (Required)</label>
+                        <FileUpload @bind-Files="uploadForm.Documents"
+                                    Multiple="true"
+                                    Accept=".pdf,.docx"
+                                    MaxFiles="5"
+                                    ShowValidationError="true"
+                                    ValueExpression="@(() => uploadForm.Documents)"
+                                    DropZoneText="Upload required documents" />
+                        <ValidationMessage For="@(() => uploadForm.Documents)" />
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Supporting Images</label>
+                        <FileUpload @bind-Files="uploadForm.SupportingImages"
+                                    Multiple="true"
+                                    Accept="image/*"
+                                    MaxFiles="10"
+                                    MaxFileSize="3145728"
+                                    ShowValidationError="true"
+                                    ValueExpression="@(() => uploadForm.SupportingImages)"
+                                    DropZoneText="Upload supporting images (optional)" />
+                        <ValidationMessage For="@(() => uploadForm.SupportingImages)" />
+                    </div>
+
+                    <div class="flex gap-2">
+                        <Button Type="ButtonType.Submit">Submit Form</Button>
+                        <Button Type="ButtonType.Button" Variant="ButtonVariant.Outline" OnClick="ResetForm">
+                            Reset
+                        </Button>
+                    </div>
+
+                    @if (formSubmitted)
+                    {
+                        <div class="p-4 rounded-lg border border-border bg-muted/50">
+                            <p class="text-sm font-medium text-green-600">Form submitted successfully!</p>
+                            <p class="text-xs text-muted-foreground mt-1">
+                                Profile Picture: @(uploadForm.ProfilePicture?.Count ?? 0) file(s)<br />
+                                Documents: @(uploadForm.Documents?.Count ?? 0) file(s)<br />
+                                Supporting Images: @(uploadForm.SupportingImages?.Count ?? 0) file(s)
+                            </p>
+                        </div>
+                    }
+                </div>
+            </EditForm>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Custom Styling -->
+    <DemoSection
+        Title="Custom Styling"
+        Description="File upload with custom CSS classes.">
+        <DemoBlock Code="@_customStylingCode">
+            <FileUpload @bind-Files="customStyleFiles"
+                        Multiple="true"
+                        Class="border-primary/50"
+                        DropZoneText="Custom styled upload zone" />
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- All Features Combined -->
+    <DemoSection
+        Title="All Features Combined"
+        Description="Demonstrates all features: multiple files, file type restriction, size limit, count limit, previews, and progress.">
+        <DemoBlock Code="@_allFeaturesCode">
+            <ChildContent>
+                <FileUpload @bind-Files="combinedFiles"
+                            Multiple="true"
+                            Accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp"
+                            MaxFileSize="5242880"
+                            MaxFiles="5"
+                            ShowPreview="true"
+                            ShowProgress="true"
+                            DropZoneText="Drop up to 5 images (max 5MB each)" />
+            </ChildContent>
+            <AdditionalContent>
+                <div class="text-sm text-muted-foreground space-y-1">
+                    <p class="font-medium text-foreground">Features enabled in this example:</p>
+                    <ul class="list-disc list-inside space-y-1">
+                        <li><code class="text-xs bg-muted px-1 py-0.5 rounded">Multiple="true"</code> — up to 5 files</li>
+                        <li><code class="text-xs bg-muted px-1 py-0.5 rounded">Accept</code> — JPEG, PNG, GIF, WebP only</li>
+                        <li><code class="text-xs bg-muted px-1 py-0.5 rounded">MaxFileSize="5242880"</code> — 5 MB per file</li>
+                        <li><code class="text-xs bg-muted px-1 py-0.5 rounded">MaxFiles="5"</code> — maximum file count</li>
+                        <li><code class="text-xs bg-muted px-1 py-0.5 rounded">ShowPreview="true"</code> — thumbnail previews</li>
+                        <li><code class="text-xs bg-muted px-1 py-0.5 rounded">ShowProgress="true"</code> — upload progress indicator</li>
+                    </ul>
+                </div>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- API Reference -->
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_fileUploadProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private List<IBrowserFile>? singleFile;
+    private List<IBrowserFile>? multipleFiles;
+    private List<IBrowserFile>? imageFiles;
+    private List<IBrowserFile>? documentFiles;
+    private List<IBrowserFile>? sizeLimitFiles;
+    private List<IBrowserFile>? countLimitFiles;
+    private List<IBrowserFile>? noProgressFiles;
+    private List<IBrowserFile>? disabledFiles;
+    private List<IBrowserFile>? customStyleFiles;
+    private List<IBrowserFile>? combinedFiles;
+
+    private UploadFormModel uploadForm = new();
+    private bool formSubmitted = false;
+
+    private void HandleValidSubmit()
+    {
+        formSubmitted = true;
+        StateHasChanged();
+
+        Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            formSubmitted = false;
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private void ResetForm()
+    {
+        uploadForm = new();
+        formSubmitted = false;
+    }
+
+    private string FormatFileSize(long bytes)
+    {
+        string[] sizes = { "B", "KB", "MB", "GB", "TB" };
+        double len = bytes;
+        int order = 0;
+
+        while (len >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            len /= 1024;
+        }
+
+        return $"{len:0.##} {sizes[order]}";
+    }
+
+    public class UploadFormModel
+    {
+        [Required(ErrorMessage = "Profile picture is required")]
+        public List<IBrowserFile>? ProfilePicture { get; set; }
+
+        [Required(ErrorMessage = "At least one document is required")]
+        [MinLength(1, ErrorMessage = "At least one document is required")]
+        public List<IBrowserFile>? Documents { get; set; }
+
+        public List<IBrowserFile>? SupportingImages { get; set; }
+    }
+
+}

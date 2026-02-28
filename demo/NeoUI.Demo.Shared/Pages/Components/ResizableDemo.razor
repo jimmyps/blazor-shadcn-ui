@@ -1,0 +1,206 @@
+@page "/components/resizable"
+
+<PageTitle>Resizable - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Resizable"
+        Description="Accessible resizable panel groups and layouts with keyboard support." />
+
+    <DemoSection
+        Title="Horizontal"
+        Description="Panels arranged side by side with a vertical drag handle.">
+        <DemoBlock Code="@_horizontalCode">
+            <ResizablePanelGroup Direction="ResizableDirection.Horizontal" Class="min-h-[200px] max-w-md rounded-lg border">
+                <ResizablePanel DefaultSize="50">
+                    <div class="flex h-full items-center justify-center p-6">
+                        <span class="font-semibold">Panel 1</span>
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle Index="0" />
+                <ResizablePanel DefaultSize="50">
+                    <div class="flex h-full items-center justify-center p-6">
+                        <span class="font-semibold">Panel 2</span>
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Vertical"
+        Description="Panels stacked vertically with a horizontal drag handle.">
+        <DemoBlock Code="@_verticalCode">
+            <ResizablePanelGroup Direction="ResizableDirection.Vertical" Class="min-h-[300px] max-w-md rounded-lg border">
+                <ResizablePanel DefaultSize="30">
+                    <div class="flex h-full items-center justify-center p-6">
+                        <span class="font-semibold">Header</span>
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle Index="0" />
+                <ResizablePanel DefaultSize="70">
+                    <div class="flex h-full items-center justify-center p-6">
+                        <span class="font-semibold">Content</span>
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Handle Grip"
+        Description="Visual grip indicator on the resize handle.">
+        <DemoBlock Code="@_withHandleCode">
+            <ResizablePanelGroup Direction="ResizableDirection.Horizontal" Class="min-h-[200px] max-w-md rounded-lg border">
+                <ResizablePanel DefaultSize="50">
+                    <div class="flex h-full items-center justify-center p-6">
+                        <span class="font-semibold">Left Panel</span>
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle Index="0" WithHandle="true" />
+                <ResizablePanel DefaultSize="50">
+                    <div class="flex h-full items-center justify-center p-6">
+                        <span class="font-semibold">Right Panel</span>
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Three Panel Layout"
+        Description="Common sidebar + main + details layout.">
+        <DemoBlock Code="@_threePanelCode">
+            <ResizablePanelGroup Direction="ResizableDirection.Horizontal" Class="min-h-[250px] rounded-lg border">
+                <ResizablePanel DefaultSize="20" MinSize="15">
+                    <div class="flex h-full items-center justify-center p-4 bg-muted/20">
+                        <span class="font-semibold text-sm">Sidebar</span>
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle Index="0" />
+                <ResizablePanel DefaultSize="60">
+                    <div class="flex h-full items-center justify-center p-4">
+                        <span class="font-semibold">Main Content</span>
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle Index="1" />
+                <ResizablePanel DefaultSize="20" MinSize="15">
+                    <div class="flex h-full items-center justify-center p-4 bg-muted/20">
+                        <span class="font-semibold text-sm">Details</span>
+                    </div>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Nested Layout"
+        Description="Combine horizontal and vertical layouts.">
+        <DemoBlock Code="@_nestedCode">
+            <ResizablePanelGroup Direction="ResizableDirection.Horizontal" Class="min-h-[350px] rounded-lg border">
+                <ResizablePanel DefaultSize="25">
+                    <div class="flex h-full items-center justify-center p-4 bg-muted/20">
+                        <span class="font-semibold text-sm">Navigation</span>
+                    </div>
+                </ResizablePanel>
+                <ResizableHandle Index="0" />
+                <ResizablePanel DefaultSize="75">
+                    <ResizablePanelGroup Direction="ResizableDirection.Vertical">
+                        <ResizablePanel DefaultSize="60">
+                            <div class="flex h-full items-center justify-center p-4">
+                                <span class="font-semibold">Editor</span>
+                            </div>
+                        </ResizablePanel>
+                        <ResizableHandle Index="0" />
+                        <ResizablePanel DefaultSize="40">
+                            <div class="flex h-full items-center justify-center p-4 bg-muted/10">
+                                <span class="font-semibold text-sm">Terminal</span>
+                            </div>
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Email Client Example"
+        Description="Real-world layout example similar to email clients.">
+        <DemoBlock Code="@_emailClientCode">
+            <ChildContent>
+                <ResizablePanelGroup Direction="ResizableDirection.Horizontal" Class="min-h-[400px] rounded-lg border">
+                    <ResizablePanel DefaultSize="20" MinSize="10">
+                        <div class="flex h-full flex-col p-2">
+                            <div class="p-2 font-semibold text-sm border-b mb-2">Folders</div>
+                            <div class="space-y-1 text-sm">
+                                <div class="p-2 rounded bg-primary/10 text-primary">Inbox</div>
+                                <div class="p-2 rounded hover:bg-muted">Sent</div>
+                                <div class="p-2 rounded hover:bg-muted">Drafts</div>
+                                <div class="p-2 rounded hover:bg-muted">Trash</div>
+                            </div>
+                        </div>
+                    </ResizablePanel>
+                    <ResizableHandle Index="0" WithHandle="true" />
+                    <ResizablePanel DefaultSize="30" MinSize="20">
+                        <div class="flex h-full flex-col">
+                            <div class="p-2 font-semibold text-sm border-b">Messages</div>
+                            <div class="flex-1 p-2 space-y-2 overflow-auto">
+                                <div class="p-2 rounded bg-muted/50 text-sm">
+                                    <div class="font-medium">Welcome to NeoUI</div>
+                                    <div class="text-xs text-muted-foreground">Getting started guide...</div>
+                                </div>
+                                <div class="p-2 rounded hover:bg-muted/50 text-sm">
+                                    <div class="font-medium">New Features</div>
+                                    <div class="text-xs text-muted-foreground">Check out the latest...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </ResizablePanel>
+                    <ResizableHandle Index="1" WithHandle="true" />
+                    <ResizablePanel DefaultSize="50">
+                        <div class="flex h-full flex-col">
+                            <div class="p-3 border-b">
+                                <div class="font-semibold">Welcome to NeoUI</div>
+                                <div class="text-sm text-muted-foreground">From: team@example.com</div>
+                            </div>
+                            <div class="flex-1 p-4 text-sm">
+                                <p>Hello,</p>
+                                <p class="mt-2">Welcome to NeoUI! We're excited to have you.</p>
+                            </div>
+                        </div>
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+            </ChildContent>
+            <AdditionalContent>
+                <ul class="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    <li>Horizontal and vertical orientations</li>
+                    <li>Min/max size constraints per panel</li>
+                    <li>Optional visual grip handle</li>
+                    <li>Nested layouts support</li>
+                    <li>OnLayoutChange event for persistence</li>
+                </ul>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Implementation Note"
+        Description="Full drag-to-resize functionality requires JavaScript interop for mouse move/up event tracking. The current implementation provides component structure and styling. For production use with full drag behavior, additional JS interop would need to be added." />
+
+    <DemoSection Title="Features">
+        <ul class="list-disc list-inside space-y-2 text-sm">
+            <li>Horizontal and vertical orientations</li>
+            <li>Min/max size constraints per panel</li>
+            <li>Optional visual grip handle</li>
+            <li>Nested layouts support</li>
+            <li>OnLayoutChange event for persistence</li>
+        </ul>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_resizableProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>

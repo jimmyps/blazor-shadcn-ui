@@ -1,0 +1,151 @@
+@page "/components/markdown-editor"
+
+<PageTitle>Markdown Editor - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Markdown Editor"
+        Description="A rich text editor with markdown support, toolbar formatting, and live preview." />
+
+    <DemoSection
+        Title="Basic Usage"
+        Description="A simple markdown editor with two-way data binding. Click the Preview tab to see rendered output.">
+        <DemoBlock Code="@_basicCode">
+            <div class="space-y-4">
+                <MarkdownEditor @bind-Value="basicValue" Placeholder="Write something amazing..." />
+                @if (!string.IsNullOrEmpty(basicValue))
+                {
+                    <Card>
+                        <CardHeader>
+                            <CardTitle Class="text-sm">Raw Markdown</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <pre class="text-xs bg-muted p-3 rounded-md overflow-auto">@basicValue</pre>
+                        </CardContent>
+                    </Card>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Label"
+        Description="Associate a label with the editor for better accessibility.">
+        <DemoBlock Code="@_labelCode">
+            <div class="space-y-2">
+                <Label For="description-editor">Description</Label>
+                <MarkdownEditor @bind-Value="labeledValue"
+                                Id="description-editor"
+                                Placeholder="Enter a description..." />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Toolbar Features"
+        Description="The toolbar provides quick access to formatting options. You can also use keyboard shortcuts.">
+        <DemoBlock Code="@_toolbarCode">
+            <ChildContent>
+                <MarkdownEditor @bind-Value="toolbarDemoValue" Placeholder="Try out the toolbar features..." />
+            </ChildContent>
+            <AdditionalContent>
+                <div class="rounded-lg border p-4 space-y-3">
+                    <h3 class="font-semibold text-sm">Available Formatting</h3>
+                    <ul class="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+                        <li><strong>Bold</strong> — Select text and click B or press <Kbd>Ctrl+B</Kbd></li>
+                        <li><em>Italic</em> — Select text and click I or press <Kbd>Ctrl+I</Kbd></li>
+                        <li><u>Underline</u> — Select text and click U or press <Kbd>Ctrl+U</Kbd></li>
+                        <li>Headings — Use the heading dropdown to set H1, H2, H3, or normal text</li>
+                        <li>Bullet List — Click the bullet list icon to add list items</li>
+                        <li>Numbered List — Click the numbered list icon for ordered lists</li>
+                    </ul>
+                </div>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Pre-populated Content"
+        Description="The editor can be initialized with existing markdown content.">
+        <DemoBlock Code="@_prePopulatedCode">
+            <MarkdownEditor @bind-Value="prePopulatedValue" />
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disabled State"
+        Description="The editor can be disabled to prevent user input.">
+        <DemoBlock Code="@_disabledCode">
+            <MarkdownEditor Value="This editor is disabled and cannot be edited." Disabled="true" />
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Form Integration"
+        Description="Use the editor within forms for content submission.">
+        <DemoBlock Code="@_formCode">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Submit Feedback</CardTitle>
+                    <CardDescription>Share your thoughts with us using markdown formatting.</CardDescription>
+                </CardHeader>
+                <CardContent Class="space-y-4">
+                    <div class="space-y-2">
+                        <Label For="feedback-editor">Your Feedback</Label>
+                        <MarkdownEditor @bind-Value="feedbackValue"
+                                        Id="feedback-editor"
+                                        Placeholder="What's on your mind?" />
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button OnClick="HandleSubmit" Disabled="@string.IsNullOrWhiteSpace(feedbackValue)">
+                        Submit Feedback
+                    </Button>
+                </CardFooter>
+            </Card>
+            @if (submitted)
+            {
+                <div class="p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100 rounded-md">
+                    Feedback submitted successfully!
+                </div>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Usage Notes"
+        Description="Key features and markdown syntax supported by the editor." />
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_markdownEditorProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string? basicValue;
+    private string? labeledValue;
+    private string? toolbarDemoValue;
+    private string? feedbackValue;
+    private bool submitted;
+
+    private string prePopulatedValue = @"# Welcome to the Markdown Editor
+
+This is a **bold** statement and this is *italic* text.
+
+## Features
+
+- Write markdown with toolbar assistance
+- Preview rendered output instantly
+- Use keyboard shortcuts for quick formatting
+
+Enjoy writing!";
+
+    private void HandleSubmit()
+    {
+        submitted = true;
+        StateHasChanged();
+    }
+}

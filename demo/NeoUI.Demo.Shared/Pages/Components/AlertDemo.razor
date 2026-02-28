@@ -1,0 +1,158 @@
+@page "/components/alert"
+
+<PageTitle>Alert - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Alert"
+        Description="Displays a callout for important messages that attract user attention." />
+
+    <!-- Basic -->
+    <DemoSection
+        Title="Basic"
+        Description="A simple alert with an icon, title, and description.">
+        <DemoBlock Code="@_basicCode">
+            <Alert>
+                <Icon><LucideIcon Name="terminal" Class="h-4 w-4" /></Icon>
+                <ChildContent>
+                    <AlertTitle>Heads up!</AlertTitle>
+                    <AlertDescription>You can add components to your app using the CLI.</AlertDescription>
+                </ChildContent>
+            </Alert>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Variants -->
+    <DemoSection
+        Title="Variants"
+        Description="Seven semantic variants for different message types.">
+        <DemoBlock Code="@_variantsCode">
+            <div class="space-y-4">
+                <Alert>
+                    <Icon><LucideIcon Name="terminal" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Default</AlertTitle>
+                        <AlertDescription>A standard alert for general informational messages.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Muted">
+                    <Icon><LucideIcon Name="info" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Muted</AlertTitle>
+                        <AlertDescription>A subtle alert with neutral gray accent for less prominent messages.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Destructive">
+                    <Icon><LucideIcon Name="octagon-alert" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Destructive</AlertTitle>
+                        <AlertDescription>Error message following shadcn/ui design system conventions.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Success">
+                    <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Success</AlertTitle>
+                        <AlertDescription>Your changes have been saved successfully.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Information</AlertTitle>
+                        <AlertDescription>This feature is currently in beta. Some functionality may change.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Warning">
+                    <Icon><LucideIcon Name="triangle-alert" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Warning</AlertTitle>
+                        <AlertDescription>Your account is approaching its storage limit.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Danger">
+                    <Icon><LucideIcon Name="circle-alert" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Danger</AlertTitle>
+                        <AlertDescription>Your session has expired. Please log in again.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Accent Border -->
+    <DemoSection
+        Title="With Accent Border"
+        Description="Use <code class=&quot;text-xs bg-muted px-1 py-0.5 rounded&quot;>AccentBorder=&quot;true&quot;</code> to display a thick left border with a subtle tinted background.">
+        <DemoBlock Code="@_accentBorderCode">
+            <div class="space-y-4">
+                <Alert Variant="AlertVariant.Success" AccentBorder="true">
+                    <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Success with Accent</AlertTitle>
+                        <AlertDescription>The accent border makes this success message more prominent.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Warning" AccentBorder="true">
+                    <Icon><LucideIcon Name="triangle-alert" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Important Note</AlertTitle>
+                        <AlertDescription>
+                            Each component has its own namespace (e.g., <code class="text-xs bg-muted px-1 py-0.5 rounded">BlazorUI.Components.Button</code>). Import only the components you use.
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Info" AccentBorder="true">
+                    <Icon><LucideIcon Name="info" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Tip</AlertTitle>
+                        <AlertDescription>You can customize theme colors by modifying the CSS variables in your theme file.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+                <Alert Variant="AlertVariant.Danger" AccentBorder="true">
+                    <Icon><LucideIcon Name="circle-alert" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>Critical Warning</AlertTitle>
+                        <AlertDescription>This action will permanently delete all data and cannot be undone.</AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Without Icons -->
+    <DemoSection
+        Title="Without Icons"
+        Description="Alerts can be used without icons for simpler messages.">
+        <DemoBlock Code="@_noIconCode">
+            <div class="space-y-4">
+                <Alert>
+                    <AlertTitle>Heads up!</AlertTitle>
+                    <AlertDescription>You can add components to your app using the CLI.</AlertDescription>
+                </Alert>
+                <Alert Variant="AlertVariant.Warning" AccentBorder="true">
+                    <AlertTitle>Note</AlertTitle>
+                    <AlertDescription>Remember to save your work before leaving the page.</AlertDescription>
+                </Alert>
+                <Alert Variant="AlertVariant.Destructive">
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>Your session has expired. Please log in again.</AlertDescription>
+                </Alert>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- Accessibility -->
+    <DemoSection
+        Title="Accessibility"
+        Description="The Alert component uses the ARIA <code class=&quot;relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm&quot;>role=&quot;alert&quot;</code> attribute to announce important messages to screen readers." />
+
+    <!-- API Reference -->
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_alertProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>

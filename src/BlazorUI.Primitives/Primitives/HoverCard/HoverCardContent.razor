@@ -18,9 +18,8 @@
                     Side="@Side"
                     Align="@Align"
                     Offset="@Offset"
-                    ForceMount="false"
-                    Strategy="PositioningStrategy.Absolute"
-                    ZIndex="ZIndexLevels.TooltipContent"
+                    Strategy="absolute"
+                    ZIndex="50"
                     OnReady="@HandleFloatingReady">
         @RenderHoverCardContent()
     </FloatingPortal>

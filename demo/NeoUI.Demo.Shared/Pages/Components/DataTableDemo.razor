@@ -1,0 +1,275 @@
+@page "/components/datatable"
+@inject MockDataService MockDataService
+
+<PageTitle>Data Table - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+
+    <DemoPageHeader
+        Title="Data Table"
+        Description="A powerful and flexible data table component with sorting, filtering, pagination, and row selection." />
+
+    <DemoSection
+        Title="Basic Table"
+        Description="A simple table with automatic sorting and pagination.">
+        <DemoBlock Code="@_basicTableCode">
+            <DataTable TData="Person" Data="@people" InitialPageSize="5">
+                <Columns>
+                    <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Sortable Alignment="ColumnAlignment.Right" />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" Sortable />
+                    <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable Alignment="ColumnAlignment.Right" />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Row Selection"
+        Description="Table with multiple row selection using checkboxes.">
+        <DemoBlock Code="@_rowSelectionCode">
+            <ChildContent>
+                <div class="flex items-center gap-2 mb-2">
+                    <input type="checkbox"
+                           id="enableKeyboardNavDataTable"
+                           checked="@enableKeyboardNavigation"
+                           @onchange="@((e) => enableKeyboardNavigation = (bool)(e.Value ?? true))"
+                           class="h-4 w-4 rounded border-gray-300 text-primary focus:ring-2 focus:ring-primary" />
+                    <label for="enableKeyboardNavDataTable" class="text-sm font-medium">Enable keyboard navigation</label>
+                </div>
+                <DataTable TData="Person"
+                           Data="@people"
+                           SelectionMode="DataTableSelectionMode.Multiple"
+                           EnableKeyboardNavigation="@enableKeyboardNavigation"
+                           @bind-SelectedItems="@selectedPeople"
+                           InitialPageSize="5">
+                    <Columns>
+                        <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                        <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                        <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+                    </Columns>
+                </DataTable>
+                @if (selectedPeople.Any())
+                {
+                    <div class="p-4 bg-muted rounded-md mt-2">
+                        <p class="text-sm font-medium">Selected: @selectedPeople.Count people</p>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            @foreach (var person in selectedPeople)
+                            {
+                                <Badge>@person.Name</Badge>
+                            }
+                        </div>
+                    </div>
+                }
+            </ChildContent>
+            <AdditionalContent>
+                <p class="text-sm text-muted-foreground">Use arrow keys to navigate rows, and Enter/Space to toggle selection. Enable keyboard navigation via the checkbox above.</p>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Cell Templates"
+        Description="Use custom templates to render cells with badges, buttons, and other components.">
+        <DemoBlock Code="@_customCellCode">
+            <DataTable TData="Person" Data="@people" ShowPagination="false">
+                <Columns>
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Status)" Header="Status" Sortable>
+                        <CellTemplate Context="person">
+                            <Badge Variant="@(person.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Outline)">
+                                @person.Status
+                            </Badge>
+                        </CellTemplate>
+                    </DataTableColumn>
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role">
+                        <CellTemplate Context="person">
+                            <Badge Variant="BadgeVariant.Secondary">@person.Role</Badge>
+                        </CellTemplate>
+                    </DataTableColumn>
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Actions">
+                        <CellTemplate Context="person">
+                            <div class="flex gap-2">
+                                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@(() => ShowDetails(person))">
+                                    View
+                                </Button>
+                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" OnClick="@(() => EditPerson(person))">
+                                    Edit
+                                </Button>
+                            </div>
+                        </CellTemplate>
+                    </DataTableColumn>
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Global Search &amp; Column Visibility"
+        Description="Search across all columns and toggle column visibility.">
+        <DemoBlock Code="@_searchCode">
+            <DataTable TData="Person" Data="@people" InitialPageSize="10">
+                <Columns>
+                    <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                    <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Status)" Header="Status">
+                        <CellTemplate Context="person">
+                            <Badge Variant="@(person.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Destructive)">
+                                @person.Status
+                            </Badge>
+                        </CellTemplate>
+                    </DataTableColumn>
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Empty State"
+        Description="Displays a message when there's no data to show.">
+        <DemoBlock Code="@_emptyStateCode">
+            <DataTable TData="Person" Data="@emptyPeople" InitialPageSize="5">
+                <Columns>
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Loading State"
+        Description="Shows a loading indicator while data is being fetched.">
+        <DemoBlock Code="@_loadingCode">
+            <div class="flex gap-2 mb-4">
+                <Button OnClick="@(() => isLoading = !isLoading)">
+                    Toggle Loading
+                </Button>
+            </div>
+            <DataTable TData="Person" Data="@people" IsLoading="@isLoading" InitialPageSize="5">
+                <Columns>
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Without Toolbar"
+        Description="A minimal table without the toolbar (no search or column visibility).">
+        <DemoBlock Code="@_withoutToolbarCode">
+            <DataTable TData="Person" Data="@people" ShowToolbar="false" InitialPageSize="5">
+                <Columns>
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                    <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Toolbar Actions"
+        Description="Add custom action buttons to the toolbar.">
+        <DemoBlock Code="@_customToolbarCode">
+            <DataTable TData="Person" Data="@people" InitialPageSize="5">
+                <ToolbarActions>
+                    <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" OnClick="@AddNewPerson">
+                        Add Person
+                    </Button>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@ExportData">
+                        Export
+                    </Button>
+                </ToolbarActions>
+                <Columns>
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" />
+                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Accessibility Features"
+        Description="Built-in accessibility features following WAI-ARIA design patterns.">
+        <div class="rounded-md border p-4 space-y-4">
+            <div>
+                <h3 class="font-semibold mb-2">ARIA Attributes</h3>
+                <ul class="text-sm space-y-1 text-muted-foreground">
+                <li class="flex items-center gap-2"><span class="text-green-600">&#10003;</span> <code class="bg-muted px-1 rounded">role="grid"</code> for screen readers</li>
+                <li class="flex items-center gap-2"><span class="text-green-600">&#10003;</span> <code class="bg-muted px-1 rounded">aria-sort</code> indicates column sort direction</li>
+                <li class="flex items-center gap-2"><span class="text-green-600">&#10003;</span> <code class="bg-muted px-1 rounded">aria-selected</code> indicates row selection state</li>
+                <li class="flex items-center gap-2"><span class="text-green-600">&#10003;</span> <code class="bg-muted px-1 rounded">aria-label</code> on checkboxes for selection</li>
+                <li class="flex items-center gap-2"><span class="text-green-600">&#10003;</span> Focusable rows with visible focus indicator</li>
+                </ul>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection
+        Title="Keyboard Shortcuts"
+        Description="Navigate and interact with the table using keyboard.">
+        <div class="rounded-md border">
+            <div class="flex justify-between items-center p-4 border-b">
+                <span class="font-medium">Navigate to next row</span>
+                <kbd class="px-2 py-1 bg-muted rounded text-sm font-mono">ArrowDown</kbd>
+            </div>
+            <div class="flex justify-between items-center p-4 border-b">
+                <span class="font-medium">Navigate to previous row</span>
+                <kbd class="px-2 py-1 bg-muted rounded text-sm font-mono">ArrowUp</kbd>
+            </div>
+            <div class="flex justify-between items-center p-4 border-b">
+                <span class="font-medium">Toggle row selection</span>
+                <div class="flex gap-1">
+                    <kbd class="px-2 py-1 bg-muted rounded text-sm font-mono">Enter</kbd>
+                    <span class="text-muted-foreground">/</span>
+                    <kbd class="px-2 py-1 bg-muted rounded text-sm font-mono">Space</kbd>
+                </div>
+            </div>
+            <div class="flex justify-between items-center p-4">
+                <span class="font-medium">Sort column (click header)</span>
+                <kbd class="px-2 py-1 bg-muted rounded text-sm font-mono">Click</kbd>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection
+        Title="API Reference"
+        Description="DataTable component parameters and their types.">
+        <DemoPropsTable Rows="_dataTableProps" />
+    </DemoSection>
+
+    <DemoSection
+        Title="DataTableColumn API"
+        Description="DataTableColumn parameters and their types.">
+        <DemoPropsTable Rows="_dataTableColumnProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    private List<Person> people = new();
+    private List<Person> emptyPeople = new();
+    private IReadOnlyCollection<Person> selectedPeople = Array.Empty<Person>();
+    private bool isLoading = false;
+    private bool enableKeyboardNavigation = true;
+
+    protected override void OnInitialized()
+    {
+        people = MockDataService.GeneratePersons(500);
+    }
+
+    private void ShowDetails(Person person) { }
+    private void EditPerson(Person person) { }
+    private void AddNewPerson() { }
+    private void ExportData() { }
+
+}

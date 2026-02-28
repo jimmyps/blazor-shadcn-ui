@@ -1,0 +1,217 @@
+@page "/components/chart/radar"
+@using NeoUI.Blazor.Charts
+<PageTitle>Radar Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+    <DemoPageHeader
+        Title="Radar Chart"
+        Description="Spider/radar charts for comparing multiple variables across categories." />
+
+    <DemoSection Title="Variants" Description="Core radar chart configurations.">
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <DemoBlock Code="@_basicCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <ChartTooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-1)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_multipleSeriesCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@teamSkillData">
+                        <XAxis DataKey="skill" />
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <RadarGrid Radius="50%" Center="@(new string[] { "50%", "65%" })" />
+                        <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
+                        <Radar DataKey="developer2" Name="Dev B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_filledCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <ChartTooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.6" Color="var(--chart-3)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_circleGridCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <RadarGrid Shape="RadarShape.Circle" SplitNumber="4" />
+                        <XAxis DataKey="skill" />
+                        <ChartTooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-4)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_performanceCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@performanceData">
+                        <XAxis DataKey="metric" />
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <RadarGrid Radius="60%" Center="@(new string[] { "50%", "65%" })" />
+                        <Radar DataKey="sales" Name="Sales" FillArea="true" AreaOpacity="0.25" Color="var(--chart-1)" />
+                        <Radar DataKey="marketing" Name="Marketing" FillArea="true" AreaOpacity="0.25" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_legendEmphasisCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@productComparison">
+                        <XAxis DataKey="feature" />
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Diamond" />
+                        <RadarGrid Radius="50%" />
+                        <Radar DataKey="productA" Name="Product A" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
+                        <Radar DataKey="productB" Name="Product B" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-4)" />
+                        <Radar DataKey="productC" Name="Product C" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-5)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_polygonGridCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <RadarGrid Shape="RadarShape.Polygon" SplitNumber="5" />
+                        <XAxis DataKey="skill" />
+                        <ChartTooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-5)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_lineOnlyCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <ChartTooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_styledIndicatorsCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid
+                            IndicatorColor="var(--foreground)"
+                            IndicatorFontSize="12"
+                            IndicatorFontWeight="bold" />
+                        <ChartTooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-3)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+            <DemoBlock Code="@_hiddenIndicatorsCode">
+                <ChartContainer Height="200">
+                    <RadarChart Data="@skillData">
+                        <XAxis DataKey="skill" />
+                        <RadarGrid ShowIndicatorLabels="false" />
+                        <ChartTooltip Show="false" />
+                        <Legend Show="false" />
+                        <Radar DataKey="score" FillArea="true" AreaOpacity="0.4" Color="var(--chart-4)" />
+                    </RadarChart>
+                </ChartContainer>
+            </DemoBlock>
+
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference">
+        <DemoPropsTable Rows="@_radarChartProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
+</div>
+
+@code {
+    // Basic skill data
+    private List<SkillData> skillData = new()
+    {
+        new() { skill = "Coding", score = 85 },
+        new() { skill = "Design", score = 70 },
+        new() { skill = "Testing", score = 90 },
+        new() { skill = "DevOps", score = 75 },
+        new() { skill = "Communication", score = 80 }
+    };
+
+    // Team skill comparison
+    private List<TeamSkillData> teamSkillData = new()
+    {
+        new() { skill = "Coding", developer1 = 85, developer2 = 75 },
+        new() { skill = "Design", developer1 = 70, developer2 = 95 },
+        new() { skill = "Testing", developer1 = 90, developer2 = 60 },
+        new() { skill = "DevOps", developer1 = 75, developer2 = 50 },
+        new() { skill = "Communication", developer1 = 70, developer2 = 90 }
+    };
+
+    // Performance metrics
+    private List<PerformanceData> performanceData = new()
+    {
+        new() { metric = "Revenue", sales = 90, marketing = 75 },
+        new() { metric = "Growth", sales = 85, marketing = 80 },
+        new() { metric = "Efficiency", sales = 78, marketing = 88 },
+        new() { metric = "Quality", sales = 82, marketing = 85 },
+        new() { metric = "Innovation", sales = 70, marketing = 92 }
+    };
+
+    // Product comparison
+    private List<ProductComparison> productComparison = new()
+    {
+        new() { feature = "Speed", productA = 75, productB = 68, productC = 90 },
+        new() { feature = "Usability", productA = 90, productB = 85, productC = 75 },
+        new() { feature = "Security", productA = 80, productB = 92, productC = 68 },
+        new() { feature = "Cost", productA = 95, productB = 60, productC = 85 },
+        new() { feature = "Support", productA = 88, productB = 45, productC = 62 }
+    };
+
+    // Data classes
+    public class SkillData
+    {
+        public string skill { get; set; } = "";
+        public int score { get; set; }
+    }
+
+    public class TeamSkillData
+    {
+        public string skill { get; set; } = "";
+        public int developer1 { get; set; }
+        public int developer2 { get; set; }
+    }
+
+    public class PerformanceData
+    {
+        public string metric { get; set; } = "";
+        public int sales { get; set; }
+        public int marketing { get; set; }
+    }
+
+    public class ProductComparison
+    {
+        public string feature { get; set; } = "";
+        public int productA { get; set; }
+        public int productB { get; set; }
+        public int productC { get; set; }
+    }
+}

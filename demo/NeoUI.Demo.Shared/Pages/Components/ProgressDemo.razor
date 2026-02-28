@@ -1,0 +1,151 @@
+@page "/components/progress"
+@implements IDisposable
+
+<PageTitle>Progress - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Progress"
+        Description="Displays an indicator showing the completion progress of a task, typically displayed as a progress bar." />
+
+    <DemoSection
+        Title="Basic"
+        Description="A simple progress bar.">
+        <DemoBlock Code="@_basicCode">
+            <Progress Value="60" />
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Progress Values"
+        Description="Progress bars at different completion levels.">
+        <DemoBlock Code="@_valuesCode">
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span>0%</span><span class="text-muted-foreground">Not started</span></div>
+                    <Progress Value="0" />
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span>25%</span><span class="text-muted-foreground">Getting started</span></div>
+                    <Progress Value="25" />
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span>50%</span><span class="text-muted-foreground">Halfway there</span></div>
+                    <Progress Value="50" />
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span>75%</span><span class="text-muted-foreground">Almost done</span></div>
+                    <Progress Value="75" />
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span>100%</span><span class="text-muted-foreground">Complete</span></div>
+                    <Progress Value="100" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Interactive"
+        Description="Control the progress value dynamically.">
+        <DemoBlock Code="@_interactiveCode">
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <Button Variant="ButtonVariant.Outline" OnClick="DecreaseProgress">Decrease</Button>
+                    <Button OnClick="IncreaseProgress">Increase</Button>
+                    <Button Variant="ButtonVariant.Outline" OnClick="ResetProgress">Reset</Button>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span>@progressValue%</span></div>
+                    <Progress Value="@progressValue" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Usage Examples"
+        Description="Common use cases for progress indicators.">
+        <DemoBlock Code="@_usageCode">
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">File Upload</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span>document.pdf</span>
+                            <span class="text-muted-foreground">2.4 MB / 4.0 MB</span>
+                        </div>
+                        <Progress Value="60" />
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Profile Completion</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span>Complete your profile</span>
+                            <span class="text-muted-foreground">3 of 5 steps</span>
+                        </div>
+                        <Progress Value="60" />
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Loading Content</h3>
+                    <div class="space-y-2">
+                        <div class="text-sm text-muted-foreground">Loading...</div>
+                        <Progress Value="@loadingProgress" />
+                    </div>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Accessibility"
+        Description="The Progress component uses ARIA attributes including <code class=&quot;relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm&quot;>role=&quot;progressbar&quot;</code>, <code class=&quot;relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm&quot;>aria-valuemin</code>, <code class=&quot;relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm&quot;>aria-valuemax</code>, and <code class=&quot;relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm&quot;>aria-valuenow</code> for screen reader support." />
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_progressProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private double progressValue = 60;
+    private double loadingProgress = 33;
+    private CancellationTokenSource? _cts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cts = new CancellationTokenSource();
+        _ = SimulateLoading(_cts.Token);
+    }
+
+    private async Task SimulateLoading(CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (loadingProgress < 100 && !cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(100, cancellationToken);
+                loadingProgress += 1;
+                StateHasChanged();
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            // Expected when component is disposed
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts?.Cancel();
+        _cts?.Dispose();
+    }
+
+    private void IncreaseProgress() => progressValue = Math.Min(100, progressValue + 10);
+    private void DecreaseProgress() => progressValue = Math.Max(0, progressValue - 10);
+    private void ResetProgress() => progressValue = 0;
+}

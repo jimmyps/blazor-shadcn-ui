@@ -1,5 +1,4 @@
 @namespace BlazorUI.Components.Chart
-@using BlazorUI.Components.Chart.Series
 
 @*
 LabelList Component
@@ -8,7 +7,7 @@ Child of series components (Line, Area, Bar, Pie, Scatter, Radar).
 *@
 
 @code {
-    [CascadingParameter] private SeriesBase? Parent { get; set; }
+    [CascadingParameter] private dynamic? Parent { get; set; }
     
     /// <summary>
     /// Label position.
@@ -49,6 +48,16 @@ Child of series components (Line, Area, Bar, Pie, Scatter, Radar).
     protected override void OnInitialized()
     {
         // Register with parent series
-        Parent?.RegisterLabelList(this);
+        if (Parent != null)
+        {
+            try
+            {
+                Parent.RegisterLabelList(this);
+            }
+            catch
+            {
+                // Parent doesn't support LabelList
+            }
+        }
     }
 }

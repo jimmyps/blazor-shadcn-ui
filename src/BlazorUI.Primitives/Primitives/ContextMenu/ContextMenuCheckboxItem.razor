@@ -9,6 +9,7 @@
      aria-checked="@Checked.ToString().ToLowerInvariant()"
      aria-disabled="@Disabled.ToString().ToLowerInvariant()"
      @onclick="HandleClick"
+     @onkeydown="HandleKeyDown"
      @onmouseenter="HandleMouseEnter"
      data-state="@(Checked ? "checked" : "unchecked")"
      data-disabled="@(Disabled ? "true" : null)"
@@ -112,6 +113,16 @@
         if (CloseOnSelect)
         {
             Context.Close();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (Disabled) return;
+
+        if (args.Key == "Enter" || args.Key == " ")
+        {
+            await HandleClick();
         }
     }
 

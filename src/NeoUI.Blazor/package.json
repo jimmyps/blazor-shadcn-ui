@@ -1,0 +1,12 @@
+{
+  "name": "neoui-blazor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i wwwroot/css/components-input.css -o wwwroot/components.css --minify",
+    "watch:css": "tailwindcss -i wwwroot/css/components-input.css -o wwwroot/components.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0"
+  }
+}

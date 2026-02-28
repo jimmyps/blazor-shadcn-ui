@@ -1,0 +1,181 @@
+@page "/primitives/collapsible"
+<PageTitle>Collapsible Primitive - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <DemoPageHeader
+        Title="Collapsible Primitive"
+        Description="Unstyled, accessible primitive component for building custom collapsibles." />
+
+        <!-- AsChild Pattern -->
+    <DemoSection Title="AsChild Pattern" Description="Use AsChild to compose triggers with your own styled elements.">
+        <DemoBlock Code="@_asChildCode">
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Without AsChild -->
+                <div class="space-y-3 p-4 border rounded-lg">
+                    <h3 class="text-lg font-medium">Without AsChild</h3>
+                    <p class="text-sm text-muted-foreground">
+                        CollapsibleTriggerPrimitive renders its own button element.
+                    </p>
+                    <CollapsiblePrimitive>
+                        <CollapsibleTriggerPrimitive class="h-9 px-3 py-2 border rounded text-sm cursor-pointer">
+                            Click to toggle
+                        </CollapsibleTriggerPrimitive>
+                        <CollapsibleContentPrimitive class="mt-2">
+                            Without AsChild - content controlled by the primitive.
+                        </CollapsibleContentPrimitive>
+                    </CollapsiblePrimitive>
+                </div>
+
+                <!-- With AsChild -->
+                <div class="space-y-3 p-4 border rounded-lg">
+                    <h3 class="text-lg font-medium">With AsChild</h3>
+                    <p class="text-sm text-muted-foreground">
+                        Button receives click behavior via TriggerContext.
+                    </p>
+                    <CollapsiblePrimitive>
+                        <CollapsibleTriggerPrimitive AsChild>
+                            <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">
+                                Click to toggle
+                                <LucideIcon Name="chevron-down" Size="16" Class="ml-2" />
+                            </Button>
+                        </CollapsibleTriggerPrimitive>
+                        <CollapsibleContentPrimitive class="mt-2">
+                            With AsChild - Button handles the trigger behavior.
+                        </CollapsibleContentPrimitive>
+                    </CollapsiblePrimitive>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Basic Headless Primitive" Description="The primitive provides behavior and accessibility without styling.">
+        <DemoBlock Code="@_basicCode">
+            <div class="rounded-lg border bg-card p-6 max-w-md">
+                <CollapsiblePrimitive>
+                    <CollapsibleTriggerPrimitive class="cursor-pointer">
+                        Click to toggle (unstyled primitive)
+                    </CollapsibleTriggerPrimitive>
+                    <CollapsibleContentPrimitive class="mt-2">
+                        This content is controlled by the headless primitive. Style it however you want!
+                    </CollapsibleContentPrimitive>
+                </CollapsiblePrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Controlled State" Description="Control the primitive state externally.">
+        <DemoBlock Code="@_controlledCode">
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <button @onclick="@(() => isPrimitiveOpen = true)"
+                            class="px-3 py-2 border rounded text-sm">
+                        Open
+                    </button>
+                    <button @onclick="@(() => isPrimitiveOpen = false)"
+                            class="px-3 py-2 border rounded text-sm">
+                        Close
+                    </button>
+                </div>
+
+                <div class="rounded-lg border bg-card p-6 max-w-md">
+                    <CollapsiblePrimitive @bind-Open="isPrimitiveOpen">
+                        <CollapsibleTriggerPrimitive class="cursor-pointer">
+                            Controlled Primitive (State: @(isPrimitiveOpen ? "Open" : "Closed"))
+                        </CollapsibleTriggerPrimitive>
+                        <CollapsibleContentPrimitive class="mt-2">
+                            External buttons control this primitive's state.
+                        </CollapsibleContentPrimitive>
+                    </CollapsiblePrimitive>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Accessibility Features" Description="Built-in accessibility features following WAI-ARIA design patterns.">
+        <Alert Variant="AlertVariant.Success" AccentBorder="true">
+            <Icon><LucideIcon Name="circle-check" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>Included by default</AlertTitle>
+                <AlertDescription>
+                    <code class="text-xs bg-muted px-1 rounded">aria-expanded</code>, <code class="text-xs bg-muted px-1 rounded">data-state</code>, <code class="text-xs bg-muted px-1 rounded">role=&quot;region&quot;</code>, focus and disabled behavior.
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
+    </DemoSection>
+
+    <DemoSection Title="Keyboard Shortcuts" Description="Navigate and interact with collapsibles using keyboard.">
+        <div class="rounded-lg border p-6 space-y-3 bg-muted/50">
+            <div class="grid gap-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Navigate to trigger</span>
+                    <Kbd>Tab</Kbd>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium">Toggle collapsible</span>
+                    <span class="flex gap-1">
+                        <Kbd>Space</Kbd>
+                        <Kbd>Enter</Kbd>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component properties and parameters.">
+        <DemoPropsTable Rows="_collapsibleProps" />
+    </DemoSection>
+
+    <DemoSection Title="When to Use Primitives" Description="Choose between primitives and styled components based on your needs.">
+        <div class="grid md:grid-cols-2 gap-4">
+                <div class="rounded-lg border p-4 space-y-3">
+                    <h3 class="font-semibold text-primary">Use Collapsible Primitive</h3>
+                    <ul class="space-y-2 text-sm text-muted-foreground">
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Building a custom design system</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Need complete control over styling</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Want to apply your own CSS framework</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-green-600 dark:text-green-400">✓</span>
+                            <span>Creating unique visual designs</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="rounded-lg border p-4 space-y-3">
+                    <h3 class="font-semibold text-primary">Use Styled Component</h3>
+                    <ul class="space-y-2 text-sm text-muted-foreground">
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Want shadcn/ui design out of the box</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Need quick implementation</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Like the default styling</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-blue-600 dark:text-blue-400">●</span>
+                            <span>Prefer convention over configuration</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+private bool isPrimitiveOpen = false;
+}

@@ -1,16 +1,16 @@
 # Release Guide
 
-This document describes the automated NuGet publishing system for BlazorUI.
+This document describes the automated NuGet publishing system for NeoUI.
 
 ## Overview
 
-BlazorUI uses a **monorepo with independent package versioning**. Each of the five packages can be released independently with its own version number:
+NeoUI uses a **monorepo with independent package versioning**. Each of the five packages can be released independently with its own version number:
 
-- **BlazorUI.Primitives** - Headless UI primitives
-- **BlazorUI.Components** - Styled components
-- **BlazorUI.Icons.Lucide** - Lucide icon library
-- **BlazorUI.Icons.Heroicons** - Heroicons library
-- **BlazorUI.Icons.Feather** - Feather icon library
+- **NeoUI.Blazor.Primitives** - Headless UI primitives
+- **NeoUI.Blazor** - Styled components
+- **NeoUI.Icons.Lucide** - Lucide icon library
+- **NeoUI.Icons.Heroicons** - Heroicons library
+- **NeoUI.Icons.Feather** - Feather icon library
 
 ## Quick Start
 
@@ -87,11 +87,11 @@ When a tag is pushed, GitHub Actions automatically:
 Each package can have a different version number:
 
 ```
-BlazorUI.Primitives       1.2.0
-BlazorUI.Components       1.1.5
-BlazorUI.Icons.Lucide     1.0.3
-BlazorUI.Icons.Heroicons  1.0.0-beta.1
-BlazorUI.Icons.Feather    1.0.0-beta.1
+NeoUI.Blazor.Primitives       1.2.0
+NeoUI.Blazor       1.1.5
+NeoUI.Icons.Lucide     1.0.3
+NeoUI.Icons.Heroicons  1.0.0-beta.1
+NeoUI.Icons.Feather    1.0.0-beta.1
 ```
 
 This allows you to:
@@ -134,7 +134,7 @@ Before releasing a package:
 1. **Get NuGet API key:**
    - Go to https://www.nuget.org/account/apikeys
    - Create a new API key with "Push" permissions
-   - Scope it to the BlazorUI.* packages
+   - Scope it to the NeoUI.* packages
 
 2. **Add to GitHub Secrets:**
    - Go to repository Settings → Secrets and variables → Actions
@@ -162,11 +162,11 @@ Each release creates a workflow run showing:
 ### NuGet.org
 
 Packages appear at:
-- https://www.nuget.org/packages/BlazorUI.Primitives
-- https://www.nuget.org/packages/BlazorUI.Components
-- https://www.nuget.org/packages/BlazorUI.Icons.Lucide
-- https://www.nuget.org/packages/BlazorUI.Icons.Heroicons
-- https://www.nuget.org/packages/BlazorUI.Icons.Feather
+- https://www.nuget.org/packages/NeoUI.Blazor.Primitives
+- https://www.nuget.org/packages/NeoUI.Blazor
+- https://www.nuget.org/packages/NeoUI.Icons.Lucide
+- https://www.nuget.org/packages/NeoUI.Icons.Heroicons
+- https://www.nuget.org/packages/NeoUI.Icons.Feather
 
 **Note:** It may take 5-10 minutes for packages to appear on NuGet.org after publishing.
 
@@ -224,10 +224,10 @@ If automation fails, you can release manually:
 
 ```bash
 # Build and pack
-dotnet pack src/BlazorUI.Primitives/BlazorUI.Primitives.csproj -c Release -o ./packages
+dotnet pack src/NeoUI.Blazor.Primitives/NeoUI.Blazor.Primitives.csproj -c Release -o ./packages
 
 # Publish to NuGet
-dotnet nuget push ./packages/BlazorUI.Primitives.*.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json
+dotnet nuget push ./packages/NeoUI.Blazor.Primitives.*.nupkg --api-key YOUR_API_KEY --source https://api.nuget.org/v3/index.json
 ```
 
 **Note:** Manual releases won't have the git tag versioning benefits.

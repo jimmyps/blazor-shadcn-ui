@@ -1,0 +1,12 @@
+{
+  "name": "neouidemodemo-shared",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i wwwroot/css/app-input.css -o wwwroot/css/app.css",
+    "watch:css": "tailwindcss -i wwwroot/css/app-input.css -o wwwroot/css/app.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0"
+  }
+}
