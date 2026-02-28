@@ -26,8 +26,8 @@
             Grid    = _grid    != null ? BuildGrid()    : null,
             Legend  = _legend  != null ? BuildLegend()  : null,
             Tooltip = _tooltip != null ? BuildTooltip() : null,
-            XAxis   = _xAxis   != null ? BuildXAxis()   : null,
-            YAxis   = _yAxis   != null ? BuildYAxis()   : null,
+            XAxis   = BuildXAxis(_xAxis != null),
+            YAxis   = BuildYAxis(_yAxis != null),
             Series = BuildSeries(),
             Animation = EnableAnimation,
             AnimationDuration = EnableAnimation ? AnimationDuration : 0,
@@ -40,21 +40,31 @@
         return option;
     }
     
-    private EChartsAxis BuildXAxis()
+    private EChartsAxis BuildXAxis(bool show)
     {
-        var axis = BuildAxis(_xAxis, null, true);
+        var xAxis = _xAxis ?? new XAxis();
+        var axis = BuildAxis(xAxis, null, true);
         
-        if (!string.IsNullOrEmpty(_xAxis!.DataKey))
+        if (!show)
+            axis.Show = false;
+        
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
         {
-            axis.Data = DataExtractor.GetStringValues(Data, _xAxis.DataKey);
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
         }
         
         return axis;
     }
     
-    private EChartsAxis BuildYAxis()
+    private EChartsAxis BuildYAxis(bool show)
     {
-        return BuildAxis(null, _yAxis, false);
+        var yAxis = _yAxis ?? new YAxis();
+        var axis = BuildAxis(null, yAxis, false);
+        
+        if (!show)
+            axis.Show = false;
+        
+        return axis;
     }
     
     private List<EChartsSeries> BuildSeries()

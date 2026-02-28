@@ -154,6 +154,12 @@ public sealed class EChartsGrid
 public sealed class EChartsAxis
 {
     /// <summary>
+    /// Whether to show the axis.
+    /// </summary>
+    [JsonPropertyName("show")]
+    public bool? Show { get; set; }
+
+    /// <summary>
     /// Axis type: "category" | "value" | "time" | "log"
     /// </summary>
     [JsonPropertyName("type")]

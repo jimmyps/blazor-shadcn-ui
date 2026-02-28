@@ -54,7 +54,7 @@ partial class BarChartExamples
     private const string _defaultCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -67,7 +67,7 @@ partial class BarChartExamples
     private const string _horizontalCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@simpleData" Layout="BarLayout.Horizontal" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@simpleData" Layout="BarLayout.Horizontal" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="sales" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -80,7 +80,7 @@ partial class BarChartExamples
     private const string _multipleCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@multiData" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -95,7 +95,7 @@ partial class BarChartExamples
     private const string _stackedCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@multiData" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -110,7 +110,7 @@ partial class BarChartExamples
     private const string _withLabelsCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -125,7 +125,7 @@ partial class BarChartExamples
     private const string _customLabelsCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -140,7 +140,7 @@ partial class BarChartExamples
     private const string _expandedCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -155,7 +155,7 @@ partial class BarChartExamples
     private const string _activeCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -168,7 +168,7 @@ partial class BarChartExamples
     private const string _mixedCode =
         """
         <ChartContainer Height="200">
-            <ComposedChart Data="@multiData" Padding="new Padding(8, 0, 0, 0)">
+            <ComposedChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -183,7 +183,7 @@ partial class BarChartExamples
     private const string _negativeCode =
         """
         <ChartContainer Height="200">
-            <BarChart Data="@negativeData" Padding="new Padding(8, 0, 0, 0)">
+            <BarChart Data="@negativeData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>

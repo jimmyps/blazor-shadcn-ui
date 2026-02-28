@@ -56,7 +56,7 @@ partial class LineChartExamples
     private const string _defaultCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -86,7 +86,7 @@ partial class LineChartExamples
     private const string _withDotsCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -99,7 +99,7 @@ partial class LineChartExamples
     private const string _customDotColorsCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@multiData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -114,7 +114,7 @@ partial class LineChartExamples
     private const string _customDotsCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -127,7 +127,7 @@ partial class LineChartExamples
     private const string _linearCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -140,7 +140,7 @@ partial class LineChartExamples
     private const string _stepCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -153,7 +153,7 @@ partial class LineChartExamples
     private const string _withLabelsCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -168,7 +168,7 @@ partial class LineChartExamples
     private const string _customLabelsCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
@@ -183,7 +183,7 @@ partial class LineChartExamples
     private const string _dashedCode =
         """
         <ChartContainer Height="200">
-            <LineChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>

@@ -72,7 +72,7 @@ partial class AreaChartExamples
     private const string _defaultCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -88,7 +88,7 @@ partial class AreaChartExamples
     private const string _stackedCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@multiData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -106,7 +106,7 @@ partial class AreaChartExamples
     private const string _gradientCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -147,7 +147,7 @@ partial class AreaChartExamples
     private const string _multipleCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@multiData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -165,7 +165,7 @@ partial class AreaChartExamples
     private const string _withDotsCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -181,7 +181,7 @@ partial class AreaChartExamples
     private const string _withGridCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <Grid Horizontal="true" Vertical="false" Stroke="var(--border)" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
@@ -198,7 +198,7 @@ partial class AreaChartExamples
     private const string _customAxesCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -214,7 +214,7 @@ partial class AreaChartExamples
     private const string _linearCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -230,7 +230,7 @@ partial class AreaChartExamples
     private const string _stepCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@simpleData" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -246,7 +246,7 @@ partial class AreaChartExamples
     private const string _expandedCode =
         """
         <ChartContainer Height="200">
-            <AreaChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="new Padding(8, 0, 0, 0)">
+            <AreaChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
