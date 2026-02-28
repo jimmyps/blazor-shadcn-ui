@@ -57,11 +57,15 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-  <!-- Build Tailwind CSS before packing (only on Windows, with local dev check) -->
-  <!-- Pre-built CSS is committed to repo, this target only runs during local development on Windows -->
-  <Target Name="BuildNeoUICSS" BeforeTargets="BeforeBuild;BeforeRebuild" Condition="'$(OS)' == 'Windows_NT' AND '$(CI)' != 'true'">
+  <!-- Build Tailwind CSS before packing (local dev only; components.css is pre-committed for CI/NuGet) -->
+  <Target Name="NpmInstall" BeforeTargets="BeforeBuild;BeforeRebuild" Condition="'$(CI)' != 'true' AND !Exists('$(MSBuildProjectDirectory)\node_modules')">
+    <Message Text="Restoring npm packages..." Importance="high" />
+    <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="BuildNeoUICSS" BeforeTargets="BeforeBuild;BeforeRebuild" DependsOnTargets="NpmInstall" Condition="'$(CI)' != 'true'">
     <Message Text="Building NeoUI Tailwind CSS..." Importance="high" />
-    <Exec Command="$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe -i wwwroot/css/components-input.css -o wwwroot/components.css --minify" />
+    <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
 </Project>

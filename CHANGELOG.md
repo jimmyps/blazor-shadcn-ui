@@ -8,6 +8,24 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### 🏗️ Infrastructure: Switch Tailwind CSS Build to npm (`NeoUI.Demo.Shared` & `NeoUI.Blazor`)
+
+Replaced the standalone `tailwindcss.exe` binary approach with an npm-based workflow in both the demo shared project and the components library. This fixes a production 404 for `app.css` caused by the gitignored output file not being present at `dotnet build` time in CI, and is faster and more portable than the downloaded binary.
+
+**Root cause of the `app.css` 404:**  
+`**/wwwroot/css/app.css` was gitignored, so a fresh CI checkout had no file on disk. The Blazor static web asset manifest needed the file to exist before `dotnet build` started; the previous `BeforeTargets="BeforeBuild"` MSBuild target generated it too late in the pipeline.
+
+**Fix — generate CSS before `dotnet build`:**
+
+- Added `package.json` to both `demo/NeoUI.Demo.Shared/` and `src/NeoUI.Blazor/` declaring `@tailwindcss/cli` as a dev dependency with `build:css` and `watch:css` npm scripts.
+- Added `NpmInstall` MSBuild target (`BeforeTargets="BeforeBuild"`) that auto-runs `npm install` when `node_modules/` is absent, so developers never need to run it manually.
+- Updated `BuildTailwindCSS` / `BuildNeoUICSS` MSBuild targets to call `npm run build:css` via `DependsOnTargets="NpmInstall"` instead of invoking `tailwindcss.exe` directly.
+- Removed the `OS==Windows_NT` restriction from the components target — npm works cross-platform.
+- Updated all three CI/CD deployment workflows (`main`, `dev/staging`, `dev/preview`) to replace the "Download Tailwind CLI" PowerShell step with `actions/setup-node@v4` → `npm install` → `npm run build:css` (run from `demo/NeoUI.Demo.Shared/`) **before** `dotnet build`, ensuring `app.css` is present when MSBuild evaluates the project.
+- The NuGet publish workflow is unchanged — `components.css` remains pre-committed to the repo and CI skips the build target via `'$(CI)' != 'true'`.
+
+---
+
 ### 🏗️ Infrastructure: Demo Project Restructure for v3 Release
 
 The demo solution has been reorganised into dedicated, purpose-named host projects so each render mode can be started directly without configuration switching:

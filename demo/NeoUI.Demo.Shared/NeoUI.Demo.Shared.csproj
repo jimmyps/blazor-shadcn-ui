@@ -28,10 +28,16 @@
   </ItemGroup>
 
 
-  <!-- Build Tailwind CSS (skipped in CI if tailwindcss.exe not available) -->
-  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" Condition="Exists('$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe')">
+  <!-- Restore npm packages if node_modules is missing -->
+  <Target Name="NpmInstall" BeforeTargets="BeforeBuild" Condition="!Exists('$(MSBuildProjectDirectory)\node_modules')">
+    <Message Text="Restoring npm packages..." Importance="high" />
+    <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <!-- Build Tailwind CSS via npm -->
+  <Target Name="BuildTailwindCSS" BeforeTargets="BeforeBuild" DependsOnTargets="NpmInstall">
     <Message Text="Building Tailwind CSS..." Importance="high" />
-    <Exec Command="$(MSBuildProjectDirectory)\..\..\tools\tailwindcss.exe -i wwwroot/css/app-input.css -o wwwroot/css/app.css" />
+    <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
   </Target>
 
 </Project>
