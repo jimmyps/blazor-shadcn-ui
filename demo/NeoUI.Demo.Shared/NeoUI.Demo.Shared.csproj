@@ -28,6 +28,12 @@
   </ItemGroup>
 
 
+  <ItemGroup>
+    <Content Remove="package.json" />
+    <Content Remove="package-lock.json" />
+    <Content Remove="node_modules\**" />
+  </ItemGroup>
+
   <!-- Restore npm packages if node_modules is missing -->
   <Target Name="NpmInstall" BeforeTargets="BeforeBuild" Condition="!Exists('$(MSBuildProjectDirectory)\node_modules')">
     <Message Text="Restoring npm packages..." Importance="high" />

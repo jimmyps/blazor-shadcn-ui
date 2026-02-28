@@ -57,6 +57,12 @@
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="package.json" />
+    <Content Remove="package-lock.json" />
+    <Content Remove="node_modules\**" />
+  </ItemGroup>
+
   <!-- Build Tailwind CSS before packing (local dev only; components.css is pre-committed for CI/NuGet) -->
   <Target Name="NpmInstall" BeforeTargets="BeforeBuild;BeforeRebuild" Condition="'$(CI)' != 'true' AND !Exists('$(MSBuildProjectDirectory)\node_modules')">
     <Message Text="Restoring npm packages..." Importance="high" />
