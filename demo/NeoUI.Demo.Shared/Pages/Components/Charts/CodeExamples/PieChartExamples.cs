@@ -40,7 +40,6 @@ partial class PieChartExamples
         <ChartContainer Height="250" Class="w-full">
             <PieChart Data="@FilteredBrowserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" Color="var(--chart-1)">
                     <LabelList Color="var(--muted-foreground)" />
                 </Pie>
@@ -53,9 +52,7 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name">
-                    <LabelList Show="false" />
                 </Pie>
             </PieChart>
         </ChartContainer>
@@ -66,7 +63,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" InnerRadius="30%">
                     <LabelList Color="var(--muted-foreground)" />
                 </Pie>
@@ -79,7 +75,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" InnerRadius="60%" EmphasisScaleSize="10">
                     <LabelList Color="var(--muted-foreground)" />
                 </Pie>
@@ -92,7 +87,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" RoseType="radius">
                     <LabelList Color="var(--muted-foreground)" />
                 </Pie>
@@ -105,7 +99,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" ShowLabel="true">
                     <LabelList Position="LabelPosition.Outside" Formatter="{b}: {c}%" FontSize="10" Color="var(--muted-foreground)" />
                 </Pie>
@@ -118,7 +111,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" ShowLabel="true">
                     <LabelList Position="LabelPosition.Outside" Formatter="function(params) { return params.name + '\n' + params.value + '%'; }" FontSize="9" Color="var(--muted-foreground)" />
                 </Pie>
@@ -131,7 +123,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" ShowLabel="true">
                     <LabelList Position="LabelPosition.Outside" Formatter="{b}" FontSize="10" Color="var(--muted-foreground)" />
                     <LabelLine Length="10" Length2="15" Smooth="true" />
@@ -145,7 +136,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" ShowLabel="true">
                     <LabelList Position="LabelPosition.Inside" Formatter="{c}%" FontSize="11" Color="var(--color-white)" />
                 </Pie>
@@ -171,7 +161,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" PadAngle="5">
                     <LabelList Color="var(--muted-foreground)" />
                 </Pie>
@@ -184,7 +173,6 @@ partial class PieChartExamples
         <ChartContainer Height="200">
             <PieChart Data="@browserData">
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Pie DataKey="value" NameKey="name" StartAngle="180" EndAngle="360" InnerRadius="50%">
                     <LabelList Color="var(--muted-foreground)" />
                 </Pie>

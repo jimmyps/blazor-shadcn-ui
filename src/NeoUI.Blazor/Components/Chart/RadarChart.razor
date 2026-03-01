@@ -18,8 +18,8 @@
     {
         var option = new EChartsOption
         {
-            Legend = BuildLegend(),
-            Tooltip = BuildTooltip(),
+            Legend  = _legend  != null ? BuildLegend()  : null,
+            Tooltip = _tooltip != null ? BuildTooltip() : null,
             Radar = BuildRadarCoordinate(),
             Series = BuildSeries(),
             Animation = EnableAnimation,

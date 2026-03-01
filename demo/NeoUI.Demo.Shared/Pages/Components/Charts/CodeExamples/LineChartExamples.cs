@@ -44,7 +44,7 @@ partial class LineChartExamples
                 <XAxis DataKey="date" TickLine="false" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
                 </XAxis>
-                <YAxis Show="false" TickLine="false"><AxisLabel Show="false" /></YAxis>
+                
                 <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
                 <Legend TextColor="var(--foreground)" />
                 <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
@@ -61,7 +61,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Sales" Color="var(--chart-1)" />
             </LineChart>
         </ChartContainer>
@@ -92,7 +91,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
             </LineChart>
         </ChartContainer>
@@ -121,7 +119,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Sales" ShowDots="true" DotSize="8" DotShape="SymbolShape.Diamond" Color="var(--chart-4)" />
             </LineChart>
         </ChartContainer>
@@ -135,7 +132,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Linear" Color="var(--chart-5)" />
             </LineChart>
         </ChartContainer>
@@ -149,7 +145,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
             </LineChart>
         </ChartContainer>
@@ -163,7 +158,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-2)">
                     <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="10" Color="#666" />
                 </Line>
@@ -179,7 +173,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" Color="var(--chart-3)">
                     <LabelList Position="LabelPosition.Top" Formatter="function(params) { return '$' + params.value; }" FontSize="9" Color="#2563eb" />
                 </Line>
@@ -195,7 +188,6 @@ partial class LineChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Line DataKey="sales" Name="Forecast" Dashed="true" ShowDots="true" Color="var(--chart-4)" />
             </LineChart>
         </ChartContainer>

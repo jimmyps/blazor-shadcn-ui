@@ -17,11 +17,11 @@
     {
         var option = new EChartsOption
         {
-            Grid = BuildGrid(),
-            Legend = BuildLegend(),
-            Tooltip = BuildTooltip(),
-            XAxis = BuildXAxis(),
-            YAxis = BuildYAxis(),
+            Grid    = BuildGrid(),
+            Legend  = _legend  != null ? BuildLegend()  : null,
+            Tooltip = _tooltip != null ? BuildTooltip() : null,
+            XAxis   = BuildXAxis(_xAxis != null),
+            YAxis   = BuildYAxis(_yAxis != null),
             Series = BuildSeries(),
             Animation = EnableAnimation,
             AnimationDuration = EnableAnimation ? AnimationDuration : 0,
@@ -34,19 +34,31 @@
         return option;
     }
     
-    private EChartsAxis BuildXAxis()
+    private EChartsAxis BuildXAxis(bool show)
     {
         var xAxis = _xAxis ?? new XAxis();
         var axis = BuildAxis(xAxis, null, true);
         axis.Type = "value"; // Scatter always uses value axes
+        if (!show)
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
         return axis;
     }
-    
-    private EChartsAxis BuildYAxis()
+
+    private EChartsAxis BuildYAxis(bool show)
     {
         var yAxis = _yAxis ?? new YAxis();
         var axis = BuildAxis(null, yAxis, false);
         axis.Type = "value"; // Scatter always uses value axes
+        if (!show)
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
         return axis;
     }
     

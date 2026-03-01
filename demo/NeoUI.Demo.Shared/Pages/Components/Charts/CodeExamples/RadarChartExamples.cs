@@ -23,8 +23,6 @@ partial class RadarChartExamples
         <ChartContainer Height="200">
             <RadarChart Data="@skillData">
                 <XAxis DataKey="skill" />
-                <ChartTooltip Show="false" />
-                <Legend Show="false" />
                 <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-1)" />
             </RadarChart>
         </ChartContainer>
@@ -49,8 +47,6 @@ partial class RadarChartExamples
         <ChartContainer Height="200">
             <RadarChart Data="@skillData">
                 <XAxis DataKey="skill" />
-                <ChartTooltip Show="false" />
-                <Legend Show="false" />
                 <Radar DataKey="score" FillArea="true" AreaOpacity="0.6" Color="var(--chart-3)" />
             </RadarChart>
         </ChartContainer>
@@ -62,8 +58,6 @@ partial class RadarChartExamples
             <RadarChart Data="@skillData">
                 <RadarGrid Shape="RadarShape.Circle" SplitNumber="4" />
                 <XAxis DataKey="skill" />
-                <ChartTooltip Show="false" />
-                <Legend Show="false" />
                 <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-4)" />
             </RadarChart>
         </ChartContainer>
@@ -104,8 +98,6 @@ partial class RadarChartExamples
             <RadarChart Data="@skillData">
                 <RadarGrid Shape="RadarShape.Polygon" SplitNumber="5" />
                 <XAxis DataKey="skill" />
-                <ChartTooltip Show="false" />
-                <Legend Show="false" />
                 <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-5)" />
             </RadarChart>
         </ChartContainer>
@@ -116,8 +108,6 @@ partial class RadarChartExamples
         <ChartContainer Height="200">
             <RadarChart Data="@skillData">
                 <XAxis DataKey="skill" />
-                <ChartTooltip Show="false" />
-                <Legend Show="false" />
                 <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
             </RadarChart>
         </ChartContainer>
@@ -132,8 +122,6 @@ partial class RadarChartExamples
                     IndicatorColor="var(--foreground)"
                     IndicatorFontSize="12"
                     IndicatorFontWeight="bold" />
-                <ChartTooltip Show="false" />
-                <Legend Show="false" />
                 <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-3)" />
             </RadarChart>
         </ChartContainer>
@@ -145,8 +133,6 @@ partial class RadarChartExamples
             <RadarChart Data="@skillData">
                 <XAxis DataKey="skill" />
                 <RadarGrid ShowIndicatorLabels="false" />
-                <ChartTooltip Show="false" />
-                <Legend Show="false" />
                 <Radar DataKey="score" FillArea="true" AreaOpacity="0.4" Color="var(--chart-4)" />
             </RadarChart>
         </ChartContainer>

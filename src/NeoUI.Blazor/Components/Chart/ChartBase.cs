@@ -236,7 +236,9 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     protected abstract TooltipMode GetDefaultTooltipMode();
     
     /// <summary>
-    /// Builds the grid configuration.
+    /// Builds the grid configuration. Always emitted so ECharts uses the chart's
+    /// Padding/ContainLabel rather than its own large defaults.
+    /// Visual grid-line properties (splitLine) are controlled separately via BuildSplitLine.
     /// </summary>
     protected EChartsGrid BuildGrid()
     {
@@ -253,37 +255,37 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Builds the legend configuration.
     /// </summary>
-    protected EChartsLegend BuildLegend()
+    protected EChartsLegend? BuildLegend()
     {
-        var legend = _legend ?? new Legend();
+        if (_legend == null) return null;
         
         // Build text style if TextColor is specified
         EChartsTextStyle? textStyle = null;
-        if (!string.IsNullOrEmpty(legend.TextColor))
+        if (!string.IsNullOrEmpty(_legend.TextColor))
         {
             textStyle = new EChartsTextStyle
             {
-                Color = legend.TextColor
+                Color = _legend.TextColor
             };
         }
         
         return new EChartsLegend
         {
-            Show = legend.Show,
-            Orient = legend.Layout == LegendLayout.Vertical ? "vertical" : "horizontal",
-            Left = legend.Align switch
+            Show = _legend.Show,
+            Orient = _legend.Layout == LegendLayout.Vertical ? "vertical" : "horizontal",
+            Left = _legend.Align switch
             {
                 LegendAlign.Left => "left",
                 LegendAlign.Right => "right",
                 _ => "center"
             },
-            Top = legend.VerticalAlign switch
+            Top = _legend.VerticalAlign switch
             {
-                LegendVerticalAlign.Top => legend.MarginTop.ToString(),
+                LegendVerticalAlign.Top => _legend.MarginTop.ToString(),
                 LegendVerticalAlign.Middle => "middle",
                 _ => "bottom"
             },
-            Icon = legend.Icon switch
+            Icon = _legend.Icon switch
             {
                 LegendIcon.Circle => "circle",
                 LegendIcon.Rect => "rect",
@@ -302,28 +304,29 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Builds the tooltip configuration.
     /// </summary>
-    protected EChartsTooltip BuildTooltip()
+    protected EChartsTooltip? BuildTooltip()
     {
-        var tooltip = _tooltip ?? new ChartTooltip { Mode = GetDefaultTooltipMode() };
-        var mode = tooltip.Mode ?? GetDefaultTooltipMode();
+        if (_tooltip == null) return null;
+        
+        var mode = _tooltip.Mode ?? GetDefaultTooltipMode();
         
         // Build text style if TextColor is specified
         EChartsTextStyle? textStyle = null;
-        if (tooltip.TextColor != null)
+        if (_tooltip.TextColor != null)
         {
             textStyle = new EChartsTextStyle
             {
-                Color = tooltip.TextColor
+                Color = _tooltip.TextColor
             };
         }
         
         return new EChartsTooltip
         {
-            Show = tooltip.Show,
+            Show = _tooltip.Show,
             Trigger = mode == TooltipMode.Axis ? "axis" : "item",
             AxisPointer = mode == TooltipMode.Axis ? new EChartsAxisPointer
             {
-                Type = tooltip.Cursor switch
+                Type = _tooltip.Cursor switch
                 {
                     TooltipCursor.Cross => "cross",
                     TooltipCursor.Line => "line",
@@ -331,10 +334,10 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
                     _ => "none"
                 }
             } : null,
-            Formatter = tooltip.Formatter,
-            BackgroundColor = tooltip.BackgroundColor,
-            BorderColor = tooltip.BorderColor,
-            BorderWidth = tooltip.BorderWidth,
+            Formatter = _tooltip.Formatter,
+            BackgroundColor = _tooltip.BackgroundColor,
+            BorderColor = _tooltip.BorderColor,
+            BorderWidth = _tooltip.BorderWidth,
             TextStyle = textStyle
         };
     }
@@ -509,6 +512,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         
         var result = new EChartsAxis
         {
+            Show = show,
             Type = type,
             Position = position,
             Min = min,
@@ -520,7 +524,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             SplitLine = BuildSplitLine(isXAxis),
             AxisLabel = BuildAxisLabel(axisLabel)
         };
-        
+
         return result;
     }
     
@@ -671,7 +675,12 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     /// </summary>
     protected EChartsSplitLine BuildSplitLine(bool isXAxis)
     {
-        var grid = _grid ?? new Grid();
+        if (_grid == null)
+        {
+            return new EChartsSplitLine { Show = false };
+        }
+        
+        var grid = _grid;
         var show = grid.Show && (isXAxis ? grid.Vertical : grid.Horizontal);
         
         // Build line style if any styling property is set

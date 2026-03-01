@@ -37,9 +37,6 @@
                     <XAxis DataKey="date" TickLine="false" Color="var(--border)">
                         <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
                     </XAxis>
-                    <YAxis Show="false" TickLine="false">
-                        <AxisLabel Show="false" />
-                    </YAxis>
                     <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Line" Formatter="@tooltipFormatter" />
                     <Legend TextColor="var(--foreground)" />
                     <Area DataKey="desktop" Name="Desktop" StackId="Total">
@@ -71,7 +68,6 @@
             <DemoBlock Code="@_defaultCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -79,7 +75,6 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <ChartTooltip />
-                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-1)" />
                     </AreaChart>
                 </ChartContainer>
@@ -88,7 +83,6 @@
             <DemoBlock Code="@_stackedCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -106,7 +100,6 @@
             <DemoBlock Code="@_gradientCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -114,7 +107,6 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <ChartTooltip Cursor="TooltipCursor.Shadow" />
-                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales">
                             <Fill>
                                 <LinearGradient Direction="GradientDirection.Vertical">
@@ -130,7 +122,6 @@
             <DemoBlock Code="@_withLegendCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -148,7 +139,6 @@
             <DemoBlock Code="@_multipleCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -166,7 +156,6 @@
             <DemoBlock Code="@_withDotsCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -174,7 +163,6 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <ChartTooltip />
-                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
                     </AreaChart>
                 </ChartContainer>
@@ -191,7 +179,6 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <ChartTooltip />
-                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-4)" />
                     </AreaChart>
                 </ChartContainer>
@@ -200,7 +187,6 @@
             <DemoBlock Code="@_customAxesCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -208,7 +194,6 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <ChartTooltip />
-                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" Opacity="0.8" />
                     </AreaChart>
                 </ChartContainer>
@@ -217,7 +202,6 @@
             <DemoBlock Code="@_linearCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -225,7 +209,6 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <ChartTooltip />
-                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" LineWidth="3" Color="var(--chart-5)" />
                     </AreaChart>
                 </ChartContainer>
@@ -234,7 +217,6 @@
             <DemoBlock Code="@_stepCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
@@ -242,7 +224,6 @@
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
                         <ChartTooltip />
-                        <Legend Show="false" />
                         <Area DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
                     </AreaChart>
                 </ChartContainer>
@@ -251,7 +232,6 @@
             <DemoBlock Code="@_expandedCode">
                 <ChartContainer Height="200">
                     <AreaChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
-                        <Grid Show="false" />
                         <XAxis DataKey="month" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </XAxis>
