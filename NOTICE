@@ -10,8 +10,7 @@ Original projects:
 https://github.com/blazorui-net/ui
 https://github.com/jimmyps/blazor-shadcn-ui
 
-Licensed under the Apache License, Version 2.0 (the "License");
+Licensed under the MIT License.
 
 If you use this software or create derivative works, you must include this
-NOTICE file (or its contents) in your distribution, as required by the
-Apache License 2.0.
+NOTICE file (or its contents) in your distribution.
