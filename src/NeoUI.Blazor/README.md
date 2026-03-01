@@ -104,6 +104,21 @@ That's it! No Tailwind installation, no build configuration needed.
 
 > 💡 **Pre-built themes**: NeoUI ships with pre-built themes built on shadcn/ui defaults — ready to use out of the box with no extra setup. See the [Theming](#-theming) section for details on applying and customizing themes.
 
+## ⚡ Project Template
+
+The fastest way to start a new NeoUI app — scaffold a complete Blazor Web App pre-wired with a sidebar layout, theme switcher, dark mode toggle, Spotlight command palette, and Tailwind CSS v4 in seconds:
+
+```bash
+dotnet new install NeoUI.Blazor.Templates
+dotnet new neoui -n MyApp
+cd MyApp
+dotnet run --project MyApp
+```
+
+Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tailwind CSS builds automatically on every `dotnet build` — Node.js just needs to be on your PATH.
+
+> Or keep reading to add NeoUI to an existing project manually.
+
 ## 📚 Available Components (85+)
 
 ### Form & Input Components
@@ -360,6 +375,7 @@ These components are built on top of `NeoUI.Blazor.Primitives` - a library of he
 - **NeoUI.Icons.Lucide** - 1,640+ Lucide icons (included)
 - **NeoUI.Icons.Heroicons** - 1,288 Heroicons across 4 variants
 - **NeoUI.Icons.Feather** - 286 beautiful minimalist icons
+- **NeoUI.Blazor.Templates** - Official project template for scaffolding full Blazor apps with NeoUI
 
 ## 🤝 Contributing
 
