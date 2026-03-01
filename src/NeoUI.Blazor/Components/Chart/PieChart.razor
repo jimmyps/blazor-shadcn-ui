@@ -17,8 +17,8 @@
     {
         var option = new EChartsOption
         {
-            Legend = BuildLegend(),
-            Tooltip = BuildTooltip(),
+            Legend  = _legend  != null ? BuildLegend()  : null,
+            Tooltip = _tooltip != null ? BuildTooltip() : null,
             Series = BuildSeries(),
             Animation = EnableAnimation,
             AnimationDuration = EnableAnimation ? AnimationDuration : 0,
