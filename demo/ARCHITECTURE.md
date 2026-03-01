@@ -109,7 +109,7 @@ This document explains the demo project structure that supports Server-only, Web
 
 ### Auto Mode (NeoUI.Demo.Auto)
 1. User navigates to the app
-2. Initial render happens on the server (InteractiveServer)
+2. Initial render happens on the server (InteractiveAuto)
 3. WebAssembly runtime downloads in the background
 4. Subsequent interactions use WebAssembly (InteractiveWebAssembly)
 5. All UI components and static assets come from NeoUI.Demo.Shared
@@ -183,7 +183,7 @@ All hosting projects reference the built CSS from Shared:
 
 ### Missing Styles
 If any hosting project appears unstyled:
-- Ensure Tailwind CSS is built in Shared: `dotnet build demo/NeoUI.Demo.Shared`
+- Ensure Tailwind CSS is built in Shared: `dotnet build demo/NeoUI.Demo.Shared/NeoUI.Demo.Shared.csproj`
 - Check that `wwwroot/css/app.css` exists in the Shared project after the build
 - All hosting projects reference CSS via `_content/NeoUI.Demo.Shared/css/app.css`
 - Alternatively, run `npm run build:css` manually inside `demo/NeoUI.Demo.Shared/`
