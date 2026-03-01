@@ -154,9 +154,11 @@ NeoUI uses a **two-layer architecture** with modern .NET 10 features and Auto re
 
 - **NeoUI.Blazor.Primitives** - Headless components (runs on both Server and WebAssembly)
 - **NeoUI.Blazor** - Pre-styled components (runs on both Server and WebAssembly)
-- **NeoUI.Demo** - Demo application (.NET 10, Auto rendering mode)
-- **NeoUI.Demo.Client** - WebAssembly-specific code (.NET 10, WASM)
-- **NeoUI.Demo.Shared** - Shared code between Server and WASM (.NET 10)
+- **NeoUI.Demo.Shared** - Shared pages, components, services, and static assets (.NET 10)
+- **NeoUI.Demo.Server** - Server-only hosting (.NET 10)
+- **NeoUI.Demo.Wasm** - WebAssembly-only hosting (.NET 10)
+- **NeoUI.Demo.Auto** - Auto mode (Server+WASM) hosting (.NET 10)
+- **NeoUI.Demo.Auto.Client** - WASM satellite for Auto mode (.NET 10)
 
 ### Rendering Mode
 

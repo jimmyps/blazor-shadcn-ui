@@ -55,7 +55,7 @@ This builds all five NuGet packages:
 ### Run the Demo Application
 
 ```bash
-cd demo/NeoUI.Demo
+cd demo/NeoUI.Demo.Auto
 dotnet watch run
 ```
 
@@ -76,7 +76,11 @@ NeoUI.Blazor/
 │   ├── NeoUI.Icons.Heroicons/ # Heroicons integration
 │   └── NeoUI.Icons.Feather/   # Feather icon integration
 ├── demo/
-│   └── NeoUI.Demo/            # Demo Blazor Server app
+│   ├── NeoUI.Demo.Shared/     # Shared pages, components, and static assets
+│   ├── NeoUI.Demo.Server/     # Server-only hosting project
+│   ├── NeoUI.Demo.Wasm/       # WebAssembly-only hosting project
+│   ├── NeoUI.Demo.Auto/       # Auto mode (Server+WASM) hosting project
+│   └── NeoUI.Demo.Auto.Client/ # WASM satellite for Auto mode
 ├── website/
 │   └── NeoUI.Website/         # Documentation website
 ├── .devflow/                     # DevFlow documentation and standards
