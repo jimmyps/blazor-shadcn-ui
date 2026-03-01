@@ -25,7 +25,7 @@ If you find a bug or have a feature request, please create an issue on GitHub:
 
 ### Prerequisites
 
-- **.NET 8 SDK** or later
+- **.NET 10 SDK** or later
 - **Git** for version control
 - **IDE**: Visual Studio 2022, VS Code, or Rider (recommended)
 - **Tailwind CSS standalone CLI** (included in demo app, no Node.js required)
@@ -35,8 +35,8 @@ If you find a bug or have a feature request, please create an issue on GitHub:
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/blazorui-net/ui.git
-cd ui
+git clone https://github.com/jimmyps/blazor-shadcn-ui.git
+cd blazor-shadcn-ui
 ```
 
 2. **Build the solution:**
@@ -55,7 +55,7 @@ This builds all five NuGet packages:
 ### Run the Demo Application
 
 ```bash
-cd demo/NeoUI.Demo
+cd demo/NeoUI.Demo.Auto
 dotnet watch run
 ```
 
@@ -76,7 +76,11 @@ NeoUI.Blazor/
 │   ├── NeoUI.Icons.Heroicons/ # Heroicons integration
 │   └── NeoUI.Icons.Feather/   # Feather icon integration
 ├── demo/
-│   └── NeoUI.Demo/            # Demo Blazor Server app
+│   ├── NeoUI.Demo.Shared/     # Shared pages, components, and static assets
+│   ├── NeoUI.Demo.Server/     # Server-only hosting project
+│   ├── NeoUI.Demo.Wasm/       # WebAssembly-only hosting project
+│   ├── NeoUI.Demo.Auto/       # Auto mode (Server+WASM) hosting project
+│   └── NeoUI.Demo.Auto.Client/ # WASM satellite for Auto mode
 ├── website/
 │   └── NeoUI.Website/         # Documentation website
 ├── .devflow/                     # DevFlow documentation and standards
@@ -86,11 +90,11 @@ NeoUI.Blazor/
 
 ### Technology Stack
 
-- **.NET 8 (LTS)** - Target framework
+- **.NET 10** - Target framework
 - **Blazor** - Supports Server, WebAssembly, and Hybrid hosting models
 - **Tailwind CSS** - Utility-first CSS framework (standalone CLI, no Node.js required)
 - **CSS Variables** - Runtime theme switching
-- **Lucide Icons** - 1000+ beautiful, consistent icons
+- **Lucide Icons** - 1,640+ beautiful, consistent icons
 
 For detailed technical architecture, see [.devflow/architecture.md](../.devflow/architecture.md)
 
@@ -131,12 +135,12 @@ Before submitting a pull request, please:
 
 ## License
 
-By contributing to NeoUI, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
+By contributing to NeoUI, you agree that your contributions will be licensed under the [MIT License](LICENSE).
 
 This means:
 - Your contributions will be freely available to everyone
 - You retain copyright to your contributions
-- You grant NeoUI and its users the rights specified in the Apache License 2.0
+- You grant NeoUI and its users the rights specified in the MIT License
 
 ## Code of Conduct
 
