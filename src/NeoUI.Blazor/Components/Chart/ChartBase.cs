@@ -236,12 +236,12 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     protected abstract TooltipMode GetDefaultTooltipMode();
     
     /// <summary>
-    /// Builds the grid configuration.
+    /// Builds the grid configuration. Always emitted so ECharts uses the chart's
+    /// Padding/ContainLabel rather than its own large defaults.
+    /// Visual grid-line properties (splitLine) are controlled separately via BuildSplitLine.
     /// </summary>
-    protected EChartsGrid? BuildGrid()
+    protected EChartsGrid BuildGrid()
     {
-        if (_grid == null) return null;
-        
         return new EChartsGrid
         {
             Top = Padding.Top,
@@ -512,6 +512,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         
         var result = new EChartsAxis
         {
+            Show = show,
             Type = type,
             Position = position,
             Min = min,
@@ -523,7 +524,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             SplitLine = BuildSplitLine(isXAxis),
             AxisLabel = BuildAxisLabel(axisLabel)
         };
-        
+
         return result;
     }
     

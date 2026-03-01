@@ -17,7 +17,7 @@
     {
         var option = new EChartsOption
         {
-            Grid    = _grid    != null ? BuildGrid()    : null,
+            Grid    = BuildGrid(),
             Legend  = _legend  != null ? BuildLegend()  : null,
             Tooltip = _tooltip != null ? BuildTooltip() : null,
             XAxis   = BuildXAxis(_xAxis != null),
@@ -40,17 +40,25 @@
         var axis = BuildAxis(xAxis, null, true);
         axis.Type = "value"; // Scatter always uses value axes
         if (!show)
-            axis.Show = false;
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
         return axis;
     }
-    
+
     private EChartsAxis BuildYAxis(bool show)
     {
         var yAxis = _yAxis ?? new YAxis();
         var axis = BuildAxis(null, yAxis, false);
         axis.Type = "value"; // Scatter always uses value axes
         if (!show)
-            axis.Show = false;
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
         return axis;
     }
     

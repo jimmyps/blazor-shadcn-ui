@@ -22,7 +22,7 @@
     {
         var option = new EChartsOption
         {
-            Grid    = _grid    != null ? BuildGrid()    : null,
+            Grid    = BuildGrid(),
             Legend  = _legend  != null ? BuildLegend()  : null,
             Tooltip = _tooltip != null ? BuildTooltip() : null,
             XAxis   = BuildXAxis(_xAxis != null),
@@ -43,10 +43,14 @@
     {
         var xAxis = _xAxis ?? new XAxis();
         var axis = BuildAxis(xAxis, null, true);
-        
+
         if (!show)
-            axis.Show = false;
-        
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+
         // For line charts, X axis is typically category with labels from data
         if (!string.IsNullOrEmpty(xAxis.DataKey))
         {
@@ -60,10 +64,14 @@
     {
         var yAxis = _yAxis ?? new YAxis();
         var axis = BuildAxis(null, yAxis, false);
-        
+
         if (!show)
-            axis.Show = false;
-        
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+
         return axis;
     }
     

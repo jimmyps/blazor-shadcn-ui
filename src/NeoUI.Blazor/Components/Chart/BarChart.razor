@@ -29,7 +29,7 @@
     {
         var option = new EChartsOption
         {
-            Grid    = _grid    != null ? BuildGrid()    : null,
+            Grid    = BuildGrid(),
             Legend  = _legend  != null ? BuildLegend()  : null,
             Tooltip = _tooltip != null ? BuildTooltip() : null,
             XAxis   = BuildXAxis(_xAxis != null),
@@ -50,10 +50,14 @@
     {
         var xAxis = _xAxis ?? new XAxis();
         var axis = BuildAxis(xAxis, null, true);
-        
+
         if (!show)
-            axis.Show = false;
-        
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+
         // For vertical bars, X is category; for horizontal, X is value
         if (Layout == BarLayout.Vertical)
         {
@@ -74,10 +78,14 @@
     {
         var yAxis = _yAxis ?? new YAxis();
         var axis = BuildAxis(null, yAxis, false);
-        
+
         if (!show)
-            axis.Show = false;
-        
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+
         // For horizontal bars, Y is category
         if (Layout == BarLayout.Horizontal)
         {
