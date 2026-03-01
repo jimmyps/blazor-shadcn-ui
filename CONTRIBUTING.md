@@ -25,7 +25,7 @@ If you find a bug or have a feature request, please create an issue on GitHub:
 
 ### Prerequisites
 
-- **.NET 8 SDK** or later
+- **.NET 10 SDK** or later
 - **Git** for version control
 - **IDE**: Visual Studio 2022, VS Code, or Rider (recommended)
 - **Tailwind CSS standalone CLI** (included in demo app, no Node.js required)
@@ -35,8 +35,8 @@ If you find a bug or have a feature request, please create an issue on GitHub:
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/blazorui-net/ui.git
-cd ui
+git clone https://github.com/jimmyps/blazor-shadcn-ui.git
+cd blazor-shadcn-ui
 ```
 
 2. **Build the solution:**
@@ -90,11 +90,11 @@ NeoUI.Blazor/
 
 ### Technology Stack
 
-- **.NET 8 (LTS)** - Target framework
+- **.NET 10** - Target framework
 - **Blazor** - Supports Server, WebAssembly, and Hybrid hosting models
 - **Tailwind CSS** - Utility-first CSS framework (standalone CLI, no Node.js required)
 - **CSS Variables** - Runtime theme switching
-- **Lucide Icons** - 1000+ beautiful, consistent icons
+- **Lucide Icons** - 1,640+ beautiful, consistent icons
 
 For detailed technical architecture, see [.devflow/architecture.md](../.devflow/architecture.md)
 
