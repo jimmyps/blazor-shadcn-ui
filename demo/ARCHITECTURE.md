@@ -21,7 +21,7 @@ This document explains the refactored demo project structure that supports both 
 - NeoUI.Icons.Heroicons
 - NeoUI.Icons.Feather
 
-**Target Framework**: net8.0
+**Target Framework**: net10.0
 
 ### 2. NeoUI.Demo.Client (Blazor WebAssembly)
 **Purpose**: Standalone WebAssembly-only application.
@@ -39,7 +39,7 @@ This document explains the refactored demo project structure that supports both 
 - Uses InteractiveWebAssembly render mode
 - No duplicate static assets (references from Shared and Component libraries)
 
-**Target Framework**: net8.0
+**Target Framework**: net10.0
 
 ### 3. NeoUI.Demo (Blazor Web App - Auto Mode)
 **Purpose**: Hybrid application using Auto rendering (Server-first, then WebAssembly).
@@ -60,7 +60,7 @@ This document explains the refactored demo project structure that supports both 
 - Manages Tailwind CSS build process
 - Serves static assets for both render modes
 
-**Target Framework**: net8.0
+**Target Framework**: net10.0
 
 ## How It Works
 
