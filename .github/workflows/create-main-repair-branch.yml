@@ -56,7 +56,11 @@ Applies all content changes from PR #137 on top of the phase 1 rename commit:
 - Tailwind CSS pipeline: exe → npm
 - CI/CD workflows updated"
 
+      - name: Fetch origin/main for Phase 3
+        run: git fetch origin main:refs/remotes/origin/main
+
       - name: Phase 3 — catch-up squash to origin/main
+        shell: bash
         run: |
           comm -23 <(git ls-files | sort) <(git ls-tree -r --name-only origin/main | sort) \
             | xargs -d '\n' git rm -f --
