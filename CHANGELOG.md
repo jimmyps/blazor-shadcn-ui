@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-3 – NavigationMenu: Hover Sensitivity & Trigger Interaction Fixes
+
+> **Primitive change.** Affects `NavigationMenuTriggerPrimitive` and `NavigationMenuContext` in `NeoUI.Blazor.Primitives`, and `NavigationMenuTrigger` in `NeoUI.Blazor`. No breaking changes to public APIs.
+
+---
+
+### 🐛 Feature: Open delay on hover to prevent accidental menu activation
+
+`NavigationMenuContext` previously opened the menu immediately on `mouseenter`. A cursor simply passing across the nav bar was enough to pop open a panel. A new `ScheduleOpen(string value)` method (mirroring the existing `ScheduleClose`) now applies a configurable delay before activating an item:
+
+- If **no menu is currently open**, activation is deferred by `OpenDelay` ms (default `200`).
+- If a menu **is already open** (user deliberately moving between triggers), the switch happens **immediately** to keep navigation responsive.
+- `CancelOpenTimer()` is called on `mouseleave` so a quick cursor pass-through never opens anything.
+
+A new `OpenDelay` property on `NavigationMenuContext` (default `200`) is wired to the existing `DelayDuration` parameter on `NavigationMenuRoot` — this parameter was previously defined but never applied.
+
+---
+
+### 🐛 Fix: Active trigger no longer closes its own menu on click
+
+`HandleClick` in `NavigationMenuTriggerPrimitive` previously toggled the menu closed when clicking an already-open trigger, making it easy to accidentally dismiss the panel. The handler is now a no-op when `IsActive` is true — clicks only open, never close.
+
+---
+
 ## 2026-3-1 – Chart System: Opt-In Primitives Model (#140)
 
 > **Library change.** Affects `NeoUI.Blazor` chart components and all chart demo pages. No breaking changes to the public API — all previous charts continue to render; the defaults are now explicit rather than implicit.

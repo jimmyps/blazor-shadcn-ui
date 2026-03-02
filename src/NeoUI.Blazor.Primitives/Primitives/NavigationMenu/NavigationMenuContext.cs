@@ -47,7 +47,14 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
     private readonly List<string> _items = new();
     private readonly object _lock = new();
     private System.Threading.Timer? _closeTimer;
+    private System.Threading.Timer? _openTimer;
     private bool _disposed;
+
+    /// <summary>
+    /// Delay in milliseconds before opening menu after mouse enter.
+    /// Default is 200ms.
+    /// </summary>
+    public int OpenDelay { get; set; } = 200;
 
     /// <summary>
     /// Delay in milliseconds before closing menu after mouse leave.
@@ -163,6 +170,42 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
             // Don't update PreviousActiveValue - keep it for motion direction
             state.ActiveValue = string.Empty;
         });
+    }
+
+    /// <summary>
+    /// Schedules opening the specified item after the open delay.
+    /// If a menu is already open, switches immediately (cursor moving between triggers).
+    /// Call CancelOpenTimer on mouse leave to prevent opening if cursor just passed through.
+    /// </summary>
+    /// <param name="value">The value of the item to open.</param>
+    public void ScheduleOpen(string value)
+    {
+        CancelOpenTimer();
+        CancelCloseTimer();
+
+        // If already open, switch immediately — user is intentionally moving between items
+        if (!string.IsNullOrEmpty(State.ActiveValue))
+        {
+            SetActiveItem(value);
+            return;
+        }
+
+        _openTimer = new System.Threading.Timer(_ =>
+        {
+            if (!_disposed)
+            {
+                SetActiveItem(value);
+            }
+        }, null, OpenDelay, System.Threading.Timeout.Infinite);
+    }
+
+    /// <summary>
+    /// Cancels any pending open operation.
+    /// </summary>
+    public void CancelOpenTimer()
+    {
+        _openTimer?.Dispose();
+        _openTimer = null;
     }
 
     /// <summary>
@@ -285,6 +328,7 @@ public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuSt
     public void Dispose()
     {
         _disposed = true;
+        _openTimer?.Dispose();
         _closeTimer?.Dispose();
     }
 }

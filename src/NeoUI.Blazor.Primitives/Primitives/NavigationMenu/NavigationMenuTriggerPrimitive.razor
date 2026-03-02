@@ -64,11 +64,7 @@
 
     private void HandleClick()
     {
-        if (IsActive)
-        {
-            Context.ClearActiveItem();
-        }
-        else
+        if (!IsActive)
         {
             Context.SetActiveItem(ItemContext.Value);
         }
@@ -76,13 +72,12 @@
 
     private void HandleMouseEnter()
     {
-        // Cancel any pending close and activate this item
-        Context.SetActiveItem(ItemContext.Value);
+        Context.ScheduleOpen(ItemContext.Value);
     }
 
     private void HandleMouseLeave()
     {
-        // Only schedule close if this trigger is currently active
+        Context.CancelOpenTimer();
         if (IsActive)
         {
             Context.ScheduleClose();
