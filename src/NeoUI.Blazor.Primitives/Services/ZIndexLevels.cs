@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Defines the z-index hierarchy for portal-based components.

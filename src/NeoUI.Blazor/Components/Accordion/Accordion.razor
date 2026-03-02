@@ -1,13 +1,10 @@
-@namespace BlazorUI.Components.Accordion
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Accordion
-
+@namespace NeoUI.Blazor
 @*
     Styled Accordion component wrapper.
     Wraps the Accordion primitive with shadcn/ui styling.
 *@
 
-<BlazorUI.Primitives.Accordion.Accordion Value="@Value"
+<AccordionPrimitive Value="@Value"
                                               ValueChanged="@ValueChanged"
                                               DefaultValue="@DefaultValue"
                                               OnValueChange="@OnValueChange"
@@ -15,7 +12,7 @@
                                               Collapsible="@Collapsible"
                                               class="@CssClass">
     @ChildContent
-</BlazorUI.Primitives.Accordion.Accordion>
+</AccordionPrimitive>
 
 @code {
     /// <summary>

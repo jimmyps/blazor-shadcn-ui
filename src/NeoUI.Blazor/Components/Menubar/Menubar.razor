@@ -1,15 +1,13 @@
-﻿@namespace BlazorUI.Components.Menubar
-@using BlazorUI.Primitives.Menubar
-
+@namespace NeoUI.Blazor
 @* Styled Menubar component - thin wrapper around Menubar primitive *@
-<BlazorUI.Primitives.Menubar.MenubarRoot class="@CssClass"
+<MenubarRootPrimitive class="@CssClass"
                                           ActiveIndex="@ActiveIndex"
                                           ActiveIndexChanged="@ActiveIndexChanged"
                                           DefaultActiveIndex="@DefaultActiveIndex"
                                           OnActiveIndexChange="@OnActiveIndexChange"
                                           Loop="@Loop">
     @ChildContent
-</BlazorUI.Primitives.Menubar.MenubarRoot>
+</MenubarRootPrimitive>
 
 @code {
     /// <summary>

@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Interface for managing dropdown components globally to ensure only one can be open at a time.

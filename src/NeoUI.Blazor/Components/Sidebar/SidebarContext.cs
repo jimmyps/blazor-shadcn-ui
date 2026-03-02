@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Sidebar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents the variant style of the sidebar.

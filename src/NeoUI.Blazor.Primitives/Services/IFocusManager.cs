@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Service for managing focus within components, including focus trapping for modal dialogs.

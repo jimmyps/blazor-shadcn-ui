@@ -21,7 +21,7 @@ A **declarative, strongly-typed animation system** for Blazor that wraps the [Mo
 Add to your `_Imports.razor`:
 
 ```razor
-@using BlazorUI.Components.Motion
+@using NeoUI.Blazor
 ```
 
 That's it! The Motion.dev library loads automatically on first use.
@@ -197,7 +197,7 @@ All entry presets support custom easing via `Easing` parameter!
 ### List & Grid Animations
 
 - `<ListItemEnter />` - Polished list item entry
-- `<GridItemEnter />` - Grid item entry with scale
+- `<GridItemEnter />` - DataGrid item entry with scale
 
 ### Scroll-Based Animations
 
@@ -340,7 +340,7 @@ To force animations even with reduced motion preference:
 }
 ```
 
-### Staggered Grid with Different Easings
+### Staggered DataGrid with Different Easings
 
 ```razor
 <Motion Trigger="@MotionTrigger.OnAppear" StaggerChildren="0.1">
@@ -523,6 +523,6 @@ Motion.dev maps our 27 easing functions to its built-in easing names. Some compl
 
 ## License
 
-This component is part of BlazorUI and is licensed under the MIT License.
+This component is part of NeoUI and is licensed under the MIT License.
 
 Motion.dev is licensed separately - see [motion.dev](https://motion.dev) for details.

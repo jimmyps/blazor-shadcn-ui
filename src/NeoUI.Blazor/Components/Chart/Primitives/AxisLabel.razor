@@ -1,4 +1,4 @@
-@namespace BlazorUI.Components.Chart
+@namespace NeoUI.Blazor.Charts
 
 @code {
     [CascadingParameter] private IAxisParent? Parent { get; set; }
@@ -108,9 +108,6 @@
     
     protected override void OnInitialized()
     {
-        if (Parent != null)
-        {
-            try { Parent.RegisterAxisLabel(this); } catch { }
-        }
+        Parent?.RegisterAxisLabel(this);
     }
 }

@@ -1,13 +1,11 @@
-@namespace BlazorUI.Components.DropdownMenu
-@using BlazorUI.Primitives.DropdownMenu
-
+@namespace NeoUI.Blazor
 @* Styled DropdownMenuItem - wrapper with shadcn Tailwind classes *@
-<BlazorUI.Primitives.DropdownMenu.DropdownMenuItem class="@CssClass"
+<DropdownMenuItemPrimitive class="@CssClass"
                                                          Disabled="@Disabled"
                                                          OnClick="@OnClick"
                                                          CloseOnSelect="@CloseOnSelect">
     @ChildContent
-</BlazorUI.Primitives.DropdownMenu.DropdownMenuItem>
+</DropdownMenuItemPrimitive>
 
 @code {
     /// <summary>

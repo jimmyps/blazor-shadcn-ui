@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.DataTable;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the row selection behavior for a data table.

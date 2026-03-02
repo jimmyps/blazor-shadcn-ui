@@ -1,4 +1,4 @@
-@namespace BlazorUI.Primitives.Table
+@namespace NeoUI.Blazor.Primitives
 @typeparam TData
 
 @if (PaginationTemplate != null)
@@ -57,7 +57,7 @@ else
                     Items per page:
                     <select @onchange="HandlePageSizeChangeEvent"
                             value="@State.PageSize"
-                            aria-label="Select page size">
+                            aria-label="SelectPrimitive page size">
                         @foreach (var size in PageSizeOptions)
                         {
                             <option value="@size">@size</option>
@@ -83,4 +83,3 @@ else
         }
     }
 }
-

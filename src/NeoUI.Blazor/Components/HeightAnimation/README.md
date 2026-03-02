@@ -15,7 +15,7 @@ A reusable Blazor component that provides smooth height transitions for dynamic 
 ### Basic Example
 
 ```razor
-@using BlazorUI.Components.HeightAnimation
+@using NeoUI.Blazor
 
 <HeightAnimation Config="@_config">
     <Command OnSelect="@HandleSelect">
@@ -161,7 +161,7 @@ Add overflow styles to your content element:
 
 ## Example: Spotlight Command Palette
 
-See `demo/BlazorUI.Demo/Shared/SpotlightCommandPalette.razor` for a complete example of using HeightAnimation with a Command component.
+See `demo/NeoUI.Demo/Shared/SpotlightCommandPalette.razor` for a complete example of using HeightAnimation with a Command component.
 
 ## Troubleshooting
 

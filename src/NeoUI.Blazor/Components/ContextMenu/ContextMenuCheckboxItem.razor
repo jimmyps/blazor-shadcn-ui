@@ -1,7 +1,7 @@
-@namespace BlazorUI.Components.ContextMenu
+@namespace NeoUI.Blazor
 
 @* ContextMenuCheckboxItem - styled checkbox menu item *@
-<BlazorUI.Primitives.ContextMenu.ContextMenuCheckboxItem Disabled="@Disabled"
+<ContextMenuCheckboxItemPrimitive Disabled="@Disabled"
                                                          Checked="@Checked"
                                                          CheckedChanged="@OnCheckedChanged"
                                                          OnCheckedChange="@OnCheckedChange"
@@ -26,7 +26,7 @@
         }
     </span>
     <span>@ChildContent</span>
-</BlazorUI.Primitives.ContextMenu.ContextMenuCheckboxItem>
+</ContextMenuCheckboxItemPrimitive>
 
 @code {
     /// <summary>

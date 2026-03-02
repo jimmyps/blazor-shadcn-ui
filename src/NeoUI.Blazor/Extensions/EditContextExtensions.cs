@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Forms;
 
-namespace BlazorUI.Components.Extensions;
+namespace NeoUI.Blazor.Extensions;
 
 /// <summary>
 /// Extension methods for EditContext to enhance validation behavior.

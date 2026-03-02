@@ -1,14 +1,12 @@
-using BlazorUI.Components.Common;
-using BlazorUI.Components.Utilities;
-using BlazorUI.Components.Extensions;
-using BlazorUI.Components.Validation;
+using NeoUI.Blazor.Extensions;
+using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.Input;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An input component that follows the shadcn/ui design system.
@@ -549,7 +547,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
             {
                 // Import the input module
                 _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+                    "import", "./_content/NeoUI.Blazor/js/input.js");
 
                 // Create DotNetObjectReference for callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);

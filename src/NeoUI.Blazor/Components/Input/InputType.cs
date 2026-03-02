@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Input;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the type of input for an Input component.

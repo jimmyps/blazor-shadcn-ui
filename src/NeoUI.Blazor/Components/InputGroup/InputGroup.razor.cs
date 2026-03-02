@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.InputGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A container component that groups input controls with additional content like icons, buttons, and text.

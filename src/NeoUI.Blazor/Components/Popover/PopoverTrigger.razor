@@ -1,14 +1,12 @@
-@namespace BlazorUI.Components.Popover
-@using BlazorUI.Primitives.Popover
-
+@namespace NeoUI.Blazor
 @* Styled PopoverTrigger wrapper - just passes through to primitive *@
 
-<BlazorUI.Primitives.Popover.PopoverTrigger AsChild="@AsChild"
+<PopoverTriggerPrimitive AsChild="@AsChild"
                                                    OnClick="@OnClick"
                                                    CustomClickHandling="@CustomClickHandling"
                                                    @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.Popover.PopoverTrigger>
+</PopoverTriggerPrimitive>
 
 @code {
     [Parameter]

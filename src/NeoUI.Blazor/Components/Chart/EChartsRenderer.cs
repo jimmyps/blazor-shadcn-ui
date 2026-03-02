@@ -2,7 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// ECharts renderer implementation (SVG-based).
@@ -37,7 +37,7 @@ public class EChartsRenderer : IChartRenderer
         Console.WriteLine("[EChartsRenderer] InitializeAsync called");
         
         _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/NeoBlazorUI.Components/js/echarts-renderer.js");
+            "import", "./_content/NeoUI.Blazor/js/echarts-renderer.js");
         Console.WriteLine("[EChartsRenderer] JS module loaded");
         
         // Serialize config with camelCase to ensure JavaScript property names match ECharts expectations
@@ -126,13 +126,13 @@ public class EChartsRenderer : IChartRenderer
     }
     
     /// <summary>
-    /// Maps BlazorUI theme configuration to ECharts theme format.
+    /// Maps NeoUI theme configuration to ECharts theme format.
     /// </summary>
-    /// <param name="theme">The BlazorUI theme to convert.</param>
+    /// <param name="theme">The NeoUI theme to convert.</param>
     /// <returns>An ECharts-compatible theme object.</returns>
     private object MapToEChartsTheme(ChartTheme theme)
     {
-        // Map BlazorUI theme to ECharts theme JSON format
+        // Map NeoUI theme to ECharts theme JSON format
         return new
         {
             color = theme.ChartColors,

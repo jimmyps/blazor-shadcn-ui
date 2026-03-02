@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Menubar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Interface for menubar items to support keyboard navigation.

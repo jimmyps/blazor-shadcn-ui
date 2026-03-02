@@ -1,5 +1,4 @@
-@namespace BlazorUI.Components.Chart
-@using BlazorUI.Components.Chart.Internal
+@namespace NeoUI.Blazor.Charts
 @typeparam TData
 @inherits ChartBase<TData>
 @implements IRadarChartParent
@@ -282,7 +281,7 @@
     }
 
     
-    public void RegisterTooltip(Tooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
+    public void RegisterChartTooltip(ChartTooltip tooltip) { _tooltip = tooltip; StateHasChanged(); }
     public void RegisterLegend(Legend legend) { _legend = legend; StateHasChanged(); }
 
 }

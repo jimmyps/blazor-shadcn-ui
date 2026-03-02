@@ -14,7 +14,7 @@ A wrapper component that maintains a fixed aspect ratio for its children. Common
 ### Basic Example (16:9 Video)
 
 ```razor
-@using BlazorUI.Components.AspectRatio
+@using NeoUI.Blazor
 
 <AspectRatio Ratio="16.0/9.0">
     <video src="video.mp4" class="w-full h-full object-cover" />

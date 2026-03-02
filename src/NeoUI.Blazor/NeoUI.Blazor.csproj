@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoWarn>$(NoWarn);RZ1042</NoWarn>
+    <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+
+    <!-- NuGet Package Configuration -->
+    <PackageId>NeoUI.Blazor</PackageId>
+    <AssemblyName>NeoUI.Blazor</AssemblyName>
+    <RootNamespace>NeoUI.Blazor</RootNamespace>
+    <Description>Over 75+ pre-styled Blazor components built with shadcn/ui design and Tailwind CSS with full .NET 10 support. Beautiful defaults that you can customize to match your brand.</Description>
+    <PackageTags>blazor;ui;components;shadcn;tailwind;styled;design-system</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- <PackageIcon>icon.png</PackageIcon> -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/jimmyps/blazor-shadcn-ui</RepositoryUrl>
+    <Authors>Jimmy Petrus</Authors>
+    <Copyright>Copyright (c) 2025-present Jimmy Petrus</Copyright>
+
+    <!-- MinVer Configuration - Version from git tags -->
+    <MinVerTagPrefix>components/v</MinVerTagPrefix>
+    <MinVerDefaultPreReleaseIdentifiers>beta.0</MinVerDefaultPreReleaseIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
+    <PackageReference Include="Markdig" Version="0.37.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.2" />
+    <PackageReference Include="MinVer" Version="5.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- Use ProjectReference for local development, PackageReference for packing -->
+  <ItemGroup Condition="'$(UsePackageReferences)' != 'true'">
+    <ProjectReference Include="..\NeoUI.Icons.Lucide\NeoUI.Icons.Lucide.csproj" />
+    <ProjectReference Include="..\NeoUI.Blazor.Primitives\NeoUI.Blazor.Primitives.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePackageReferences)' == 'true'">
+    <PackageReference Include="NeoUI.Icons.Lucide" Version="3.0.0-rc.1" />
+    <PackageReference Include="NeoUI.Blazor.Primitives" Version="3.0.0-rc.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="package.json" />
+    <Content Remove="package-lock.json" />
+    <Content Remove="node_modules\**" />
+  </ItemGroup>
+
+  <!-- Build Tailwind CSS before packing (local dev only; components.css is pre-committed for CI/NuGet) -->
+  <Target Name="NpmInstall" BeforeTargets="BeforeBuild;BeforeRebuild" Condition="'$(CI)' != 'true' AND !Exists('$(MSBuildProjectDirectory)\node_modules')">
+    <Message Text="Restoring npm packages..." Importance="high" />
+    <Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+  <Target Name="BuildNeoUICSS" BeforeTargets="BeforeBuild;BeforeRebuild" DependsOnTargets="NpmInstall" Condition="'$(CI)' != 'true'">
+    <Message Text="Building NeoUI Tailwind CSS..." Importance="high" />
+    <Exec Command="npm run build:css" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+
+</Project>

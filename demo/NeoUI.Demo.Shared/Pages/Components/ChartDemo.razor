@@ -1,58 +1,268 @@
 @page "/components/chart"
-@using BlazorUI.Components.Chart
-@using BlazorUI.Components.Card
-@using BlazorUI.Components.Tabs
-@using BlazorUI.Demo.Shared.Pages.Components.Charts
+@using NeoUI.Blazor.Charts
 
-<PageTitle>Chart Components - BlazorUI</PageTitle>
+<PageTitle>Chart - NeoUI</PageTitle>
 
-<div class="space-y-8 max-w-6xl">
-    <div>
-        <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">Charts</h1>
-            <p class="text-xl text-muted-foreground">
-                Beautifully designed. Copy and paste into your apps. Open Source.
-            </p>
-        </div>
+<div class="space-y-10 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Chart"
+        Description="Beautiful data visualizations built on Apache ECharts. Declarative, theme-aware, and composable." />
+
+    <p class="text-muted-foreground leading-relaxed">
+        NeoUI Charts provide 8 chart types through a Recharts-inspired declarative API rendered via
+        Apache ECharts SVG. Charts automatically pick up your theme's CSS variables — including
+        dark mode — with no extra configuration required.
+    </p>
+
+    <!-- Chart type quick-nav -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        @foreach (var entry in ComponentRegistry.All.Where(e => e.Tier == ComponentTier.Component && e.Category == ComponentCategories.Charts && e.IsSubPage))
+        {
+            <a href="/@entry.Route"
+               class="group flex flex-col gap-1.5 rounded-lg border p-3 hover:border-primary hover:bg-accent transition-colors no-underline">
+                <div class="flex items-center gap-2">
+                    <LucideIcon Name="@entry.Icon" Size="16" Class="text-primary" />
+                    <span class="text-sm font-medium group-hover:text-primary">@entry.Title</span>
+                </div>
+                <span class="text-xs text-muted-foreground leading-tight line-clamp-2">@entry.Description</span>
+            </a>
+        }
     </div>
 
-    <Tabs DefaultValue="area">
-        <TabsList Class="grid w-full m-0 grid-cols-7 lg:w-auto lg:grid-cols-7">
-            <TabsTrigger Value="area">Area</TabsTrigger>
-            <TabsTrigger Value="bar">Bar</TabsTrigger>
-            <TabsTrigger Value="line">Line</TabsTrigger>
-            <TabsTrigger Value="pie">Pie</TabsTrigger>
-            <TabsTrigger Value="scatter">Scatter</TabsTrigger>
-            <TabsTrigger Value="radar">Radar</TabsTrigger>
-            <TabsTrigger Value="composed">Composed</TabsTrigger>
-        </TabsList>
+    <!-- Component Model -->
+    <DemoSection
+        Title="Component Model"
+        Description="Charts use a four-layer declarative composition. You pick only the layers you need.">
+        <div class="rounded-lg border overflow-hidden">
+            <div class="p-4 bg-muted/30 font-mono text-sm leading-relaxed space-y-1">
+                <p><span class="font-semibold text-foreground">Chart Root</span> <span class="text-muted-foreground">— BarChart, LineChart, AreaChart, PieChart, ScatterChart, RadarChart, RadialBarChart, ComposedChart</span></p>
+                <p class="pl-6"><span class="font-semibold text-foreground">Primitives</span> <span class="text-muted-foreground">— Grid, XAxis, YAxis, ChartTooltip, Legend, RadarGrid, PolarGrid, CenterLabel</span></p>
+                <p class="pl-6"><span class="font-semibold text-foreground">Series</span> <span class="text-muted-foreground">— Bar, Line, Area, Pie, Scatter, Radar, RadialBar</span></p>
+                <p class="pl-6"><span class="font-semibold text-foreground">Fill / Paint</span> <span class="text-muted-foreground">— Fill, LinearGradient, Stop</span></p>
+            </div>
+        </div>
+        <Alert Variant="AlertVariant.Info">
+            <AlertDescription>
+                Charts are not wrapped — you write Recharts-style Razor markup directly. When a new feature is needed, add the relevant primitive rather than waiting for a wrapper parameter.
+            </AlertDescription>
+        </Alert>
+    </DemoSection>
 
-        <TabsContent Value="line" Class="space-y-8">
-            <LineChartExamples />
-        </TabsContent>
+    <!-- Your First Chart -->
+    <DemoSection Title="Your First Chart">
 
-        <TabsContent Value="area" Class="space-y-8">
-            <AreaChartExamples />
-        </TabsContent>
+        <!-- Step 1 — data -->
+        <div class="space-y-3">
+            <div>
+                <h3 class="font-semibold text-base">1. Define your data</h3>
+                <p class="text-sm text-muted-foreground mt-1">
+                    Data can be any <code class="text-xs bg-muted px-1 py-0.5 rounded">IEnumerable&lt;T&gt;</code>.
+                    Use the <code class="text-xs bg-muted px-1 py-0.5 rounded">DataKey</code> parameter on series components to map properties.
+                </p>
+            </div>
+            <div class="relative rounded-lg border overflow-hidden">
+                <ScrollArea ShowHorizontalScrollbar="true" ShowVerticalScrollbar="false" EnableScrollShadows="true">
+                    <pre class="p-4 text-sm bg-muted/30 font-mono leading-relaxed"><code>@((MarkupString)_dataSnippetHighlighted)</code></pre>
+                </ScrollArea>
+                <DemoCopyButton Text="@_dataSnippetCode" Class="absolute top-2 right-2" />
+            </div>
+        </div>
 
-        <TabsContent Value="bar" Class="space-y-8">
-            <BarChartExamples />
-        </TabsContent>
+        <!-- Step 2 — build your chart -->
+        <div class="space-y-3">
+            <div>
+                <h3 class="font-semibold text-base">2. Build your chart</h3>
+                <p class="text-sm text-muted-foreground mt-1">
+                    Wrap a <code class="text-xs bg-muted px-1 py-0.5 rounded">ChartContainer</code> around your chart root and pass
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">Data</code>.
+                    Setting a <code class="text-xs bg-muted px-1 py-0.5 rounded">Height</code> is required for responsive sizing.
+                </p>
+            </div>
+            <DemoBlock Code="@_step2Code">
+                <ChartContainer Height="250" Class="w-full">
+                    <BarChart Data="@_chartData">
+                        <Bar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Radius="4" />
+                        <Bar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Radius="4" />
+                    </BarChart>
+                </ChartContainer>
+            </DemoBlock>
+        </div>
 
-        <TabsContent Value="pie" Class="space-y-8">
-            <PieChartExamples />
-        </TabsContent>
+        <!-- Step 3 — add grid -->
+        <div class="space-y-3">
+            <div>
+                <h3 class="font-semibold text-base">3. Add a grid</h3>
+                <p class="text-sm text-muted-foreground mt-1">
+                    Add <code class="text-xs bg-muted px-1 py-0.5 rounded">&lt;Grid&gt;</code> inside the chart root.
+                    Use <code class="text-xs bg-muted px-1 py-0.5 rounded">Vertical="false"</code> for horizontal-only lines, matching the shadcn/ui chart style.
+                </p>
+            </div>
+            <DemoBlock Code="@_step3Code">
+                <ChartContainer Height="250" Class="w-full">
+                    <BarChart Data="@_chartData">
+                        <Grid Vertical="false" Stroke="var(--border)" />
+                        <Bar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Radius="4" />
+                        <Bar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Radius="4" />
+                    </BarChart>
+                </ChartContainer>
+            </DemoBlock>
+        </div>
 
-        <TabsContent Value="scatter" Class="space-y-8">
-            <ScatterChartExamples />
-        </TabsContent>
+        <!-- Step 4 — add axis -->
+        <div class="space-y-3">
+            <div>
+                <h3 class="font-semibold text-base">4. Add an axis</h3>
+                <p class="text-sm text-muted-foreground mt-1">
+                    Add <code class="text-xs bg-muted px-1 py-0.5 rounded">&lt;XAxis DataKey="month"&gt;</code> to label the category axis.
+                    Nest <code class="text-xs bg-muted px-1 py-0.5 rounded">&lt;AxisLabel&gt;</code> to style the tick labels independently.
+                </p>
+            </div>
+            <DemoBlock Code="@_step4Code">
+                <ChartContainer Height="250" Class="w-full">
+                    <BarChart Data="@_chartData">
+                        <Grid Vertical="false" Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <Bar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Radius="4" />
+                        <Bar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Radius="4" />
+                    </BarChart>
+                </ChartContainer>
+            </DemoBlock>
+        </div>
 
-        <TabsContent Value="radar" Class="space-y-8">
-            <RadarChartExamples />
-        </TabsContent>
+        <!-- Step 5 — add tooltip -->
+        <div class="space-y-3">
+            <div>
+                <h3 class="font-semibold text-base">5. Add a tooltip</h3>
+                <p class="text-sm text-muted-foreground mt-1">
+                    Add <code class="text-xs bg-muted px-1 py-0.5 rounded">&lt;ChartTooltip&gt;</code> to show values on hover.
+                    Hover over the chart below to see it in action.
+                </p>
+            </div>
+            <DemoBlock Code="@_step5Code">
+                <ChartContainer Height="250" Class="w-full">
+                    <BarChart Data="@_chartData">
+                        <Grid Vertical="false" Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <ChartTooltip />
+                        <Bar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Radius="4" />
+                        <Bar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Radius="4" />
+                    </BarChart>
+                </ChartContainer>
+            </DemoBlock>
+        </div>
 
-        <TabsContent Value="composed" Class="space-y-8">
-            <ComposedChartExamples />
-        </TabsContent>
-    </Tabs>
+        <!-- Step 6 — add legend -->
+        <div class="space-y-3">
+            <div>
+                <h3 class="font-semibold text-base">6. Add a legend</h3>
+                <p class="text-sm text-muted-foreground mt-1">
+                    Add <code class="text-xs bg-muted px-1 py-0.5 rounded">&lt;Legend&gt;</code> to identify series.
+                    Labels come from the <code class="text-xs bg-muted px-1 py-0.5 rounded">Name</code> parameter on each series component.
+                    Your first chart is complete!
+                </p>
+            </div>
+            <DemoBlock Code="@_step6Code">
+                <ChartContainer Height="250" Class="w-full">
+                    <BarChart Data="@_chartData">
+                        <Grid Vertical="false" Stroke="var(--border)" />
+                        <XAxis DataKey="month" Color="var(--border)">
+                            <AxisLabel Color="var(--muted-foreground)" />
+                        </XAxis>
+                        <ChartTooltip />
+                        <Legend TextColor="var(--foreground)" />
+                        <Bar DataKey="desktop" Name="Desktop" Color="var(--chart-1)" Radius="4" />
+                        <Bar DataKey="mobile" Name="Mobile" Color="var(--chart-2)" Radius="4" />
+                    </BarChart>
+                </ChartContainer>
+            </DemoBlock>
+        </div>
+
+    </DemoSection>
+
+    <!-- Theming -->
+    <DemoSection
+        Title="Theming"
+        Description="Charts read color tokens directly from your CSS theme. Dark mode and theme switching work automatically.">
+        <div class="space-y-4">
+            <p class="text-sm text-muted-foreground">
+                Use <code class="text-xs bg-muted px-1 py-0.5 rounded">Color="var(--chart-N)"</code> on any series component.
+                Five semantic chart tokens are predefined in the component library's base theme and adapt to light/dark mode.
+            </p>
+            <div class="flex flex-wrap gap-3">
+                @for (var n = 1; n <= 5; n++)
+                {
+                    var token = $"--chart-{n}";
+                    <div class="flex items-center gap-2 rounded-md border px-3 py-2">
+                        <span class="h-4 w-4 rounded-sm flex-shrink-0" style="background:var(@token)"></span>
+                        <code class="text-xs font-mono">var(@token)</code>
+                    </div>
+                }
+            </div>
+            <div class="relative rounded-lg border overflow-hidden">
+                <ScrollArea ShowHorizontalScrollbar="true" ShowVerticalScrollbar="false" EnableScrollShadows="true">
+                    <pre class="p-4 text-sm bg-muted/30 font-mono leading-relaxed"><code>@((MarkupString)_themingHighlighted)</code></pre>
+                </ScrollArea>
+                <DemoCopyButton Text="@_themingCode" Class="absolute top-2 right-2" />
+            </div>
+            <Alert Variant="AlertVariant.Muted">
+                <AlertDescription>
+                    You can also pass any valid CSS color directly: <code class="text-xs bg-muted px-1 py-0.5 rounded">Color="#2563eb"</code>,
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">Color="hsl(220 98% 61%)"</code>, or
+                    <code class="text-xs bg-muted px-1 py-0.5 rounded">Color="oklch(0.65 0.22 41)"</code>.
+                </AlertDescription>
+            </Alert>
+        </div>
+    </DemoSection>
+
+    <!-- Tooltip Reference -->
+    <DemoSection
+        Title="Tooltip"
+        Description="&lt;ChartTooltip&gt; supports several display modes and an optional JavaScript formatter function.">
+        <DemoPropsTable Rows="@_tooltipProps" />
+    </DemoSection>
+
+    <!-- Legend Reference -->
+    <DemoSection
+        Title="Legend"
+        Description="&lt;Legend&gt; renders series labels below the chart. Colors are sourced automatically from each series.">
+        <DemoPropsTable Rows="@_legendProps" />
+    </DemoSection>
+
+    <!-- ChartContainer Reference -->
+    <DemoSection
+        Title="ChartContainer"
+        Description="Required wrapper around every chart root. Sets height and provides responsive sizing.">
+        <DemoPropsTable Rows="@_containerProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
 </div>
+
+@code {
+    private record ChartPoint(string month, int desktop, int mobile);
+
+    private static readonly List<ChartPoint> _chartData =
+    [
+        new("Jan", 186, 80),
+        new("Feb", 305, 200),
+        new("Mar", 237, 120),
+        new("Apr", 273, 190),
+        new("May", 209, 130),
+        new("Jun", 214, 140),
+    ];
+
+    private string _dataSnippetHighlighted = string.Empty;
+    private string _themingHighlighted = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _dataSnippetHighlighted = CodeHighlighter.Highlight(_dataSnippetCode);
+        _themingHighlighted = CodeHighlighter.Highlight(_themingCode);
+    }
+}

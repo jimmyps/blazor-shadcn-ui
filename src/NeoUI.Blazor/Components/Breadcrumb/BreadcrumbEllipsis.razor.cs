@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Breadcrumb;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An ellipsis component for breadcrumb items to indicate collapsed items.

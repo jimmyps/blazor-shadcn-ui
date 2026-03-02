@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace BlazorUI.Components.Chart.Internal;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Root ECharts option object - represents the complete configuration for an ECharts instance.
@@ -10,7 +10,7 @@ namespace BlazorUI.Components.Chart.Internal;
 public sealed class EChartsOption
 {
     /// <summary>
-    /// Grid component configuration for positioning chart elements in the cartesian coordinate system.
+    /// DataGrid component configuration for positioning chart elements in the cartesian coordinate system.
     /// </summary>
     [JsonPropertyName("grid")]
     public EChartsGrid? Grid { get; set; }
@@ -113,7 +113,7 @@ public sealed class EChartsOption
 }
 
 /// <summary>
-/// Grid component for positioning chart elements in the cartesian coordinate system.
+/// DataGrid component for positioning chart elements in the cartesian coordinate system.
 /// </summary>
 public sealed class EChartsGrid
 {

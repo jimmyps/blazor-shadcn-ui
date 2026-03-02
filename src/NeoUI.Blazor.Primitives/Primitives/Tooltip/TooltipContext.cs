@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using BlazorUI.Primitives.Contexts;
-
-namespace BlazorUI.Primitives.Tooltip;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// Holds the state for a Tooltip primitive component.
+/// Holds the state for a TooltipPrimitive primitive component.
 /// </summary>
 public class TooltipState
 {
@@ -25,7 +23,7 @@ public class TooltipState
 }
 
 /// <summary>
-/// Context for the Tooltip primitive component system.
+/// Context for the TooltipPrimitive primitive component system.
 /// Manages tooltip visibility state, timing delays, and provides scoped IDs for ARIA.
 /// </summary>
 public class TooltipContext : PrimitiveContextWithEvents<TooltipState>
@@ -59,7 +57,7 @@ public class TooltipContext : PrimitiveContextWithEvents<TooltipState>
 
     /// <summary>
     /// Signals intent to open the tooltip (without immediately updating IsOpen).
-    /// The Tooltip component will apply the delay before actually opening.
+    /// The TooltipPrimitive component will apply the delay before actually opening.
     /// </summary>
     /// <param name="triggerElement">Optional trigger element reference for positioning.</param>
     public void Open(ElementReference? triggerElement = null)
@@ -67,26 +65,26 @@ public class TooltipContext : PrimitiveContextWithEvents<TooltipState>
         UpdateState(state =>
         {
             // Store trigger element but don't change IsOpen yet
-            // The Tooltip component will handle the delay
+            // The TooltipPrimitive component will handle the delay
             if (triggerElement.HasValue)
             {
                 state.TriggerElement = triggerElement.Value;
             }
             // Set a flag to signal open intent
-            state.IsOpen = true; // This will trigger the delay logic in Tooltip component
+            state.IsOpen = true; // This will trigger the delay logic in TooltipPrimitive component
         });
     }
 
     /// <summary>
     /// Signals intent to close the tooltip (without immediately updating IsOpen).
-    /// The Tooltip component will apply the delay before actually closing.
+    /// The TooltipPrimitive component will apply the delay before actually closing.
     /// </summary>
     public void Close()
     {
         UpdateState(state =>
         {
             // Signal close intent
-            state.IsOpen = false; // This will trigger the delay logic in Tooltip component
+            state.IsOpen = false; // This will trigger the delay logic in TooltipPrimitive component
         });
     }
 
@@ -104,7 +102,7 @@ public class TooltipContext : PrimitiveContextWithEvents<TooltipState>
 
     /// <summary>
     /// Sets the trigger element reference for positioning.
-    /// This is called by TooltipTrigger to ensure the element is available
+    /// This is called by TooltipTriggerPrimitive to ensure the element is available
     /// even when the tooltip is opened programmatically.
     /// </summary>
     /// <param name="triggerElement">The trigger element reference.</param>

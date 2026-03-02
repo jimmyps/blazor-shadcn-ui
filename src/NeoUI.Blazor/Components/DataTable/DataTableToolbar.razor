@@ -1,16 +1,8 @@
-@namespace BlazorUI.Components.DataTable
+@namespace NeoUI.Blazor
 @typeparam TData where TData : class
-@using BlazorUI.Components.Input
-@using BlazorUI.Components.Button
-@using BlazorUI.Components.Popover
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Components.Checkbox
-@using BlazorUI.Components.Field
-@using BlazorUI.Primitives.Services
-
 <div class="flex items-center justify-between gap-2 py-4">
     <div class="flex flex-1 items-center gap-2">
-        <Input @bind-Value="@_searchValue"
+        <NeoUI.Blazor.Input @bind-Value="@_searchValue"
                @bind-Value:after="@HandleSearchChanged"
                Placeholder="Search..."
                Class="h-8 w-[150px] lg:w-[250px]" />
@@ -27,7 +19,7 @@
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent Class="w-[200px] p-0" Align="@PopoverAlign.Start">
-                    <div class="p-4 space-y-2">
+                    <div class="p-3 space-y-2">
                         <div class="text-sm font-medium">Filter columns</div>
                         <div class="text-xs text-muted-foreground">
                             (Column filtering UI - To be implemented in Phase 2)
@@ -47,7 +39,7 @@
                 </Button>
             </PopoverTrigger>
             <PopoverContent Class="w-[200px] p-0" Side="@PopoverSide.Bottom" Align="@PopoverAlign.End">
-                <div class="space-y-2">
+                <div class="p-3 space-y-2">
                     <div class="text-sm font-medium mb-3">Toggle columns</div>
                     @foreach (var column in Columns)
                     {

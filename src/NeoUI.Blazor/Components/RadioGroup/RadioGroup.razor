@@ -1,8 +1,6 @@
 @typeparam TValue
-@namespace BlazorUI.Components.RadioGroup
-@using BlazorUI.Primitives.RadioGroup
-
-<BlazorUI.Primitives.RadioGroup.RadioGroup TValue="TValue"
+@namespace NeoUI.Blazor
+<RadioGroupPrimitive TValue="TValue"
     Value="@Value"
     ValueChanged="@HandleValueChanged"
     Disabled="@Disabled"
@@ -12,4 +10,4 @@
     class="@CssClass"
     aria-invalid="@(IsInvalid ? "true" : null)">
     @ChildContent
-</BlazorUI.Primitives.RadioGroup.RadioGroup>
+</RadioGroupPrimitive>

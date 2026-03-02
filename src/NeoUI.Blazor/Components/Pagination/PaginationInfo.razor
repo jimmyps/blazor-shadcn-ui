@@ -1,4 +1,4 @@
-@namespace BlazorUI.Components.Pagination
+@namespace NeoUI.Blazor
 
 <div class="@CssClass">
     @if (Context?.State != null)
@@ -45,7 +45,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "flex-1 text-sm text-muted-foreground",
         Class
     );

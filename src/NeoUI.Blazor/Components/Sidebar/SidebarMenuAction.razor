@@ -1,22 +1,18 @@
-@namespace BlazorUI.Components.Sidebar
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Tooltip
-@using BlazorUI.Primitives.Services
-
+@namespace NeoUI.Blazor
 @*
     SidebarMenuAction component for action buttons/icons in menu items.
 *@
 
 @if (!string.IsNullOrEmpty(Tooltip))
 {
-    <BlazorUI.Primitives.Tooltip.Tooltip>
-        <BlazorUI.Primitives.Tooltip.TooltipTrigger>
+    <TooltipPrimitive>
+        <TooltipTriggerPrimitive>
             @RenderButton()
-        </BlazorUI.Primitives.Tooltip.TooltipTrigger>
-        <BlazorUI.Primitives.Tooltip.TooltipContent Side="@PopoverSide.Right">
+        </TooltipTriggerPrimitive>
+        <TooltipContentPrimitive Side="@PopoverSide.Right">
             <span>@Tooltip</span>
-        </BlazorUI.Primitives.Tooltip.TooltipContent>
-    </BlazorUI.Primitives.Tooltip.Tooltip>
+        </TooltipContentPrimitive>
+    </TooltipPrimitive>
 }
 else
 {

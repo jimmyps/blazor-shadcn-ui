@@ -1,13 +1,11 @@
-@namespace BlazorUI.Components.Dialog
-@using BlazorUI.Primitives.Dialog
-
+@namespace NeoUI.Blazor
 @*
     Styled DialogTitle component with shadcn/ui classes.
 *@
 
-<BlazorUI.Primitives.Dialog.DialogTitle class="@GetClassNames()" @attributes="AdditionalAttributes">
+<DialogTitlePrimitive class="@GetClassNames()" @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.Dialog.DialogTitle>
+</DialogTitlePrimitive>
 
 @code {
     /// <summary>

@@ -1,8 +1,6 @@
-﻿@namespace BlazorUI.Components.Menubar
-@using BlazorUI.Primitives.Menubar
-
+@namespace NeoUI.Blazor
 @* Styled MenubarCheckboxItem - wrapper with shadcn Tailwind classes *@
-<BlazorUI.Primitives.Menubar.MenubarCheckboxItem class="@CssClass"
+<MenubarCheckboxItemPrimitive class="@CssClass"
                                                   Disabled="@Disabled"
                                                   Checked="@Checked"
                                                   CheckedChanged="@CheckedChanged"
@@ -26,7 +24,7 @@
         }
     </span>
     <span>@ChildContent</span>
-</BlazorUI.Primitives.Menubar.MenubarCheckboxItem>
+</MenubarCheckboxItemPrimitive>
 
 @code {
     /// <summary>

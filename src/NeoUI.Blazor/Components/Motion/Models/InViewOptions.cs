@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Configuration for IntersectionObserver-based animations.

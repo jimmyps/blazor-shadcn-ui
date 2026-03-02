@@ -1,4 +1,4 @@
-// Global keyboard shortcut handler for BlazorUI
+// Global keyboard shortcut handler for NeoUI
 // Provides document-level keyboard event handling with Blazor interop
 
 let dotNetRef = null;

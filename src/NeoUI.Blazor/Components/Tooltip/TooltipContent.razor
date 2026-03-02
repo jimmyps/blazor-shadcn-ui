@@ -1,16 +1,12 @@
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Services
-@namespace BlazorUI.Components.Tooltip
-@using BlazorUI.Primitives.Tooltip
-
+@namespace NeoUI.Blazor
 @* Styled TooltipContent - wrapper with shadcn Tailwind classes *@
-<BlazorUI.Primitives.Tooltip.TooltipContent class="@CssClass"
+<TooltipContentPrimitive class="@CssClass"
                                                   Side="@Side"
                                                   Align="@Align"
                                                   Offset="@Offset"
                                                   Strategy="@Strategy">
     @ChildContent
-</BlazorUI.Primitives.Tooltip.TooltipContent>
+</TooltipContentPrimitive>
 
 @code {
     [CascadingParameter]

@@ -13,7 +13,7 @@ function injectRequiredStyles() {
   if (stylesInjected) return;
 
   const css = `
-        /* BlazorUI Primitives - Auto-injected positioning styles */
+        /* NeoUI Blazor Primitives - Auto-injected positioning styles */
         [data-positioned="false"] {
             position: absolute !important;
             top: -9999px !important;
@@ -25,7 +25,7 @@ function injectRequiredStyles() {
     `;
 
   const style = document.createElement('style');
-  style.setAttribute('data-blazorui-primitives', 'positioning');
+  style.setAttribute('data-neoui-primitives', 'positioning');
   style.textContent = css;
   document.head.appendChild(style);
   stylesInjected = true;
@@ -317,7 +317,7 @@ export function applyPosition(floating, position, makeVisible = false) {
       floating.style.setProperty('left', floating.style.left, 'important');
 
       // Dispatch event to signal element is now visible and positioned
-      floating.dispatchEvent(new CustomEvent('blazorui:visible', { bubbles: true }));
+      floating.dispatchEvent(new CustomEvent('neoui:visible', { bubbles: true }));
     });
   }
 }
@@ -428,7 +428,7 @@ export async function showFloating(floating, reference = null, options = null) {
     floating.style.setProperty('pointer-events', 'auto', 'important');
 
     // Dispatch event to signal element is now visible
-    floating.dispatchEvent(new CustomEvent('blazorui:visible', { bubbles: true }));
+    floating.dispatchEvent(new CustomEvent('neoui:visible', { bubbles: true }));
   });
 }
 
@@ -468,7 +468,7 @@ export function hideFloating(floating) {
     floating.style.setProperty('pointer-events', 'none', 'important');
 
     // Dispatch event to signal element is now hidden
-    floating.dispatchEvent(new CustomEvent('blazorui:hidden', { bubbles: true }));
+    floating.dispatchEvent(new CustomEvent('neoui:hidden', { bubbles: true }));
   });
 }
 

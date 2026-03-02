@@ -1,14 +1,12 @@
-@namespace BlazorUI.Components.Sheet
-@using BlazorUI.Primitives.Sheet
-
+@namespace NeoUI.Blazor
 @*
     Styled SheetTrigger component wrapper.
     Renders the trigger button for opening the sheet.
 *@
 
-<BlazorUI.Primitives.Sheet.SheetTrigger AsChild="@AsChild" @attributes="AdditionalAttributes">
+<SheetTriggerPrimitive AsChild="@AsChild" @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.Sheet.SheetTrigger>
+</SheetTriggerPrimitive>
 
 @code {
     /// <summary>

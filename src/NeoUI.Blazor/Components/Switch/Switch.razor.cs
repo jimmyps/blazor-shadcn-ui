@@ -1,10 +1,9 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.Switch;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Size variants for the Switch component.

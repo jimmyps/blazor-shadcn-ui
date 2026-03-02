@@ -1,114 +1,99 @@
-﻿@page "/components/empty"
-@using BlazorUI.Components.Empty
-@using BlazorUI.Components.Button
-@using BlazorUI.Icons.Lucide.Components
+@page "/components/empty"
 
-<PageTitle>Empty Component - BlazorUI</PageTitle>
+<PageTitle>Empty - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">Empty Component</h1>
-            <p class="text-xl text-muted-foreground">
-                Displays an empty state when there's no data or content to show.
-            </p>
-        </div>
-    </div>
 
-    <!-- Basic Empty State -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Basic</h2>
-            <p class="text-sm text-muted-foreground">
-                A simple empty state with icon, title, and description.
-            </p>
-        </div>
-        <Empty>
-            <EmptyIcon>
-                <LucideIcon Name="inbox" Class="h-10 w-10" />
-            </EmptyIcon>
-            <EmptyTitle>No messages</EmptyTitle>
-            <EmptyDescription>
-                You don't have any messages yet. Start a conversation to see messages here.
-            </EmptyDescription>
-        </Empty>
-    </div>
+    <DemoPageHeader
+        Title="Empty"
+        Description="Displays an empty state when there's no data or content to show." />
 
-    <!-- With Actions -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">With Actions</h2>
-            <p class="text-sm text-muted-foreground">
-                An empty state with action buttons.
-            </p>
-        </div>
-        <Empty>
-            <EmptyIcon>
-                <LucideIcon Name="file-text" Class="h-10 w-10" />
-            </EmptyIcon>
-            <EmptyTitle>No documents</EmptyTitle>
-            <EmptyDescription>
-                Get started by creating your first document.
-            </EmptyDescription>
-            <EmptyActions>
-                <Button>Create Document</Button>
-            </EmptyActions>
-        </Empty>
-    </div>
+    <DemoSection
+        Title="Basic"
+        Description="A simple empty state with icon, title, and description.">
+        <DemoBlock Code="@_basicCode">
+            <Empty>
+                <EmptyIcon>
+                    <LucideIcon Name="inbox" Class="h-10 w-10" />
+                </EmptyIcon>
+                <EmptyTitle>No messages</EmptyTitle>
+                <EmptyDescription>
+                    You don't have any messages yet. Start a conversation to see messages here.
+                </EmptyDescription>
+            </Empty>
+        </DemoBlock>
+    </DemoSection>
 
-    <!-- Usage Examples -->
-    <div class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Usage Examples</h2>
-            <p class="text-sm text-muted-foreground">
-                Common empty state scenarios.
-            </p>
-        </div>
-        <div class="space-y-6">
-            <!-- No Search Results -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">No Search Results</h3>
-                <Empty>
-                    <EmptyIcon>
-                        <LucideIcon Name="search" Class="h-10 w-10" />
-                    </EmptyIcon>
-                    <EmptyTitle>No results found</EmptyTitle>
-                    <EmptyDescription>
-                        We couldn't find any results for your search. Try using different keywords.
-                    </EmptyDescription>
-                </Empty>
+    <DemoSection
+        Title="With Actions"
+        Description="An empty state with action buttons to guide the user forward.">
+        <DemoBlock Code="@_withActionsCode">
+            <Empty>
+                <EmptyIcon>
+                    <LucideIcon Name="file-text" Class="h-10 w-10" />
+                </EmptyIcon>
+                <EmptyTitle>No documents</EmptyTitle>
+                <EmptyDescription>
+                    Get started by creating your first document.
+                </EmptyDescription>
+                <EmptyActions>
+                    <Button>Create Document</Button>
+                </EmptyActions>
+            </Empty>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Usage Examples"
+        Description="Common empty state scenarios.">
+        <DemoBlock Code="@_usageCode">
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">No Search Results</h3>
+                    <Empty>
+                        <EmptyIcon>
+                            <LucideIcon Name="search" Class="h-10 w-10" />
+                        </EmptyIcon>
+                        <EmptyTitle>No results found</EmptyTitle>
+                        <EmptyDescription>
+                            We couldn't find any results for your search. Try using different keywords.
+                        </EmptyDescription>
+                    </Empty>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">Empty Shopping Cart</h3>
+                    <Empty>
+                        <EmptyIcon>
+                            <LucideIcon Name="shopping-cart" Class="h-10 w-10" />
+                        </EmptyIcon>
+                        <EmptyTitle>Your cart is empty</EmptyTitle>
+                        <EmptyDescription>
+                            Add items to your cart to get started with your purchase.
+                        </EmptyDescription>
+                        <EmptyActions>
+                            <Button>Continue Shopping</Button>
+                        </EmptyActions>
+                    </Empty>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-lg font-medium">No Notifications</h3>
+                    <Empty Class="min-h-[300px]">
+                        <EmptyIcon>
+                            <LucideIcon Name="bell" Class="h-10 w-10" />
+                        </EmptyIcon>
+                        <EmptyTitle>All caught up!</EmptyTitle>
+                        <EmptyDescription>
+                            You don't have any notifications at the moment.
+                        </EmptyDescription>
+                    </Empty>
+                </div>
             </div>
+        </DemoBlock>
+    </DemoSection>
 
-            <!-- No Items in Cart -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">Empty Shopping Cart</h3>
-                <Empty>
-                    <EmptyIcon>
-                        <LucideIcon Name="shopping-cart" Class="h-10 w-10" />
-                    </EmptyIcon>
-                    <EmptyTitle>Your cart is empty</EmptyTitle>
-                    <EmptyDescription>
-                        Add items to your cart to get started with your purchase.
-                    </EmptyDescription>
-                    <EmptyActions>
-                        <Button>Continue Shopping</Button>
-                    </EmptyActions>
-                </Empty>
-            </div>
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_emptyProps" />
+    </DemoSection>
 
-            <!-- No Notifications -->
-            <div class="space-y-3">
-                <h3 class="text-lg font-medium">No Notifications</h3>
-                <Empty Class="min-h-[300px]">
-                    <EmptyIcon>
-                        <LucideIcon Name="bell" Class="h-10 w-10" />
-                    </EmptyIcon>
-                    <EmptyTitle>All caught up!</EmptyTitle>
-                    <EmptyDescription>
-                        You don't have any notifications at the moment.
-                    </EmptyDescription>
-                </Empty>
-            </div>
-        </div>
-    </div>
+    <DemoPageNav />
 </div>

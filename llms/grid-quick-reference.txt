@@ -1,9 +1,9 @@
-# BlazorUI Grid - Developer Quick Reference
+# NeoUI Grid - Developer Quick Reference
 
 ## Installation
 
 ```bash
-dotnet add package BlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 ## Service Registration
@@ -11,35 +11,35 @@ dotnet add package BlazorUI.Components
 ### Basic (Field-Based Rendering Only)
 ```csharp
 // Program.cs
-builder.Services.AddBlazorUIComponents();
+builder.Services.AddNeoUIComponents();
 ```
 
 ### Full Features (With Template Rendering)
 ```csharp
 // Program.cs
-builder.Services.AddBlazorUIComponents();
-builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
+builder.Services.AddNeoUIComponents();
+builder.Services.AddScoped<IDataGridDataGridTemplateRenderer, DataGridTemplateRenderer>();
 ```
 
 ---
 
 ## Usage Patterns
 
-### 1. Simple Grid (Field-Based)
+### 1. Simple DataGrid (Field-Based)
 
 ```razor
-<Grid TItem="Product" Data="@products">
-    <GridColumn Field="@nameof(Product.Name)" Header="Name" Sortable="true" />
-    <GridColumn Field="@nameof(Product.Price)" Header="Price" />
-    <GridColumn Field="@nameof(Product.Stock)" Header="Stock" Filterable="true" />
-</Grid>
+<DataGrid TItem="Product" Data="@products">
+    <DataGridColumn Field="@nameof(Product.Name)" Header="Name" Sortable="true" />
+    <DataGridColumn Field="@nameof(Product.Price)" Header="Price" />
+    <DataGridColumn Field="@nameof(Product.Stock)" Header="Stock" Filterable="true" />
+</DataGrid>
 ```
 
-### 2. Grid with Templates
+### 2. DataGrid with Templates
 
 ```razor
-<Grid TItem="Customer" Data="@customers">
-    <GridColumn Field="@nameof(Customer.Name)" Header="Name">
+<DataGrid TItem="Customer" Data="@customers">
+    <DataGridColumn Field="@nameof(Customer.Name)" Header="Name">
         <CellTemplate Context="customer">
             <div class="flex items-center gap-2">
                 <Avatar>
@@ -48,41 +48,41 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
                 <span class="font-medium">@customer.Name</span>
             </div>
         </CellTemplate>
-    </GridColumn>
+    </DataGridColumn>
     
-    <GridColumn Field="@nameof(Customer.Status)" Header="Status">
+    <DataGridColumn Field="@nameof(Customer.Status)" Header="Status">
         <CellTemplate Context="customer">
             <Badge Variant="@(customer.IsActive ? BadgeVariant.Success : BadgeVariant.Secondary)">
                 @customer.Status
             </Badge>
         </CellTemplate>
-    </GridColumn>
-</Grid>
+    </DataGridColumn>
+</DataGrid>
 ```
 
-**Requirements:** Register `ITemplateRenderer` in DI (see above)
+**Requirements:** Register `IDataGridDataGridTemplateRenderer` in DI (see above)
 
 ### 3. Server-Side Grid
 
 ```razor
-<Grid TItem="Order" 
-      PagingMode="GridPagingMode.Server"
+<DataGrid TItem="Order" 
+      PagingMode="DataGridPagingMode.Server"
       PageSize="25"
       OnDataRequest="@LoadDataAsync">
       
-    <GridColumn Field="@nameof(Order.Id)" Header="Order #" />
-    <GridColumn Field="@nameof(Order.CustomerName)" Header="Customer" Sortable="true" />
-    <GridColumn Field="@nameof(Order.Total)" Header="Total" />
-</Grid>
+    <DataGridColumn Field="@nameof(Order.Id)" Header="Order #" />
+    <DataGridColumn Field="@nameof(Order.CustomerName)" Header="Customer" Sortable="true" />
+    <DataGridColumn Field="@nameof(Order.Total)" Header="Total" />
+</DataGrid>
 
 @code {
-    private async Task<GridDataResponse<Order>> LoadDataAsync(GridDataRequest<Order> request)
+    private async Task<DataGridDataResponse<Order>> LoadDataAsync(DataGridDataRequest<Order> request)
     {
         // Apply sorting
         var query = _context.Orders.AsQueryable();
         foreach (var sort in request.SortDescriptors)
         {
-            query = sort.Direction == GridSortDirection.Ascending
+            query = sort.Direction == DataGridSortDirection.Ascending
                 ? query.OrderBy(o => EF.Property<object>(o, sort.Field))
                 : query.OrderByDescending(o => EF.Property<object>(o, sort.Field));
         }
@@ -100,7 +100,7 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
             .Take(request.Count)
             .ToListAsync();
         
-        return new GridDataResponse<Order>
+        return new DataGridDataResponse<Order>
         {
             Items = items,
             TotalCount = totalCount
@@ -109,28 +109,28 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 }
 ```
 
-### 4. Grid with State Management
+### 4. DataGrid with State Management
 
 ```razor
-<Grid TItem="Product" 
+<DataGrid TItem="Product" 
       Data="@products"
       @bind-State="@gridState"
-      OnStateChanged="@SaveGridState">
+      OnStateChanged="@SaveDataGridState">
       
-    <GridColumn Field="@nameof(Product.Name)" Header="Name" Sortable="true" />
-    <GridColumn Field="@nameof(Product.Price)" Header="Price" Sortable="true" />
-</Grid>
+    <DataGridColumn Field="@nameof(Product.Name)" Header="Name" Sortable="true" />
+    <DataGridColumn Field="@nameof(Product.Price)" Header="Price" Sortable="true" />
+</DataGrid>
 
 @code {
-    private GridState gridState = new();
+    private DataGridState gridState = new();
     
     protected override async Task OnInitializedAsync()
     {
         // Restore state from localStorage or database
-        gridState = await LoadGridStateAsync();
+        gridState = await LoadDataGridStateAsync();
     }
     
-    private async Task SaveGridState(GridState state)
+    private async Task SaveDataGridState(DataGridState state)
     {
         // Save to localStorage or database
         await _localStorage.SetItemAsync("product-grid-state", state);
@@ -138,17 +138,17 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 }
 ```
 
-### 5. Grid with Selection
+### 5. DataGrid with Selection
 
 ```razor
-<Grid TItem="Customer" 
+<DataGrid TItem="Customer" 
       Data="@customers"
-      SelectionMode="GridSelectionMode.Multiple"
+      SelectionMode="DataGridSelectionMode.Multiple"
       OnSelectionChanged="@HandleSelectionChanged">
       
-    <GridColumn Field="@nameof(Customer.Name)" Header="Name" />
-    <GridColumn Field="@nameof(Customer.Email)" Header="Email" />
-</Grid>
+    <DataGridColumn Field="@nameof(Customer.Name)" Header="Name" />
+    <DataGridColumn Field="@nameof(Customer.Email)" Header="Email" />
+</DataGrid>
 
 <div class="mt-4">
     <p>Selected: @selectedCustomers.Count customers</p>
@@ -179,12 +179,12 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `Data` | `IEnumerable<TItem>` | Required | Grid data source |
-| `SelectionMode` | `GridSelectionMode` | `None` | None, Single, Multiple |
-| `PagingMode` | `GridPagingMode` | `ClientSide` | ClientSide, Server, InfiniteScroll, None |
+| `Data` | `IEnumerable<TItem>` | Required | DataGrid data source |
+| `SelectionMode` | `DataGridSelectionMode` | `None` | None, Single, Multiple |
+| `PagingMode` | `DataGridPagingMode` | `ClientSide` | ClientSide, Server, InfiniteScroll, None |
 | `PageSize` | `int` | `10` | Rows per page |
-| `OnStateChanged` | `EventCallback<GridState>` | - | Fired on sort/filter/page change |
-| `OnDataRequest` | `EventCallback<GridDataRequest<TItem>>` | - | Fired for server-side data |
+| `OnStateChanged` | `EventCallback<DataGridState>` | - | Fired on sort/filter/page change |
+| `OnDataRequest` | `EventCallback<DataGridDataRequest<TItem>>` | - | Fired for server-side data |
 | `OnSelectionChanged` | `EventCallback<IReadOnlyCollection<TItem>>` | - | Fired on selection change |
 
 ## Column Parameters
@@ -198,7 +198,7 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 | `Width` | `string` | `null` | Column width (px, %, auto) |
 | `MinWidth` | `string` | `null` | Minimum width |
 | `MaxWidth` | `string` | `null` | Maximum width |
-| `Pinned` | `GridColumnPinPosition` | `None` | Left, Right, None |
+| `Pinned` | `DataDataGridColumnPinPosition` | `None` | Left, Right, None |
 | `AllowResize` | `bool` | `true` | Allow column resizing |
 | `CellTemplate` | `RenderFragment<TItem>` | `null` | Custom cell template |
 
@@ -206,22 +206,22 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 
 ## Enums
 
-### GridSelectionMode
+### DataGridSelectionMode
 - `None` - No selection
 - `Single` - Single row selection
 - `Multiple` - Multiple row selection with checkboxes
 
-### GridPagingMode
+### DataGridPagingMode
 - `None` - No pagination
 - `ClientSide` - Client-side pagination (all data loaded)
 - `Server` - Server-side pagination (fetch on demand)
 - `InfiniteScroll` - Infinite scroll loading
 
-### GridSortDirection
+### DataGridSortDirection
 - `Ascending` - A → Z, 0 → 9
 - `Descending` - Z → A, 9 → 0
 
-### GridFilterOperator
+### DataGridFilterOperator
 - `Equals` - Exact match
 - `NotEquals` - Not equal
 - `Contains` - Contains substring
@@ -236,38 +236,38 @@ builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 
 ## API Reference
 
-### GridState
+### DataGridState
 
 ```csharp
-public class GridState
+public class DataGridState
 {
-    public List<GridSortDescriptor> SortDescriptors { get; set; }
-    public List<GridFilterDescriptor> FilterDescriptors { get; set; }
+    public List<DataGridSortDescriptor> SortDescriptors { get; set; }
+    public List<DataGridFilterDescriptor> FilterDescriptors { get; set; }
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
-    public List<GridColumnState> ColumnStates { get; set; }
+    public List<DataDataGridColumnState> ColumnStates { get; set; }
     public List<object> SelectedRowIds { get; set; }
 }
 ```
 
-### GridDataRequest<TItem>
+### DataGridDataRequest<TItem>
 
 ```csharp
-public class GridDataRequest<TItem>
+public class DataGridDataRequest<TItem>
 {
     public int StartIndex { get; set; }
     public int Count { get; set; }
-    public List<GridSortDescriptor> SortDescriptors { get; set; }
-    public List<GridFilterDescriptor> FilterDescriptors { get; set; }
+    public List<DataGridSortDescriptor> SortDescriptors { get; set; }
+    public List<DataGridFilterDescriptor> FilterDescriptors { get; set; }
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
 }
 ```
 
-### GridDataResponse<TItem>
+### DataGridDataResponse<TItem>
 
 ```csharp
-public class GridDataResponse<TItem>
+public class DataGridDataResponse<TItem>
 {
     public IEnumerable<TItem> Items { get; set; }
     public int TotalCount { get; set; }
@@ -281,21 +281,21 @@ public class GridDataResponse<TItem>
 
 ### Templates not rendering?
 **Check:**
-1. ✅ `ITemplateRenderer` registered in DI
+1. ✅ `IDataGridDataGridTemplateRenderer` registered in DI
 2. ✅ `CellTemplate` defined on column
 3. ✅ Browser console for errors
-4. ✅ AG Grid loaded (Network tab)
+4. ✅ AG DataGrid loaded (Network tab)
 
 ### Callbacks not firing?
 **Check:**
 1. ✅ Callback assigned to grid parameter
 2. ✅ Interactive render mode (`@rendermode InteractiveServer`)
-3. ✅ Grid initialized (wait for `OnAfterRenderAsync`)
+3. ✅ DataGrid initialized (wait for `OnAfterRenderAsync`)
 
 ### Styling issues?
 **Check:**
-1. ✅ `blazorui.css` loaded in App.razor
-2. ✅ AG Grid theme CSS loaded from CDN
+1. ✅ `components.css` loaded in App.razor
+2. ✅ AG DataGrid theme CSS loaded from CDN
 3. ✅ Custom CSS classes applied correctly
 
 ---
@@ -320,16 +320,16 @@ public class GridDataResponse<TItem>
 <div class="container mx-auto p-4 space-y-4">
     <h1 class="text-2xl font-bold">Customers</h1>
     
-    <Grid TItem="Customer" 
-          PagingMode="GridPagingMode.Server"
+    <DataGrid TItem="Customer" 
+          PagingMode="DataGridPagingMode.Server"
           PageSize="25"
-          SelectionMode="GridSelectionMode.Multiple"
+          SelectionMode="DataGridSelectionMode.Multiple"
           @bind-State="@gridState"
           OnDataRequest="@LoadDataAsync"
           OnStateChanged="@SaveStateAsync"
           OnSelectionChanged="@HandleSelectionChanged">
           
-        <GridColumn Field="@nameof(Customer.Name)" Header="Name" Sortable="true">
+        <DataGridColumn Field="@nameof(Customer.Name)" Header="Name" Sortable="true">
             <CellTemplate Context="customer">
                 <div class="flex items-center gap-2">
                     <Avatar>
@@ -339,26 +339,26 @@ public class GridDataResponse<TItem>
                     <span class="font-medium">@customer.Name</span>
                 </div>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
         
-        <GridColumn Field="@nameof(Customer.Email)" Header="Email" Filterable="true" />
+        <DataGridColumn Field="@nameof(Customer.Email)" Header="Email" Filterable="true" />
         
-        <GridColumn Field="@nameof(Customer.Status)" Header="Status" Sortable="true">
+        <DataGridColumn Field="@nameof(Customer.Status)" Header="Status" Sortable="true">
             <CellTemplate Context="customer">
                 <Badge Variant="@(customer.Status == "Active" ? BadgeVariant.Success : BadgeVariant.Secondary)">
                     @customer.Status
                 </Badge>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
         
-        <GridColumn Field="@nameof(Customer.CreatedAt)" Header="Created" Sortable="true">
+        <DataGridColumn Field="@nameof(Customer.CreatedAt)" Header="Created" Sortable="true">
             <CellTemplate Context="customer">
                 <span class="text-sm text-muted-foreground">
                     @customer.CreatedAt.ToString("MMM dd, yyyy")
                 </span>
             </CellTemplate>
-        </GridColumn>
-    </Grid>
+        </DataGridColumn>
+    </DataGrid>
     
     @if (selectedCustomers.Any())
     {
@@ -374,22 +374,22 @@ public class GridDataResponse<TItem>
 </div>
 
 @code {
-    private GridState gridState = new();
+    private DataGridState gridState = new();
     private List<Customer> selectedCustomers = new();
     
     protected override async Task OnInitializedAsync()
     {
         // Restore grid state
-        gridState = await LocalStorage.GetItemAsync<GridState>("customer-grid-state") ?? new();
+        gridState = await LocalStorage.GetItemAsync<DataGridState>("customer-grid-state") ?? new();
     }
     
-    private async Task<GridDataResponse<Customer>> LoadDataAsync(GridDataRequest<Customer> request)
+    private async Task<DataGridDataResponse<Customer>> LoadDataAsync(DataGridDataRequest<Customer> request)
     {
         var result = await CustomerService.GetCustomersAsync(request);
         return result;
     }
     
-    private async Task SaveStateAsync(GridState state)
+    private async Task SaveStateAsync(DataGridState state)
     {
         await LocalStorage.SetItemAsync("customer-grid-state", state);
     }
@@ -417,34 +417,34 @@ public class GridDataResponse<TItem>
 
 #### Level 1: High-Level Presets
 ```razor
-<Grid TItem="Order" Items="@orders" 
-      Theme="GridTheme.Shadcn"           @* Shadcn/Alpine/Balham/Material/Quartz *@
-      Density="GridDensity.Compact"      @* Compact/Comfortable/Spacious *@
-      VisualStyle="GridStyle.Striped">   @* Default/Striped/Bordered/Minimal *@
+<DataGrid TItem="Order" Items="@orders" 
+      Theme="DataGridTheme.Shadcn"           @* Shadcn/Alpine/Balham/Material/Quartz *@
+      Density="DataGridDensity.Compact"      @* Compact/Comfortable/Spacious *@
+      VisualStyle="DataGridStyle.Striped">   @* Default/Striped/Bordered/Minimal *@
     <Columns>...</Columns>
-</Grid>
+</DataGrid>
 ```
 
 #### Level 2: Fine-Grained Parameters
 ```razor
-<Grid TItem="Order" Items="@orders">
+<DataGrid TItem="Order" Items="@orders">
     <Columns>
-        <GridThemeParameters
+        <DataDataGridThemeParameters
             AccentColor="#dc2626"
             RowHeight="48"
             BorderRadius="8"
             FontSize="16"
         />
-        <GridColumn Field="OrderId" Header="ID" />
+        <DataGridColumn Field="OrderId" Header="ID" />
     </Columns>
-</Grid>
+</DataGrid>
 ```
 
 #### Level 3: Advanced CSS
 ```razor
-<Grid TItem="Order" Items="@orders" Class="custom-grid">
+<DataGrid TItem="Order" Items="@orders" Class="custom-grid">
     <Columns>...</Columns>
-</Grid>
+</DataGrid>
 
 <style>
 .custom-grid {
@@ -454,10 +454,10 @@ public class GridDataResponse<TItem>
 ```
 
 ### Theme Precedence (Highest → Lowest)
-1. GridThemeParameters (explicit overrides)
+1. DataDataGridThemeParameters (explicit overrides)
 2. VisualStyle presets (Striped, Bordered, etc.)
 3. Density presets (Compact, Comfortable, Spacious)
-4. Theme defaults (Shadcn tokens or AG Grid defaults)
+4. Theme defaults (Shadcn tokens or AG DataGrid defaults)
 5. CSS variables (manual overrides)
 
 ### Shadcn Theme (Default)
@@ -470,7 +470,7 @@ Automatically integrates with shadcn/ui design tokens and supports dark mode:
 
 **Custom Brand Colors:**
 ```razor
-<GridThemeParameters
+<DataDataGridThemeParameters
     AccentColor="var(--primary)"
     HeaderBackgroundColor="var(--muted)"
 />
@@ -479,24 +479,24 @@ Automatically integrates with shadcn/ui design tokens and supports dark mode:
 **Override Density:**
 ```razor
 <!-- Compact preset sets 28px rows, but we want 35px -->
-<Grid Density="GridDensity.Compact">
+<DataGrid Density="DataGridDensity.Compact">
     <Columns>
-        <GridThemeParameters RowHeight="35" />
-        <GridColumn ... />
+        <DataDataGridThemeParameters RowHeight="35" />
+        <DataGridColumn ... />
     </Columns>
-</Grid>
+</DataGrid>
 ```
 
 **Custom Typography:**
 ```razor
-<GridThemeParameters
+<DataDataGridThemeParameters
     FontFamily="'Roboto', sans-serif"
     FontSize="15"
     HeaderFontWeight="700"
 />
 ```
 
-### Available GridThemeParameters (35 total)
+### Available DataDataGridThemeParameters (35 total)
 
 **Spacing & Sizing:** Spacing, RowHeight, HeaderHeight, IconSize, InputHeight, ToggleButtonWidth, ToggleButtonHeight
 
@@ -514,7 +514,7 @@ Automatically integrates with shadcn/ui design tokens and supports dark mode:
 **See Also:**
 - Full documentation: `.devflow/ag-grid-implementation.md`
 - Component patterns: `llms/patterns.txt`
-- Grid primitives: `llms/primitives.txt`
+- DataGrid primitives: `llms/primitives.txt`
 - Theme customization: `llms/grid-theme-customization.txt`
 - Theme parameters: `llms/grid-theme-parameters-reference.txt`
 

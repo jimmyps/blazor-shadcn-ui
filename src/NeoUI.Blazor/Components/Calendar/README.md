@@ -16,9 +16,9 @@ Accessible month/day grid for date selection. Foundation for date pickers and ra
 ### Basic Calendar
 
 ```razor
-@using BlazorUI.Components.Calendar
+@using NeoUI.Blazor
 
-<Calendar @bind-SelectedDate="selectedDate" />
+<Calendar @bind-SelectedDate
 
 <p>Selected: @selectedDate?.ToString("D")</p>
 
@@ -87,9 +87,7 @@ Accessible month/day grid for date selection. Foundation for date pickers and ra
 ### In a Popover (DatePicker Pattern)
 
 ```razor
-@using BlazorUI.Components.Popover
-@using BlazorUI.Components.Calendar
-@using BlazorUI.Components.Button
+@using NeoUI.Blazor
 
 <Popover>
     <PopoverTrigger>

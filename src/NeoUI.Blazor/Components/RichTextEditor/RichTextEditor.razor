@@ -1,13 +1,6 @@
-@namespace BlazorUI.Components.RichTextEditor
+@namespace NeoUI.Blazor
 @using Microsoft.JSInterop
-@using BlazorUI.Icons.Lucide.Components
-@using BlazorUI.Components.Toggle
-@using BlazorUI.Components.Button
-@using BlazorUI.Components.Separator
-@using BlazorUI.Components.NativeSelect
-@using BlazorUI.Components.Dialog
-@using BlazorUI.Components.Input
-@using BlazorUI.Components.Label
+@using NeoUI.Icons.Lucide
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
@@ -154,7 +147,7 @@
             <div class="grid gap-4 py-4">
                 <div class="grid gap-2">
                     <Label For="link-url">URL</Label>
-                    <Input Id="link-url"
+                    <NeoUI.Blazor.Input Id="link-url"
                            Type="InputType.Url"
                            Placeholder="https://example.com"
                            @bind-Value="_linkUrl"

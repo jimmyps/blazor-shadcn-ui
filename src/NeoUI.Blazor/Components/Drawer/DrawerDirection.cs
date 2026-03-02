@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Drawer;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the direction from which a Drawer component slides into view.

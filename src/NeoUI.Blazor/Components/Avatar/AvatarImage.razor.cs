@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Text;
 
-namespace BlazorUI.Components.Avatar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Displays an image within an Avatar component with automatic error handling.

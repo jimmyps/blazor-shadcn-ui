@@ -1,8 +1,7 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
-namespace BlazorUI.Components.Field;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A semantic fieldset container for grouping related form controls.

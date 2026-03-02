@@ -1,7 +1,7 @@
-namespace BlazorUI.Primitives.ContextMenu;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// Context class for sharing state between ContextMenuRadioGroup and ContextMenuRadioItem components.
+/// Context class for sharing state between ContextMenuRadioGroup and ContextMenuRadioItemPrimitive components.
 /// </summary>
 /// <typeparam name="TValue">The type of the value associated with radio items.</typeparam>
 public class ContextMenuRadioGroupContext<TValue>

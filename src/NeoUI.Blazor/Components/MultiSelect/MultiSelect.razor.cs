@@ -5,7 +5,7 @@ using Microsoft.JSInterop;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace BlazorUI.Components.MultiSelect;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A multi-select component that allows users to select multiple options from a searchable dropdown.
@@ -285,7 +285,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             try
             {
                 _multiSelectModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/multiselect.js");
+                    "import", "./_content/NeoUI.Blazor/js/multiselect.js");
 
                 _dotNetRef = DotNetObjectReference.Create(this);
 

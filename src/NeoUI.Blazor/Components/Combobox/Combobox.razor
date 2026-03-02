@@ -1,9 +1,5 @@
-@namespace BlazorUI.Components.Combobox
+@namespace NeoUI.Blazor
 @typeparam TItem
-@using BlazorUI.Components.Popover
-@using BlazorUI.Components.Command
-@using BlazorUI.Primitives.Services
-
 <CascadingValue Value="this" IsFixed="false">
     <div class="@ContainerClass">
         <Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
@@ -30,7 +26,7 @@
                 </svg>
             </PopoverTrigger>
             <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
-                <Command>
+                <CommandContent>
                     <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@SearchPlaceholder" />
                     <CommandList>
                         <CommandEmpty>@EmptyMessage</CommandEmpty>
@@ -65,7 +61,7 @@
                             }
                         </CommandGroup>
                     </CommandList>
-                </Command>
+                </CommandContent>
             </PopoverContent>
         </Popover>
     </div>

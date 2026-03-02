@@ -106,3 +106,7 @@ window.theme = {
         }
     }
 };
+
+// Auto-initialize on script load to prevent FOUC.
+// No manual call needed in the host page.
+window.theme.initialize();

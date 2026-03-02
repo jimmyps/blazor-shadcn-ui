@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.ToggleGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the type of toggle group (single or multiple selection).

@@ -1,12 +1,12 @@
-﻿@namespace BlazorUI.Components.ContextMenu
+@namespace NeoUI.Blazor
 
 @* ContextMenuItem - styled menu item *@
-<BlazorUI.Primitives.ContextMenu.ContextMenuItem Disabled="@Disabled"
+<ContextMenuItemPrimitive Disabled="@Disabled"
                  OnClick="OnClick"
                  class="@GetClass()"
                  @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.ContextMenu.ContextMenuItem>
+</ContextMenuItemPrimitive>
 
 @code {
     /// <summary>

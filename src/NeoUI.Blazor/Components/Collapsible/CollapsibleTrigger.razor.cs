@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Collapsible;
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A styled trigger button component that toggles the open/closed state of a Collapsible.

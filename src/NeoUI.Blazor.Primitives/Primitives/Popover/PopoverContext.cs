@@ -1,11 +1,10 @@
-using BlazorUI.Primitives.Contexts;
-using BlazorUI.Primitives.Services;
 using Microsoft.AspNetCore.Components;
+using NeoUI.Blazor.Primitives.Services;
 
-namespace BlazorUI.Primitives.Popover;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the Popover primitive context.
+/// State for the PopoverPrimitive primitive context.
 /// </summary>
 public class PopoverState
 {
@@ -28,7 +27,7 @@ public class PopoverState
 }
 
 /// <summary>
-/// Context for Popover primitive component and its children.
+/// Context for PopoverPrimitive primitive component and its children.
 /// Manages popover state and provides IDs for ARIA attributes.
 /// </summary>
 public class PopoverContext : PrimitiveContextWithEvents<PopoverState>
@@ -102,7 +101,7 @@ public class PopoverContext : PrimitiveContextWithEvents<PopoverState>
 
     /// <summary>
     /// Notifies subscribers that the popover content is fully ready.
-    /// Called by PopoverContent after setup completes.
+    /// Called by PopoverContentPrimitive after setup completes.
     /// </summary>
     public void NotifyContentReady()
     {
@@ -111,7 +110,7 @@ public class PopoverContext : PrimitiveContextWithEvents<PopoverState>
 
     /// <summary>
     /// Sets the trigger element reference for positioning.
-    /// This is called by PopoverTrigger to ensure the element is available
+    /// This is called by PopoverTriggerPrimitive to ensure the element is available
     /// even when the popover is opened programmatically.
     /// </summary>
     /// <param name="triggerElement">The trigger element reference.</param>

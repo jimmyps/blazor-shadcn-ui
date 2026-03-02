@@ -1,5 +1,5 @@
 /**
- * Chart.js Renderer Module for BlazorUI Charts
+ * Chart.js Renderer Module for NeoUI Charts
  * Provides integration between Blazor components and Chart.js library
  */
 

@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Item;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Container for action buttons or interactive elements positioned on the right.

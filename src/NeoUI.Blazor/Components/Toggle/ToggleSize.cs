@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Toggle;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the size options for a Toggle component.

@@ -1,5 +1,4 @@
-@namespace BlazorUI.Primitives.Floating
-@using BlazorUI.Primitives.Services
+@namespace NeoUI.Blazor.Primitives
 @using Microsoft.Extensions.Logging
 @inject IPositioningService PositioningService
 @inject IPortalService PortalService
@@ -20,7 +19,7 @@
     for smooth animation in ForceMount case when transitioning open/close state by delegating the works
     to JS with RFA, particularly when running in WebAssembly mode.
 
-    Use this as the base layer for Select, Popover, DropdownMenu, Tooltip, etc.
+    Use this as the base layer for SelectPrimitive, PopoverPrimitive, DropdownMenuPrimitive, TooltipPrimitive, etc.
 *@
 
 @code {
@@ -113,12 +112,12 @@
 
     /// <summary>
     /// CSS z-index value for the floating content.
-    /// Default is 60 (PopoverContent level).
+    /// Default is 60 (PopoverContentPrimitive level).
     /// Use ZIndexLevels constants for proper layering:
     /// - DialogOverlay: 40
-    /// - DialogContent: 50
-    /// - PopoverContent: 60 (default for dropdowns/menus/selects)
-    /// - TooltipContent: 70
+    /// - DialogContentPrimitive: 50
+    /// - PopoverContentPrimitive: 60 (default for dropdowns/menus/selects)
+    /// - TooltipContentPrimitive: 70
     /// </summary>
     [Parameter]
     public int ZIndex { get; set; } = ZIndexLevels.PopoverContent;

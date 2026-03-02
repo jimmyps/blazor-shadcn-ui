@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.DataTable;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the text alignment for a DataTable column.

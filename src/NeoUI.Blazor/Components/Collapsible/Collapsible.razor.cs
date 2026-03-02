@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Collapsible;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A styled container component that provides collapsible functionality with expandable/collapsible content sections.

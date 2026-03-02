@@ -1,28 +1,17 @@
-﻿@page "/components/carousel"
-@using BlazorUI.Components.Carousel
-@using BlazorUI.Components.Card
+@page "/components/carousel"
 
-<PageTitle>Carousel Component - BlazorUI</PageTitle>
+<PageTitle>Carousel - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
-    <div>
-        <div class="space-y-3">
-            <h1 class="text-4xl font-bold tracking-tight">Carousel Component</h1>
-            <p class="text-xl text-muted-foreground">
-                A slideshow component with animations, touch gestures, and keyboard navigation.
-            </p>
-        </div>
-    </div>
 
-    <div class="space-y-6">
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Default</h2>
-                <p class="text-muted-foreground">
-                    A basic carousel with navigation arrows.
-                </p>
-            </div>
+    <DemoPageHeader
+        Title="Carousel"
+        Description="A slideshow component with animations, touch gestures, and keyboard navigation." />
 
+    <DemoSection
+        Title="Default"
+        Description="A basic carousel with navigation arrows.">
+        <DemoBlock Code="@_defaultCode">
             <div class="flex justify-center">
                 <div class="w-full max-w-xs">
                     <Carousel>
@@ -41,16 +30,13 @@
                     </Carousel>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">With Indicators</h2>
-                <p class="text-muted-foreground">
-                    Carousel with dot indicators showing the current slide.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="With Indicators"
+        Description="Carousel with dot indicators showing the current slide.">
+        <DemoBlock Code="@_withIndicatorsCode">
             <div class="flex justify-center">
                 <div class="w-full max-w-xs">
                     <Carousel ShowIndicators="true">
@@ -69,16 +55,13 @@
                     </Carousel>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Auto-Play</h2>
-                <p class="text-muted-foreground">
-                    Carousel that automatically advances every 3 seconds.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="Auto-Play"
+        Description="Carousel that automatically advances every 3 seconds.">
+        <DemoBlock Code="@_autoPlayCode">
             <div class="flex justify-center">
                 <div class="w-full max-w-xs">
                     <Carousel AutoPlay="true" AutoPlayInterval="3000" Loop="true" ShowIndicators="true">
@@ -97,16 +80,13 @@
                     </Carousel>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Loop Mode</h2>
-                <p class="text-muted-foreground">
-                    Infinite loop carousel - navigate past the last slide to return to the first.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="Loop Mode"
+        Description="Infinite loop carousel — navigate past the last slide to return to the first.">
+        <DemoBlock Code="@_loopCode">
             <div class="flex justify-center">
                 <div class="w-full max-w-xs">
                     <Carousel Loop="true">
@@ -125,16 +105,13 @@
                     </Carousel>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Multiple Slides</h2>
-                <p class="text-muted-foreground">
-                    Show multiple slides at once (3 slides per view).
-                </p>
-            </div>
-
+    <DemoSection
+        Title="Multiple Slides"
+        Description="Show multiple slides at once (3 slides per view).">
+        <DemoBlock Code="@_multipleCode">
             <div class="flex justify-center">
                 <div class="w-full max-w-xs">
                     <Carousel SlidesPerView="3" Gap="2">
@@ -151,16 +128,13 @@
                     </Carousel>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Vertical Carousel</h2>
-                <p class="text-muted-foreground">
-                    Navigate vertically instead of horizontally.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="Vertical Carousel"
+        Description="Navigate vertically instead of horizontally.">
+        <DemoBlock Code="@_verticalCode">
             <div class="flex justify-center">
                 <div class="w-full max-w-xs py-12">
                     <Carousel Orientation="CarouselOrientation.Vertical" ShowIndicators="true" ContentClass="max-h-[160px]">
@@ -179,16 +153,13 @@
                     </Carousel>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Image Gallery</h2>
-                <p class="text-muted-foreground">
-                    Carousel with images and captions.
-                </p>
-            </div>
-
+    <DemoSection
+        Title="Image Gallery"
+        Description="Carousel with images and captions.">
+        <DemoBlock Code="@_galleryCode">
             <div class="flex justify-center">
                 <div class="w-full max-w-lg">
                     <Carousel ShowIndicators="true" OnSlideChange="HandleSlideChange">
@@ -216,51 +187,56 @@
                     </p>
                 </div>
             </div>
-        </section>
+        </DemoBlock>
+    </DemoSection>
 
-        <section class="space-y-4">
-            <div class="space-y-2">
-                <h2 class="text-2xl font-semibold">Without Navigation</h2>
-                <p class="text-muted-foreground">
-                    Carousel without navigation arrows (swipe or drag only).
-                </p>
-            </div>
-
-            <div class="flex justify-center">
-                <div class="w-full max-w-xs">
-                    <Carousel ShowNavigation="false" ShowIndicators="true" EnableDrag="true">
-                        @foreach (var i in Enumerable.Range(1, 5))
-                        {
-                            <CarouselItem>
-                                <div class="p-1">
-                                    <Card>
-                                        <CardContent Class="flex h-[150px] items-center justify-center p-6">
-                                            <span class="text-4xl font-semibold">@i</span>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            </CarouselItem>
-                        }
-                    </Carousel>
+    <DemoSection
+        Title="Without Navigation"
+        Description="Carousel without navigation arrows (swipe or drag only).">
+        <DemoBlock Code="@_noNavCode">
+            <ChildContent>
+                <div class="flex justify-center">
+                    <div class="w-full max-w-xs">
+                        <Carousel ShowNavigation="false" ShowIndicators="true" EnableDrag="true">
+                            @foreach (var i in Enumerable.Range(1, 5))
+                            {
+                                <CarouselItem>
+                                    <div class="p-1">
+                                        <Card>
+                                            <CardContent Class="flex h-[150px] items-center justify-center p-6">
+                                                <span class="text-4xl font-semibold">@i</span>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            }
+                        </Carousel>
+                    </div>
                 </div>
-            </div>
-            <p class="text-sm text-muted-foreground text-center">
-                Swipe or drag to navigate
-            </p>
-        </section>
-    </div>
+            </ChildContent>
+            <AdditionalContent>
+                <p class="text-sm text-muted-foreground text-center">Swipe or drag to navigate</p>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_carouselProps" />
+    </DemoSection>
+
+    <DemoPageNav />
 </div>
 
 @code {
     private int currentSlideIndex = 0;
-    
+
     private readonly List<GalleryImage> galleryImages = new()
     {
-        new GalleryImage { Icon = "≡ƒîä", Title = "Mountain Sunrise", Description = "Beautiful morning view" },
-        new GalleryImage { Icon = "≡ƒÅû∩╕Å", Title = "Beach Paradise", Description = "Tropical getaway" },
-        new GalleryImage { Icon = "≡ƒîâ", Title = "City Lights", Description = "Urban skyline at night" },
-        new GalleryImage { Icon = "≡ƒî▓", Title = "Forest Trail", Description = "Nature hiking path" },
-        new GalleryImage { Icon = "≡ƒÅö∩╕Å", Title = "Snow Peaks", Description = "Winter wonderland" }
+        new GalleryImage { Icon = "🌄", Title = "Mountain Sunrise", Description = "Beautiful morning view" },
+        new GalleryImage { Icon = "🏖️", Title = "Beach Paradise", Description = "Tropical getaway" },
+        new GalleryImage { Icon = "🌃", Title = "City Lights", Description = "Urban skyline at night" },
+        new GalleryImage { Icon = "🌲", Title = "Forest Trail", Description = "Nature hiking path" },
+        new GalleryImage { Icon = "🏔️", Title = "Snow Peaks", Description = "Winter wonderland" }
     };
 
     private void HandleSlideChange(int index)
@@ -274,4 +250,5 @@
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
     }
+
 }

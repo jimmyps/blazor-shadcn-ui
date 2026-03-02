@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Slider;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A slider component for selecting a numeric value from a range.

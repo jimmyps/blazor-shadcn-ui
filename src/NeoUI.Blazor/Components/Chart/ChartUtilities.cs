@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Utility methods for chart components.

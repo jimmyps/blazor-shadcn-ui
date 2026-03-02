@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Typography;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A typography component for semantic text styling.

@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Breadcrumb;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A component representing the current page in a breadcrumb.

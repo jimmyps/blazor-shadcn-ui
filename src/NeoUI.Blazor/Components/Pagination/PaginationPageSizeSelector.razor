@@ -1,6 +1,4 @@
-@namespace BlazorUI.Components.Pagination
-@using BlazorUI.Components.Select
-
+@namespace NeoUI.Blazor
 <div class="@CssClass">
     @if (ShowLabel)
     {
@@ -100,12 +98,12 @@
         }
     }
 
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "flex items-center gap-2",
         Class
     );
 
-    private string TriggerCssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+    private string TriggerCssClass => ClassNames.cn(
         "h-8 w-[70px]",
         TriggerClass
     );

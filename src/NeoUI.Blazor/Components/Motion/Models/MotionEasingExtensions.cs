@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Extension methods and helpers for MotionEasing enum.

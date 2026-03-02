@@ -1,5 +1,5 @@
 /**
- * ECharts Renderer Module for BlazorUI Charts
+ * ECharts Renderer Module for NeoUI Charts
  * Provides integration between Blazor components and ECharts library
  */
 

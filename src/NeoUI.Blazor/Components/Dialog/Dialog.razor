@@ -1,18 +1,16 @@
-@namespace BlazorUI.Components.Dialog
-@using BlazorUI.Primitives.Dialog
-
+@namespace NeoUI.Blazor
 @*
     Styled Dialog component wrapper.
     Wraps the Dialog primitive with shadcn/ui styling.
 *@
 
-<BlazorUI.Primitives.Dialog.Dialog Open="@Open"
-                                         OpenChanged="@OpenChanged"
-                                         DefaultOpen="@DefaultOpen"
-                                         OnOpenChange="@OnOpenChange"
-                                         Modal="@Modal">
+<DialogPrimitive Open="@Open"
+                    OpenChanged="@OpenChanged"
+                    DefaultOpen="@DefaultOpen"
+                    OnOpenChange="@OnOpenChange"
+                    Modal="@Modal">
     @ChildContent
-</BlazorUI.Primitives.Dialog.Dialog>
+</DialogPrimitive>
 
 @code {
     /// <summary>

@@ -1,9 +1,7 @@
 @typeparam TValue
-@namespace BlazorUI.Components.RadioGroup
-@using BlazorUI.Icons.Lucide.Components
-@using BlazorUI.Primitives.RadioGroup
-
-<BlazorUI.Primitives.RadioGroup.RadioGroupItem TValue="TValue"
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+<RadioGroupItemPrimitive TValue="TValue"
     @ref="primitiveRef"
     Value="@Value"
     Disabled="@Disabled"
@@ -21,7 +19,7 @@
     {
         <span class="@CircleIndicatorClass"></span>
     }
-</BlazorUI.Primitives.RadioGroup.RadioGroupItem>
+</RadioGroupItemPrimitive>
 
 @* Hidden native radio input for form submission *@
 @if (Context != null && !string.IsNullOrEmpty(Context.Name))

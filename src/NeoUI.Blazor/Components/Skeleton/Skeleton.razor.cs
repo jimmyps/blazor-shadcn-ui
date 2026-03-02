@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Skeleton;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A skeleton component that displays a placeholder preview of content before the data is loaded.

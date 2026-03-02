@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Progress;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A progress bar component for displaying completion status.

@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Calendar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the selection mode for the Calendar component.

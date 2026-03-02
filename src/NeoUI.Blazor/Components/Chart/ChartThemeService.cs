@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Service for managing chart themes and coordinating theme changes across all charts.
@@ -135,7 +135,7 @@ public class ChartThemeService : IAsyncDisposable
             {
                 _moduleRef = await _jsRuntime.InvokeAsync<IJSObjectReference>(
                     "import",
-                    "./_content/NeoBlazorUI.Components/js/chart-theme.js"
+                    "./_content/NeoUI.Blazor/js/chart-theme.js"
                 );
             }
             catch (Exception ex)

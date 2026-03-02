@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Services;
+namespace NeoUI.Blazor.Services;
 
 /// <summary>
 /// Options for customizing dialog appearance and behavior

@@ -1,10 +1,10 @@
-using BlazorUI.Components.Extensions;
+using NeoUI.Blazor.Extensions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.Validation;
+namespace NeoUI.Blazor.Validation;
 
 /// <summary>
 /// Reusable validation behavior for input components integrated with EditContext.

@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 
-namespace BlazorUI.Components.Utilities;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides Tailwind CSS class conflict resolution logic.
@@ -93,6 +93,11 @@ public static class TailwindMerge
         ["flex-row-reverse"] = "flex-direction",
         ["flex-col"] = "flex-direction",
         ["flex-col-reverse"] = "flex-direction",
+
+        // Flex Wrap
+        ["flex-wrap"] = "flex-wrap",
+        ["flex-nowrap"] = "flex-wrap",
+        ["flex-wrap-reverse"] = "flex-wrap",
 
         // Justify Content
         ["justify-start"] = "justify-content",

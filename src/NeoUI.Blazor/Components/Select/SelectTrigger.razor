@@ -1,17 +1,16 @@
 @typeparam TValue
-@namespace BlazorUI.Components.Select
-@using BlazorUI.Primitives.Select
+@namespace NeoUI.Blazor
 @attribute [CascadingTypeParameter(nameof(TValue))]
 
 @* Styled SelectTrigger wrapper around SelectTrigger primitive *@
-<BlazorUI.Primitives.Select.SelectTrigger TValue="TValue"
+<SelectTriggerPrimitive TValue="TValue"
                                                class="@CssClass"
                                                @attributes="AdditionalAttributes">
     @ChildContent
     <svg class="ms-2 h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="6 9 12 15 18 9"></polyline>
     </svg>
-</BlazorUI.Primitives.Select.SelectTrigger>
+</SelectTriggerPrimitive>
 
 @code {
     /// <summary>

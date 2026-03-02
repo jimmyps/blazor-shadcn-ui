@@ -1,11 +1,11 @@
-@namespace BlazorUI.Components.ContextMenu
+@namespace NeoUI.Blazor
 
 @* ContextMenuSub - styled container for a submenu *@
-<BlazorUI.Primitives.ContextMenu.ContextMenuSub Open="@Open"
+<ContextMenuSubPrimitive Open="@Open"
                                                  OpenChanged="@OpenChanged"
                                                  OnOpenChange="@OnOpenChange">
     @ChildContent
-</BlazorUI.Primitives.ContextMenu.ContextMenuSub>
+</ContextMenuSubPrimitive>
 
 @code {
     /// <summary>

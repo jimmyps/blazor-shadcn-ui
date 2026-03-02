@@ -1,18 +1,16 @@
-@namespace BlazorUI.Components.Sheet
-@using BlazorUI.Primitives.Sheet
-
+@namespace NeoUI.Blazor
 @*
     Styled SheetClose component wrapper.
     Renders a button to close the sheet.
 *@
 
-<BlazorUI.Primitives.Sheet.SheetClose
+<SheetClosePrimitive
     AsChild="@AsChild"
     OnClick="@OnClick"
     PreventClose="@PreventClose"
     @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.Sheet.SheetClose>
+</SheetClosePrimitive>
 
 @code {
     /// <summary>

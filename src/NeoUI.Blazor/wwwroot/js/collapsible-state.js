@@ -3,7 +3,7 @@
  * Handles state persistence in both localStorage and cookies for SSR support
  */
 
-const STORAGE_PREFIX = "blazorui:collapsible:";
+const STORAGE_PREFIX = "neoui:collapsible:";
 const COOKIE_EXPIRATION_DAYS = 365;
 
 /**

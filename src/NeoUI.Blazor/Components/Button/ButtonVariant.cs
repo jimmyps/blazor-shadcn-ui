@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Button;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the visual style variant for a Button component.

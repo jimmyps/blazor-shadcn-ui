@@ -1,4 +1,4 @@
-# NeoBlazorUI.Components
+# NeoUI.Blazor
 
 Over 85+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
@@ -19,12 +19,14 @@ Over 85+ production-ready Blazor components with shadcn/ui design and Tailwind C
 ## 📦 Installation
 
 ```bash
-dotnet add package NeoBlazorUI.Components
+dotnet add package NeoUI.Blazor
 ```
 
 This package automatically includes:
-- `NeoBlazorUI.Primitives` - Headless primitives providing behavior and accessibility
-- `NeoBlazorUI.Icons.Lucide` - 1,640+ beautiful icons
+- `NeoUI.Blazor.Primitives` - Headless primitives providing behavior and accessibility
+- `NeoUI.Icons.Lucide` - 1,640+ beautiful icons
+- `NeoUI.Icons.Heroicons` - 1,288 icons across 4 variants
+- `NeoUI.Icons.Feather` - 286 minimalist icons
 - Pre-built CSS - No Tailwind setup required!
 
 ## 🚀 Quick Start
@@ -32,47 +34,43 @@ This package automatically includes:
 ### 1. Add to your `_Imports.razor`:
 
 ```razor
-@using BlazorUI.Components
-@using BlazorUI.Components.Button
-@using BlazorUI.Components.Input
-@using BlazorUI.Components.Dialog
-@using BlazorUI.Components.Sheet
-@using BlazorUI.Components.Accordion
-@using BlazorUI.Components.Tabs
-@using BlazorUI.Components.Select
-@using BlazorUI.Components.Avatar
-@using BlazorUI.Components.Badge
-@using BlazorUI.Components.Card
-@using BlazorUI.Components.Chart
-@using BlazorUI.Components.DataTable
-@using BlazorUI.Icons.Lucide.Components
+@using NeoUI.Blazor
 ```
 
-Add imports for each component namespace you use. This gives access to component-specific enums like `ButtonVariant`, `InputType`, etc.
+All components and their enums (e.g. `ButtonVariant`, `InputType`) live in the single `NeoUI.Blazor` namespace. If you use chart components, also add `@using NeoUI.Blazor.Charts`.
 
-### 2. Add CSS to your `App.razor` or `index.html`:
+**Optional icon packages** — add whichever you need:
 
-BlazorUI Components come with pre-built CSS - no Tailwind setup required!
+```razor
+@using NeoUI.Icons.Lucide      @* 1,640+ icons *@
+@using NeoUI.Icons.Heroicons   @* 1,288 icons across 4 variants *@
+@using NeoUI.Icons.Feather     @* 286 minimalist icons *@
+```
 
-```html
+### 2. Add CSS and scripts to your `App.razor`:
+
+NeoUI.Blazor Components come with pre-built CSS and a theme script — no Tailwind setup required!
+
+```razor
 <!DOCTYPE html>
-<html lang="en" data-theme="default">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
 
-    <!-- Optional: Your custom theme (defines CSS variables) -->
-    <link rel="stylesheet" href="styles/theme.css" />
+    <!-- Pre-built NeoUI.Blazor styles -->
+    <link href="@Assets["_content/NeoUI.Blazor/components.css"]" rel="stylesheet" />
 
-    <!-- Pre-built BlazorUI styles (included in NuGet package) -->
-    <link rel="stylesheet" href="_content/NeoBlazorUI.Components/blazorui.css" />
+    <!-- Theme script: reads localStorage and applies classes before Blazor loads (prevents FOUC) -->
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
 
-    <HeadOutlet @rendermode="InteractiveAuto" />
+    <ImportMap />
+    <HeadOutlet />
 </head>
 <body>
-    <Routes @rendermode="InteractiveAuto" />
-    <script src="_framework/blazor.web.js"></script>
+    <Routes />
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
 </body>
 </html>
 ```
@@ -88,7 +86,7 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
     </DialogTrigger>
     <DialogContent>
         <DialogHeader>
-            <DialogTitle>Welcome to NeoBlazorUI</DialogTitle>
+            <DialogTitle>Welcome to NeoUI</DialogTitle>
             <DialogDescription>
                 Beautiful Blazor components with zero configuration
             </DialogDescription>
@@ -103,6 +101,8 @@ BlazorUI Components come with pre-built CSS - no Tailwind setup required!
 ```
 
 That's it! No Tailwind installation, no build configuration needed.
+
+> 💡 **Pre-built themes**: NeoUI ships with pre-built themes built on shadcn/ui defaults — ready to use out of the box with no extra setup. See the [Theming](#-theming) section for details on applying and customizing themes.
 
 ## 📚 Available Components (85+)
 
@@ -204,7 +204,7 @@ Create beautiful, responsive charts with a declarative Recharts-inspired API:
 <LineChart Data="@salesData">
     <XAxis DataKey="Month" />
     <YAxis />
-    <Grid />
+    <DataGrid />
     <Tooltip />
     <Legend />
     <Line DataKey="Revenue" Fill="var(--chart-1)" />
@@ -242,37 +242,37 @@ Powerful data tables with built-in sorting, filtering, pagination, and selection
 ```
 
 ### Grid Component
-Enterprise-grade data grid powered by AG Grid with Blazor template support and auto-discovery actions, designed with shadcn theme with real-time light/dark theme switching support:
+Enterprise-grade data grid powered by AG DataGrid with Blazor template support and auto-discovery actions, designed with shadcn theme with real-time light/dark theme switching support:
 
 ```razor
-<Grid Items="@orders" ActionHost="this">
+<DataGrid Items="@orders" ActionHost="this">
     <Columns>
-        <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-        <GridColumn Field="CustomerName" Header="Customer" Sortable="true" />
-        <GridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
-        <GridColumn Field="Total" Header="Total" DataFormatString="C" />
-        <GridColumn Field="Status" Header="Status">
+        <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+        <DataGridColumn Field="CustomerName" Header="Customer" Sortable="true" />
+        <DataGridColumn Field="OrderDate" Header="Date" DataFormatString="d" />
+        <DataGridColumn Field="Total" Header="Total" DataFormatString="C" />
+        <DataGridColumn Field="Status" Header="Status">
             <CellTemplate Context="order">
                 <Badge Variant="@GetStatusVariant(order.Status)">
                     @order.Status
                 </Badge>
             </CellTemplate>
-        </GridColumn>
-        <GridColumn Field="Actions" Header="">
+        </DataGridColumn>
+        <DataGridColumn Field="Actions" Header="">
             <CellTemplate Context="order">
                 <Button data-action="Edit" Variant="ButtonVariant.Ghost">
                     Edit
                 </Button>
             </CellTemplate>
-        </GridColumn>
+        </DataGridColumn>
     </Columns>
-</Grid>
+</DataGrid>
 
 @code {
-    [GridAction]
+    [DataGridAction]
     private async Task Edit(Order order)
     {
-        // Action auto-wired via [GridAction] attribute
+        // Action auto-wired via [DataGridAction] attribute
         await ShowEditDialog(order);
     }
 }
@@ -289,7 +289,7 @@ Add smooth animations with 20+ presets:
 
 ## 🎨 Theming
 
-NeoBlazorUI uses CSS variables for theming, compatible with shadcn/ui themes. You can use any theme from:
+NeoUI uses CSS variables for theming, compatible with shadcn/ui themes. You can use any theme from:
 - [shadcn/ui themes](https://ui.shadcn.com/themes)
 - [tweakcn.com](https://tweakcn.com)
 
@@ -352,14 +352,14 @@ Visit our interactive documentation site for:
 
 ## 🏗️ Built On Primitives
 
-These components are built on top of `NeoBlazorUI.Primitives` - a library of headless, unstyled components that provide behavior and accessibility without any styling. If you need complete control over styling, you can use the primitives directly.
+These components are built on top of `NeoUI.Blazor.Primitives` - a library of headless, unstyled components that provide behavior and accessibility without any styling. If you need complete control over styling, you can use the primitives directly.
 
 ## 📦 Related Packages
 
-- **NeoBlazorUI.Primitives** - Headless, unstyled components (included)
-- **NeoBlazorUI.Icons.Lucide** - 1,640+ Lucide icons (included)
-- **NeoBlazorUI.Icons.Heroicons** - 1,288 Heroicons across 4 variants
-- **NeoBlazorUI.Icons.Feather** - 286 beautiful minimalist icons
+- **NeoUI.Blazor.Primitives** - Headless, unstyled components (included)
+- **NeoUI.Icons.Lucide** - 1,640+ Lucide icons (included)
+- **NeoUI.Icons.Heroicons** - 1,288 Heroicons across 4 variants
+- **NeoUI.Icons.Feather** - 286 beautiful minimalist icons
 
 ## 🤝 Contributing
 
@@ -380,9 +380,9 @@ MIT License - see LICENSE file for details
 
 - **Current Version**: 1.0.15
 - **Target Framework**: .NET 10
-- **Package ID**: NeoBlazorUI.Components
-- **Assembly Name**: NeoBlazorUI.Components
+- **Package ID**: NeoUI.Blazor
+- **Assembly Name**: NeoUI.Blazor
 
 ---
 
-**Note**: This package was formerly known as `BlazorUI.Components`. As of version 1.0.7, the assembly name has been updated to `NeoBlazorUI.Components` to match the NuGet package ID, ensuring consistent asset paths when consumed from NuGet.
+**Note**: This package was formerly known as `BlazorUI.Components`. As of version 1.0.7, the assembly name has been updated to `NeoUI.Blazor` to match the NuGet package ID, ensuring consistent asset paths when consumed from NuGet.

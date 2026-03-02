@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Service for rendering content at the document body level, outside the normal DOM hierarchy.

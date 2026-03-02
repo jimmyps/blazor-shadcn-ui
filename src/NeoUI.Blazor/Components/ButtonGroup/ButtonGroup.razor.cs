@@ -1,8 +1,7 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 
-namespace BlazorUI.Components.ButtonGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A button group component that visually connects related buttons together.

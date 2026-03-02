@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Item;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Renders secondary text/description with line clamping.

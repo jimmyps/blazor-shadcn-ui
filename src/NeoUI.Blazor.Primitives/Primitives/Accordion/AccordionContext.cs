@@ -1,9 +1,7 @@
-using BlazorUI.Primitives.Contexts;
-
-namespace BlazorUI.Primitives.Accordion;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the Accordion primitive context.
+/// State for the AccordionPrimitive primitive context.
 /// </summary>
 public class AccordionState
 {
@@ -40,7 +38,7 @@ public enum AccordionType
 }
 
 /// <summary>
-/// Context for Accordion primitive component and its children.
+/// Context for AccordionPrimitive primitive component and its children.
 /// Manages accordion state and provides IDs for ARIA attributes.
 /// </summary>
 public class AccordionContext : PrimitiveContextWithEvents<AccordionState>

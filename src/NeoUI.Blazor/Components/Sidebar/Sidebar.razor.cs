@@ -1,9 +1,10 @@
-using BlazorUI.Primitives.Sheet;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using System;
 
-namespace BlazorUI.Components.Sidebar;
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents the main sidebar navigation component with responsive behavior and state management.
@@ -131,7 +132,7 @@ public partial class Sidebar : ComponentBase, IDisposable
             }
         }
 
-        return Utilities.ClassNames.cn(
+        return ClassNames.cn(
             baseClasses,
             variantClasses,
             sideClasses,
@@ -146,7 +147,7 @@ public partial class Sidebar : ComponentBase, IDisposable
     /// </summary>
     private string GetMobileClasses()
     {
-        return Utilities.ClassNames.cn(
+        return ClassNames.cn(
             "w-[var(--sidebar-width)] bg-sidebar p-0 flex flex-col overflow-y-auto",
             "[&>button]:hidden", // Hide the default Sheet close button
             Class

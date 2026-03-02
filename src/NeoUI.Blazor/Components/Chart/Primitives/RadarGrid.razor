@@ -1,4 +1,4 @@
-@namespace BlazorUI.Components.Chart
+@namespace NeoUI.Blazor.Charts
 
 <CascadingValue Value="this" IsFixed="true">
     @ChildContent
@@ -99,9 +99,6 @@
     
     protected override void OnInitialized()
     {
-        if (Parent != null)
-        {
-            try { Parent.RegisterRadarGrid(this); } catch { }
-        }
+        Parent?.RegisterRadarGrid(this);
     }
 }

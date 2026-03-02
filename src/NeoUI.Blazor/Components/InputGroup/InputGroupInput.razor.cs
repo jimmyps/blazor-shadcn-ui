@@ -1,9 +1,7 @@
-using BlazorUI.Components.Input;
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorUI.Components.InputGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An input component optimized for use within InputGroup.

@@ -1,9 +1,7 @@
-using BlazorUI.Primitives.Contexts;
-
-namespace BlazorUI.Primitives.Tabs;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the Tabs primitive context.
+/// State for the TabsPrimitive primitive context.
 /// </summary>
 public class TabsState
 {
@@ -29,12 +27,12 @@ public class TabsState
 public enum TabsOrientation
 {
     /// <summary>
-    /// Tabs are arranged horizontally.
+    /// TabsPrimitive are arranged horizontally.
     /// </summary>
     Horizontal,
 
     /// <summary>
-    /// Tabs are arranged vertically.
+    /// TabsPrimitive are arranged vertically.
     /// </summary>
     Vertical
 }
@@ -45,18 +43,18 @@ public enum TabsOrientation
 public enum TabsActivationMode
 {
     /// <summary>
-    /// Tabs activate automatically when focused with arrow keys.
+    /// TabsPrimitive activate automatically when focused with arrow keys.
     /// </summary>
     Automatic,
 
     /// <summary>
-    /// Tabs must be clicked or Enter/Space pressed to activate.
+    /// TabsPrimitive must be clicked or Enter/Space pressed to activate.
     /// </summary>
     Manual
 }
 
 /// <summary>
-/// Context for Tabs primitive component and its children.
+/// Context for TabsPrimitive primitive component and its children.
 /// Manages tab state and provides IDs for ARIA attributes.
 /// </summary>
 public class TabsContext : PrimitiveContextWithEvents<TabsState>

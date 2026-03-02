@@ -1,19 +1,18 @@
 using Microsoft.Extensions.DependencyInjection;
-using BlazorUI.Primitives.Services;
-
-namespace BlazorUI.Primitives.Extensions;
+using NeoUI.Blazor.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Extensions;
 
 /// <summary>
-/// Extension methods for registering BlazorUI.Primitives services with dependency injection.
+/// Extension methods for registering NeoUI.Blazor.Primitives services with dependency injection.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds all BlazorUI.Primitives primitive services to the service collection.
+    /// Adds all NeoUI.Blazor.Primitives primitive services to the service collection.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddBlazorUIPrimitives(this IServiceCollection services)
+    public static IServiceCollection AddNeoUIPrimitives(this IServiceCollection services)
     {
         // Register PortalService as scoped for user isolation in Blazor Server
         // Each user session gets its own portal registry

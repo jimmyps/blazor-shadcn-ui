@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Sidebar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Style variants for SidebarMenuButton.

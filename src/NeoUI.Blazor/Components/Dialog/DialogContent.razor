@@ -1,8 +1,5 @@
-@namespace BlazorUI.Components.Dialog
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Dialog
-@using BlazorUI.Primitives.Services
-@using BlazorUI.Icons.Lucide.Components
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
 @inject IPortalService PortalService
 
 @*
@@ -13,7 +10,7 @@
 <DialogPortal>
     <DialogOverlay class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
-    <BlazorUI.Primitives.Dialog.DialogContent
+    <DialogContentPrimitive
         class="@GetClassNames()"
         style="@($"z-index: {GetEffectiveContentZIndex()}")"
         CloseOnEscape="@CloseOnEscape"
@@ -25,12 +22,12 @@
 
             @if (ShowClose)
             {
-                <BlazorUI.Primitives.Dialog.DialogClose class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                <DialogClosePrimitive class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
                     <LucideIcon Name="x" Class="h-4 w-4" />
                     <span class="sr-only">Close</span>
-                </BlazorUI.Primitives.Dialog.DialogClose>
+                </DialogClosePrimitive>
             }
-        </BlazorUI.Primitives.Dialog.DialogContent>
+        </DialogContentPrimitive>
 </DialogPortal>
 
 @code {

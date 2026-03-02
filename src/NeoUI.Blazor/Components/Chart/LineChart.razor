@@ -1,5 +1,4 @@
-@namespace BlazorUI.Components.Chart
-@using BlazorUI.Components.Chart.Internal
+@namespace NeoUI.Blazor.Charts
 @typeparam TData
 @inherits ChartBase<TData>
 @implements ILineSeriesParent
@@ -191,7 +190,7 @@
     }
     
     /// <summary>
-    /// Internal method to register a Line series component.
+    /// Registers a Line series component. Called by child components during initialization.
     /// </summary>
     public void RegisterLine(Line line)
     {
@@ -200,7 +199,7 @@
     }
     
     /// <summary>
-    /// Internal method to register a Grid component.
+    /// Registers the Chart Grid component. Called by child components during initialization.
     /// </summary>
     public void RegisterGrid(Grid grid)
     {
@@ -209,7 +208,7 @@
     }
     
     /// <summary>
-    /// Internal method to register an XAxis component.
+    /// Registers an XAxis component. Called by child components during initialization.
     /// </summary>
     public void RegisterXAxis(XAxis xAxis)
     {
@@ -218,7 +217,7 @@
     }
     
     /// <summary>
-    /// Internal method to register a YAxis component.
+    /// Registers a YAxis component. Called by child components during initialization.
     /// </summary>
     public void RegisterYAxis(YAxis yAxis)
     {
@@ -227,16 +226,16 @@
     }
     
     /// <summary>
-    /// Internal method to register a Tooltip component.
+    /// Registers a ChartTooltip component. Called by child components during initialization.
     /// </summary>
-    public void RegisterTooltip(Tooltip tooltip)
+    public void RegisterChartTooltip(ChartTooltip tooltip)
     {
         _tooltip = tooltip;
         StateHasChanged();
     }
     
     /// <summary>
-    /// Internal method to register a Legend component.
+    /// Registers a Legend component. Called by child components during initialization.
     /// </summary>
     public void RegisterLegend(Legend legend)
     {

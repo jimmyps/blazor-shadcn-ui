@@ -1,10 +1,9 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.ColorPicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A color picker component with popover, canvas-based selection, and preset swatches.
@@ -278,7 +277,7 @@ public partial class ColorPicker : ComponentBase, IAsyncDisposable
             try
             {
                 _colorPickerModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/color-picker.js");
+                    "import", "./_content/NeoUI.Blazor/js/color-picker.js");
             }
             catch (JSException)
             {

@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Components;
-using BlazorUI.Primitives.Contexts;
-
-namespace BlazorUI.Primitives.Select;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the Select primitive context.
+/// State for the SelectPrimitive primitive context.
 /// </summary>
 /// <typeparam name="TValue">The type of the selected value.</typeparam>
 public class SelectState<TValue>
@@ -43,7 +41,7 @@ public class SelectState<TValue>
 }
 
 /// <summary>
-/// Context for Select primitive component and its children.
+/// Context for SelectPrimitive primitive component and its children.
 /// Manages select state, provides IDs for ARIA attributes, and handles keyboard navigation.
 /// </summary>
 /// <typeparam name="TValue">The type of the selected value.</typeparam>

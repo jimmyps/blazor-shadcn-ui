@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Menubar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the alignment of Menubar content relative to the trigger element.

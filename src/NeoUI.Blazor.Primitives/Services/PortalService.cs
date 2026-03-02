@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Implementation of portal rendering service for Blazor.

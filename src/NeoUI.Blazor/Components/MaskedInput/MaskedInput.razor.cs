@@ -1,13 +1,11 @@
-using BlazorUI.Components.Common;
-using BlazorUI.Components.Utilities;
-using BlazorUI.Components.Validation;
+using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.MaskedInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A masked input component that follows the shadcn/ui design system.
@@ -668,7 +666,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
             {
                 // Import the input module for event handling
                 _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+                    "import", "./_content/NeoUI.Blazor/js/input.js");
 
                 // Create DotNetObjectReference for callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);
@@ -693,7 +691,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
 
                 // Load mask module
                 _maskModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/masked-input.js");
+                    "import", "./_content/NeoUI.Blazor/js/masked-input.js");
 
                 // Initialize masked input with JavaScript
                 if (_maskModule != null && !string.IsNullOrEmpty(Mask))

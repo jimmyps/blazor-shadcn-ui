@@ -1,25 +1,17 @@
 @page "/components/command-library"
-@using BlazorUI.Components.Command
-@using BlazorUI.Components.Kbd
-@using BlazorUI.Icons.Lucide
-@using BlazorUI.Icons.Lucide.Data
-@using BlazorUI.Icons.Heroicons
-@using BlazorUI.Icons.Heroicons.Data
-@using BlazorUI.Icons.Feather
-@using BlazorUI.Icons.Feather.Data
 @using Microsoft.AspNetCore.Components.Web
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 @implements IAsyncDisposable
 
-<PageTitle>Component Library Command - BlazorUI</PageTitle>
+<PageTitle>Component Library Command - NeoUI</PageTitle>
 
 <div class="space-y-8 max-w-4xl">
     <div>
         <div class="space-y-3">
             <h1 class="text-4xl font-bold tracking-tight">Component Library Command</h1>
             <p class="text-xl text-muted-foreground">
-                A command palette showcasing all primitives, components, and icons in the BlazorUI library.
+                A command palette showcasing all primitives, components, and icons in the NeoUI library.
             </p>
         </div>
     </div>
@@ -71,17 +63,17 @@
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @onclick="CloseModal"></div>
 
         <div class="relative w-full max-w-2xl mx-4 z-10">
-            <BlazorUI.Components.Command.Command Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
-                <BlazorUI.Components.Command.CommandInput Placeholder="Search primitives, components, and icons..." AutoFocus="true" />
-                <BlazorUI.Components.Command.CommandList Class="max-h-[400px]">
-                    <BlazorUI.Components.Command.CommandEmpty>
+            <CommandContent Class="border rounded-lg shadow-2xl bg-background" OnValueChange="HandleCommandSelect">
+                <CommandInput Placeholder="Search primitives, components, and icons..." AutoFocus="true" />
+                <CommandList Class="max-h-[400px]">
+                    <CommandEmpty>
                         <div class="flex flex-col items-center gap-2 py-6">
                             <LucideIcon Name="search-x" Size="32" Class="text-muted-foreground" />
                             <p class="text-sm text-muted-foreground">No items found.</p>
                         </div>
-                    </BlazorUI.Components.Command.CommandEmpty>
+                    </CommandEmpty>
 
-                    <BlazorUI.Components.Command.CommandVirtualizedGroup TItem="LibraryItem"
+                    <CommandVirtualizedGroup TItem="LibraryItem"
                         Heading="Primitives"
                         Items="Primitives"
                         ItemValue="@(item => item.Url)"
@@ -92,11 +84,11 @@
                             @item.Name
                             <span class="ml-auto text-xs text-muted-foreground">Headless</span>
                         </ItemTemplate>
-                    </BlazorUI.Components.Command.CommandVirtualizedGroup>
+                    </CommandVirtualizedGroup>
 
-                    <BlazorUI.Components.Command.CommandSeparator />
+                    <CommandSeparator />
 
-                    <BlazorUI.Components.Command.CommandVirtualizedGroup TItem="LibraryItem"
+                    <CommandVirtualizedGroup TItem="LibraryItem"
                         Heading="Components"
                         Items="Components"
                         ItemValue="@(item => item.Url)"
@@ -107,11 +99,11 @@
                             @item.Name
                             <span class="ml-auto text-xs text-muted-foreground">Styled</span>
                         </ItemTemplate>
-                    </BlazorUI.Components.Command.CommandVirtualizedGroup>
+                    </CommandVirtualizedGroup>
 
-                    <BlazorUI.Components.Command.CommandSeparator />
+                    <CommandSeparator />
 
-                    <BlazorUI.Components.Command.CommandVirtualizedGroup TItem="string"
+                    <CommandVirtualizedGroup TItem="string"
                         Heading="Lucide Icons"
                         Items="AllLucideIcons"
                         ItemValue="@(name => $"/icons/lucide?search={name}")"
@@ -122,11 +114,11 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Lucide</span>
                         </ItemTemplate>
-                    </BlazorUI.Components.Command.CommandVirtualizedGroup>
+                    </CommandVirtualizedGroup>
 
-                    <BlazorUI.Components.Command.CommandSeparator />
+                    <CommandSeparator />
 
-                    <BlazorUI.Components.Command.CommandVirtualizedGroup TItem="string"
+                    <CommandVirtualizedGroup TItem="string"
                         Heading="Heroicons"
                         Items="AllHeroIcons"
                         ItemValue="@(name => $"/icons/heroicons?search={name}")"
@@ -137,11 +129,11 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Heroicons</span>
                         </ItemTemplate>
-                    </BlazorUI.Components.Command.CommandVirtualizedGroup>
+                    </CommandVirtualizedGroup>
 
-                    <BlazorUI.Components.Command.CommandSeparator />
+                    <CommandSeparator />
 
-                    <BlazorUI.Components.Command.CommandVirtualizedGroup TItem="string"
+                    <CommandVirtualizedGroup TItem="string"
                         Heading="Feather Icons"
                         Items="AllFeatherIcons"
                         ItemValue="@(name => $"/icons/feather?search={name}")"
@@ -152,9 +144,9 @@
                             @FormatIconName(iconName)
                             <span class="ml-auto text-xs text-muted-foreground">Feather</span>
                         </ItemTemplate>
-                    </BlazorUI.Components.Command.CommandVirtualizedGroup>
-                </BlazorUI.Components.Command.CommandList>
-            </BlazorUI.Components.Command.Command>
+                    </CommandVirtualizedGroup>
+                </CommandList>
+            </CommandContent>
         </div>
     </div>
 }

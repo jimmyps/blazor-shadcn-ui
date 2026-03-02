@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Defines the side where a positioned element appears relative to its trigger.

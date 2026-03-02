@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Defines the alignment of a positioned element relative to its trigger.

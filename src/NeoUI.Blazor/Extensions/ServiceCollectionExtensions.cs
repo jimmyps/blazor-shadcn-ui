@@ -1,32 +1,32 @@
-using BlazorUI.Components.Services;
-using BlazorUI.Components.Services.Grid;
-using BlazorUI.Components.Services.Theming;
-using BlazorUI.Components.Toast;
+using NeoUI.Blazor.Services;
+using NeoUI.Blazor.Services.Grid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BlazorUI.Components.Extensions;
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
+namespace NeoUI.Blazor.Extensions;
 
 /// <summary>
-/// Extension methods for registering BlazorUI.Components services with dependency injection.
+/// Extension methods for registering NeoUI.Blazor components services with dependency injection.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds BlazorUI.Components services to the service collection.
+    /// Adds NeoUI.Blazor components services to the service collection.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddBlazorUIComponents(this IServiceCollection services)
+    public static IServiceCollection AddNeoUIComponents(this IServiceCollection services)
     {
-        // Register template renderer for Grid cell templates
-        // This enables rendering of Blazor components (like Badge) inside AG Grid cells
-        services.AddScoped<ITemplateRenderer, TemplateRenderer>();
+        // Register template renderer for DataGrid cell templates
+        // This enables rendering of Blazor components (like Badge) inside AG DataGrid cells
+        services.AddScoped<IDataGridDataGridTemplateRenderer, DataGridTemplateRenderer>();
         
         // Register generic grid renderer as TRANSIENT
-        // Each Grid<TItem> component gets its own renderer instance with its own template dictionary
+        // Each DataGrid<TItem> component gets its own renderer instance with its own template dictionary
         // This prevents template conflicts when multiple grids are on the same page
-        services.AddTransient(typeof(IGridRenderer<>), typeof(AgGridRenderer<>));
+        services.AddTransient(typeof(IDataGridRenderer<>), typeof(AgDataGridRenderer<>));
 
         // Register DialogService for programmatic dialogs
         services.AddScoped<DialogService>();

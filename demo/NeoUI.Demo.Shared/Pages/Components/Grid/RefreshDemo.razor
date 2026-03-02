@@ -1,127 +1,71 @@
-@page "/components/grid/refresh"
-@using BlazorUI.Components.Grid
-@using BlazorUI.Components.Button
-@using BlazorUI.Demo.Shared.Data
+@page "/components/datagrid/refresh"
+@using NeoUI.Demo.Shared.Data
 
 <PageTitle>Grid - Manual Refresh Demo</PageTitle>
 
 <div class="space-y-8">
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h1 class="text-3xl font-bold">Grid Manual Refresh</h1>
-            <p class="text-muted-foreground">
-                Demonstrates the <code>RefreshAsync()</code> method for forcing grid display updates
-                after in-place data modifications.
-            </p>
-        </div>
-
-        <div class="rounded-lg border bg-amber-50 dark:bg-amber-950/20 p-4 text-sm">
-            <div class="flex gap-2">
-                <div class="text-amber-600 dark:text-amber-400">💡</div>
-                <div>
-                    <p class="font-semibold mb-2">When to use RefreshAsync():</p>
-                    <ul class="list-disc list-inside space-y-1 text-muted-foreground">
-                        <li><strong>In-place property changes</strong> - When you modify item properties directly without ObservableCollection events</li>
-                        <li><strong>Debugging/testing</strong> - Force grid to refresh for verification</li>
-                        <li><strong>After bulk updates</strong> - When you update many properties at once</li>
-                    </ul>
-                    <p class="mt-2 text-xs">
-                        <strong>Note:</strong> For most scenarios, prefer using <code>ObservableCollection</code> or transaction APIs 
-                        (<code>AddRowsAsync</code>, <code>UpdateRowsAsync</code>, <code>RemoveRowsAsync</code>) for better performance.
-                    </p>
+    <DemoSection Title="Grid Manual Refresh"
+                 Description="Demonstrates the &lt;code&gt;RefreshAsync()&lt;/code&gt; method for forcing grid display updates after in-place data modifications.">
+        <DemoBlock Code="@_refreshCode">
+            <div class="rounded-lg border bg-amber-50 dark:bg-amber-950/20 p-4 text-sm">
+                <div class="flex gap-2">
+                    <div class="text-amber-600 dark:text-amber-400">💡</div>
+                    <div>
+                        <p class="font-semibold mb-2">When to use RefreshAsync():</p>
+                        <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                            <li><strong>In-place property changes</strong> - When you modify item properties directly without ObservableCollection events</li>
+                            <li><strong>Debugging/testing</strong> - Force grid to refresh for verification</li>
+                            <li><strong>After bulk updates</strong> - When you update many properties at once</li>
+                        </ul>
+                        <p class="mt-2 text-xs">
+                            <strong>Note:</strong> For most scenarios, prefer using <code>ObservableCollection</code> or transaction APIs 
+                            (<code>AddRowsAsync</code>, <code>UpdateRowsAsync</code>, <code>RemoveRowsAsync</code>) for better performance.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="flex gap-2 mb-4">
-            <Button Size="ButtonSize.Small" OnClick="IncreasePricesInPlace">
-                📈 Increase All Prices by 10%
-            </Button>
-            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ApplyRandomDiscount">
-                🎲 Apply Random Discounts
-            </Button>
-            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="RestockAll">
-                📦 Restock All Items
-            </Button>
-            <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" OnClick="ManualRefresh">
-                🔄 Manual Refresh
-            </Button>
-        </div>
-
-        <Grid @ref="_gridRef"
-              Items="@products" 
-              SelectionMode="GridSelectionMode.Multiple"
-              IdField="ProductId"
-              Height="400px">
-            <Columns>
-                <GridColumn Field="ProductId" Header="Product ID" Width="120px" />
-                <GridColumn Field="Name" Header="Product Name" />
-                <GridColumn Field="Category" Header="Category" Width="150px" />
-                <GridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" />
-                <GridColumn Field="Stock" Header="Stock" Width="100px" />
-            </Columns>
-        </Grid>
-
-        <div class="mt-4 text-sm text-muted-foreground">
-            <p>
-                💡 Try clicking "Increase All Prices" - the grid automatically refreshes!
-                The buttons modify data in-place and call <code>RefreshAsync()</code> to update the display.
-            </p>
-        </div>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>@@page "/components/grid/refresh"
-@@using BlazorUI.Components.Grid
-@@using BlazorUI.Components.Button
-
-&lt;Grid @@ref="_gridRef" Items="@@products" IdField="ProductId"&gt;
-    &lt;Columns&gt;
-        &lt;GridColumn Field="Name" Header="Product" /&gt;
-        &lt;GridColumn Field="Price" Header="Price" DataFormatString="{0:C}" /&gt;
-        &lt;GridColumn Field="Stock" Header="Stock" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;
-
-&lt;Button OnClick="IncreasePrices"&gt;Increase Prices&lt;/Button&gt;
-
-@@code {
-    private Grid&lt;Product&gt; _gridRef = default!;
-    private List&lt;Product&gt; products = new();
-
-    protected override void OnInitialized()
-    {
-        products = GenerateProducts(20);
-    }
-
-    private async Task IncreasePrices()
-    {
-        // Modify data in-place
-        foreach (var product in products)
-        {
-            product.Price *= 1.1m; // 10% increase
-        }
-        
-        // Force grid to refresh and show updated prices
-        await _gridRef.RefreshAsync();
-    }
-    
-    private async Task ManualRefresh()
-    {
-        // Force refresh without data changes
-        await _gridRef.RefreshAsync();
-    }
-}</code></pre>
+            <div class="flex gap-2 mb-4">
+                <Button Size="ButtonSize.Small" OnClick="IncreasePricesInPlace">
+                    📈 Increase All Prices by 10%
+                </Button>
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ApplyRandomDiscount">
+                    🎲 Apply Random Discounts
+                </Button>
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="RestockAll">
+                    📦 Restock All Items
+                </Button>
+                <Button Size="ButtonSize.Small" Variant="ButtonVariant.Secondary" OnClick="ManualRefresh">
+                    🔄 Manual Refresh
+                </Button>
             </div>
-        </details>
-    </section>
+
+            <DataGrid @ref="_gridRef"
+                  Items="@products" 
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  IdField="ProductId"
+                  Height="400px">
+                <Columns>
+                    <DataGridColumn Field="ProductId" Header="Product ID" Width="120px" />
+                    <DataGridColumn Field="Name" Header="Product Name" />
+                    <DataGridColumn Field="Category" Header="Category" Width="150px" />
+                    <DataGridColumn Field="Price" Header="Price" Width="120px" DataFormatString="{0:C}" />
+                    <DataGridColumn Field="Stock" Header="Stock" Width="100px" />
+                </Columns>
+            </DataGrid>
+
+            <div class="mt-4 text-sm text-muted-foreground">
+                <p>
+                    💡 Try clicking "Increase All Prices" - the grid automatically refreshes!
+                    The buttons modify data in-place and call <code>RefreshAsync()</code> to update the display.
+                </p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
 </div>
 
 @code {
-    private Grid<Product> _gridRef = default!;
+    private DataGrid<Product> _gridRef = default!;
     private List<Product> products = new();
     private Random _random = new Random();
 
@@ -205,4 +149,6 @@
         public decimal Price { get; set; }
         public int Stock { get; set; }
     }
-}
+
+    }
+

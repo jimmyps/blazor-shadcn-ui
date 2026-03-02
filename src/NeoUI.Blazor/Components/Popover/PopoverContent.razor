@@ -1,11 +1,7 @@
-@using BlazorUI.Primitives.Services
-@namespace BlazorUI.Components.Popover
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Popover
-
+@namespace NeoUI.Blazor
 @* Styled PopoverContent with shadcn/ui classes *@
 
-<BlazorUI.Primitives.Popover.PopoverContent CloseOnEscape="@CloseOnEscape"
+<PopoverContentPrimitive CloseOnEscape="@CloseOnEscape"
                                                    CloseOnClickOutside="@CloseOnClickOutside"
                                                    ForceMount="@ForceMount"
                                                    Side="@Side"
@@ -20,7 +16,7 @@
                                                    class="@CssClass"
                                                    @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.Popover.PopoverContent>
+</PopoverContentPrimitive>
 
 @code {
     [Parameter]

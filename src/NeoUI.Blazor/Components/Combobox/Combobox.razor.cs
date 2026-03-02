@@ -1,7 +1,6 @@
-using BlazorUI.Components.Command;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Combobox;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A searchable combobox component that enables users to filter and select from a list of options.

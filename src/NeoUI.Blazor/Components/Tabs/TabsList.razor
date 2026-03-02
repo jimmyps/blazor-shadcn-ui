@@ -1,15 +1,12 @@
-@namespace BlazorUI.Components.Tabs
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Tabs
-
+@namespace NeoUI.Blazor
 @*
     Styled TabsList component.
     Wraps the TabsList primitive with shadcn/ui styling.
 *@
 
-<BlazorUI.Primitives.Tabs.TabsList class="@CssClass">
+<TabsListPrimitive class="@CssClass">
     @ChildContent
-</BlazorUI.Primitives.Tabs.TabsList>
+</TabsListPrimitive>
 
 @code {
     /// <summary>

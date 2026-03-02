@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.DateRangePicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Preset date ranges for quick selection.

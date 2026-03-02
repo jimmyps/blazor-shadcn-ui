@@ -1,5 +1,5 @@
 /**
- * AG Grid Renderer for BlazorUI
+ * AG Grid Renderer for NeoUI
  * Uses AG Grid Community with modular Enterprise features
  * 
  * Base: AG Grid Community (free, open source)
@@ -55,7 +55,7 @@ async function loadServerSideRowModelModule() {
 }
 
 /**
- * Gets the base AG Grid theme object
+ * Gets the base AG DataGrid theme object
  */
 function getBaseTheme(themeName) {
     switch (themeName) {
@@ -234,9 +234,9 @@ class BlazorTemplateHeaderRenderer {
 }
 
 /**
- * Creates and initializes an AG Grid instance
+ * Creates and initializes an AG DataGrid instance
  * @param {HTMLElement|Object} elementOrRef - DOM element or Blazor ElementReference
- * @param {Object} config - Grid configuration
+ * @param {Object} config - DataGrid configuration
  * @param {Object} dotNetRef - .NET object reference for callbacks
  */
 export async function createGrid(elementOrRef, config, dotNetRef) {
@@ -289,7 +289,7 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         const gridOptions = buildGridOptionsWithEvents(config, dotNetRef);
         gridOptions.theme = theme;
         
-        // Create AG Grid instance - returns the API directly
+        // Create AG DataGrid instance - returns the API directly
         const gridApi = agCreateGrid(element, gridOptions);
         
         // Return wrapper object with API methods
@@ -304,11 +304,11 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
             },
             
             applyState: (state) => {
-                applyGridState(gridApi, state, gridOptions);
+                applyDataGridState(gridApi, state, gridOptions);
             },
             
             getState: () => {
-                return getGridState(gridApi);
+                return getDataGridState(gridApi);
             },
             
             setGridOptions: (options) => {
@@ -338,7 +338,7 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
             },
             
             refreshServerSideStore: () => {
-                // Refresh server-side cache, causing AG Grid to re-fetch data
+                // Refresh server-side cache, causing AG DataGrid to re-fetch data
                 if (config.rowModelType === 'serverSide') {
                     gridApi.refreshServerSide({ purge: true });
                 }
@@ -355,8 +355,8 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
 }
 
 /**
- * Builds AG Grid options with event handlers
- * Event handlers receive the API as a parameter from AG Grid events
+ * Builds AG DataGrid options with event handlers
+ * Event handlers receive the API as a parameter from AG DataGrid events
  */
 function buildGridOptionsWithEvents(config, dotNetRef) {
     // Flag to prevent selection event during programmatic sync
@@ -365,7 +365,7 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     // Register custom cell renderer and value formatter
     const components = {
         templateRenderer: BlazorTemplateCellRenderer,
-        headerTemplateRenderer: BlazorTemplateHeaderRenderer
+        headerDataGridTemplateRenderer: BlazorTemplateHeaderRenderer
     };
     
     // Add value formatter function for DataFormatString support
@@ -393,7 +393,7 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         };
         
         // Also enhance header component params with dotNetRef
-        if (col.headerComponent === 'headerTemplateRenderer') {
+        if (col.headerComponent === 'headerDataGridTemplateRenderer') {
             enhanced.headerComponentParams = {
                 ...col.headerComponentParams,
                 dotNetRef
@@ -408,7 +408,7 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         return enhanced;
     });
     
-    // ✅ AG Grid v32.2+ Migration: rowSelection as object instead of string
+    // ✅ AG DataGrid v32.2+ Migration: rowSelection as object instead of string
     // Convert legacy string rowSelection to new object format
     // "single" → { mode: 'singleRow' }
     // "multiple" → { mode: 'multiRow' }
@@ -421,7 +421,7 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         };
     }
     
-    // ✅ AG Grid v32.2+: Provide getRowId for stable row identification
+    // ✅ AG DataGrid v32.2+: Provide getRowId for stable row identification
     // This is CRITICAL for row selection persistence across data updates
     // Developer specifies the ID field via config.idField (e.g., "Id", "ProductId", "OrderId")
     const idField = config.idField || 'Id'; // Default to 'Id' if not specified
@@ -462,10 +462,10 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         rowData: [],
         components: components,
         
-        // ✅ AG Grid v32.2+: Use object-based rowSelection
+        // ✅ AG DataGrid v32.2+: Use object-based rowSelection
         rowSelection: rowSelectionConfig,
         
-        // ✅ AG Grid v32.2+: Stable row IDs for selection persistence
+        // ✅ AG DataGrid v32.2+: Stable row IDs for selection persistence
         getRowId: getRowIdFunc,
         
         // Pagination
@@ -504,7 +504,7 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
                 .catch(err => console.error('[AG Grid] Selection callback failed:', err.message));
         },
         
-        // Store the sync flag in grid options so applyGridState can access it
+        // Store the sync flag in grid options so applyDataGridState can access it
         __isSyncingSelection: () => isSyncingSelection,
         __setIsSyncingSelection: (value) => { isSyncingSelection = value; }
     };
@@ -572,7 +572,7 @@ function createInfiniteDatasource(dotNetRef) {
 }
 
 /**
- * Maps AG Grid server-side request to GridDataRequest
+ * Maps AG DataGrid server-side request to DataGridDataRequest
  */
 function mapServerSideRequest(agRequest) {
     return {
@@ -587,20 +587,20 @@ function mapServerSideRequest(agRequest) {
 }
 
 /**
- * Maps AG Grid sort model to GridSortDescriptor[]
+ * Maps AG DataGrid sort model to DataGridSortDescriptor[]
  */
 function mapSortModel(sortModel) {
     if (!sortModel || sortModel.length === 0) return [];
     
     return sortModel.map((sort, index) => ({
         field: sort.colId,
-        direction: sort.sort === 'asc' ? 1 : 2, // GridSortDirection: None=0, Ascending=1, Descending=2
+        direction: sort.sort === 'asc' ? 1 : 2, // DataGridSortDirection: None=0, Ascending=1, Descending=2
         order: index
     }));
 }
 
 /**
- * Maps AG Grid filter model to GridFilterDescriptor[]
+ * Maps AG DataGrid filter model to DataGridFilterDescriptor[]
  */
 function mapFilterModel(filterModel) {
     if (!filterModel) return [];
@@ -619,7 +619,7 @@ function mapFilterModel(filterModel) {
 }
 
 /**
- * Maps AG Grid filter type to GridFilterOperator enum
+ * Maps AG DataGrid filter type to DataGridFilterOperator enum
  */
 function mapFilterOperator(agType) {
     const mapping = {
@@ -647,8 +647,8 @@ function notifyStateChanged(api, dotNetRef) {
     if (!api) return;
     
     try {
-        const state = getGridState(api);
-        dotNetRef.invokeMethodAsync('OnGridStateChanged', state)
+        const state = getDataGridState(api);
+        dotNetRef.invokeMethodAsync('OnDataGridStateChanged', state)
             .catch(err => console.error('[AG Grid] State change callback failed:', err.message));
     } catch (error) {
         console.error('[AG Grid] Failed to get grid state:', error.message);
@@ -658,7 +658,7 @@ function notifyStateChanged(api, dotNetRef) {
 /**
  * Gets current grid state
  */
-function getGridState(api) {
+function getDataGridState(api) {
     const columnState = api.getColumnState();
     
     const sortModel = columnState
@@ -677,7 +677,7 @@ function getGridState(api) {
     
     const selectedRows = api.getSelectedRows();
     
-    // ✅ AG Grid v32.2+: Get selected row IDs using getRowId
+    // ✅ AG DataGrid v32.2+: Get selected row IDs using getRowId
     // AG Grid's getSelectedRows() returns the data objects with their IDs already resolved
     const selectedRowIds = selectedRows.map(row => {
         return String(row.Id || row.id || row._id || 'unknown');
@@ -702,7 +702,7 @@ function getGridState(api) {
 /**
  * Applies state to the grid
  */
-function applyGridState(api, state, gridOptions) {
+function applyDataGridState(api, state, gridOptions) {
     if (!api || !state) return;
     
     try {
@@ -760,7 +760,7 @@ function applyGridState(api, state, gridOptions) {
             api.paginationGoToPage(state.pageNumber - 1);
         }
         
-        // ✅ AG Grid v32.2+: Apply row selection using row IDs
+        // ✅ AG DataGrid v32.2+: Apply row selection using row IDs
         // CRITICAL: Set sync flag to prevent onSelectionChanged from firing during programmatic sync
         if (state.selectedRowIds !== undefined && state.selectedRowIds !== null) {
             const setIsSyncingSelection = gridOptions?.__setIsSyncingSelection;
@@ -802,7 +802,7 @@ function applyGridState(api, state, gridOptions) {
 }
 
 /**
- * Reverse maps GridFilterOperator to AG Grid filter type
+ * Reverse maps DataGridFilterOperator to AG DataGrid filter type
  */
 function reverseMapFilterOperator(enumValue) {
     const mapping = {

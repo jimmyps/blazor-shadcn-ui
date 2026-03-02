@@ -1,30 +1,35 @@
 @page "/components/chart/line"
-@using BlazorUI.Components.Card
-@using BlazorUI.Components.Chart
+@using NeoUI.Blazor.Charts
 
-<PageTitle>Chart Components - Line Chart</PageTitle>
+<PageTitle>Line Chart - NeoUI</PageTitle>
 
-<div class="space-y-8">
-    @* Hero - Interactive Line Chart with Date Filter *@
-    <Card>
-        <CardHeader Class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
-            <div class="grid flex-1 gap-1">
-                <CardTitle Class="text-xl">Line Chart - Interactive</CardTitle>
-                <CardDescription>Showing trends for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</CardDescription>
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Line Chart"
+        Description="Smooth, linear, and step line charts with optional dots, data labels, dashed strokes, and custom interpolation. Supports right-axis placement and multi-series layouts." />
+
+    <DemoSection
+        Title="Interactive"
+        Description="A live line chart with time-range filtering and a custom tooltip formatter.">
+        <DemoBlock Code="@_interactiveCode">
+            <div class="flex items-center gap-2 space-y-0 border-b pb-4 sm:flex-row">
+                    <div class="grid flex-1 gap-1">
+                        <p class="text-xl font-semibold">Line Chart — Interactive</p>
+                        <p class="text-sm text-muted-foreground">Showing trends for the @(timeRanges.TryGetValue(timeRange, out var description) ? description.ToLower() : "last 3 months")</p>
+                    </div>
+                    <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
+                        <SelectTrigger>
+                            <SelectValue Placeholder="Last 3 months" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            @foreach (var range in timeRanges)
+                            {
+                                <SelectItem Value="@range.Key" TValue="string" Text="@range.Value">@range.Value</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
             </div>
-            <Select @bind-Value="@timeRange" TValue="string" Class="w-[160px] rounded-lg sm:ml-auto sm:flex">
-                <SelectTrigger>
-                    <SelectValue Placeholder="Last 3 months" />
-                </SelectTrigger>
-                <SelectContent>
-                    @foreach (var range in timeRanges)
-                    {
-                        <SelectItem Value="@range.Key" TValue="string" Text="@range.Value">@range.Value</SelectItem>
-                    }
-                </SelectContent>
-            </Select>
-        </CardHeader>
-        <CardContent Class="p-6 pt-2 sm:px-6 sm:pt-6">
             <ChartContainer Height="250" Class="w-full">
                 <LineChart Data="@FilteredData" Padding="@(new Padding(32, 16, 0, 16))">
                     <Grid Vertical="false" Stroke="var(--border)" />
@@ -34,23 +39,20 @@
                     <YAxis Show="false" TickLine="false">
                         <AxisLabel Show="false" />
                     </YAxis>
-                    <Tooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
+                    <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Cross" Formatter="@tooltipFormatter" />
                     <Legend TextColor="var(--foreground)" />
                     <Line DataKey="desktop" Name="Desktop" Color="var(--chart-1)" />
                     <Line DataKey="mobile" Name="Mobile" Color="var(--chart-2)" />
                 </LineChart>
             </ChartContainer>
-        </CardContent>
-    </Card>
 
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        @* Default Line Chart with shadcn theme *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Line Chart</CardTitle>
-                <CardDescription>Default line chart</CardDescription>
-            </CardHeader>
-            <CardContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Variants" Description="Core line chart configurations.">
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <DemoBlock Code="@_defaultCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -60,21 +62,14 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Color="var(--chart-1)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Multiple Lines *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Multiple Lines</CardTitle>
-                <CardDescription>Multiple line series with custom interval</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_multipleCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
                         <Grid Show="false" />
@@ -84,22 +79,15 @@
                         <YAxis Interval="100" Position="YAxisPosition.Right" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Circle" />
                         <Line DataKey="product1" Name="Product A" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" Color="var(--chart-2)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Line with Dots *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Dots</CardTitle>
-                <CardDescription>Visible data point markers</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_withDotsCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -109,21 +97,14 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Dots with Custom Colors *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Custom Dot Colors</CardTitle>
-                <CardDescription>Different colored dots</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_customDotColorsCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -133,22 +114,15 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Line DataKey="product1" Name="Product A" ShowDots="true" Color="var(--chart-1)" />
                         <Line DataKey="product2" Name="Product B" ShowDots="true" Color="var(--chart-2)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Custom Dot Styles *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Custom Dots</CardTitle>
-                <CardDescription>Styled data points</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_customDotsCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -158,22 +132,15 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" DotSize="8"
                               DotShape="SymbolShape.Diamond" Color="var(--chart-4)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Linear Interpolation *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Linear</CardTitle>
-                <CardDescription>Linear interpolation</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_linearCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -183,21 +150,14 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Linear" Color="var(--chart-5)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Step Interpolation (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Step Line</CardTitle>
-                <CardDescription>Step interpolation</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_stepCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -207,21 +167,14 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Line with Labels (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Labels</CardTitle>
-                <CardDescription>Data labels on points</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_withLabelsCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -231,23 +184,16 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-2)">
                             <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="10" Color="#666" />
                         </Line>
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Custom Label Formatting (MVP+ Feature) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Custom Labels</CardTitle>
-                <CardDescription>Custom label formatting</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_customLabelsCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -257,23 +203,16 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Sales" ShowDots="true" ShowLabel="true" Color="var(--chart-3)">
                             <LabelList Position="LabelPosition.Top" Formatter="function(params) { return '$' + params.value; }" FontSize="9" Color="#2563eb" />
                         </Line>
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Dashed Line *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Dashed Line</CardTitle>
-                <CardDescription>Dashed line style</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_dashedCode">
                 <ChartContainer Height="200">
                     <LineChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
                         <Grid Stroke="var(--border)" />
@@ -283,14 +222,22 @@
                         <YAxis Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Line DataKey="sales" Name="Forecast" Dashed="true" ShowDots="true" Color="var(--chart-4)" />
                     </LineChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-    </div>
+            </DemoBlock>
+
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference">
+        <DemoPropsTable Rows="@_lineChartProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
 </div>
 
 @code {

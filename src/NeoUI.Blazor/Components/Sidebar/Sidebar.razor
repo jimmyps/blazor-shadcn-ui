@@ -1,8 +1,4 @@
-@namespace BlazorUI.Components.Sidebar
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Components.Sheet
-@using BlazorUI.Primitives.Sheet
-
+@namespace NeoUI.Blazor
 @*
     Main Sidebar component that renders as a Sheet on mobile and a sidebar on desktop.
     Provides the container for all sidebar content.
@@ -13,11 +9,11 @@
     @if (Context.IsMobile)
     {
         @* Mobile: Render as Sheet *@
-        <BlazorUI.Components.Sheet.Sheet Open="@MobileOpen" OpenChanged="@(value => MobileOpen = value)" Side="@GetSheetSide()">
-            <BlazorUI.Components.Sheet.SheetContent Class="@GetMobileClasses()" ShowClose="false">
+        <Sheet Open="@MobileOpen" OpenChanged="@(value => MobileOpen = value)" Side="@GetSheetSide()">
+            <SheetContent Class="@GetMobileClasses()" ShowClose="false">
                 @ChildContent
-            </BlazorUI.Components.Sheet.SheetContent>
-        </BlazorUI.Components.Sheet.Sheet>
+            </SheetContent>
+        </Sheet>
     }
     else
     {

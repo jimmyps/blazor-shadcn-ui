@@ -1,4 +1,4 @@
-@namespace BlazorUI.Primitives.Dialog
+@namespace NeoUI.Blazor.Primitives
 @inject IPortalService PortalService
 @implements IDisposable
 
@@ -12,7 +12,7 @@
     private DialogContext Context { get; set; } = null!;
 
     /// <summary>
-    /// The content to render in the portal (typically DialogOverlay and DialogContent).
+    /// The content to render in the portal (typically DialogOverlay and DialogContentPrimitive).
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -40,8 +40,8 @@
         if (Context == null)
         {
             throw new InvalidOperationException(
-                "DialogPortal must be used within a Dialog component. " +
-                "Ensure DialogPortal is a child of a Dialog component.");
+                "DialogPortal must be used within a DialogPrimitive component. " +
+                "Ensure DialogPortal is a child of a DialogPrimitive component.");
         }
 
         _portalId = $"{Context.Id}-portal";

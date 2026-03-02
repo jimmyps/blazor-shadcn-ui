@@ -1,4 +1,4 @@
-@namespace BlazorUI.Components.Typography
+@namespace NeoUI.Blazor
 
 <h2 class="@CssClass">@ChildContent</h2>
 
@@ -9,7 +9,7 @@
     [Parameter]
     public string? Class { get; set; }
 
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0",
         Class
     );

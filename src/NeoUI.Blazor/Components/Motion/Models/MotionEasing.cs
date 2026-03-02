@@ -1,4 +1,4 @@
-﻿namespace BlazorUI.Components.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Comprehensive easing functions for animations.

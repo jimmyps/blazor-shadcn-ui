@@ -1,9 +1,7 @@
-using BlazorUI.Primitives.Contexts;
-
-namespace BlazorUI.Primitives.Dialog;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
-/// State for the Dialog primitive context.
+/// State for the DialogPrimitive primitive context.
 /// </summary>
 public class DialogState
 {
@@ -20,7 +18,7 @@ public class DialogState
 }
 
 /// <summary>
-/// Context for Dialog primitive component and its children.
+/// Context for DialogPrimitive primitive component and its children.
 /// Manages dialog state and provides IDs for ARIA attributes.
 /// </summary>
 public class DialogContext : PrimitiveContextWithEvents<DialogState>

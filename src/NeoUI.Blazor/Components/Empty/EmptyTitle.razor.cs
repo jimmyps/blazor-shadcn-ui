@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Empty;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A title component for an empty state.

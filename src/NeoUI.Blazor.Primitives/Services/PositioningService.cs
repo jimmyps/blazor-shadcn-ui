@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Text.Json;
 
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Implementation of positioning service using Floating UI library.
@@ -36,7 +36,7 @@ public class PositioningService : IPositioningService, IAsyncDisposable
             if (_module == null)
             {
                 _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/positioning.js");
+                    "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/positioning.js");
             }
             return _module;
         }

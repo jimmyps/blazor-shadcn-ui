@@ -2,7 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Chart.js renderer implementation (canvas-based).
@@ -35,7 +35,7 @@ public class ChartJsRenderer : IChartRenderer
     public async Task<string> InitializeAsync(ElementReference element, ChartConfig config)
     {
         _jsModule ??= await _jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/NeoBlazorUI.Components/js/chartjs-renderer.js");
+            "import", "./_content/NeoUI.Blazor/js/chartjs-renderer.js");
         
         // Serialize config to JSON with camelCase to ensure proper property names in JS
         var json = JsonSerializer.Serialize(config, _jsonOptions);

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.RadioGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A radio group component that allows single selection from a set of mutually exclusive options.

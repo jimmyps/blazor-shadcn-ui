@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Components;
-using BlazorUI.Primitives.RadioGroup;
-using BlazorUI.Components.Utilities;
-
-namespace BlazorUI.Components.RadioGroup;
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the visual style variant for a radio group item.
@@ -46,7 +45,7 @@ public enum RadioGroupItemVariant
 /// </example>
 public partial class RadioGroupItem<TValue> : ComponentBase
 {
-    private BlazorUI.Primitives.RadioGroup.RadioGroupItem<TValue>? primitiveRef;
+    private RadioGroupItemPrimitive<TValue>? primitiveRef;
 
     /// <summary>
     /// Gets or sets the cascaded RadioGroup context from the parent.

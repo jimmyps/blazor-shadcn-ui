@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.DataTable;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines a column in a DataTable with declarative syntax.

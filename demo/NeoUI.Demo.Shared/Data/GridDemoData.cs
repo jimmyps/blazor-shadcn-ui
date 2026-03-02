@@ -1,15 +1,21 @@
-namespace BlazorUI.Demo.Shared.Data;
+namespace NeoUI.Demo.Shared.Data;
 
 /// <summary>
-/// Order model for Grid component demos.
+/// Order model for DataGrid component demos.
 /// </summary>
 public class Order
 {
+    /// <summary>Gets or sets the unique order identifier.</summary>
     public int Id { get; set; }
+    /// <summary>Gets or sets the customer name.</summary>
     public string Customer { get; set; } = "";
+    /// <summary>Gets or sets the order status.</summary>
     public OrderStatus Status { get; set; }
+    /// <summary>Gets or sets the order total amount.</summary>
     public decimal Amount { get; set; }
+    /// <summary>Gets or sets the date the order was placed.</summary>
     public DateTime OrderDate { get; set; }
+    /// <summary>Gets or sets the shipping destination.</summary>
     public string ShipTo { get; set; } = "";
 }
 
@@ -18,15 +24,20 @@ public class Order
 /// </summary>
 public enum OrderStatus
 {
+    /// <summary>Order has been placed but not yet processed.</summary>
     Pending,
+    /// <summary>Order is currently being processed.</summary>
     Processing,
+    /// <summary>Order has been shipped.</summary>
     Shipped,
+    /// <summary>Order has been delivered.</summary>
     Delivered,
+    /// <summary>Order has been cancelled.</summary>
     Cancelled
 }
 
 /// <summary>
-/// Demo data generator for Grid component examples.
+/// Demo data generator for DataGrid component examples.
 /// </summary>
 public static class GridDemoData
 {

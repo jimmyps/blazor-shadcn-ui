@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Abstraction for chart rendering engines.

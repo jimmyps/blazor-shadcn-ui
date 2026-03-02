@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Represents theme configuration for charts.

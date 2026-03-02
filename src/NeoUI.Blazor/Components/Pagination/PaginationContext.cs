@@ -1,6 +1,6 @@
-using BlazorUI.Primitives.Table;
-
-namespace BlazorUI.Components.Pagination;
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides context state for Pagination component and its sub-components.

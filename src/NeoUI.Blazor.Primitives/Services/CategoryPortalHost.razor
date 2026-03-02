@@ -1,4 +1,4 @@
-@namespace BlazorUI.Primitives.Services
+@namespace NeoUI.Blazor.Primitives.Services
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IPortalService PortalService
@@ -17,7 +17,7 @@
 @foreach (var portal in PortalService.GetPortals(Category))
 {
     _renderedThisCycle.Add(portal.Key);
-    <div @key="portal.Key" data-portal-id="@portal.Key" data-category="@Category.ToString().ToLowerInvariant()" class="blazorui-portal" style="display: contents;">
+    <div @key="portal.Key" data-portal-id="@portal.Key" data-category="@Category.ToString().ToLowerInvariant()" class="neoui-portal" style="display: contents;">
         @portal.Value
     </div>
 }
@@ -59,7 +59,7 @@
             try
             {
                 _portalModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/portal.js");
+                    "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/portal.js");
             }
             catch (JSDisconnectedException)
             {

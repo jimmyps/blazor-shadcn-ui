@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// A headless pagination component that provides pagination controls for a table.

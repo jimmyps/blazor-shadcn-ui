@@ -1,0 +1,22 @@
+using System.Text.Json.Serialization;
+
+namespace NeoUI.Blazor;
+
+/// <summary>
+/// Specifies the virtualization mode for rendering large datasets efficiently.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum DataGridVirtualizationMode
+{
+    /// <summary>Renderer decides based on data size.</summary>
+    Auto,
+    
+    /// <summary>No virtualization.</summary>
+    None,
+    
+    /// <summary>Row virtualization only.</summary>
+    RowOnly,
+    
+    /// <summary>Both row and column virtualization.</summary>
+    RowAndColumn
+}

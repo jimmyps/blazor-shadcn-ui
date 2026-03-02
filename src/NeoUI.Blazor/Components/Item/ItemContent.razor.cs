@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Item;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A flex container for managing internal spacing and layout of item information.

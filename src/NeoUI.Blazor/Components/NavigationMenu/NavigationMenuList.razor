@@ -1,10 +1,8 @@
-@namespace BlazorUI.Components.NavigationMenu
-@using BlazorUI.Components.Utilities
-
+@namespace NeoUI.Blazor
 @* NavigationMenuList - styled list container *@
-<BlazorUI.Primitives.NavigationMenu.NavigationMenuList class="@GetClass()" @attributes="AdditionalAttributes">
+<NavigationMenuListPrimitive class="@GetClass()" @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.NavigationMenu.NavigationMenuList>
+</NavigationMenuListPrimitive>
 
 @code {
     /// <summary>

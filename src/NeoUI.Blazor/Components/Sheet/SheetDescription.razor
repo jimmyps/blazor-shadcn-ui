@@ -1,14 +1,11 @@
-@namespace BlazorUI.Components.Sheet
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Sheet
-
+@namespace NeoUI.Blazor
 @*
     Styled SheetDescription component with shadcn/ui typography classes.
 *@
 
-<BlazorUI.Primitives.Sheet.SheetDescription class="@GetClassNames()" @attributes="AdditionalAttributes">
+<SheetDescriptionPrimitive class="@GetClassNames()" @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.Sheet.SheetDescription>
+</SheetDescriptionPrimitive>
 
 @code {
     /// <summary>

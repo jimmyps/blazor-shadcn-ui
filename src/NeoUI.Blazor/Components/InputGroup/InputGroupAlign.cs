@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.InputGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the alignment positions for InputGroup addons.

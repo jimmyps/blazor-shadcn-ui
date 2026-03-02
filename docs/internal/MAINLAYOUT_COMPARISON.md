@@ -3,8 +3,8 @@
 ## Summary
 
 **Conflict Type:** DU (Deleted by Us)
-- **THEIRS:** `demo/BlazorUI.Demo/Shared/MainLayout.razor` (626 lines)
-- **OURS:** `demo/BlazorUI.Demo.Shared/Common/MainLayout.razor` (590 lines) - **MOVED**
+- **THEIRS:** `demo/NeoUI.Demo/Shared/MainLayout.razor` (626 lines)
+- **OURS:** `demo/NeoUI.Demo.Shared/Common/MainLayout.razor` (590 lines) - **MOVED**
 
 **Why Deleted:** We refactored and moved MainLayout to the Shared project (`Demo.Shared/Common/`)
 
@@ -34,8 +34,8 @@
 
 **Action:**
 ```bash
-git rm demo/BlazorUI.Demo/Shared/MainLayout.razor
-git rm demo/BlazorUI.Demo/Shared/MainLayout.razor.cs
+git rm demo/NeoUI.Demo/Shared/MainLayout.razor
+git rm demo/NeoUI.Demo/Shared/MainLayout.razor.cs
 ```
 
 ---

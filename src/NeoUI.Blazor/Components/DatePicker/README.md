@@ -21,9 +21,9 @@ Date selection components with Calendar in Popover pattern.
 ### Basic DatePicker
 
 ```razor
-@using BlazorUI.Components.DatePicker
+@using NeoUI.Blazor
 
-<DatePicker @bind-SelectedDate="selectedDate" />
+<DatePicker
 
 <p>Selected: @selectedDate?.ToString("D")</p>
 
@@ -114,7 +114,7 @@ Date selection components with Calendar in Popover pattern.
 ### DatePicker in a Form
 
 ```razor
-@using BlazorUI.Components.Field
+@using NeoUI.Blazor
 
 <Field>
     <FieldLabel>Date of Birth</FieldLabel>

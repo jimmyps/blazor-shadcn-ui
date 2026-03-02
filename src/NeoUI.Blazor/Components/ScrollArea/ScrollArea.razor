@@ -1,4 +1,4 @@
-@namespace BlazorUI.Components.ScrollArea
+@namespace NeoUI.Blazor
 @using Microsoft.JSInterop
 @using Microsoft.Extensions.Logging
 @implements IAsyncDisposable
@@ -114,7 +114,7 @@
             try
             {
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/scroll-area.js");
+                    "import", "./_content/NeoUI.Blazor/js/scroll-area.js");
 
                 _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
                     "initialize",

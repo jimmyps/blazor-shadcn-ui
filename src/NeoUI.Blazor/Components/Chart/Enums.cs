@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Scale type for chart axes.

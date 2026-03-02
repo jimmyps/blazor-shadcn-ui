@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.DropdownMenu;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Interface for dropdown menu items to support keyboard navigation.

@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Services;
+namespace NeoUI.Blazor.Services;
 
 /// <summary>
 /// Visual variant of the dialog

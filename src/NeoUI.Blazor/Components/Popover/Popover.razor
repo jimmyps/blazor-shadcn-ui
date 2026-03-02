@@ -1,18 +1,16 @@
-@namespace BlazorUI.Components.Popover
-@using BlazorUI.Primitives.Popover
-
+@namespace NeoUI.Blazor
 @*
     Styled Popover component wrapper.
     Wraps the Popover primitive with shadcn/ui styling.
 *@
 
-<BlazorUI.Primitives.Popover.Popover Open="@Open"
+<PopoverPrimitive Open="@Open"
                                            OpenChanged="@OpenChanged"
                                            DefaultOpen="@DefaultOpen"
                                            OnOpenChange="@OnOpenChange"
                                            Modal="@Modal">
     @ChildContent
-</BlazorUI.Primitives.Popover.Popover>
+</PopoverPrimitive>
 
 @code {
     /// <summary>

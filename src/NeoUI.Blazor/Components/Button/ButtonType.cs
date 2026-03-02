@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Button;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the HTML button type attribute value.

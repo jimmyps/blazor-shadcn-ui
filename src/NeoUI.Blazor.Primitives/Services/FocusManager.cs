@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Implementation of focus management service using JavaScript interop.
@@ -25,7 +25,7 @@ public class FocusManager : IFocusManager, IAsyncDisposable
         if (_module == null)
         {
             _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/NeoBlazorUI.Primitives/js/primitives/focus-trap.js");
+                "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/focus-trap.js");
         }
         return _module;
     }

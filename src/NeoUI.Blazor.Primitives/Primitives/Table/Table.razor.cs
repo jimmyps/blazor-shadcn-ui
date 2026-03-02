@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Headless table primitive component providing sorting, pagination, and selection capabilities.
@@ -158,7 +158,7 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
     /// Synchronizes the SelectionMode parameter with the TableState's Selection.Mode property.
     /// This ensures consistency between the primitive's parameter and internal state, allowing
     /// selection operations to function correctly. Without this synchronization, the SelectionState
-    /// would retain its default Mode value (None), causing Select() to return early without effect.
+    /// would retain its default Mode value (None), causing SelectPrimitive() to return early without effect.
     /// </summary>
     private void SyncSelectionMode()
     {

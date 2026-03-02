@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Chart.Series;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Base class for all chart series components providing common properties and animation support.

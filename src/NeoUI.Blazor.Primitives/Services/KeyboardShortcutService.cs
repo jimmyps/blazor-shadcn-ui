@@ -1,7 +1,7 @@
-using BlazorUI.Primitives.Utilities;
+using NeoUI.Blazor.Primitives;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Implementation of keyboard shortcut service using JavaScript interop for global keyboard handling.
@@ -179,7 +179,7 @@ public class KeyboardShortcutService : IKeyboardShortcutService
             {
                 _dotNetRef = DotNetObjectReference.Create(this);
                 _module = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Primitives/js/primitives/keyboard-shortcuts.js");
+                    "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/keyboard-shortcuts.js");
                 await _module.InvokeVoidAsync("initialize", _dotNetRef);
             }
         }

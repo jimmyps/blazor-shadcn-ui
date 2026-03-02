@@ -1,5 +1,4 @@
-@namespace BlazorUI.Components.ResponsiveNav
-@using BlazorUI.Primitives.Sheet
+@namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
 @inject NavigationManager NavigationManager
 @implements IDisposable
@@ -12,8 +11,8 @@
 
 @if (Context != null)
 {
-    <BlazorUI.Components.Sheet.Sheet Open="@Context.OpenMobile" OpenChanged="@(EventCallback.Factory.Create<bool>(this, OnOpenChanged))" Side="@Side">
-        <BlazorUI.Components.Sheet.SheetContent Class="@ContentClass" ShowClose="@ShowClose">
+    <Sheet Open="@Context.OpenMobile" OpenChanged="@(EventCallback.Factory.Create<bool>(this, OnOpenChanged))" Side="@Side">
+        <SheetContent Class="@ContentClass" ShowClose="@ShowClose">
             @if (Header != null)
             {
                 <div class="border-b pb-4 mb-4">
@@ -27,8 +26,8 @@
                     @Footer
                 </div>
             }
-        </BlazorUI.Components.Sheet.SheetContent>
-    </BlazorUI.Components.Sheet.Sheet>
+        </SheetContent>
+    </Sheet>
 }
 
 @code {

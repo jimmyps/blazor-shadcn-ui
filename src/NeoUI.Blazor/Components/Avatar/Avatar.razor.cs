@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Text;
 
-namespace BlazorUI.Components.Avatar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An avatar component that displays a user image with fallback support.

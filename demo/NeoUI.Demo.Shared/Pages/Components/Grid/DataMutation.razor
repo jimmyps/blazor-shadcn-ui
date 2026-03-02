@@ -1,8 +1,5 @@
-@page "/components/grid/data-mutation"
-@using BlazorUI.Components.Grid
-@using BlazorUI.Components.Button
-@using BlazorUI.Components.Badge
-@using BlazorUI.Demo.Shared.Data
+@page "/components/datagrid/data-mutation"
+@using NeoUI.Demo.Shared.Data
 @using System.Collections.ObjectModel
 
 <PageTitle>Grid Components - Data Mutation (NotifyItemsChanged)</PageTitle>
@@ -15,16 +12,10 @@
         </p>
     </div>
 
-    @* Demo 1: Natural Mutation Pattern *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Natural Mutation Pattern ✨</h2>
-            <p class="text-muted-foreground">
-                With <code class="px-1 py-0.5 rounded bg-muted">TrackedObservableCollection</code>, you can mutate objects naturally and signal changes when done.
-            </p>
-        </div>
-
-        <div class="rounded-lg border bg-green-50 dark:bg-green-950/20 p-4 text-sm">
+    <DemoSection Title="Natural Mutation Pattern ✨"
+                 Description="With &lt;code class=&quot;px-1 py-0.5 rounded bg-muted&quot;&gt;TrackedObservableCollection&lt;/code&gt;, you can mutate objects naturally and signal changes when done.">
+        <DemoBlock Code="@_naturalMutationCode">
+            <div class="rounded-lg border bg-green-50 dark:bg-green-950/20 p-4 text-sm">
             <div class="flex gap-2">
                 <div class="text-green-600 dark:text-green-400">✅</div>
                 <div>
@@ -34,7 +25,7 @@ order1.Status = OrderStatus.Shipped;
 order2.Quantity = 10;
 order3.Total = 299.99m;
 
-// Signal changes - Grid updates only these rows!
+// Signal changes - DataGrid updates only these rows!
 collection.NotifyItemsChanged(order1, order2, order3);</code></pre>
                 </div>
             </div>
@@ -52,80 +43,31 @@ collection.NotifyItemsChanged(order1, order2, order3);</code></pre>
             </Button>
         </div>
 
-        <Grid @ref="mutationGrid" 
+        <DataGrid @ref="mutationGrid" 
               Items="@mutationOrders" 
-              SelectionMode="GridSelectionMode.None"
+              SelectionMode="DataGridSelectionMode.None"
               Height="400px">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
-                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
-                <GridColumn Field="OrderDate" Header="Order Date" Width="150px" DataFormatString="{0:MM/dd/yyyy}" />
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <DataGridColumn Field="OrderDate" Header="Order Date" Width="150px" DataFormatString="{0:MM/dd/yyyy}" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 text-sm text-muted-foreground">
             Pending: @mutationOrders.Count(o => o.Status == OrderStatus.Pending) | 
             Shipped: @mutationOrders.Count(o => o.Status == OrderStatus.Shipped) | 
             Delivered: @mutationOrders.Count(o => o.Status == OrderStatus.Delivered)
         </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>@@code {
-    private Grid&lt;Order&gt; mutationGrid;
-    private TrackedObservableCollection&lt;Order&gt; mutationOrders = new();
-
-    private void UpdateRandomOrder()
-    {
-        if (mutationOrders.Count == 0) return;
-        
-        var order = mutationOrders[Random.Shared.Next(mutationOrders.Count)];
-        
-        // Natural mutation
-        order.Status = OrderStatus.Shipped;
-        order.Amount = Math.Round((decimal)(Random.Shared.NextDouble() * 10000 + 100), 2);
-        
-        // Signal the change
-        mutationOrders.NotifyItemsChanged(order);
-    }
-
-    private void UpdateMultipleOrders()
-    {
-        var ordersToUpdate = mutationOrders
-            .OrderBy(x => Random.Shared.Next())
-            .Take(3)
-            .ToArray();
-        
-        // Batch mutations
-        foreach (var order in ordersToUpdate)
-        {
-            order.Status = OrderStatus.Delivered;
-            order.Amount *= 0.9m; // 10% discount
-        }
-        
-        // Signal all changes at once
-        mutationOrders.NotifyItemsChanged(ordersToUpdate);
-    }
-}</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Demo 2: Comparison with Old Pattern *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Comparison: Old vs New Pattern</h2>
-            <p class="text-muted-foreground">
-                Compare the awkward index reassignment with the elegant mutation pattern.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <DemoSection Title="Comparison: Old vs New Pattern"
+                 Description="Compare the awkward index reassignment with the elegant mutation pattern.">
+        <DemoBlock>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="rounded-lg border p-4">
                 <h3 class="font-semibold mb-2 text-red-600 dark:text-red-400">❌ Old Pattern (Awkward)</h3>
                 <pre class="text-xs bg-muted p-2 rounded overflow-x-auto"><code>var order = orders[5];
@@ -150,18 +92,13 @@ orders.NotifyItemsChanged(order);
 orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
             </div>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Demo 3: Batch Updates *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Batch Updates Demo</h2>
-            <p class="text-muted-foreground">
-                Update multiple items and signal all changes in a single efficient transaction.
-            </p>
-        </div>
-
-        <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
+    <DemoSection Title="Batch Updates Demo"
+                 Description="Update multiple items and signal all changes in a single efficient transaction.">
+        <DemoBlock Code="@_batchUpdatesCode">
+            <div class="rounded-lg border bg-blue-50 dark:bg-blue-950/20 p-4 text-sm">
             <div class="flex gap-2">
                 <div class="text-blue-600 dark:text-blue-400">⚡</div>
                 <div>
@@ -169,7 +106,7 @@ orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
                     <ul class="list-disc list-inside space-y-1 text-muted-foreground">
                         <li>Mutate multiple objects naturally in a loop or LINQ query</li>
                         <li>Signal all changes at once with <code>NotifyItemsChanged()</code></li>
-                        <li>Grid applies a single transaction - minimal DOM updates</li>
+                        <li>DataGrid applies a single transaction - minimal DOM updates</li>
                         <li>Perfect for applying business rules or bulk status updates</li>
                     </ul>
                 </div>
@@ -188,77 +125,29 @@ orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
             </Button>
         </div>
 
-        <Grid @ref="batchGrid" 
+        <DataGrid @ref="batchGrid" 
               Items="@batchOrders" 
-              SelectionMode="GridSelectionMode.None"
+              SelectionMode="DataGridSelectionMode.None"
               Height="400px">
             <Columns>
-                <GridColumn Field="Id" Header="Order ID" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" />
-                <GridColumn Field="Status" Header="Status" Width="130px" />
-                <GridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
-                <GridColumn Field="OrderDate" Header="Order Date" Width="150px" DataFormatString="{0:MM/dd/yyyy}" />
+                <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
+                <DataGridColumn Field="Customer" Header="Customer" />
+                <DataGridColumn Field="Status" Header="Status" Width="130px" />
+                <DataGridColumn Field="Amount" Header="Amount" Width="120px" DataFormatString="{0:C}" />
+                <DataGridColumn Field="OrderDate" Header="Order Date" Width="150px" DataFormatString="{0:MM/dd/yyyy}" />
             </Columns>
-        </Grid>
+        </DataGrid>
 
         <div class="mt-4 text-sm text-muted-foreground">
             Total Orders: @batchOrders.Count | 
             High Value (&gt;$5000): @batchOrders.Count(o => o.Amount > 5000)
         </div>
+        </DemoBlock>
+    </DemoSection>
 
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>@@code {
-    private void ApplyDiscount()
-    {
-        // Find high-value orders
-        var highValueOrders = batchOrders
-            .Where(o => o.Amount > 5000)
-            .ToArray();
-        
-        if (highValueOrders.Length == 0) return;
-        
-        // Apply 10% discount to all
-        foreach (var order in highValueOrders)
-        {
-            order.Amount *= 0.9m;
-        }
-        
-        // Signal all changes in one batch
-        batchOrders.NotifyItemsChanged(highValueOrders);
-    }
-
-    private void MarkOldOrdersDelivered()
-    {
-        var cutoffDate = DateTime.Now.AddDays(-15);
-        var oldOrders = batchOrders
-            .Where(o =&gt; o.OrderDate &lt; cutoffDate && o.Status != OrderStatus.Delivered)
-            .ToArray();
-        
-        if (oldOrders.Length == 0) return;
-        
-        foreach (var order in oldOrders)
-        {
-            order.Status = OrderStatus.Delivered;
-        }
-        
-        batchOrders.NotifyItemsChanged(oldOrders);
-    }
-}</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Best Practices *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Best Practices</h2>
-        </div>
-
-        <div class="rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-4 text-sm">
+    <DemoSection Title="Best Practices">
+        <DemoBlock>
+            <div class="rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-4 text-sm">
             <div class="flex gap-2">
                 <div class="text-yellow-600 dark:text-yellow-400">💡</div>
                 <div>
@@ -321,14 +210,17 @@ orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
                 </table>
             </div>
         </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 </div>
 
+<DemoPageSubNav ParentSlug="datagrid" />
+
 @code {
-    private Grid<Order> mutationGrid = null!;
+    private DataGrid<Order> mutationGrid = null!;
     private TrackedObservableCollection<Order> mutationOrders = new();
 
-    private Grid<Order> batchGrid = null!;
+    private DataGrid<Order> batchGrid = null!;
     private TrackedObservableCollection<Order> batchOrders = new();
 
     protected override void OnInitialized()
@@ -446,4 +338,6 @@ orders.NotifyItemsChanged(order1, order2, order3);</code></pre>
             batchOrders.Add(order);
         }
     }
-}
+
+    }
+

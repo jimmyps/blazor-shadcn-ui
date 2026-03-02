@@ -1,18 +1,18 @@
-@page "/components/chart/scatter"
-@using BlazorUI.Components.Card
-@using BlazorUI.Components.Chart
+﻿@page "/components/chart/scatter"
+@using NeoUI.Blazor.Charts
 
-<PageTitle>Chart Components - Scatter Chart</PageTitle>
+<PageTitle>Scatter Chart - NeoUI</PageTitle>
 
-<div class="space-y-8">
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        @* Basic Scatter *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Basic Scatter</CardTitle>
-                <CardDescription>Height vs Weight correlation</CardDescription>
-            </CardHeader>
-            <CardContent>
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Scatter Chart"
+        Description="Scatter and bubble charts for visualising correlations between two numeric variables. Supports multiple series, custom symbol shapes, and large datasets." />
+
+    <DemoSection Title="Variants" Description="Core scatter chart configurations.">
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <DemoBlock Code="@_basicCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@heightWeightData">
                         <Grid Stroke="var(--border)" />
@@ -22,21 +22,14 @@
                         <YAxis DataKey="weight" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="weight" SymbolSize="8" Symbol="SymbolShape.Circle" Color="var(--chart-1)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Multiple Series *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Multiple Series</CardTitle>
-                <CardDescription>Customer segments comparison</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_multipleSeriesCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@customerData">
                         <Grid Stroke="var(--border)" />
@@ -46,22 +39,15 @@
                         <YAxis DataKey="spending" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="premium" Name="Premium" SymbolSize="8" Color="var(--chart-1)" />
                         <Scatter DataKey="standard" Name="Standard" SymbolSize="8" Color="var(--chart-2)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Bubble Chart *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Bubble Chart</CardTitle>
-                <CardDescription>Sales by region visualization</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_bubbleCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@salesData">
                         <Grid Stroke="var(--border)" />
@@ -71,21 +57,14 @@
                         <YAxis DataKey="customers" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="customers" SymbolSize="12" Color="var(--chart-3)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Custom Symbols *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Custom Symbols</CardTitle>
-                <CardDescription>Different symbol shapes</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_customSymbolsCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@symbolData">
                         <Grid Stroke="var(--border)" />
@@ -95,22 +74,15 @@
                         <YAxis DataKey="y" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="diamonds" Name="Diamond" SymbolSize="10" Symbol="SymbolShape.Diamond" Color="var(--chart-1)" />
                         <Scatter DataKey="triangles" Name="Triangle" SymbolSize="10" Symbol="SymbolShape.Triangle" Color="var(--chart-2)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* With Grid *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Grid</CardTitle>
-                <CardDescription>Scatter with grid lines</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_withGridCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@heightWeightData">
                         <Grid Horizontal="true" Vertical="true" Stroke="var(--border)" />
@@ -120,21 +92,14 @@
                         <YAxis DataKey="weight" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="weight" SymbolSize="8" Color="var(--chart-4)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Large Dataset *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Large Dataset</CardTitle>
-                <CardDescription>Performance with 120 points</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_largeDatasetCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@largeDataset">
                         <Grid Stroke="var(--border)" />
@@ -144,21 +109,14 @@
                         <YAxis DataKey="y" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="y" SymbolSize="4" Color="var(--chart-5)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Scatter with Trend *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Trend Pattern</CardTitle>
-                <CardDescription>Positive correlation pattern</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_trendCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@trendData">
                         <Grid Stroke="var(--border)" />
@@ -168,21 +126,14 @@
                         <YAxis DataKey="salary" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend Show="false" />
                         <Scatter DataKey="salary" SymbolSize="8" Color="var(--chart-1)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Custom Colors *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Color Variations</CardTitle>
-                <CardDescription>Different color combinations</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_colorVariationsCode">
                 <ChartContainer Height="200">
                     <ScatterChart Data="@colorData">
                         <Grid Stroke="var(--border)" />
@@ -192,16 +143,24 @@
                         <YAxis DataKey="y" Color="var(--border)">
                             <AxisLabel Color="var(--muted-foreground)" />
                         </YAxis>
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <Scatter DataKey="series1" Name="Series A" SymbolSize="8" Color="var(--chart-3)" />
                         <Scatter DataKey="series2" Name="Series B" SymbolSize="8" Color="var(--chart-4)" />
                         <Scatter DataKey="series3" Name="Series C" SymbolSize="8" Color="var(--chart-5)" />
                     </ScatterChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-    </div>
+            </DemoBlock>
+
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference">
+        <DemoPropsTable Rows="@_scatterChartProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
 </div>
 
 @code {

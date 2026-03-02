@@ -1,6 +1,4 @@
-using BlazorUI.Components.Common;
-using BlazorUI.Components.Utilities;
-using BlazorUI.Components.Validation;
+using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
@@ -8,7 +6,7 @@ using Microsoft.JSInterop;
 using System.Globalization;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.NumericInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A numeric input component that follows the shadcn/ui design system.
@@ -694,7 +692,7 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
             {
                 // Import the input module for event handling
                 _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+                    "import", "./_content/NeoUI.Blazor/js/input.js");
 
                 // Create DotNetObjectReference for callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);
@@ -732,7 +730,7 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
                 
                 // Load cursor position module (still needed for programmatic updates)
                 _cursorModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/cursor-position.js");
+                    "import", "./_content/NeoUI.Blazor/js/cursor-position.js");
 
                 // Apply initial validation state after first render
                 if (ShowValidationError && _validationBehavior != null)

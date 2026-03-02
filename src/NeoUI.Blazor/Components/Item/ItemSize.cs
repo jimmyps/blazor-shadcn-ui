@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Item;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the size options for the Item component.

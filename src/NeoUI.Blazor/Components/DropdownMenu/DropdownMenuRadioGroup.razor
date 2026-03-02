@@ -1,14 +1,14 @@
-@namespace BlazorUI.Components.DropdownMenu
+@namespace NeoUI.Blazor
 @typeparam TValue
 
 @* Styled DropdownMenuRadioGroup - wrapper for radio items *@
-<BlazorUI.Primitives.DropdownMenu.DropdownMenuRadioGroup TValue="TValue"
+<DropdownMenuRadioGroupPrimitive TValue="TValue"
                                                          Value="@Value"
                                                          ValueChanged="@ValueChanged"
                                                          OnValueChange="@OnValueChange"
                                                          class="@Class">
     @ChildContent
-</BlazorUI.Primitives.DropdownMenu.DropdownMenuRadioGroup>
+</DropdownMenuRadioGroupPrimitive>
 
 @code {
     /// <summary>

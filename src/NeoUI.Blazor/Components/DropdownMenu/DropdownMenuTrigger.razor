@@ -1,15 +1,13 @@
-@namespace BlazorUI.Components.DropdownMenu
-@using BlazorUI.Primitives.DropdownMenu
-
+@namespace NeoUI.Blazor
 @* Styled DropdownMenuTrigger - passthrough wrapper without layout interference *@
-<BlazorUI.Primitives.DropdownMenu.DropdownMenuTrigger class="@Class"
+<DropdownMenuTriggerPrimitive class="@Class"
                                                             AsChild="@AsChild"
                                                             Disabled="@Disabled"
                                                             OnClick="@OnClick"
                                                             CustomClickHandling="@CustomClickHandling"
                                                             @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.DropdownMenu.DropdownMenuTrigger>
+</DropdownMenuTriggerPrimitive>
 
 @code {
     /// <summary>

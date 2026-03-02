@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Kbd;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A keyboard key badge component for displaying keyboard shortcuts.

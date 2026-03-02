@@ -1,0 +1,47 @@
+@* DemoCopyButton — copies Text to the clipboard via the browser Clipboard API. *@
+@inject IJSRuntime JS
+@using Microsoft.JSInterop
+
+<button
+    type="button"
+    title="Copy to clipboard"
+    @onclick="CopyAsync"
+    class="@("inline-flex items-center gap-1 rounded px-2 py-1 text-xs bg-background/80 border border-border/60 hover:bg-accent transition-colors " + Class)">
+    @if (_copied)
+    {
+        <LucideIcon Name="check" Size="13" Class="text-green-500" />
+        <span>Copied</span>
+    }
+    else
+    {
+        <LucideIcon Name="copy" Size="13" />
+        <span>Copy</span>
+    }
+</button>
+
+@code {
+    /// <summary>The text that will be placed on the clipboard.</summary>
+    [Parameter, EditorRequired] public string Text { get; set; } = "";
+
+    /// <summary>Additional CSS classes for the button element.</summary>
+    [Parameter] public string? Class { get; set; }
+
+    private bool _copied;
+
+    private async Task CopyAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", Text);
+            _copied = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            _copied = false;
+            StateHasChanged();
+        }
+        catch (JSException)
+        {
+            // Clipboard API may be blocked in non-secure contexts or by browser permissions; ignore silently.
+        }
+    }
+}

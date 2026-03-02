@@ -1,4 +1,4 @@
-@namespace BlazorUI.Components.Drawer
+@namespace NeoUI.Blazor
 
 <h2 class="@CssClass">
     @ChildContent
@@ -11,7 +11,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private string CssClass => BlazorUI.Components.Utilities.ClassNames.cn(
+    private string CssClass => ClassNames.cn(
         "text-lg font-semibold leading-none tracking-tight",
         Class
     );

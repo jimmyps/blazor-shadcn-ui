@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.CurrencyInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the properties of a currency.

@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Utilities;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Represents a keyboard shortcut definition with modifier keys and a main key.

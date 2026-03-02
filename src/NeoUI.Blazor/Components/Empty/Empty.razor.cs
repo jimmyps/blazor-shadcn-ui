@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Empty;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An empty state component for displaying when no data is available.

@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "BlazorUI.Demo.Client": {
+    "NeoUI.Demo.Auto.Client": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

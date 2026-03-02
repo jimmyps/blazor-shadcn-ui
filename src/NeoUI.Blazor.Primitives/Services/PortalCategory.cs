@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Services;
+namespace NeoUI.Blazor.Primitives.Services;
 
 /// <summary>
 /// Categories of portals for separate rendering hosts.

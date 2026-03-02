@@ -1,7 +1,7 @@
 @using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
-@namespace BlazorUI.Components.HeightAnimation
+@namespace NeoUI.Blazor
 
 @*
     HeightAnimation Component
@@ -83,7 +83,7 @@
             {
                 // Load the height animation JavaScript module
                 _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/height-animation.js");
+                    "import", "./_content/NeoUI.Blazor/js/height-animation.js");
             }
             catch (JSException)
             {

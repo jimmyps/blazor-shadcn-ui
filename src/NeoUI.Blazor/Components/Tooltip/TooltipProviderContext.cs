@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Tooltip;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provides shared configuration context for all tooltips within a TooltipProvider.

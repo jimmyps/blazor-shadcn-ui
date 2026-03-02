@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Sidebar;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Element type to render for SidebarMenuButton.

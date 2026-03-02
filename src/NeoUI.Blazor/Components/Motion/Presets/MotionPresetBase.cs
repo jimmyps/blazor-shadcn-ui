@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Base class for motion preset components.

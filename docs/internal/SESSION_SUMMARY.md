@@ -7,7 +7,7 @@
 ### 🆕 New Components
 
 #### 1. **TimePicker Component**
-- **Location:** `src\BlazorUI.Components\Components\TimePicker\`
+- **Location:** `src\NeoUI.Blazor\Components\TimePicker\`
 - **Features:**
   - Hour/Minute selection with NativeSelect dropdowns
   - 12-hour and 24-hour format support
@@ -35,7 +35,7 @@
 
 #### 2. **DateRangePicker - Complete Rewrite**
 - **Relocated:** From `DatePicker\` to `DateRangePicker\` folder
-- **Namespace:** Changed from `BlazorUI.Components.DatePicker` to `BlazorUI.Components.DateRangePicker`
+- **Namespace:** Changed from `NeoUI.Blazor.DatePicker` to `NeoUI.Blazor.DateRangePicker`
 
 **Major Enhancements:**
 
@@ -128,7 +128,7 @@ focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50
 - Works with all popover-based components
 
 **Files Modified:**
-- `src\BlazorUI.Primitives\wwwroot\js\primitives\positioning.js`
+- `src\NeoUI.Blazor.Primitives\wwwroot\js\primitives\positioning.js`
 
 ---
 
@@ -137,9 +137,9 @@ focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50
 #### Updated Files:
 1. **`change_log.md`** - Added comprehensive entry for all changes
 2. **`README.md`** - Updated component count to 79+
-3. **`src\BlazorUI.Components\README.md`** - Updated component count to 79+, added TimePicker and DateRangePicker descriptions
-4. **`demo\BlazorUI.Demo.Shared\Pages\Components\Index.razor`** - Added DateRangePicker entry (TimePicker was already there)
-5. **`demo\BlazorUI.Demo.Shared\Common\SpotlightCommandPalette.razor`** - Added DateRangePicker to search
+3. **`src\NeoUI.Blazor\README.md`** - Updated component count to 79+, added TimePicker and DateRangePicker descriptions
+4. **`demo\NeoUI.Demo.Shared\Pages\Components\Index.razor`** - Added DateRangePicker entry (TimePicker was already there)
+5. **`demo\NeoUI.Demo.Shared\Common\SpotlightCommandPalette.razor`** - Added DateRangePicker to search
 
 ---
 
@@ -215,12 +215,12 @@ focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50
 ### DateRangePicker Namespace Change
 **Before:**
 ```razor
-@using BlazorUI.Components.DatePicker
+@using NeoUI.Blazor.DatePicker
 ```
 
 **After:**
 ```razor
-@using BlazorUI.Components.DateRangePicker
+@using NeoUI.Blazor.DateRangePicker
 ```
 
 **Reason:** Component relocated to its own folder for better organization and maintainability.
@@ -253,8 +253,8 @@ focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50
 ## 🚀 Next Steps (Recommendations)
 
 1. **Fix Tailwind CSS Build Issue** - Pre-existing issue with `tailwindcss.exe` exit code
-2. **Add DateRangePicker README** - Create comprehensive documentation in `src\BlazorUI.Components\Components\DateRangePicker\README.md`
-3. **Add TimePicker README** - Create comprehensive documentation in `src\BlazorUI.Components\Components\TimePicker\README.md`
+2. **Add DateRangePicker README** - Create comprehensive documentation in `src\NeoUI.Blazor\Components\DateRangePicker\README.md`
+3. **Add TimePicker README** - Create comprehensive documentation in `src\NeoUI.Blazor\Components\TimePicker\README.md`
 4. **Update NuGet Package** - Publish new version with TimePicker and enhanced components
 5. **Update Live Demo** - Deploy changes to demo site
 
@@ -263,25 +263,25 @@ focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50
 ## 📦 Files Changed
 
 ### New Files (4)
-- `src\BlazorUI.Components\Components\TimePicker\TimePicker.razor`
-- `src\BlazorUI.Components\Components\TimePicker\TimePicker.razor.cs`
-- `src\BlazorUI.Components\Components\TimePicker\TimePeriod.cs`
-- `demo\BlazorUI.Demo.Shared\Pages\Components\TimePickerDemo.razor`
+- `src\NeoUI.Blazor\Components\TimePicker\TimePicker.razor`
+- `src\NeoUI.Blazor\Components\TimePicker\TimePicker.razor.cs`
+- `src\NeoUI.Blazor\Components\TimePicker\TimePeriod.cs`
+- `demo\NeoUI.Demo.Shared\Pages\Components\TimePickerDemo.razor`
 
 ### Relocated/Renamed (3)
-- `src\BlazorUI.Components\Components\DateRangePicker\DateRangePicker.razor` (from DatePicker folder)
-- `src\BlazorUI.Components\Components\DateRangePicker\DateRangePreset.cs` (new)
-- `demo\BlazorUI.Demo.Shared\Pages\Components\DateRangePickerDemo.razor` (updated)
+- `src\NeoUI.Blazor\Components\DateRangePicker\DateRangePicker.razor` (from DatePicker folder)
+- `src\NeoUI.Blazor\Components\DateRangePicker\DateRangePreset.cs` (new)
+- `demo\NeoUI.Demo.Shared\Pages\Components\DateRangePickerDemo.razor` (updated)
 
 ### Modified (15+)
-- `src\BlazorUI.Components\Components\NativeSelect\NativeSelect.razor`
-- `src\BlazorUI.Primitives\wwwroot\js\primitives\positioning.js`
+- `src\NeoUI.Blazor\Components\NativeSelect\NativeSelect.razor`
+- `src\NeoUI.Blazor.Primitives\wwwroot\js\primitives\positioning.js`
 - `change_log.md`
 - `README.md`
-- `src\BlazorUI.Components\README.md`
-- `demo\BlazorUI.Demo.Shared\Pages\Components\Index.razor`
-- `demo\BlazorUI.Demo.Shared\Common\SpotlightCommandPalette.razor`
-- `demo\BlazorUI.Demo.Shared\Pages\Components\DatePickerDemo.razor`
+- `src\NeoUI.Blazor\README.md`
+- `demo\NeoUI.Demo.Shared\Pages\Components\Index.razor`
+- `demo\NeoUI.Demo.Shared\Common\SpotlightCommandPalette.razor`
+- `demo\NeoUI.Demo.Shared\Pages\Components\DatePickerDemo.razor`
 
 ---
 
@@ -300,7 +300,7 @@ focus-visible:border-ring focus-visible:ring-[2px] focus-visible:ring-ring/50
 
 ## 🏆 Impact
 
-This session significantly improved the BlazorUI component library with:
+This session significantly improved the NeoUI component library with:
 - **Enhanced form inputs** - TimePicker fills a critical gap in date/time selection
 - **Better user experience** - DateRangePicker presets and confirmation buttons
 - **Improved styling** - NativeSelect now looks polished and professional

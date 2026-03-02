@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Represents a single keyframe in an animation sequence.

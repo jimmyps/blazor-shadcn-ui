@@ -17,7 +17,7 @@ A one-time password (OTP) input component with individual slots for each charact
 ### Basic Example (6 Digits)
 
 ```razor
-@using BlazorUI.Components.InputOtp
+@using NeoUI.Blazor
 
 <InputOtp Length="6" OnComplete="HandleComplete">
     <InputOtpGroup>

@@ -1,10 +1,9 @@
 using System.Text.Json;
-using BlazorUI.Components.Utilities;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Components.RichTextEditor;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A rich text editor component built on Quill.js that follows the shadcn/ui design system.
@@ -228,7 +227,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         try
         {
             _jsModule = await JS.InvokeAsync<IJSObjectReference>("import",
-                "./_content/NeoBlazorUI.Components/js/quill-interop.js");
+                "./_content/NeoUI.Blazor/js/quill-interop.js");
             _dotNetRef = DotNetObjectReference.Create(this);
 
             var options = BuildEditorOptions();

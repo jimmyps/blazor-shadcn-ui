@@ -1,20 +1,17 @@
-@namespace BlazorUI.Components.Accordion
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Accordion
-
+@namespace NeoUI.Blazor
 @*
     Styled AccordionContent component.
     Wraps the AccordionContent primitive with shadcn/ui styling.
 *@
 
-<BlazorUI.Primitives.Accordion.AccordionContent ForceMount="@ForceMount"
+<AccordionContentPrimitive ForceMount="@ForceMount"
                                                       class="@CssClass">
     <div class="overflow-hidden min-h-0">
         <div class="pb-4 pt-0 text-sm">
             @ChildContent
         </div>
     </div>
-</BlazorUI.Primitives.Accordion.AccordionContent>
+</AccordionContentPrimitive>
 
 @code {
     /// <summary>

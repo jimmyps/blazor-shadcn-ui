@@ -1,8 +1,6 @@
-using BlazorUI.Components.Button;
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.InputGroup;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A button component optimized for use within InputGroup.

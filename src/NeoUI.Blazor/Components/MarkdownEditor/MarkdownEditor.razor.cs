@@ -1,11 +1,10 @@
-using BlazorUI.Components.Utilities;
 using Ganss.Xss;
 using Markdig;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Components.MarkdownEditor;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A markdown editor component with toolbar and preview functionality.
@@ -144,7 +143,7 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
             {
                 _dotNetRef = DotNetObjectReference.Create(this);
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/markdown-editor.js");
+                    "import", "./_content/NeoUI.Blazor/js/markdown-editor.js");
 
                 // Initialize list continuation behavior and undo/redo
                 await _module.InvokeVoidAsync("initializeListContinuation", _textareaRef, _dotNetRef);

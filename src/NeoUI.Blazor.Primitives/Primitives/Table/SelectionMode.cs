@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Table;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Defines the selection behavior for table rows.

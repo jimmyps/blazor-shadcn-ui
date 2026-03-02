@@ -1,15 +1,15 @@
-@namespace BlazorUI.Components.ContextMenu
+@namespace NeoUI.Blazor
 @typeparam TValue
 
 @* ContextMenuRadioGroup - styled wrapper for radio items *@
-<BlazorUI.Primitives.ContextMenu.ContextMenuRadioGroup TValue="TValue"
+<ContextMenuRadioGroupPrimitive TValue="TValue"
                                                         Value="@Value"
                                                         ValueChanged="@ValueChanged"
                                                         OnValueChange="@OnValueChange"
                                                         class="@Class"
                                                         @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.ContextMenu.ContextMenuRadioGroup>
+</ContextMenuRadioGroupPrimitive>
 
 @code {
     /// <summary>

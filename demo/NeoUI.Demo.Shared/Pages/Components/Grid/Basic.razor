@@ -1,275 +1,159 @@
-@page "/components/grid/basic"
-@using BlazorUI.Components.Grid
-@using BlazorUI.Components.Badge
-@using BlazorUI.Demo.Shared.Data
+@page "/components/datagrid/basic"
+@using NeoUI.Demo.Shared.Data
 
 <PageTitle>Grid Components - Basic Examples</PageTitle>
 
 <div class="space-y-8">
-    @* Demo 1: Simple Grid *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <div class="flex items-center gap-2">
-                <h2 class="text-2xl font-semibold">Simple Grid</h2>
-                <Badge Variant="BadgeVariant.Outline">100 rows</Badge>
-            </div>
-            <p class="text-muted-foreground">
-                Basic 3-column grid with sortable columns displaying order data.
-            </p>
-        </div>
-
-        <Grid Items="@simpleOrders">
-            <Columns>
-                <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" Sortable="true" />
-                <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-            </Columns>
-        </Grid>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders"&gt;
-    &lt;Columns&gt;
-        &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
-        &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
-        &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Demo 2: Paginated Grid *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <div class="flex items-center gap-2">
-                <h2 class="text-2xl font-semibold">Paginated Grid</h2>
-                <Badge Variant="BadgeVariant.Outline">1000 rows</Badge>
-            </div>
-            <p class="text-muted-foreground">
-                Client-side pagination with configurable page size.
-            </p>
-        </div>
-
-        <Grid Items="@allOrders" PagingMode="GridPagingMode.Client" PageSize="25">
-            <Columns>
-                <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" Sortable="true" />
-                <GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
-                <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-                <GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" />
-            </Columns>
-        </Grid>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" PagingMode="GridPagingMode.Client" PageSize="25"&gt;
-    &lt;Columns&gt;
-        &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
-        &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
-        &lt;GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" /&gt;
-        &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
-        &lt;GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Demo 3: Fixed Height Grid *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <div class="flex items-center gap-2">
-                <h2 class="text-2xl font-semibold">Fixed Height Grid</h2>
-                <Badge Variant="BadgeVariant.Outline">Virtualized</Badge>
-            </div>
-            <p class="text-muted-foreground">
-                Grid with fixed 400px height and row virtualization for performance.
-            </p>
-        </div>
-
-        <Grid Items="@allOrders" Height="400px" VirtualizationMode="GridVirtualizationMode.Auto">
-            <Columns>
-                <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                <GridColumn Field="Customer" Header="Customer" Sortable="true" />
-                <GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
-                <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-                <GridColumn Field="ShipTo" Header="Ship To" Sortable="true" Width="150px" />
-            </Columns>
-        </Grid>
-
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;Grid Items="@@orders" Height="400px" VirtualizationMode="GridVirtualizationMode.Auto"&gt;
-    &lt;Columns&gt;
-        &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
-        &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
-        &lt;GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" /&gt;
-        &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
-        &lt;GridColumn Field="ShipTo" Header="Ship To" Sortable="true" Width="150px" /&gt;
-    &lt;/Columns&gt;
-&lt;/Grid&gt;</code></pre>
-            </div>
-        </details>
-    </section>
-
-    @* Demo 3b: 100% Height Grid *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <div class="flex items-center gap-2">
-                <h2 class="text-2xl font-semibold">Container-Filling Grid</h2>
-                <Badge Variant="BadgeVariant.Outline">100% Height</Badge>
-            </div>
-            <p class="text-muted-foreground">
-                Grid that fills 100% of its parent container's height (50% viewport height in this example).
-            </p>
-        </div>
-
-        <div style="height: 50vh;">
-            <Grid Items="@allOrders" Height="100%" VirtualizationMode="GridVirtualizationMode.Auto">
+    <DemoSection Title="Simple DataGrid" Description="Basic 3-column grid with sortable columns displaying order data.">
+        <DemoBlock Code="@_simpleGridCode">
+            <DataGrid Items="@simpleOrders">
                 <Columns>
-                    <GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
-                    <GridColumn Field="Customer" Header="Customer" Sortable="true" />
-                    <GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
-                    <GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
-                    <GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" />
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
                 </Columns>
-            </Grid>
-        </div>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
 
-        <details class="rounded-lg border">
-            <summary class="cursor-pointer select-none px-4 py-3 font-medium hover:bg-muted/50">
-                View Code
-            </summary>
-            <div class="border-t bg-muted/20 p-4">
-                <pre class="overflow-x-auto text-sm"><code>&lt;div style="height: 600px;"&gt;
-    &lt;Grid Items="@@orders" Height="100%" VirtualizationMode="GridVirtualizationMode.Auto"&gt;
-        &lt;Columns&gt;
-            &lt;GridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" /&gt;
-            &lt;GridColumn Field="Customer" Header="Customer" Sortable="true" /&gt;
-            &lt;GridColumn Field="Status" Header="Status" Sortable="true" Width="120px" /&gt;
-            &lt;GridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" /&gt;
-            &lt;GridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" /&gt;
-        &lt;/Columns&gt;
-    &lt;/Grid&gt;
-&lt;/div&gt;</code></pre>
-            </div>
-        </details>
-    </section>
+    <DemoSection Title="Paginated DataGrid" Description="Client-side pagination with configurable page size.">
+        <DemoBlock Code="@_paginatedCode">
+            <DataGrid Items="@allOrders" PagingMode="DataGridPagingMode.Client" PageSize="25">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <DataGridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                    <DataGridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
 
-    @* Demo 4: Themed Grids *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Visual Styles</h2>
-            <p class="text-muted-foreground">
-                Different visual style modifiers: Default, Striped, Bordered, and Minimal.
-            </p>
-        </div>
+    <DemoSection Title="Fixed Height DataGrid" Description="DataGrid with fixed 400px height and row virtualization for performance.">
+        <DemoBlock Code="@_fixedHeightCode">
+            <DataGrid Items="@allOrders" Height="400px" VirtualizationMode="DataGridVirtualizationMode.Auto">
+                <Columns>
+                    <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                    <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
+                    <DataGridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
+                    <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                    <DataGridColumn Field="ShipTo" Header="Ship To" Sortable="true" Width="150px" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
 
-        <div class="grid gap-6 md:grid-cols-2">
-            <div class="space-y-2">
-                <h3 class="font-medium">Default Style</h3>
-                <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Default">
+    <DemoSection Title="Container-Filling DataGrid" Description="DataGrid that fills 100% of its parent container's height (50% viewport height in this example).">
+        <DemoBlock Code="@_containerFillingCode">
+            <div style="height: 50vh;">
+                <DataGrid Items="@allOrders" Height="100%" VirtualizationMode="DataGridVirtualizationMode.Auto">
                     <Columns>
-                        <GridColumn Field="Id" Header="ID" Width="80px" />
-                        <GridColumn Field="Customer" Header="Customer" />
-                        <GridColumn Field="Amount" Header="Amount" Width="100px" />
+                        <DataGridColumn Field="Id" Header="Order ID" Sortable="true" Width="100px" />
+                        <DataGridColumn Field="Customer" Header="Customer" Sortable="true" />
+                        <DataGridColumn Field="Status" Header="Status" Sortable="true" Width="120px" />
+                        <DataGridColumn Field="Amount" Header="Amount" Sortable="true" Width="120px" />
+                        <DataGridColumn Field="OrderDate" Header="Date" Sortable="true" Width="140px" />
                     </Columns>
-                </Grid>
+                </DataGrid>
             </div>
+        </DemoBlock>
+    </DemoSection>
 
-            <div class="space-y-2">
-                <h3 class="font-medium">Striped Style</h3>
-                <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Striped">
-                    <Columns>
-                        <GridColumn Field="Id" Header="ID" Width="80px" />
-                        <GridColumn Field="Customer" Header="Customer" />
-                        <GridColumn Field="Amount" Header="Amount" Width="100px" />
-                    </Columns>
-                </Grid>
+    <DemoSection Title="Visual Styles" Description="Different visual style modifiers: Default, Striped, Bordered, and Minimal.">
+        <DemoBlock Code="@_visualStylesCode">
+            <div class="grid gap-6 md:grid-cols-2">
+                <div class="space-y-2">
+                    <h3 class="font-medium">Default Style</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" VisualStyle="DataGridStyle.Default">
+                        <Columns>
+                            <DataGridColumn Field="Id" Header="ID" Width="80px" />
+                            <DataGridColumn Field="Customer" Header="Customer" />
+                            <DataGridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </DataGrid>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-medium">Striped Style</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" VisualStyle="DataGridStyle.Striped">
+                        <Columns>
+                            <DataGridColumn Field="Id" Header="ID" Width="80px" />
+                            <DataGridColumn Field="Customer" Header="Customer" />
+                            <DataGridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </DataGrid>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-medium">Bordered Style</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" VisualStyle="DataGridStyle.Bordered">
+                        <Columns>
+                            <DataGridColumn Field="Id" Header="ID" Width="80px" />
+                            <DataGridColumn Field="Customer" Header="Customer" />
+                            <DataGridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </DataGrid>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-medium">Minimal Style</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" VisualStyle="DataGridStyle.Minimal">
+                        <Columns>
+                            <DataGridColumn Field="Id" Header="ID" Width="80px" />
+                            <DataGridColumn Field="Customer" Header="Customer" />
+                            <DataGridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </DataGrid>
+                </div>
             </div>
+        </DemoBlock>
+    </DemoSection>
 
-            <div class="space-y-2">
-                <h3 class="font-medium">Bordered Style</h3>
-                <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Bordered">
-                    <Columns>
-                        <GridColumn Field="Id" Header="ID" Width="80px" />
-                        <GridColumn Field="Customer" Header="Customer" />
-                        <GridColumn Field="Amount" Header="Amount" Width="100px" />
-                    </Columns>
-                </Grid>
+    <DemoSection Title="Density Variations" Description="Control the spacing and size: Compact, Comfortable (default), and Spacious.">
+        <DemoBlock Code="@_densityCode">
+            <div class="grid gap-6">
+                <div class="space-y-2">
+                    <h3 class="font-medium">Compact Density</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" Density="DataGridDensity.Compact">
+                        <Columns>
+                            <DataGridColumn Field="Id" Header="ID" Width="80px" />
+                            <DataGridColumn Field="Customer" Header="Customer" />
+                            <DataGridColumn Field="Status" Header="Status" Width="120px" />
+                            <DataGridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </DataGrid>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-medium">Comfortable Density (Default)</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" Density="DataGridDensity.Comfortable">
+                        <Columns>
+                            <DataGridColumn Field="Id" Header="ID" Width="80px" />
+                            <DataGridColumn Field="Customer" Header="Customer" />
+                            <DataGridColumn Field="Status" Header="Status" Width="120px" />
+                            <DataGridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </DataGrid>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="font-medium">Spacious Density</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" Density="DataGridDensity.Spacious">
+                        <Columns>
+                            <DataGridColumn Field="Id" Header="ID" Width="80px" />
+                            <DataGridColumn Field="Customer" Header="Customer" />
+                            <DataGridColumn Field="Status" Header="Status" Width="120px" />
+                            <DataGridColumn Field="Amount" Header="Amount" Width="100px" />
+                        </Columns>
+                    </DataGrid>
+                </div>
             </div>
-
-            <div class="space-y-2">
-                <h3 class="font-medium">Minimal Style</h3>
-                <Grid Items="@simpleOrders.Take(5).ToList()" VisualStyle="GridStyle.Minimal">
-                    <Columns>
-                        <GridColumn Field="Id" Header="ID" Width="80px" />
-                        <GridColumn Field="Customer" Header="Customer" />
-                        <GridColumn Field="Amount" Header="Amount" Width="100px" />
-                    </Columns>
-                </Grid>
-            </div>
-        </div>
-    </section>
-
-    @* Demo 5: Density Variations *@
-    <section class="space-y-4">
-        <div class="space-y-2">
-            <h2 class="text-2xl font-semibold">Density Variations</h2>
-            <p class="text-muted-foreground">
-                Control the spacing and size: Compact, Comfortable (default), and Spacious.
-            </p>
-        </div>
-
-        <div class="grid gap-6">
-            <div class="space-y-2">
-                <h3 class="font-medium">Compact Density</h3>
-                <Grid Items="@simpleOrders.Take(5).ToList()" Density="GridDensity.Compact">
-                    <Columns>
-                        <GridColumn Field="Id" Header="ID" Width="80px" />
-                        <GridColumn Field="Customer" Header="Customer" />
-                        <GridColumn Field="Status" Header="Status" Width="120px" />
-                        <GridColumn Field="Amount" Header="Amount" Width="100px" />
-                    </Columns>
-                </Grid>
-            </div>
-
-            <div class="space-y-2">
-                <h3 class="font-medium">Comfortable Density (Default)</h3>
-                <Grid Items="@simpleOrders.Take(5).ToList()" Density="GridDensity.Comfortable">
-                    <Columns>
-                        <GridColumn Field="Id" Header="ID" Width="80px" />
-                        <GridColumn Field="Customer" Header="Customer" />
-                        <GridColumn Field="Status" Header="Status" Width="120px" />
-                        <GridColumn Field="Amount" Header="Amount" Width="100px" />
-                    </Columns>
-                </Grid>
-            </div>
-
-            <div class="space-y-2">
-                <h3 class="font-medium">Spacious Density</h3>
-                <Grid Items="@simpleOrders.Take(5).ToList()" Density="GridDensity.Spacious">
-                    <Columns>
-                        <GridColumn Field="Id" Header="ID" Width="80px" />
-                        <GridColumn Field="Customer" Header="Customer" />
-                        <GridColumn Field="Status" Header="Status" Width="120px" />
-                        <GridColumn Field="Amount" Header="Amount" Width="100px" />
-                    </Columns>
-                </Grid>
-            </div>
-        </div>
-    </section>
+        </DemoBlock>
+    </DemoSection>
 </div>
+
+<DemoPageSubNav ParentSlug="datagrid" />
 
 @code {
     private List<Order> simpleOrders = new();
@@ -281,4 +165,6 @@
         simpleOrders = GridDemoData.GenerateOrders(100);
         allOrders = GridDemoData.GenerateOrders(1000);
     }
-}
+
+    }
+

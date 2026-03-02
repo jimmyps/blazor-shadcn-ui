@@ -1,13 +1,11 @@
-using BlazorUI.Components.Common;
-using BlazorUI.Components.Utilities;
-using BlazorUI.Components.Validation;
+using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using System.Globalization;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.CurrencyInput;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A currency input component that follows the shadcn/ui design system.
@@ -751,7 +749,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
             {
                 // Import the input module for event handling
                 _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/input.js");
+                    "import", "./_content/NeoUI.Blazor/js/input.js");
 
                 // Create DotNetObjectReference for callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);

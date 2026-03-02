@@ -1,9 +1,8 @@
-@namespace BlazorUI.Components.Menubar
-@using BlazorUI.Components.Utilities
+@namespace NeoUI.Blazor
 @typeparam TValue
 
 @* Styled MenubarRadioItem - wrapper with shadcn Tailwind classes *@
-<BlazorUI.Primitives.Menubar.MenubarRadioItem TValue="TValue"
+<MenubarRadioItemPrimitive TValue="TValue"
                                                class="@CssClass"
                                                Disabled="@Disabled"
                                                Value="@Value"
@@ -21,11 +20,11 @@
         }
     </span>
     <span>@ChildContent</span>
-</BlazorUI.Primitives.Menubar.MenubarRadioItem>
+</MenubarRadioItemPrimitive>
 
 @code {
     [CascadingParameter]
-    private BlazorUI.Primitives.Menubar.MenubarRadioGroupContext<TValue>? RadioGroupContext { get; set; }
+    private MenubarRadioGroupContext<TValue>? RadioGroupContext { get; set; }
 
     /// <summary>
     /// The content to display inside the radio item.

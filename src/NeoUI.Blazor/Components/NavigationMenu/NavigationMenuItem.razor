@@ -1,9 +1,9 @@
-﻿@namespace BlazorUI.Components.NavigationMenu
+@namespace NeoUI.Blazor
 
 @* NavigationMenuItem - styled item container *@
-<BlazorUI.Primitives.NavigationMenu.NavigationMenuItem Value="@Value" class="relative" @attributes="AdditionalAttributes">
+<NavigationMenuItemPrimitive Value="@Value" class="relative" @attributes="AdditionalAttributes">
     @ChildContent
-</BlazorUI.Primitives.NavigationMenu.NavigationMenuItem>
+</NavigationMenuItemPrimitive>
 
 @code {
     /// <summary>

@@ -1,12 +1,9 @@
-@namespace BlazorUI.Components.Menubar
-@using BlazorUI.Components.Utilities
-@using BlazorUI.Primitives.Menubar
-
+@namespace NeoUI.Blazor
 @* Styled MenubarTrigger - wrapper with shadcn Tailwind classes *@
-<BlazorUI.Primitives.Menubar.MenubarTrigger class="@CssClass"
+<MenubarTriggerPrimitive class="@CssClass"
                                               Disabled="@Disabled">
     @ChildContent
-</BlazorUI.Primitives.Menubar.MenubarTrigger>
+</MenubarTriggerPrimitive>
 
 @code {
     /// <summary>

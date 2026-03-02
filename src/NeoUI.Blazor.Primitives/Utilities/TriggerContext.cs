@@ -1,4 +1,4 @@
-namespace BlazorUI.Primitives.Utilities;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// Context passed to child components when AsChild=true on trigger components.
@@ -35,7 +35,7 @@ public class TriggerContext
 
     /// <summary>
     /// Action to open the associated overlay.
-    /// Used for hover-triggered components like HoverCard.
+    /// Used for hover-triggered components like HoverCardPrimitive.
     /// </summary>
     public Action? Open { get; init; }
 
@@ -59,7 +59,7 @@ public class TriggerContext
 
     /// <summary>
     /// Keyboard event handler for triggers that need keyboard support.
-    /// Used by DropdownMenuTrigger for arrow key navigation.
+    /// Used by DropdownMenuPrimitiveTrigger for arrow key navigation.
     /// </summary>
     public Func<Microsoft.AspNetCore.Components.Web.KeyboardEventArgs, Task>? OnKeyDown { get; init; }
 
@@ -86,7 +86,7 @@ public class TriggerContext
     /// <summary>
     /// Action to register the trigger element reference for positioning.
     /// Child components should call this with their ElementReference after rendering.
-    /// Used by components that need to position content relative to the trigger (DropdownMenu, Popover, etc.).
+    /// Used by components that need to position content relative to the trigger (DropdownMenuPrimitive, PopoverPrimitive, etc.).
     /// </summary>
     public Action<Microsoft.AspNetCore.Components.ElementReference>? SetTriggerElement { get; init; }
 }

@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Pagination;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A list item component for pagination.

@@ -1,25 +1,18 @@
-using BlazorUI.Components.Toast;
-using BlazorUI.Components.Extensions;
-using BlazorUI.Demo.Services;
-using BlazorUI.Demo.Shared;
-using BlazorUI.Primitives.Extensions;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using NeoUI.Blazor;
+using NeoUI.Blazor.Extensions;
+using NeoUI.Blazor.Primitives.Extensions;
+using NeoUI.Demo.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-#if WASM_STANDALONE
-builder.RootComponents.Add<Routes>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
-#endif
-
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-// Add BlazorUI.Primitives services
-builder.Services.AddBlazorUIPrimitives();
+// Add NeoUI.Blazor.Primitives services
+builder.Services.AddNeoUIPrimitives();
 
-// Add BlazorUI.Components services (includes Grid renderer and CollapsibleStateService)
-builder.Services.AddBlazorUIComponents();
+// Add NeoUI.Blazor components services (includes DataGrid renderer and CollapsibleStateService)
+builder.Services.AddNeoUIComponents();
 
 // Add mock data service for generating demo data
 builder.Services.AddSingleton<MockDataService>();

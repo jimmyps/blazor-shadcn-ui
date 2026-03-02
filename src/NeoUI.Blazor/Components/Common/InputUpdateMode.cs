@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Common;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies when an input component should update its bound value.

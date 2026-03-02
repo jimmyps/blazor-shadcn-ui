@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Utilities;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Manual tests for ClassNames utility.

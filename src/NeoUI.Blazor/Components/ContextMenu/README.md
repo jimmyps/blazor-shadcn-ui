@@ -15,7 +15,7 @@ Right-click context menu component distinct from DropdownMenu.
 ### Basic Context Menu
 
 ```razor
-@using BlazorUI.Components.ContextMenu
+@using NeoUI.Blazor
 
 <ContextMenu>
     <ContextMenuTrigger>

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using System.Text;
 
-namespace BlazorUI.Components.Label;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A label component that renders a semantic HTML label element for form fields.

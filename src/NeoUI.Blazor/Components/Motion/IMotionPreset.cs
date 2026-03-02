@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Motion;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Interface for motion preset components.

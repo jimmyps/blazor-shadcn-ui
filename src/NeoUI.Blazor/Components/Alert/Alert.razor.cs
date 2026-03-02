@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Alert;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A callout component that displays a prominent message to users.

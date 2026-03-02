@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Alert;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// The title/headline component for an Alert.

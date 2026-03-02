@@ -31,7 +31,7 @@ Charts use a declarative composition pattern where you combine:
 <LineChart Data="@salesData">
     <XAxis DataKey="Month" />
     <YAxis />
-    <Grid />
+    <DataGrid />
     <Tooltip />
     <Legend />
     <Line DataKey="Sales" Fill="var(--chart-1)" />
@@ -80,7 +80,7 @@ Display trends over time with customizable line styles, interpolation, and data 
         <AxisLabel Rotate="-45" FontSize="12" HideOverlap="true" />
     </XAxis>
     <YAxis Min="0" Max="1000" />
-    <Grid StrokeWidth="1" StrokeType="LineStyleType.Dashed" Opacity="0.3" />
+    <DataGrid StrokeWidth="1" StrokeType="LineStyleType.Dashed" Opacity="0.3" />
     <Tooltip Formatter="function(params) { return params.value + ' units'; }" />
     <Line DataKey="sales" 
           Interpolation="InterpolationType.Step"
@@ -311,7 +311,7 @@ Configure chart grid lines.
 
 **Usage:**
 ```razor
-<Grid StrokeWidth="2" 
+<DataGrid StrokeWidth="2" 
       StrokeType="LineStyleType.Dashed" 
       Stroke="var(--border)" 
       Opacity="0.3" />
@@ -654,7 +654,7 @@ See the demo pages for 68 comprehensive examples:
 
 ## Migration from Legacy API
 
-Legacy charts have been moved to `BlazorUI.Components.Old. Chart` namespace. The new declarative API is the recommended approach for all new development.
+Legacy charts have been moved to `NeoUI.Blazor.Old. Chart` namespace. The new declarative API is the recommended approach for all new development.
 
 **Key Differences:**
 - Declarative composition vs configuration objects

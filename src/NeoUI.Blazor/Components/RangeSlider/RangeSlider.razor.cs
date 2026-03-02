@@ -1,11 +1,10 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.RangeSlider;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A dual-handle range slider component that follows the shadcn/ui design system.
@@ -618,7 +617,7 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
             {
                 _dotNetRef = DotNetObjectReference.Create(this);
                 _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/range-slider.js");
+                    "import", "./_content/NeoUI.Blazor/js/range-slider.js");
                 
                 await _jsModule.InvokeVoidAsync("initialize", _containerRef, _dotNetRef);
             }

@@ -1,19 +1,17 @@
-@namespace BlazorUI.Components.Sheet
-@using BlazorUI.Primitives.Sheet
-
+@namespace NeoUI.Blazor
 @*
     Styled Sheet component wrapper.
     Wraps the Sheet primitive with shadcn/ui styling.
 *@
 
-<BlazorUI.Primitives.Sheet.Sheet Open="@Open"
+<SheetPrimitive Open="@Open"
                  OpenChanged="@OpenChanged"
                  DefaultOpen="@DefaultOpen"
                  OnOpenChange="@OnOpenChange"
                  Side="@Side"
                  Modal="@Modal">
     @ChildContent
-</BlazorUI.Primitives.Sheet.Sheet>
+</SheetPrimitive>
 
 @code {
     /// <summary>

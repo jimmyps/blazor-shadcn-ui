@@ -6,7 +6,7 @@
  * @param {string} id - The portal container ID
  * @returns {HTMLElement} The portal container element
  */
-export function ensurePortalContainer(id = 'blazorui-portal-root') {
+export function ensurePortalContainer(id = 'neoui-portal-root') {
     let container = document.getElementById(id);
 
     if (!container) {
@@ -27,7 +27,7 @@ export function ensurePortalContainer(id = 'blazorui-portal-root') {
  * Removes a portal container if it's empty.
  * @param {string} id - The portal container ID
  */
-export function cleanupPortalContainer(id = 'blazorui-portal-root') {
+export function cleanupPortalContainer(id = 'neoui-portal-root') {
     const container = document.getElementById(id);
 
     if (container && container.children.length === 0) {
@@ -42,7 +42,7 @@ export function cleanupPortalContainer(id = 'blazorui-portal-root') {
  * @param {string} portalId - The portal container ID
  * @returns {Object} Disposable object with dispose() method
  */
-export function setupPortal(element, portalId = 'blazorui-portal-root') {
+export function setupPortal(element, portalId = 'neoui-portal-root') {
     if (!element) {
         console.warn('setupPortal: element is null');
         return { dispose: () => {} };
@@ -133,7 +133,7 @@ export function isElementInViewport(element) {
 // ============================================================================
 // Auto-focus Listener
 // Automatically focuses elements with data-autofocus attribute when they become visible
-// Listens for 'blazorui:visible' event dispatched by the positioning service
+// Listens for 'neoui:visible' event dispatched by the positioning service
 // ============================================================================
 
 let autofocusListenerInitialized = false;
@@ -141,7 +141,7 @@ let autofocusListenerInitialized = false;
 function initAutofocusListener() {
     if (autofocusListenerInitialized) return;
 
-    document.addEventListener('blazorui:visible', (event) => {
+    document.addEventListener('neoui:visible', (event) => {
         const element = event.target;
 
         // Check if the element or any of its children has data-autofocus
@@ -171,5 +171,5 @@ export function triggerAutofocus(element) {
     if (!element) return;
 
     // Dispatch the same event that positioning service uses
-    element.dispatchEvent(new CustomEvent('blazorui:visible', { bubbles: true }));
+    element.dispatchEvent(new CustomEvent('neoui:visible', { bubbles: true }));
 }

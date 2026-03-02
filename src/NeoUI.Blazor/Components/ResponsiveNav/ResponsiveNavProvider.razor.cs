@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Components.ResponsiveNav;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Provider component for responsive navigation functionality.
@@ -29,7 +29,7 @@ public partial class ResponsiveNavProvider : ComponentBase
             {
                 // Load the responsive nav JavaScript module
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/responsive-nav.js");
+                    "import", "./_content/NeoUI.Blazor/js/responsive-nav.js");
 
                 // Create a reference to this component for JS callbacks
                 _dotNetRef = DotNetObjectReference.Create(this);

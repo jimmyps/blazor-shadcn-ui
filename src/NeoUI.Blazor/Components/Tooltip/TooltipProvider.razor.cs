@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Tooltip;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A provider component that configures tooltip behavior for all child Tooltip components.

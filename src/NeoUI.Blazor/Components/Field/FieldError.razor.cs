@@ -1,9 +1,8 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BlazorUI.Components.Field;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// An accessible error message container for displaying validation errors.

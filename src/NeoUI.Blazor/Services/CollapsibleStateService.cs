@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.JSInterop;
 
-namespace BlazorUI.Components.Services;
+namespace NeoUI.Blazor.Services;
 
 /// <summary>
 /// Service for persisting collapsible menu state using JavaScript-based localStorage and cookie management.
@@ -12,7 +12,7 @@ namespace BlazorUI.Components.Services;
 public class CollapsibleStateService : IAsyncDisposable
 {
     private readonly IJSRuntime _jsRuntime;
-    private const string StoragePrefix = "blazorui:collapsible:";
+    private const string StoragePrefix = "neoui:collapsible:";
     
     /// <summary>
     /// Cookie expiration period in days. Cookies will persist for 365 days.
@@ -44,7 +44,7 @@ public class CollapsibleStateService : IAsyncDisposable
         if (_collapsibleModule == null)
         {
             _collapsibleModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/NeoBlazorUI.Components/js/collapsible-state.js");
+                "import", "./_content/NeoUI.Blazor/js/collapsible-state.js");
         }
         return _collapsibleModule;
     }

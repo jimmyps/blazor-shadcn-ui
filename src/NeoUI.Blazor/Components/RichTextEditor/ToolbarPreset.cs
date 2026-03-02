@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.RichTextEditor;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the preset toolbar configurations for the rich text editor.

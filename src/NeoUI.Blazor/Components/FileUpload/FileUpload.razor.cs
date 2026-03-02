@@ -1,11 +1,10 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
-namespace BlazorUI.Components.FileUpload;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A file upload component with drag-and-drop support following the shadcn/ui design system.
@@ -325,12 +324,12 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
             try
             {
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/file-upload.js");
+                    "import", "./_content/NeoUI.Blazor/js/file-upload.js");
 
                 if (ShowValidationError)
                 {
                     _validationModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/NeoBlazorUI.Components/js/input-validation.js");
+                        "import", "./_content/NeoUI.Blazor/js/input-validation.js");
                 }
             }
             catch (JSException)

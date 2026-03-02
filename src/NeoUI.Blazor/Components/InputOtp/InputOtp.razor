@@ -1,8 +1,6 @@
-@namespace BlazorUI.Components.InputOtp
-@using BlazorUI.Primitives.InputOtp
-
+@namespace NeoUI.Blazor
 @* Styled InputOtp component - wrapper around OtpRoot primitive *@
-<BlazorUI.Primitives.InputOtp.OtpRoot class="@CssClass"
+<OtpRootPrimitive class="@CssClass"
                                         Length="@Length"
                                         Value="@Value"
                                         ValueChanged="@ValueChanged"
@@ -14,7 +12,7 @@
                                         AriaLabel="@AriaLabel"
                                         AriaInvalid="@AriaInvalid">
     @ChildContent
-</BlazorUI.Primitives.InputOtp.OtpRoot>
+</OtpRootPrimitive>
 
 @code {
     /// <summary>

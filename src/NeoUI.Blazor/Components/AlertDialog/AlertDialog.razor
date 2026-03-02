@@ -1,19 +1,17 @@
-@namespace BlazorUI.Components.AlertDialog
-@using BlazorUI.Primitives.Dialog
-
+@namespace NeoUI.Blazor
 @*
     Alert Dialog component - a modal requiring acknowledgement.
     Wraps the Dialog primitive with specific accessibility for confirmations.
     Use AlertDialogContent to configure dismissal behavior (CloseOnClickOutside, CloseOnEscape).
 *@
 
-<BlazorUI.Primitives.Dialog.Dialog Open="@Open"
+<DialogPrimitive Open="@Open"
                                    OpenChanged="@OpenChanged"
                                    DefaultOpen="@DefaultOpen"
                                    OnOpenChange="@OnOpenChange"
                                    Modal="true">
     @ChildContent
-</BlazorUI.Primitives.Dialog.Dialog>
+</DialogPrimitive>
 
 @code {
     /// <summary>

@@ -1,7 +1,5 @@
-﻿@namespace BlazorUI.Components.Carousel
-@using BlazorUI.Components.Button
-@using BlazorUI.Icons.Lucide.Components
-@using BlazorUI.Components.Utilities
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
 @implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
 
@@ -160,7 +158,7 @@
             try
             {
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/carousel.js");
+                    "import", "./_content/NeoUI.Blazor/js/carousel.js");
 
                 var options = new
                 {

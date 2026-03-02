@@ -61,9 +61,9 @@
 - Better maintainability
 
 ### 3. Project Files - KEPT OURS ✅
-- README.md - NeoBlazorUI branding
+- README.md - NeoUI branding
 - LICENSE - Apache 2.0
-- Icon .csproj files - NeoBlazorUI packages, net10.0
+- Icon .csproj files - NeoUI packages, net10.0
 - Primitives README - Our documentation
 
 ### 4. Demo/Layout - RESOLVED ✅
@@ -206,7 +206,7 @@ Deleted:
   - Combobox primitive (2 files)
   - MultiSelect primitive (2 files)
   - MainLayout (old location - 2 files)
-  - theme.css (demo/BlazorUI.Demo/)
+  - theme.css (demo/NeoUI.Demo/)
   - .claude/ and .devflow/ directories
 ```
 
@@ -323,7 +323,7 @@ git commit -m "Merge upstream/feb2: Components enhanced, primitives modernized w
 - Adopted Floating UI refactor for primitives (35% code reduction, 515 lines removed)
 - Preserved custom features (SearchInterval, NativeSelect form attributes)
 - Deleted unused primitives (Combobox, MultiSelect)
-- Updated README, LICENSE, .csproj files with NeoBlazorUI branding
+- Updated README, LICENSE, .csproj files with NeoUI branding
 - Refactored MainLayout to Demo.Shared project
 
 Breaking changes:

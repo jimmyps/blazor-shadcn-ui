@@ -1,117 +1,80 @@
 @page "/components/chart/radar"
-@using BlazorUI.Components.Card
-@using BlazorUI.Components.Chart
+@using NeoUI.Blazor.Charts
+<PageTitle>Radar Chart - NeoUI</PageTitle>
 
-<PageTitle>Chart Components - Radar Chart</PageTitle>
+<div class="space-y-8 max-w-6xl">
+    <DemoPageHeader
+        Title="Radar Chart"
+        Description="Spider/radar charts for comparing multiple variables across categories." />
 
-<div class="space-y-8">
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
-        @* Basic Radar *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Basic Radar</CardTitle>
-                <CardDescription>Skill assessment across 5 dimensions</CardDescription>
-            </CardHeader>
-            <CardContent>
+    <DemoSection Title="Variants" Description="Core radar chart configurations.">
+        <div class="grid gap-6 md:grid-cols-2">
+
+            <DemoBlock Code="@_basicCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-1)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Multiple Series *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Team Comparison</CardTitle>
-                <CardDescription>Compare two developers</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_multipleSeriesCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@teamSkillData">
                         <XAxis DataKey="skill" />
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <RadarGrid Radius="50%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="developer1" Name="Dev A" FillArea="true" AreaOpacity="0.2" Color="var(--chart-1)" />
                         <Radar DataKey="developer2" Name="Dev B" FillArea="true" AreaOpacity="0.2" Color="var(--chart-2)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Filled Radar *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Filled Areas</CardTitle>
-                <CardDescription>Radar with increased opacity</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_filledCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.6" Color="var(--chart-3)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Circle Shape Radar *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Circle Grid</CardTitle>
-                <CardDescription>Circular radar grid shape</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_circleGridCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <RadarGrid Shape="RadarShape.Circle" SplitNumber="4" />
                         <XAxis DataKey="skill" />
-                        <Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-4)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Performance Metrics *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Performance Metrics</CardTitle>
-                <CardDescription>Department KPI comparison</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_performanceCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@performanceData">
                         <XAxis DataKey="metric" />
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" />
                         <RadarGrid Radius="60%" Center="@(new string[] { "50%", "65%" })" />
                         <Radar DataKey="sales" Name="Sales" FillArea="true" AreaOpacity="0.25" Color="var(--chart-1)" />
                         <Radar DataKey="marketing" Name="Marketing" FillArea="true" AreaOpacity="0.25" Color="var(--chart-2)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* With Legend *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">With Legend and Emphasis</CardTitle>
-                <CardDescription>Multiple series with custom legend and emphasis</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_legendEmphasisCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@productComparison">
                         <XAxis DataKey="feature" />
-                        <Tooltip />
+                        <ChartTooltip />
                         <Legend TextColor="var(--foreground)" VerticalAlign="LegendVerticalAlign.Bottom" Icon="LegendIcon.Diamond" />
                         <RadarGrid Radius="50%" />
                         <Radar DataKey="productA" Name="Product A" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-3)" />
@@ -119,87 +82,67 @@
                         <Radar DataKey="productC" Name="Product C" Emphasis="true" FillArea="true" AreaOpacity="0.2" Color="var(--chart-5)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Polygon Shape (Default) *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Polygon Grid</CardTitle>
-                <CardDescription>Standard polygon radar grid</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_polygonGridCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <RadarGrid Shape="RadarShape.Polygon" SplitNumber="5" />
                         <XAxis DataKey="skill" />
-                        <Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-5)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
+            </DemoBlock>
 
-        @* Without Fill *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Line Only</CardTitle>
-                <CardDescription>Radar without filled area</CardDescription>
-            </CardHeader>
-            <CardContent>
+            <DemoBlock Code="@_lineOnlyCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="false" Color="var(--chart-2)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-        
-        @* Styled Radar Indicators *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Styled Indicators</CardTitle>
-                <CardDescription>Custom indicator label styling</CardDescription>
-            </CardHeader>
-            <CardContent>
+            </DemoBlock>
+
+            <DemoBlock Code="@_styledIndicatorsCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
-                        <RadarGrid 
+                        <RadarGrid
                             IndicatorColor="var(--foreground)"
                             IndicatorFontSize="12"
                             IndicatorFontWeight="bold" />
-                        <Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.3" Color="var(--chart-3)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-        
-        @* Hidden Radar Indicators *@
-        <Card>
-            <CardHeader Class="pb-2">
-                <CardTitle Class="text-xl">Hidden Indicators</CardTitle>
-                <CardDescription>Radar chart without indicator labels</CardDescription>
-            </CardHeader>
-            <CardContent>
+            </DemoBlock>
+
+            <DemoBlock Code="@_hiddenIndicatorsCode">
                 <ChartContainer Height="200">
                     <RadarChart Data="@skillData">
                         <XAxis DataKey="skill" />
                         <RadarGrid ShowIndicatorLabels="false" />
-                        <Tooltip Show="false" />
+                        <ChartTooltip Show="false" />
                         <Legend Show="false" />
                         <Radar DataKey="score" FillArea="true" AreaOpacity="0.4" Color="var(--chart-4)" />
                     </RadarChart>
                 </ChartContainer>
-            </CardContent>
-        </Card>
-    </div>
+            </DemoBlock>
+
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference">
+        <DemoPropsTable Rows="@_radarChartProps" />
+    </DemoSection>
+
+    <DemoPageSubNav />
+
 </div>
 
 @code {

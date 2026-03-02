@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.ColorPicker;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Defines the size variants for the ColorPicker component.

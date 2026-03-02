@@ -1,6 +1,4 @@
-using BlazorUI.Primitives.Contexts;
-
-namespace BlazorUI.Primitives.NavigationMenu;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the NavigationMenu primitive context.

@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Breadcrumb;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A breadcrumb component that displays page hierarchy for navigation.

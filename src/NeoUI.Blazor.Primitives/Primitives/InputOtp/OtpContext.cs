@@ -1,7 +1,6 @@
-using BlazorUI.Primitives.Contexts;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Primitives.InputOtp;
+namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
 /// State for the OTP input primitive context.

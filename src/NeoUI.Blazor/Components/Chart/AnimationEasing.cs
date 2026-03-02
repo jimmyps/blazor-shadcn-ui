@@ -1,4 +1,4 @@
-namespace BlazorUI.Components.Chart;
+namespace NeoUI.Blazor.Charts;
 
 /// <summary>
 /// Animation easing functions supported by ECharts.

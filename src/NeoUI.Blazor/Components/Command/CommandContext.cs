@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Command;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Metadata for a registered command item.

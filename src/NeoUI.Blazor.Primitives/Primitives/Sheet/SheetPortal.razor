@@ -1,4 +1,4 @@
-@namespace BlazorUI.Primitives.Sheet
+@namespace NeoUI.Blazor.Primitives
 @inject IPortalService PortalService
 @implements IDisposable
 
@@ -12,7 +12,7 @@
     private SheetContext Context { get; set; } = null!;
 
     /// <summary>
-    /// The content to render in the portal (typically SheetOverlay and SheetContent).
+    /// The content to render in the portal (typically SheetOverlay and SheetContentPrimitive).
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -40,8 +40,8 @@
         if (Context == null)
         {
             throw new InvalidOperationException(
-                "SheetPortal must be used within a Sheet component. " +
-                "Ensure SheetPortal is a child of a Sheet component.");
+                "SheetPortal must be used within a SheetPrimitive component. " +
+                "Ensure SheetPortal is a child of a SheetPrimitive component.");
         }
 
         _portalId = $"{Context.Id}-portal";

@@ -1,4 +1,4 @@
-@namespace BlazorUI.Primitives.Table
+@namespace NeoUI.Blazor.Primitives
 
 <thead class="@Class" @attributes="AdditionalAttributes">
     @ChildContent
@@ -6,7 +6,7 @@
 
 @code {
     /// <summary>
-    /// Child content for the table header (typically TableRow with TableHeaderCell components).
+    /// Child content for the table header (typically TableRowPrimitive with TableHeaderCellPrimitive components).
     /// </summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

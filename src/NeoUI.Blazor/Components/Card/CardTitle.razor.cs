@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Card;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// The title heading of a card component.

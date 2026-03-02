@@ -1,9 +1,9 @@
-using BlazorUI.Components.Utilities;
-using BlazorUI.Primitives.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-namespace BlazorUI.Components.Button;
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Services;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A button component that follows the shadcn/ui design system.

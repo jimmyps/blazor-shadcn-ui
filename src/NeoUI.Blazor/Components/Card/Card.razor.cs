@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Card;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A card component that displays structured content in a visually distinct container.

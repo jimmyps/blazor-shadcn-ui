@@ -1,53 +1,20 @@
-using BlazorUI.Components.Extensions;
-using BlazorUI.Demo;
-using BlazorUI.Demo.Services;
-using BlazorUI.Primitives.Extensions;
 
+using NeoUI.Blazor.Extensions;
+using NeoUI.Blazor.Primitives.Extensions;
+using NeoUI.Demo.Auto; using NeoUI.Demo.Services;
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
-
-// Add HttpClient services for server-side components
+builder.Services.AddRazorComponents().AddInteractiveServerComponents().AddInteractiveWebAssemblyComponents();
 builder.Services.AddHttpClient();
-
-// Add HttpContextAccessor for SSR scenarios (e.g., reading cookies on server)
 builder.Services.AddHttpContextAccessor();
-
-// Add BlazorUI.Primitives services
-builder.Services.AddBlazorUIPrimitives();
-
-// Add BlazorUI.Components services (includes Grid renderer and CollapsibleStateService)
-builder.Services.AddBlazorUIComponents();
-
-// Add mock data service for generating demo data
+builder.Services.AddNeoUIPrimitives();
+builder.Services.AddNeoUIComponents();
 builder.Services.AddSingleton<MockDataService>();
-
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
+if (!app.Environment.IsDevelopment()) {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app.UseAntiforgery();
-
-// Serve static files (required for WebAssembly framework files)
-app.UseStaticFiles();
-
-// Map static assets (for optimized asset delivery)
-app.MapStaticAssets();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BlazorUI.Demo.Shared.Routes).Assembly);
-
+    app.UseHsts(); }
+app.UseHttpsRedirection(); app.UseAntiforgery();
+app.UseStaticFiles(); app.MapStaticAssets();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode().AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(NeoUI.Demo.Shared.Routes).Assembly);
 app.Run();

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace BlazorUI.Components.Checkbox;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A checkbox component that follows the shadcn/ui design system.

@@ -1,5 +1,4 @@
-@namespace BlazorUI.Components.Sidebar
-@using BlazorUI.Components.Utilities
+@namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
@@ -67,7 +66,7 @@
             try
             {
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoBlazorUI.Components/js/sidebar.js");
+                    "import", "./_content/NeoUI.Blazor/js/sidebar.js");
             }
             catch (JSException)
             {

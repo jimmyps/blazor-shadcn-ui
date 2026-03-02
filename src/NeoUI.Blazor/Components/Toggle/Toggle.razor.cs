@@ -1,7 +1,6 @@
-using BlazorUI.Components.Utilities;
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorUI.Components.Toggle;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// A toggle button component with pressed/unpressed states.
