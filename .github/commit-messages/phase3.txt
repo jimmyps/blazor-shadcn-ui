@@ -1,0 +1,32 @@
+feat: post-RC stabilization — charts opt-in primitives, demo docs & cleanup
+
+## Charts — Opt-in Primitives & Axis Rendering Fix
+
+Chart primitives (<Grid />, <XAxis />, <YAxis />, <ChartTooltip />,
+<Legend />) are now fully opt-in: nothing is emitted to ECharts unless
+the corresponding child component is explicitly declared inside the chart
+root. Fixes a regression where nullifying axes broke cartesian chart
+rendering entirely.
+
+- BuildLegend() / BuildTooltip() return null when no child declared;
+  JsonIgnoreCondition.WhenWritingNull cleanly drops the key from ECharts JSON
+- BuildGrid() always emitted so ECharts respects chart Padding/ContainLabel
+- BuildSplitLine() returns Show=false when <Grid /> is absent
+- BuildAxis() gains top-level Show forwarded to EChartsAxis
+- All cartesian roots (Bar, Line, Area, Scatter, Composed) updated;
+  non-cartesian roots (Pie, Radar, RadialBar) gate Legend/Tooltip on null-check
+- All demo chart pages cleaned up: removed all opt-out suppression tags
+- ChartDefaults.cs: DefaultPadding centralised, replaces scattered inline values
+
+## Demo — Project Structure & Docs Reconciliation
+
+- NeoUI.Demo.Shared owns all static assets with StaticWebAssetBasePath="."
+- All four hosting projects (Auto, Auto.Client, Server, Wasm) documented
+- ARCHITECTURE.md, NOTICE, and all LLM context docs updated
+- NOTICE rewritten: correct MIT / Apache-2.0 dual-provenance attribution
+
+## Housekeeping
+
+- Dependency package versions bumped for 3.0.0 release
+- README updated to include new project template setup instructions
+- Stale BlazorUI.* source fully removed (paths were renamed in phase 1)

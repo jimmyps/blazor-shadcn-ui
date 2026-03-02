@@ -41,7 +41,7 @@ jobs:
           git mv src/NeoUI.Blazor/wwwroot/css/blazorui-input.css src/NeoUI.Blazor/wwwroot/css/components-input.css
           git commit -m "refactor(rename): pure git mv — BlazorUI.* → NeoUI.* (phase 1 of 2, no content changes)"
 
-      - name: Phase 2 — overlay RC content from b703288 (NeoUI.* paths only, no old BlazorUI.* re-introduced)
+      - name: Phase 2 — overlay RC content from b703288 (NeoUI.* paths only)
         run: |
           git checkout b70328836a66d8272df91bb9a02513547abdb804 -- \
             .editorconfig .gitattributes .gitignore \
@@ -50,16 +50,8 @@ jobs:
             .github/ demo/ docs/ llms/ scripts/ tools/ \
             src/NeoUI.Blazor/ src/NeoUI.Blazor.Primitives/ \
             src/NeoUI.Icons.Feather/ src/NeoUI.Icons.Heroicons/ src/NeoUI.Icons.Lucide/
-          git commit -m "feat(major): NeoUI rebrand + namespace flattening + demo revamp (phase 2 of 2)
-
-Applies all content changes from PR #137 on top of the phase 1 rename commit:
-- Namespace flattening: NeoBlazorUI.* → NeoUI.*
-- AddBlazorUI* → AddNeoUI* service registration
-- blazorui:* → neoui:* runtime tokens
-- Four-project demo restructure (Server, Wasm, Auto, Auto.Client)
-- ComponentRegistry & all 97+ demo pages migrated
-- Tailwind CSS pipeline: exe → npm
-- CI/CD workflows updated"
+          git log --format="%B" -1 b70328836a66d8272df91bb9a02513547abdb804 > /tmp/phase2-msg.txt
+          git commit -F /tmp/phase2-msg.txt
 
       - name: Fetch origin/main for Phase 3
         run: git fetch origin main:refs/remotes/origin/main
@@ -72,7 +64,8 @@ Applies all content changes from PR #137 on top of the phase 1 rename commit:
             while IFS= read -r f; do git rm -f -- "$f"; done <<< "$EXTRA"
           fi
           git checkout origin/main -- .
-          git commit -m "feat: post-RC stabilization — charts opt-in primitives, demo docs & cleanup"
+          git show origin/copilot/main-repair:.github/commit-messages/phase3.txt > /tmp/phase3-msg.txt
+          git commit -F /tmp/phase3-msg.txt
 
       - name: Push main-repair to origin
         run: git push origin main-repair
