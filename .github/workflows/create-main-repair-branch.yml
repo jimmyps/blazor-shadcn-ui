@@ -22,7 +22,12 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Create branch from pre-RC commit
-        run: git checkout -b main-repair
+        run: |
+          if git ls-remote --exit-code origin main-repair; then
+            echo "ERROR: branch 'main-repair' already exists on origin. Delete it first."
+            exit 1
+          fi
+          git checkout -b main-repair
 
       - name: Phase 1 — pure git mv renames (no content changes)
         run: |
@@ -62,8 +67,10 @@ Applies all content changes from PR #137 on top of the phase 1 rename commit:
       - name: Phase 3 — catch-up squash to origin/main
         shell: bash
         run: |
-          comm -23 <(git ls-files | sort) <(git ls-tree -r --name-only origin/main | sort) \
-            | xargs -d '\n' git rm -f --
+          EXTRA=$(comm -23 <(git ls-files | sort) <(git ls-tree -r --name-only origin/main | sort))
+          if [ -n "$EXTRA" ]; then
+            while IFS= read -r f; do git rm -f -- "$f"; done <<< "$EXTRA"
+          fi
           git checkout origin/main -- .
           git commit -m "feat: post-RC stabilization — charts opt-in primitives, demo docs & cleanup"
 
