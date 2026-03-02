@@ -2,6 +2,11 @@ name: Create main-repair branch
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - copilot/main-repair
+    paths:
+      - .github/workflows/create-main-repair-branch.yml
 
 jobs:
   create-branch:
