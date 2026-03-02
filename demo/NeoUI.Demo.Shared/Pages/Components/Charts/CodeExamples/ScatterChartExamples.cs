@@ -26,7 +26,6 @@ partial class ScatterChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Scatter DataKey="weight" SymbolSize="8" Symbol="SymbolShape.Circle" Color="var(--chart-1)" />
             </ScatterChart>
         </ChartContainer>
@@ -63,7 +62,6 @@ partial class ScatterChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Scatter DataKey="customers" SymbolSize="12" Color="var(--chart-3)" />
             </ScatterChart>
         </ChartContainer>
@@ -100,7 +98,6 @@ partial class ScatterChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Scatter DataKey="weight" SymbolSize="8" Color="var(--chart-4)" />
             </ScatterChart>
         </ChartContainer>
@@ -118,7 +115,6 @@ partial class ScatterChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Scatter DataKey="y" SymbolSize="4" Color="var(--chart-5)" />
             </ScatterChart>
         </ChartContainer>
@@ -136,7 +132,6 @@ partial class ScatterChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Scatter DataKey="salary" SymbolSize="8" Color="var(--chart-1)" />
             </ScatterChart>
         </ChartContainer>

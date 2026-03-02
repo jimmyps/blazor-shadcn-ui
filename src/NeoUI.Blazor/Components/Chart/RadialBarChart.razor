@@ -52,8 +52,8 @@
     {
         var option = new EChartsOption
         {
-            Tooltip = BuildTooltip(),
-            Legend = BuildLegend(),
+            Tooltip = _tooltip != null ? BuildTooltip() : null,
+            Legend  = _legend  != null ? BuildLegend()  : null,
             PolarCoordinateSystem = BuildPolarCoordinateSystem(),
             AngleAxis = BuildAngleAxis(),
             RadiusAxis = BuildRadiusAxis(),

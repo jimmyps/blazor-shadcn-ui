@@ -23,11 +23,11 @@
     {
         var option = new EChartsOption
         {
-            Grid = BuildGrid(),
-            Legend = BuildLegend(),
-            Tooltip = BuildTooltip(),
-            XAxis = BuildXAxis(),
-            YAxis = BuildYAxis(),
+            Grid    = BuildGrid(),
+            Legend  = _legend  != null ? BuildLegend()  : null,
+            Tooltip = _tooltip != null ? BuildTooltip() : null,
+            XAxis   = BuildXAxis(_xAxis != null),
+            YAxis   = BuildYAxis(_yAxis != null),
             Series = BuildSeries(),
             Animation = EnableAnimation,
             AnimationDuration = EnableAnimation ? AnimationDuration : 0,
@@ -40,11 +40,18 @@
         return option;
     }
     
-    private EChartsAxis BuildXAxis()
+    private EChartsAxis BuildXAxis(bool show)
     {
         var xAxis = _xAxis ?? new XAxis();
         var axis = BuildAxis(xAxis, null, true);
-        
+
+        if (!show)
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+
         if (!string.IsNullOrEmpty(xAxis.DataKey))
         {
             axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
@@ -53,10 +60,19 @@
         return axis;
     }
     
-    private EChartsAxis BuildYAxis()
+    private EChartsAxis BuildYAxis(bool show)
     {
         var yAxis = _yAxis ?? new YAxis();
-        return BuildAxis(null, yAxis, false);
+        var axis = BuildAxis(null, yAxis, false);
+
+        if (!show)
+        {
+            axis.AxisLine = new EChartsAxisLine { Show = false };
+            axis.AxisTick = new EChartsAxisTick { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+
+        return axis;
     }
     
     private List<EChartsSeries> BuildSeries()

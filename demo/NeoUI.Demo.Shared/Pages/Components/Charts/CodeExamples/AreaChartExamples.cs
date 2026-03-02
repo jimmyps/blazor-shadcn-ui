@@ -73,7 +73,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -81,7 +80,6 @@ partial class AreaChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Area DataKey="sales" Name="Sales" Color="var(--chart-1)" />
             </AreaChart>
         </ChartContainer>
@@ -91,7 +89,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -110,7 +107,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -118,7 +114,6 @@ partial class AreaChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip Cursor="TooltipCursor.Shadow" />
-                <Legend Show="false" />
                 <Area DataKey="sales" Name="Sales">
                     <Fill>
                         <LinearGradient Direction="GradientDirection.Vertical">
@@ -135,7 +130,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@multiData" Padding="@(new Padding(6, 0, 32, 0))">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -154,7 +148,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@multiData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -173,7 +166,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -181,7 +173,6 @@ partial class AreaChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Area DataKey="sales" Name="Sales" ShowDots="true" Color="var(--chart-3)" />
             </AreaChart>
         </ChartContainer>
@@ -199,7 +190,6 @@ partial class AreaChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Area DataKey="sales" Name="Sales" Color="var(--chart-4)" />
             </AreaChart>
         </ChartContainer>
@@ -209,7 +199,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Show="true" AxisLine="true" TickLine="true" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -217,7 +206,6 @@ partial class AreaChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Area DataKey="sales" Name="Sales" Color="var(--chart-2)" Opacity="0.8" />
             </AreaChart>
         </ChartContainer>
@@ -227,7 +215,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -235,7 +222,6 @@ partial class AreaChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Area DataKey="sales" Name="Sales" LineWidth="3" Color="var(--chart-5)" />
             </AreaChart>
         </ChartContainer>
@@ -245,7 +231,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@simpleData" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>
@@ -253,7 +238,6 @@ partial class AreaChartExamples
                     <AxisLabel Color="var(--muted-foreground)" />
                 </YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Area DataKey="sales" Name="Sales" Interpolation="InterpolationType.Step" Color="var(--chart-1)" />
             </AreaChart>
         </ChartContainer>
@@ -263,7 +247,6 @@ partial class AreaChartExamples
         """
         <ChartContainer Height="200">
             <AreaChart Data="@multiData" StackOffset="StackOffset.Expand" Padding="ChartDefaults.DefaultPadding">
-                <Grid Show="false" />
                 <XAxis DataKey="month" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" />
                 </XAxis>

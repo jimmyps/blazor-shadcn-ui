@@ -42,7 +42,7 @@ partial class BarChartExamples
                 <XAxis DataKey="date" TickLine="false" Color="var(--border)">
                     <AxisLabel Color="var(--muted-foreground)" Formatter="@dateFormatter" />
                 </XAxis>
-                <YAxis Show="false" TickLine="false"><AxisLabel Show="false" /></YAxis>
+                
                 <ChartTooltip Mode="TooltipMode.Axis" Cursor="TooltipCursor.Shadow" />
                 <Legend TextColor="var(--foreground)" />
                 <Bar DataKey="desktop" Name="Desktop" Radius="4" Color="var(--chart-1)" />
@@ -59,7 +59,6 @@ partial class BarChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-1)" />
             </BarChart>
         </ChartContainer>
@@ -73,7 +72,6 @@ partial class BarChartExamples
                 <XAxis DataKey="sales" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-2)" />
             </BarChart>
         </ChartContainer>
@@ -117,7 +115,6 @@ partial class BarChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" LabelPosition="LabelPosition.Top" Color="var(--chart-3)">
                     <LabelList Position="LabelPosition.Top" Formatter="{c}" FontSize="11" Color="#666" />
                 </Bar>
@@ -133,7 +130,6 @@ partial class BarChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Bar DataKey="sales" Name="Sales" Radius="4" ShowLabel="true" Color="var(--chart-4)">
                     <LabelList Position="LabelPosition.Inside" Formatter="function(params) { return '$' + params.value; }" FontSize="10" Color="#fff" />
                 </Bar>
@@ -164,7 +160,6 @@ partial class BarChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Bar DataKey="sales" Name="Sales" Radius="4" Color="var(--chart-5)" />
             </BarChart>
         </ChartContainer>
@@ -193,7 +188,6 @@ partial class BarChartExamples
                 <XAxis DataKey="month" Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></XAxis>
                 <YAxis Color="var(--border)"><AxisLabel Color="var(--muted-foreground)" /></YAxis>
                 <ChartTooltip />
-                <Legend Show="false" />
                 <Bar DataKey="value" Name="Profit/Loss" Radius="4" Color="var(--chart-3)" />
             </BarChart>
         </ChartContainer>

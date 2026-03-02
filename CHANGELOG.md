@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-1 – Chart System: Opt-In Primitives Model (#140)
+
+> **Library change.** Affects `NeoUI.Blazor` chart components and all chart demo pages. No breaking changes to the public API — all previous charts continue to render; the defaults are now explicit rather than implicit.
+
+---
+
+### ✨ Feature: Opt-In Chart Primitives
+
+Chart primitive components (`<Grid />`, `<XAxis />`, `<YAxis />`, `<ChartTooltip />`, `<Legend />`) are now **opt-in** rather than always-present. Nothing is rendered into the ECharts option unless the corresponding primitive is added as a child of the chart root. This gives consumers full, declarative control over which chart elements appear and how they are styled.
+
+Previously, chart roots (e.g. `BarChart`) unconditionally built and emitted `grid`, `xAxis`, `yAxis`, `tooltip`, and `legend` objects using internal defaults. Now:
+
+- `Grid = BuildGrid()` is always emitted (so ECharts uses the chart's `Padding` / `ContainLabel` settings rather than ECharts' large 60 px defaults), but **split-line visibility is still gated on `<Grid />`** via `BuildSplitLine`.
+- `Legend`, `Tooltip` — only emitted when `<Legend />` / `<ChartTooltip />` is present.
+- `XAxis`, `YAxis` — always emitted for best compatibility (required by ECharts for cartesian layouts), but when the primitive is absent the **visual sub-components only** are hidden (`axisLine.show: false`, `axisTick.show: false`, `axisLabel.show: false`). The axis is kept alive as a coordinate reference so that `splitLine` (grid lines from `<Grid />`) can still render independently.
+
+---
+
+### ♻️ Refactor: Demo chart pages updated to opt-in model
+
+All chart demo pages (`BarChartExamples`, `LineChartExamples`, `AreaChartExamples`, `PieChartExamples`, `RadarChartExamples`, `ScatterChartExamples`) have been updated to explicitly declare the primitives they need. Shared demo defaults extracted into `ChartDefaults.cs`.
+
+---
+
 ## 2026-2-28 – Demo Solution Polish: Blazor UX Improvements & Project Cleanup
 
 > **Demo-only change.** No library component APIs were modified. All changes are contained within the `demo/` projects.
