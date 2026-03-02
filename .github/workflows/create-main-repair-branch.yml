@@ -1,0 +1,86 @@
+name: Create main-repair branch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout at pre-RC commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: f4d2ece5f8317da60371a8622fb5582c74d351b3
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create branch from pre-RC commit
+        run: git checkout -b main-repair
+
+      - name: Phase 1 — pure git mv renames (no content changes)
+        run: |
+          git mv src/BlazorUI.Components    src/NeoUI.Blazor
+          git mv src/BlazorUI.Primitives    src/NeoUI.Blazor.Primitives
+          git mv demo/BlazorUI.Demo.Shared  demo/NeoUI.Demo.Shared
+          git mv demo/BlazorUI.Demo         demo/NeoUI.Demo.Auto
+          git mv demo/BlazorUI.Demo.Client  demo/NeoUI.Demo.Auto.Client
+          git mv BlazorUI.sln               NeoUI.Blazor.sln
+          git mv src/NeoUI.Blazor/wwwroot/blazorui.css           src/NeoUI.Blazor/wwwroot/components.css
+          git mv src/NeoUI.Blazor/wwwroot/css/blazorui-input.css src/NeoUI.Blazor/wwwroot/css/components-input.css
+          git commit -m "refactor(rename): pure git mv — BlazorUI.* → NeoUI.* (phase 1 of 2, no content changes)"
+
+      - name: Phase 2 — overlay RC content from b703288 (NeoUI.* paths only, no old BlazorUI.* re-introduced)
+        run: |
+          git checkout b70328836a66d8272df91bb9a02513547abdb804 -- \
+            .editorconfig .gitattributes .gitignore \
+            CHANGELOG.md CONTRIBUTING.md Directory.Build.props LICENSE NOTICE \
+            NeoUI.Blazor.sln README.md RELEASE.md THEMING.md \
+            .github/ demo/ docs/ llms/ scripts/ tools/ \
+            src/NeoUI.Blazor/ src/NeoUI.Blazor.Primitives/ \
+            src/NeoUI.Icons.Feather/ src/NeoUI.Icons.Heroicons/ src/NeoUI.Icons.Lucide/
+          git commit -m "feat(major): NeoUI rebrand + namespace flattening + demo revamp (phase 2 of 2)
+
+Applies all content changes from PR #137 on top of the phase 1 rename commit:
+- Namespace flattening: NeoBlazorUI.* → NeoUI.*
+- AddBlazorUI* → AddNeoUI* service registration
+- blazorui:* → neoui:* runtime tokens
+- Four-project demo restructure (Server, Wasm, Auto, Auto.Client)
+- ComponentRegistry & all 97+ demo pages migrated
+- Tailwind CSS pipeline: exe → npm
+- CI/CD workflows updated"
+
+      - name: Phase 3 — catch-up squash to origin/main
+        run: |
+          comm -23 <(git ls-files | sort) <(git ls-tree -r --name-only origin/main | sort) \
+            | xargs -d '\n' git rm -f --
+          git checkout origin/main -- .
+          git commit -m "feat: post-RC stabilization — charts opt-in primitives, demo docs & cleanup"
+
+      - name: Push main-repair to origin
+        run: git push origin main-repair
+
+      - name: Verify — diff vs origin/main must be empty
+        run: |
+          DIFF=$(git diff main-repair origin/main)
+          if [ -n "$DIFF" ]; then
+            echo "ERROR: main-repair diverges from origin/main!"
+            echo "$DIFF" | head -40
+            exit 1
+          fi
+          echo "✅ git diff main-repair origin/main → empty (trees identical)"
+
+      - name: Verify — git log --follow shows pre-RC history
+        run: |
+          echo "=== Alert.razor ==="
+          git log --follow --oneline -- src/NeoUI.Blazor/Components/Alert/Alert.razor | head -6
+          echo "=== Button.razor ==="
+          git log --follow --oneline -- src/NeoUI.Blazor/Components/Button/Button.razor | head -6
+          echo "=== AlertDemo.razor ==="
+          git log --follow --oneline -- demo/NeoUI.Demo.Shared/Pages/Components/AlertDemo.razor | head -6
