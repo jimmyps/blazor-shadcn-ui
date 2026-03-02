@@ -75,6 +75,8 @@
     protected override void OnParametersSet()
     {
         _context.State.Orientation = Orientation;
+        _context.OpenDelay = DelayDuration;
+        _context.CloseDelay = DelayDuration;
 
         if (Value != null && _context.ActiveValue != Value)
         {
