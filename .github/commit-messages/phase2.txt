@@ -1,0 +1,352 @@
+feat(major): NeoUI rebrand + demo site revamp + four-project demo restructure + all demo pages standardized (#137)
+
+Complete the RC release: brand rename NeoBlazorUI → NeoUI with full
+namespace flattening, restructure the demo solution into four dedicated
+Blazor hosting projects covering all render modes with best-in-class
+developer ergonomics, introduce a component-driven Demo* infrastructure
+and ComponentRegistry, migrate all 97+ demo pages to the standardized
+structure, and migrate the Tailwind CSS pipeline from a standalone exe
+to npm.
+
+PR: https://github.com/jimmyps/blazor-shadcn-ui/pull/137
+
+---
+
+## BREAKING CHANGES
+
+### Brand Rename & Namespace Flattening
+
+All public namespaces, NuGet package IDs, assembly names, and service
+registration methods have changed. Consumers must update their using
+directives and DI registrations.
+
+**Package / project renames:**
+
+| Before | After |
+|---|---|
+| `NeoBlazorUI.Components` | `NeoUI.Blazor` |
+| `NeoBlazorUI.Primitives` | `NeoUI.Blazor.Primitives` |
+| `NeoBlazorUI.Icons.Lucide` | `NeoUI.Icons.Lucide` |
+| `NeoBlazorUI.Icons.Heroicons` | `NeoUI.Icons.Heroicons` |
+| `NeoBlazorUI.Icons.Feather` | `NeoUI.Icons.Feather` |
+
+**Filesystem renames (`git mv`):**
+
+| Before | After |
+|---|---|
+| `BlazorUI.sln` | `NeoUI.Blazor.sln` |
+| `src/BlazorUI.Components/` | `src/NeoUI.Blazor/` |
+| `src/BlazorUI.Primitives/` | `src/NeoUI.Blazor.Primitives/` |
+| `demo/BlazorUI.Demo/` | `demo/NeoUI.Demo/` → then → `NeoUI.Demo.Auto` |
+| `demo/BlazorUI.Demo.Shared/` | `demo/NeoUI.Demo.Shared/` |
+| `demo/BlazorUI.Demo.Client/` | `demo/NeoUI.Demo.Client/` → then → `NeoUI.Demo.Auto.Client` |
+| `wwwroot/blazorui.css` | `wwwroot/components.css` |
+| `wwwroot/css/blazorui-input.css` | `wwwroot/css/components-input.css` |
+
+**Namespace flattening:**
+- All per-component sub-namespaces collapsed into package root
+- `_Imports.razor` restructured: single root import replaces per-component
+  using directives; all per-component `@using` directives removed from
+  97+ demo pages
+- `Utilities` and `Contexts` sub-namespaces merged into their parents;
+  `Services` retained
+- Chart types scoped to `NeoUI.Blazor.Charts` (conventional plural
+  namespace, avoids IntelliSense pollution)
+
+**Component renames (disambiguation):**
+
+| Old | New | Reason |
+|---|---|---|
+| `Grid<TItem>` | `DataGrid<TItem>` | Clash with chart's internal `Grid` type |
+| `GridColumn` | `DataGridColumn` | Same |
+| `GridDefinition` | `DataGridDefinition` | Same |
+| `Chart.Tooltip` | `ChartTooltip` | Clash with styled `Tooltip` |
+| `Command` | `CommandContent` | Razor RZ1042 void-element clash |
+
+Primitive components gain `Primitive` suffix where a styled counterpart
+exists (`AccordionPrimitive`, `CheckboxPrimitive`, etc.). Infrastructure
+primitives with no styled counterpart (`FloatingPortal`, Table family,
+`DialogPortal`, `SheetPortal`, `NavigationMenuRoot`) keep no suffix.
+
+**Service registration:**
+- `AddBlazorUIPrimitives()` → `AddNeoUIPrimitives()`
+- `AddBlazorUIComponents()` → `AddNeoUIComponents()`
+
+**Runtime token renames:**
+
+| Before | After |
+|---|---|
+| `blazorui:visible` / `blazorui:hidden` (JS events) | `neoui:visible` / `neoui:hidden` |
+| `blazorui-portal-root` (DOM id) | `neoui-portal-root` |
+| `.blazorui-portal` (CSS class) | `.neoui-portal` |
+| `blazorui:collapsible:` (localStorage prefix) | `neoui:collapsible:` |
+| `_content/NeoBlazorUI.Components/` | `_content/NeoUI.Blazor/` |
+| `_content/NeoBlazorUI.Primitives/` | `_content/NeoUI.Blazor.Primitives/` |
+| `BuildBlazorUICSS` (MSBuild target) | `BuildNeoUICSS` |
+| `blazorui.css` | `components.css` |
+| `blazorui-input.css` | `components-input.css` |
+
+**Migration guide (quick reference):**
+1. Swap NuGet package IDs (see table above)
+2. Replace `@using BlazorUI.Components.*` with `@using NeoUI.Blazor`
+3. Change `_content/NeoBlazorUI.Components/blazorui.css` →
+   `_content/NeoUI.Blazor/components.css` in `App.razor`/`index.html`
+4. Rename `AddBlazorUIComponents()` / `AddNeoBlazorUIPrimitives()` in
+   `Program.cs`
+5. Rename component tags: `<Grid>` → `<DataGrid>`, `<Command>` →
+   `<CommandContent>`, chart `<Tooltip>` → `<ChartTooltip>`
+6. `blazorui:collapsible:*` localStorage keys become `neoui:collapsible:*`
+   (existing persisted state treated as missing on first load; no data loss)
+
+---
+
+## Demo Solution Restructure — All Blazor Rendering Modes (v3)
+
+The demo solution has been reorganised into **four dedicated,
+purpose-named projects** so each render mode can be started directly
+without any configuration switching:
+
+| Project | Render Mode | HTTPS Port |
+|---|---|---|
+| `NeoUI.Demo.Auto` | Interactive Auto (Server-first → WASM) | 7172 |
+| `NeoUI.Demo.Auto.Client` | WASM satellite for Auto | — |
+| `NeoUI.Demo.Server` | Interactive Server only | 7173 |
+| `NeoUI.Demo.Wasm` | Standalone WebAssembly | 7174 |
+
+**Rename & new projects:**
+- `NeoUI.Demo` → `NeoUI.Demo.Auto`; `NeoUI.Demo.Client` →
+  `NeoUI.Demo.Auto.Client`
+- `NeoUI.Demo.Server` and `NeoUI.Demo.Wasm` are **new projects**
+  created from scratch
+
+**Shared asset strategy:**
+- All shared `wwwroot` assets (`css/`, `images/`, `styles/`,
+  `favicon.png`) moved from the old Client project into
+  `NeoUI.Demo.Shared/wwwroot` with `StaticWebAssetBasePath="."` so
+  every host project picks them up at root path automatically
+- Tailwind CSS build target consolidated into `NeoUI.Demo.Shared.csproj`
+
+**`NeoUI.Demo.Auto.Client` workaround removed:**
+- `RemoveIndexHtmlFromStaticAssets` MSBuild target removed (no longer
+  needed now that `NeoUI.Demo.Wasm` owns its own `index.html`)
+- `ResolveStaticWebAssetsInputsDependsOn` override removed
+- `NeoUI.Demo.Auto.Client/wwwroot/index.html` deleted
+
+**`NeoUI.Demo.Shared` (Razor Class Library):**
+- Single source of truth for all 97+ demo pages, shared layouts
+  (`MainLayout`, `DarkModeToggle`, `SpotlightCommandPalette`),
+  `Routes.razor`, and services (`ThemeService`, `CollapsibleStateService`,
+  `MockDataService`, `KeyboardShortcutService`); zero code duplication
+  across host projects; flat `_Imports.razor`
+
+**`NeoUI.Demo.Auto` (Blazor Web App — Auto Mode):**
+- InteractiveAuto rendermode (server-first for fast initial load, then
+  WASM); references both `NeoUI.Demo.Shared` and `NeoUI.Demo.Auto.Client`
+
+**`NeoUI.Demo.Auto.Client` (WASM satellite):**
+- `WASM_STANDALONE` compile constant gates root component registration
+  for standalone vs. referenced use; `StaticWebAssetBasePath` prevents
+  asset conflicts when referenced as a project dependency
+
+**`NeoUI.Demo.Server` (Blazor Web App — Server only):**
+- InteractiveServer rendermode; references `NeoUI.Demo.Shared`
+
+**`NeoUI.Demo.Wasm` (Standalone WebAssembly):**
+- InteractiveWebAssembly rendermode; hosts its own `index.html`
+- Polished `/Error` page using NeoUI `Card` + `Alert` (destructive) +
+  `Button`; adapted for WASM (no `HttpContext`, no server guidance card)
+
+**Polished host-specific UX:**
+- Themed `blazor-error-ui` bottom-bar notification across all three
+  server/client host projects, using CSS theme variables — renders even
+  if Blazor itself crashes
+- `ReconnectModal` component (native `<dialog>`) added to
+  `NeoUI.Demo.Auto` and `NeoUI.Demo.Server`; replaces the default
+  browser reconnect UI with a fully themed modal covering: Reconnecting,
+  Retrying (live countdown), Failed (Retry button), Paused (Resume
+  button), Resume Failed states; driven by CSS classes Blazor sets on
+  `#components-reconnect-modal` + ES module JS; intentionally absent
+  from `NeoUI.Demo.Wasm` (no SignalR circuit)
+
+**Architecture documented:**
+- Added `demo/ARCHITECTURE.md` covering the four-project layout,
+  rendering modes, static asset strategy, running instructions, and
+  troubleshooting
+
+---
+
+## Tailwind CSS Pipeline — Standalone Exe → npm
+
+- Add `package.json` to `NeoUI.Demo.Shared` and `NeoUI.Blazor` with
+  `@tailwindcss/cli` and `build:css` / `watch:css` npm scripts
+- Add `NpmInstall` MSBuild target (`BeforeTargets="BeforeBuild"`) that
+  auto-runs `npm install` when `node_modules/` is absent
+- Update `BuildTailwindCSS` / `BuildNeoUICSS` MSBuild targets to call
+  `npm run build:css` via `DependsOnTargets="NpmInstall"` instead of
+  invoking `tailwindcss.exe`; remove Windows-only restriction
+- **Root cause of `app.css` 404 in CI:** `**/wwwroot/css/app.css` was
+  gitignored; Blazor's static web asset manifest needed the file before
+  `dotnet build`; the previous `BeforeTargets="BeforeBuild"` MSBuild
+  target generated it too late
+- All three CI/CD workflows (`main`, `dev/staging`, `dev/preview`)
+  replace the "Download Tailwind CLI" PowerShell step with
+  `actions/setup-node@v4` → `npm install` → `npm run build:css` run
+  from `demo/NeoUI.Demo.Shared/` **before** `dotnet build`
+- NuGet publish workflow unchanged — `components.css` remains
+  pre-committed; CI skips the build target via `'$(CI)' != 'true'`
+- `tailwind.config.js` restored to correct location
+  `demo/NeoUI.Demo.Shared/tailwind.config.js`; content paths corrected;
+  stale `../NeoUI.Demo.Shared/**/*` entry removed
+- Exclude unnecessary build-time JSON from published output
+
+---
+
+## ComponentRegistry & Navigation Infrastructure
+
+- Introduce `ComponentRegistry` with `ComponentCategoryInfo` /
+  `ComponentCategories` for a structured, category-driven component
+  catalogue organizing all 85+ components (Form, Overlay, Navigation,
+  Display, etc.)
+- Registry entries carry: slug, title, description, icon name,
+  category/tags, and tier (`Component` vs `Primitive`)
+- Stable ordering used for prev/next navigation across all ~80 demo pages
+- Helper methods: find entry by route/slug, get prev/next entry,
+  enumerate grouped items
+- All three navigation surfaces now read from the registry:
+  - **Left sidebar** menu
+  - **`/components` index page** (card grid)
+  - **Spotlight Command Palette** (global search)
+- Add chart sub-pages as registry entries; audit registry for
+  completeness; remove non-existent entries (`command-library`,
+  `page-transition`, `datagrid/data-mutation`, `datagrid/refresh`)
+- Drive DataGrid sidebar navigation from registry
+
+**Layout & UX:**
+- Revamp sidebar navigation surfaces to be registry-driven
+- Add breadcrumb to the page header via `MainLayout`; breadcrumb shows
+  active page context and prev/next buttons when browsing any demo page
+- Add `DemoPageSubNav` component for in-page sub-page navigation
+  rendered in both header and footer
+- Polish overall layout styles and UX consistency
+- Auto-initialize `theme.js`; use `Assets` directive for all static
+  resource references
+
+---
+
+## Demo* Display Components
+
+- Introduce `DemoBlock`, `DemoSection`, `DemoPageHeader`,
+  `DemoPropsTable`, `DemoPropRow`, `DemoPageNav`, `DemoPageSubNav`,
+  `DemoCopyButton`
+- Add `AdditionalContent` `RenderFragment` slot to `DemoBlock` for
+  inline supplementary/info content alongside live previews
+- Add syntax-highlighted code block component with `ScrollArea`
+  integration for long-snippet overflow
+- Revive App.razor Setup section in ThemeSwitcherDemo with stylesheet
+  list and copy buttons
+- Refactor `AlertDemo` as the reference implementation for the new
+  `Demo*` system
+
+---
+
+## Demo Page Migration — All 97+ Pages
+
+All demo pages now follow: `DemoPageHeader` → `DemoSection` +
+`DemoBlock` (with static code string constants) → `DemoPropsTable` →
+`DemoPageNav`. All existing `@code` state, `@bind-*` bindings, and
+event handlers are preserved throughout. Code snippets and props tables
+extracted to `CodeExamples/` partial `.cs` classes.
+
+**Batch 1 (14 pages):** Spinner, Typography, Toggle, ToggleGroup, Empty,
+NativeSelect, AspectRatio, Drawer, Popover, Select, Slider, Pagination,
+Kbd, Breadcrumb
+
+**Batch 2 (13 pages):** InputOtp, Resizable, Badge, Carousel, Textarea,
+DialogService, Combobox, ScrollArea, DatePicker, Skeleton, Label, Card,
+Checkbox; retrofit `AdditionalContent` in AspectRatioDemo and
+NumericInputDemo
+
+**Batch 3:** FileUpload, RangeSlider, RichTextEditor, RadioGroup, Switch,
+Avatar, Button, Tooltip
+
+**Batch 4 (17 pages):** ThemeSwitcher, MultiSelect, Item, DataTable,
+Toast, Collapsible, ButtonGroup, Sheet, InputGroup, Menubar, ContextMenu,
+Input, Motion, Field, MaskedInput, Command, CurrencyInput —
+`CommandContent` used instead of `Command`
+
+**Batch 5:** Sidebar (12 sub-demos), Dialog, DropdownMenu
+
+**Batches 6 & 7:** All remaining primitive demos — NavigationMenu,
+TimePicker, Calendar, HoverCard, Separator, NumericInput, and more
+
+**Primitives revamp:** all primitives demos converted to the new Demo
+component structure
+
+**DataGrid (11 sub-pages):** Convert Basic, Templating, Selection,
+Transactions, SortingFiltering, State, ServerSide, Advanced, Theming,
+DataMutation, and RefreshDemo from raw HTML `<section>`/`<details>` to
+`DemoSection`/`DemoBlock`; add `DemoPageHeader` to DataGridDemo;
+populate `_visualStylesCode` and `_densityCode`; remove empty `Code`
+params from info-only DemoBlocks; reduce alert-button spacing to `mt-2`
+
+**Chart demos:** complete comprehensive chart demo revamp; remove `Card`
+containers from all 7 chart-type demo pages and `_interactiveCode`
+snippets in CodeExamples files; sub-page navigation in both header and
+footer
+
+---
+
+## Code Organization
+
+- Create `CodeExamples/` subfolder for all component demos: extract
+  code snippets and props tables into partial `.cs` classes
+- Take primitives `CodeExamples` from the revamp branch; fix
+  input-variant performance sections
+- Remove all `Installation`, `Usage`, and `Usage Notes` `DemoSection`
+  blocks from component demos
+
+---
+
+## Content Quality Pass & Bug Fixes
+
+**Reference-alignment fixes:** AlertDialogDemo, AspectRatioDemo,
+AvatarDemo, BadgeDemo, ButtonDemo (Dark Mode, Browser Compatibility, RTL
+rename), ButtonGroupDemo, CardDemo, CollapsibleDemo, ContextMenuDemo,
+DrawerDemo, FieldDemo, InputGroupDemo, MaskedInputDemo (ZIP Code, Custom
+Masks, Disabled/Readonly splits, Without Mask Display), NativeSelectDemo,
+RadioGroupDemo, ResizableDemo, ScrollAreaDemo, SelectDemo, SheetDemo,
+SkeletonDemo, SwitchDemo, ToastDemo (split sections + Installation/Usage),
+AccordionDemo (4th FAQ item), BreadcrumbDemo (Settings Navigation),
+CommandDemo (full Spotlight/Height Animation restore), CurrencyInputDemo
+(split Disabled/Readonly/Required), InputDemo (3-field validation form)
+
+**Bug fixes:** HTML entity encoding in `DemoPropRow` type columns
+(`<TItem>`, `<TData>`); ZIndex default in ThemeSwitcherDemo; ContextMenu
+demo image size; Tooltip API split into 4 DemoSections, remove invalid
+`ComponentName` param; FieldDemo `Title` error; `ResponsiveNav` `Class`
+error; expand NavigationMenu items with `min-height` wrapper; restore
+MotionDemo, ThemeSwitcherDemo, MarkdownEditorDemo to reference quality;
+revert AccordionDemo code example to correct version
+
+---
+
+## CI/CD, Solution & Docs
+
+- Solution renamed: `BlazorUI.sln` → `NeoUI.Blazor.sln`
+- `nuget-publish.yml` — `case` block updated to new `csproj` paths and
+  `NeoUI.*` package IDs
+- Three Azure deploy workflows updated: `AZURE_WEBAPP_PACKAGE_PATH` and
+  `WORKING_DIRECTORY` updated; "Download Tailwind CLI" step replaced with
+  `actions/setup-node` + npm steps in all three
+- Release scripts (`release-components.sh`, `release-primitives.sh`)
+  updated for NeoUI brand
+- Icon codegen scripts updated for new namespace output
+- Update GitHub README and repository assets
+- Update `CHANGELOG.md` and all documentation/LLM context files for
+  NeoUI brand
+- Bump version to rc.1
+
+---
+
+Co-authored-by: jimmyps <4159883+jimmyps@users.noreply.github.com>
+Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>

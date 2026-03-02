@@ -43,6 +43,7 @@ jobs:
 
       - name: Phase 2 — overlay RC content from b703288 (NeoUI.* paths only)
         run: |
+          git show origin/copilot/main-repair:.github/commit-messages/phase2.txt > /tmp/phase2-msg.txt
           git checkout b70328836a66d8272df91bb9a02513547abdb804 -- \
             .editorconfig .gitattributes .gitignore \
             CHANGELOG.md CONTRIBUTING.md Directory.Build.props LICENSE NOTICE \
@@ -50,7 +51,6 @@ jobs:
             .github/ demo/ docs/ llms/ scripts/ tools/ \
             src/NeoUI.Blazor/ src/NeoUI.Blazor.Primitives/ \
             src/NeoUI.Icons.Feather/ src/NeoUI.Icons.Heroicons/ src/NeoUI.Icons.Lucide/
-          git log --format="%B" -1 b70328836a66d8272df91bb9a02513547abdb804 > /tmp/phase2-msg.txt
           git commit -F /tmp/phase2-msg.txt
 
       - name: Fetch origin/main for Phase 3
