@@ -8,6 +8,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+### ✨ Feature: `SidebarMenuButton` now works as an `AsChild` target for trigger components
+
+`SidebarMenuButton` previously ignored `TriggerContext`, which meant using it as `<DropdownMenuTrigger AsChild>` (or any other trigger primitive with `AsChild`) silently failed — the dropdown never opened, no anchor element was registered for positioning, and aria attributes were absent.
+
+`SidebarMenuButton` now fully participates in the `AsChild` / `TriggerContext` pattern, matching the behaviour already present in `Button`:
+
+- **`[CascadingParameter(Name = "TriggerContext")]`** — receives context cascaded by `DropdownMenuTriggerPrimitive`, `PopoverTriggerPrimitive`, etc.
+- **`_buttonRef` + `OnAfterRender` → `SetTriggerElement`** — registers the rendered element with the positioning service so the floating overlay can anchor correctly.
+- **`HandleClick`** — invokes `TriggerContext.Toggle()` when a trigger context is present; falls through to `CollapsibleContext` otherwise, preserving existing sub-menu expand/collapse behaviour.
+- **`HandleKeyDown` → `TriggerContext.OnKeyDown`** — delegates arrow-key / Enter handling to the trigger context, enabling keyboard navigation into the opened overlay.
+- **`id`, `aria-haspopup`, `aria-expanded`, `aria-controls`** — wired from `TriggerContext` on the `<button>` element for full accessibility compliance.
+- **`data-state`** — now evaluates `TriggerContext?.IsOpen` first (falling back to `CollapsibleContext`), so `data-[state=open]:*` Tailwind selectors fire correctly while the overlay is open — enabling the standard UX pattern of the trigger holding its active/hover background while its overlay is visible.
+
+---
+
 ### 🐛 Fix: `SidebarMenuButton` — `data-active` emitted as C# boolean instead of `"true"/"false"` string
 
 The `<button>` render path was emitting `data-active="@effectiveActive"`, which Blazor serialises as `True` / `False` (capitalised). CSS attribute selectors such as `data-[active=true]:bg-sidebar-accent` never matched, so the active state was visually absent on non-anchor buttons. Fixed to `@(effectiveActive ? "true" : "false")` to match the lowercase string expected by both the component's own class logic and consumer-side selectors.

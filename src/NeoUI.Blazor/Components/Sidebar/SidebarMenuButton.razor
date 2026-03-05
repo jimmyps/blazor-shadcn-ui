@@ -90,6 +90,23 @@ else
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Trigger context received when this button is used as an AsChild target
+    /// (e.g. inside DropdownMenuTrigger AsChild, PopoverTrigger AsChild, etc.).
+    /// </summary>
+    [CascadingParameter(Name = "TriggerContext")]
+    private TriggerContext? TriggerContext { get; set; }
+
+    private ElementReference _buttonRef;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && TriggerContext?.SetTriggerElement != null)
+        {
+            TriggerContext.SetTriggerElement.Invoke(_buttonRef);
+        }
+    }
+
     private bool ShouldShowTooltip()
     {
         return !string.IsNullOrEmpty(Tooltip) && Context != null && !Context.Open;
@@ -159,12 +176,17 @@ else
         {
             <button type="button"
                     class="@GetClasses()"
+                    id="@(TriggerContext?.TriggerId)"
+                    @ref="_buttonRef"
                     data-active="@(effectiveActive ? "true" : "false")"
                     data-size="@Size.ToValue()"
-                    data-state="@(CollapsibleContext?.Open ?? false ? "open" : "closed")"
+                    data-state="@((TriggerContext?.IsOpen ?? CollapsibleContext?.Open ?? false) ? "open" : "closed")"
                     aria-current="@(effectiveActive ? "page" : null)"
-                    aria-expanded="@(CollapsibleContext?.Open ?? false)"
+                    aria-haspopup="@(TriggerContext?.AriaHasPopup)"
+                    aria-expanded="@(TriggerContext != null ? TriggerContext.IsOpen.ToString().ToLower() : (CollapsibleContext?.Open ?? false).ToString().ToLower())"
+                    aria-controls="@(TriggerContext?.AriaControls)"
                     @onclick="HandleClick"
+                    @onkeydown="HandleKeyDown"
                     @attributes="AdditionalAttributes">
                 @ChildContent
             </button>
@@ -173,9 +195,23 @@ else
 
     private async Task HandleClick(Microsoft.AspNetCore.Components.Web.MouseEventArgs args)
     {
+        if (TriggerContext != null)
+        {
+            TriggerContext.Toggle?.Invoke();
+            return;
+        }
+
         if (CollapsibleContext?.Toggle != null && !CollapsibleContext.Disabled)
         {
             await CollapsibleContext.Toggle.Invoke();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (TriggerContext?.OnKeyDown != null)
+        {
+            await TriggerContext.OnKeyDown.Invoke(args);
         }
     }
 
