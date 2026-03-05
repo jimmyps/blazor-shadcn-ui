@@ -1,0 +1,79 @@
+@namespace NeoUI.Test.Pages.Blocks.Dashboard
+
+<div class="@@container w-full bg-muted/20 p-6">
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <h2 class="text-xl font-semibold">User Management</h2>
+            <p class="text-sm text-muted-foreground">@_users.Count total users</p>
+        </div>
+        <Button Size="ButtonSize.Small" Class="gap-1.5">
+            <LucideIcon Name="plus" Size="14" />
+            Add User
+        </Button>
+    </div>
+
+    <div class="overflow-x-auto">
+        <DataTable TData="UserRow" Data="_users" ShowPagination="false">
+            <Columns>
+                <DataTableColumn TData="UserRow" TValue="string" Property="@(u => u.Name)" Header="User" Sortable>
+                    <CellTemplate Context="user">
+                        <div class="flex items-center gap-3">
+                            <div class="size-8 rounded-full bg-muted flex items-center justify-center shrink-0 text-xs font-medium">
+                                @(user.Name.Length >= 2 ? user.Name[..2].ToUpper() : user.Name.ToUpper())
+                            </div>
+                            <div>
+                                <p class="font-medium">@user.Name</p>
+                                <p class="text-xs text-muted-foreground">@user.Email</p>
+                            </div>
+                        </div>
+                    </CellTemplate>
+                </DataTableColumn>
+                <DataTableColumn TData="UserRow" TValue="string" Property="@(u => u.Role)" Header="Role" Sortable>
+                    <CellTemplate Context="user">
+                        <Badge Variant="BadgeVariant.Secondary">@user.Role</Badge>
+                    </CellTemplate>
+                </DataTableColumn>
+                <DataTableColumn TData="UserRow" TValue="bool" Property="@(u => u.Active)" Header="Status">
+                    <CellTemplate Context="user">
+                        <Badge Variant="@(user.Active ? BadgeVariant.Default : BadgeVariant.Outline)">
+                            @(user.Active ? "Active" : "Inactive")
+                        </Badge>
+                    </CellTemplate>
+                </DataTableColumn>
+                <DataTableColumn TData="UserRow" TValue="string" Property="@(u => u.Name)" Header="Actions">
+                    <CellTemplate Context="user">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger AsChild>
+                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="size-8">
+                                    <LucideIcon Name="ellipsis" Size="16" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem>View profile</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem Class="text-destructive">Remove</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </CellTemplate>
+                </DataTableColumn>
+            </Columns>
+        </DataTable>
+    </div>
+</div>
+
+@code {
+    record UserRow(string Name, string Email, string Role, bool Active);
+
+    readonly List<UserRow> _users =
+    [
+        new("Alice Johnson", "alice@acme.com", "Admin",     true),
+        new("Bob Smith",     "bob@acme.com",   "Developer", true),
+        new("Carol White",   "carol@acme.com", "Designer",  true),
+        new("David Kim",     "david@acme.com", "Developer", false),
+        new("Eva Martinez",  "eva@acme.com",   "Manager",   true),
+        new("Frank Lee",     "frank@acme.com", "Viewer",    false),
+    ];
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" class="base-zinc primary-violet" data-theme="default">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <title>NeoUI Test</title>
+
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/components.css"]" />
+    <link rel="stylesheet" href="@Assets["css/app.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/base/zinc.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/NeoUI.Blazor/css/themes/primary/violet.css"]" />
+
+    <HeadOutlet />
+
+    <ImportMap />
+    <script src="@Assets["_content/NeoUI.Blazor/js/theme.js"]"></script>
+</head>
+<body>
+    <Routes @rendermode="InteractiveServer" />
+
+    <script src="@Assets["_framework/blazor.web.js"]"></script>
+</body>
+</html>
+
+@using NeoUI.Test

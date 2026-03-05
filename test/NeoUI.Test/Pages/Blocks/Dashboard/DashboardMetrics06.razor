@@ -1,0 +1,38 @@
+@namespace NeoUI.Test.Pages.Blocks.Dashboard
+
+<div class="@@container w-full bg-muted/20 p-6">
+    <div class="mb-6">
+        <h2 class="text-xl font-semibold">SaaS Metrics</h2>
+        <p class="text-sm text-muted-foreground">Key performance indicators for this month</p>
+    </div>
+
+    <div class="grid grid-cols-1 @@sm:grid-cols-2 @@3xl:grid-cols-3 gap-4">
+        @foreach (var metric in _metrics)
+        {
+            <Card>
+                <CardContent Class="pt-6">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm text-muted-foreground">@metric.Label</span>
+                        <LucideIcon Name="@metric.Icon" Size="16" Class="text-muted-foreground" />
+                    </div>
+                    <div class="text-2xl font-bold tracking-tight mb-2">@metric.Value</div>
+                    <Badge Variant="@metric.TrendVariant" Class="text-xs">@metric.Trend</Badge>
+                </CardContent>
+            </Card>
+        }
+    </div>
+</div>
+
+@code {
+    record MetricCard(string Label, string Value, string Trend, string Icon, BadgeVariant TrendVariant);
+
+    readonly List<MetricCard> _metrics =
+    [
+        new("MRR",                    "$24,500",     "+8.1% vs last month",     "trending-up",   BadgeVariant.Default),
+        new("ARR",                    "$294,000",    "+8.1% annualized",         "bar-chart-big", BadgeVariant.Default),
+        new("Churn Rate",             "2.4%",        "-0.3% improvement",        "user-minus",    BadgeVariant.Default),
+        new("NPS Score",              "68",          "+4 pts this quarter",      "smile",         BadgeVariant.Default),
+        new("Active Subscriptions",   "1,284",       "+52 new this month",       "credit-card",   BadgeVariant.Secondary),
+        new("Top Customer",           "Globex Corp", "$3,200/mo",                "star",          BadgeVariant.Secondary),
+    ];
+}

@@ -1,0 +1,170 @@
+@namespace NeoUI.Test.Pages.Blocks.Dashboard
+
+<div class="h-[580px] w-full overflow-hidden rounded-lg border">
+    <SidebarProvider CookieKey="sidebar:dashboard-shell-01" HeightClass="h-full">
+        <div class="flex h-full w-full">
+
+            <Sidebar style="--sidebar-accent: var(--primary); --sidebar-accent-foreground: var(--primary-foreground);">
+                <SidebarHeader>
+                    <SidebarHeaderContent>
+                        <div class="size-7 rounded-md bg-foreground flex items-center justify-center shrink-0">
+                            <LucideIcon Name="layers" Size="14" Class="text-background" />
+                        </div>
+                        <SidebarHeaderInfo>
+                            <span class="truncate font-semibold text-sm">Acme Inc.</span>
+                        </SidebarHeaderInfo>
+                    </SidebarHeaderContent>
+                </SidebarHeader>
+
+                <SidebarContent>
+                    <SidebarMenu>
+                        @foreach (var item in _navItems)
+                        {
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Tooltip="@item.Label" IsActive="@item.Active" Class="hover:bg-sidebar-accent/10 hover:!text-foreground active:bg-sidebar-accent/20 active:!text-foreground data-[active=true]:hover:bg-sidebar-accent/90 data-[active=true]:hover:!text-primary-foreground">
+                                    <LucideIcon Name="@item.Icon" Size="15" />
+                                    <span>@item.Label</span>
+                                </SidebarMenuButton>
+                                @if (item.Badge is not null)
+                                {
+                                    <SidebarMenuBadge Class="transition-[color,background-color] duration-200 peer-hover/menu-button:bg-sidebar-accent/10 peer-hover/menu-button:!text-foreground peer-active/menu-button:bg-sidebar-accent/20 peer-data-[active=true]/menu-button:bg-sidebar-accent peer-data-[active=true]/menu-button:!text-primary-foreground">
+                                        @item.Badge</SidebarMenuBadge>
+                                }
+                            </SidebarMenuItem>
+                        }
+                    </SidebarMenu>
+                </SidebarContent>
+
+                <SidebarFooter>
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger AsChild>
+                                    <SidebarMenuButton Size="SidebarMenuButtonSize.Large" Tooltip="Jane Doe"
+                                                       Class="hover:bg-sidebar-accent/10 hover:!text-foreground active:bg-sidebar-accent/20 active:!text-foreground data-[state=open]:!bg-sidebar-accent/10 data-[state=open]:!text-foreground">
+                                        <Avatar Class="size-8 rounded-lg">
+                                            <AvatarFallback Class="rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-[10px]">JD</AvatarFallback>
+                                        </Avatar>
+                                        <div class="grid flex-1 text-left text-sm leading-tight">
+                                            <span class="truncate font-semibold">Jane Doe</span>
+                                            <span class="truncate text-xs text-muted-foreground">jane@acme.io</span>
+                                        </div>
+                                        <LucideIcon Name="chevrons-up-down" Size="16" Class="ml-auto" />
+                                    </SidebarMenuButton>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent Class="w-48" Align="@PopoverAlign.End">
+                                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>
+                                        <LucideIcon Name="user" Size="14" Class="mr-2" />
+                                        Profile
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <LucideIcon Name="settings" Size="14" Class="mr-2" />
+                                        Settings
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>
+                                        <LucideIcon Name="log-out" Size="14" Class="mr-2" />
+                                        Sign out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+                </SidebarFooter>
+
+                <SidebarRail />
+            </Sidebar>
+
+            <SidebarInset>
+                <header class="flex items-center justify-between px-4 h-14 border-b shrink-0">
+                    <div class="flex items-center gap-2">
+                        <SidebarTrigger />
+                        <div>
+                            <h1 class="text-sm font-semibold">Dashboard</h1>
+                            <p class="text-xs text-muted-foreground">Welcome back, Jane</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="size-8">
+                            <LucideIcon Name="bell" Size="15" />
+                        </Button>
+                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="size-8">
+                            <LucideIcon Name="settings" Size="15" />
+                        </Button>
+                    </div>
+                </header>
+
+                <div class="flex-1 overflow-y-auto p-5 space-y-4">
+                    <div class="grid grid-cols-3 gap-3">
+                        @foreach (var kpi in _kpis)
+                        {
+                            <Card Class="p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-muted-foreground">@kpi.Label</span>
+                                    <LucideIcon Name="@kpi.Icon" Size="13" Class="text-muted-foreground" />
+                                </div>
+                                <div class="text-xl font-bold">@kpi.Value</div>
+                                <div class="text-[10px] text-emerald-600 font-medium mt-0.5">@kpi.Delta</div>
+                            </Card>
+                        }
+                    </div>
+
+                    <Card>
+                        <CardHeader Class="pb-2">
+                            <div class="flex items-center justify-between">
+                                <CardTitle Class="text-sm font-medium">Recent Activity</CardTitle>
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-[10px]">Live</Badge>
+                            </div>
+                        </CardHeader>
+                        <CardContent Class="space-y-2">
+                            @foreach (var event_ in _events)
+                            {
+                                <div class="flex items-start gap-2.5">
+                                    <div class="size-6 rounded-full bg-muted flex items-center justify-center shrink-0 mt-0.5">
+                                        <LucideIcon Name="@event_.Icon" Size="11" Class="text-foreground/60" />
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-medium">@event_.Title</p>
+                                        <p class="text-[10px] text-muted-foreground">@event_.Time</p>
+                                    </div>
+                                </div>
+                            }
+                        </CardContent>
+                    </Card>
+                </div>
+            </SidebarInset>
+
+        </div>
+    </SidebarProvider>
+</div>
+
+@code {
+    private record NavItem(string Icon, string Label, bool Active = false, string? Badge = null);
+    private record KpiItem(string Label, string Icon, string Value, string Delta);
+    private record EventItem(string Icon, string Title, string Time);
+
+    private static readonly NavItem[] _navItems =
+    [
+        new("layout-dashboard", "Dashboard", Active: true),
+        new("users",            "Users",     Badge: "12"),
+        new("bar-chart-big",    "Analytics"),
+        new("shopping-cart",    "Orders",    Badge: "3"),
+        new("settings",         "Settings"),
+    ];
+
+    private static readonly KpiItem[] _kpis =
+    [
+        new("Revenue",  "dollar-sign",  "$12,430", "+8.2% this week"),
+        new("Users",    "users",        "2,350",   "+180 new today"),
+        new("Sessions", "activity",     "18,942",  "+12.5% vs last week"),
+    ];
+
+    private static readonly EventItem[] _events =
+    [
+        new("user-plus",     "New user registered – alice@example.com", "2 minutes ago"),
+        new("shopping-cart", "Order #1234 placed – $99.00",             "15 minutes ago"),
+        new("circle-check",  "Deployment completed successfully",       "1 hour ago"),
+    ];
+}

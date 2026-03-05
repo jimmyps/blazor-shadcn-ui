@@ -1,0 +1,39 @@
+@namespace NeoUI.Test.Pages.Blocks.Dashboard
+
+<div class="@@container w-full bg-background p-6">
+    <div class="grid grid-cols-1 @@sm:grid-cols-2 @@3xl:grid-cols-4 gap-4">
+        @foreach (var stat in _stats)
+        {
+            <Card>
+                <CardHeader Class="flex flex-row items-center justify-between pb-2">
+                    <CardTitle Class="text-sm font-medium text-muted-foreground">@stat.Label</CardTitle>
+                    <div class="size-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                        <LucideIcon Name="@stat.Icon" Size="15" Class="text-foreground/60" />
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <div class="text-2xl font-bold tracking-tight">@stat.Value</div>
+                    <div class="flex items-center gap-1 mt-1">
+                        <Badge Variant="@(stat.IsPositive ? BadgeVariant.Default : BadgeVariant.Destructive)"
+                               Class="text-[10px] px-1.5 py-0 font-mono">
+                            @(stat.IsPositive ? "+" : "")@stat.Delta
+                        </Badge>
+                        <span class="text-xs text-muted-foreground">from last month</span>
+                    </div>
+                </CardContent>
+            </Card>
+        }
+    </div>
+</div>
+
+@code {
+    private record Stat(string Label, string Icon, string Value, string Delta, bool IsPositive);
+
+    private static readonly Stat[] _stats =
+    [
+        new("Total Revenue",    "dollar-sign",    "$45,231.89", "20.1%", true),
+        new("Active Users",     "users",          "+2,350",     "180.1%", true),
+        new("New Signups",      "user-plus",      "+12,234",    "19%",    true),
+        new("Active Now",       "activity",       "+573",       "201",    true),
+    ];
+}

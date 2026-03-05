@@ -1,0 +1,70 @@
+@namespace NeoUI.Test.Pages.Blocks.Dashboard
+
+<div class="@@container w-full bg-muted/20 p-6">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold">Notifications</h2>
+        <a href="#" @onclick:preventDefault class="text-sm text-muted-foreground hover:text-foreground transition-colors">Mark all read</a>
+    </div>
+
+    <Card Class="max-w-lg">
+        <ScrollArea Class="h-[420px]">
+            <div class="p-4 space-y-4">
+                <div>
+                    <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Today</p>
+                    <div class="space-y-1">
+                        @foreach (var n in _todayItems)
+                        {
+                            <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors @(n.Unread ? "bg-primary/5" : "")">
+                                <Avatar Class="size-9 shrink-0">
+                                    <AvatarFallback>@n.Initials</AvatarFallback>
+                                </Avatar>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm leading-snug">@((MarkupString)n.Text)</p>
+                                    <span class="text-xs text-muted-foreground">@n.Time</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                    <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Earlier</p>
+                    <div class="space-y-1">
+                        @foreach (var n in _earlierItems)
+                        {
+                            <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                                <Avatar Class="size-9 shrink-0">
+                                    <AvatarFallback>@n.Initials</AvatarFallback>
+                                </Avatar>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm leading-snug">@((MarkupString)n.Text)</p>
+                                    <span class="text-xs text-muted-foreground">@n.Time</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </ScrollArea>
+    </Card>
+</div>
+
+@code {
+    record NotifItem(string Initials, string Text, string Time, bool Unread = false);
+
+    readonly List<NotifItem> _todayItems =
+    [
+        new("JD", "<strong>Jane Doe</strong> deployed a new release to production.", "2 min ago",  true),
+        new("MS", "<strong>Mark S.</strong> mentioned you in pull request #142.",   "18 min ago", true),
+        new("AK", "<strong>Amy K.</strong> assigned you to issue #88.",             "1 hr ago",   true),
+    ];
+
+    readonly List<NotifItem> _earlierItems =
+    [
+        new("RB", "<strong>Rob B.</strong> merged your pull request.",                          "Yesterday at 4:30 PM"),
+        new("TL", "<strong>Tina L.</strong> commented on your dashboard design.",               "2 days ago"),
+        new("SY", "<strong>System</strong> Your scheduled backup completed successfully.",      "3 days ago"),
+    ];
+}
