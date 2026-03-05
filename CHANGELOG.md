@@ -2,6 +2,48 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-4 – Sidebar & Positioning: Bug Fixes
+
+> **Library change.** Affects `SidebarMenuButton` in `NeoUI.Blazor` and `positioning.js` in `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
+
+---
+
+### 🐛 Fix: `SidebarMenuButton` — `data-active` emitted as C# boolean instead of `"true"/"false"` string
+
+The `<button>` render path was emitting `data-active="@effectiveActive"`, which Blazor serialises as `True` / `False` (capitalised). CSS attribute selectors such as `data-[active=true]:bg-sidebar-accent` never matched, so the active state was visually absent on non-anchor buttons. Fixed to `@(effectiveActive ? "true" : "false")` to match the lowercase string expected by both the component's own class logic and consumer-side selectors.
+
+---
+
+### 🐛 Fix: `SidebarMenuButton` — `data-size` attribute missing from rendered elements
+
+`data-size` was declared in the component API and used by `SidebarMenuBadge`'s peer selectors (`peer-data-[size=sm]/menu-button:top-1` etc.) but was never actually emitted on either the `<button>` or `<NavLink>` elements. Peer selectors targeting size never fired. Both render paths now emit `data-size="@Size.ToValue()"`.
+
+---
+
+### 🐛 Fix: `SidebarMenuButton` — size variant classes keyed on wrong strings
+
+The `GetClasses()` size switch matched on `"small"` and `"large"`, but `SidebarMenuButtonSize.ToValue()` returns `"sm"` and `"lg"`. The `sm` and `lg` size variants therefore never applied. Switch cases corrected to `"sm"` and `"lg"`.
+
+---
+
+### 🐛 Fix: `positioning.js` — overflow detection used wrong coordinate space on scrolled pages
+
+The `preventOverflow` middleware was computing `exceedsBottom / exceedsTop / exceedsRight / exceedsLeft` against the pre-existing `adjustedX / adjustedY` variables (document-space coordinates) rather than the viewport-relative `vpX / vpY` values that had been derived immediately above. On any page with a non-zero scroll offset the overflow checks were incorrect, causing floating elements to be mis-positioned or needlessly constrained. All four boundary checks and the subsequent correction assignments are now consistently performed in viewport coordinates, with a final conversion back to document space (`vpX + scrollX`, `vpY + scrollY`) before returning.
+
+---
+
+### 🐛 Fix: `positioning.js` — wrong CSS `position` on floating element caused coordinate-space mismatch
+
+Floating UI's `getOffsetParent()` inspects the floating element's *current* `CSS position` to resolve its containing block. The element is initialised off-screen as `position: fixed` by `GetInitialStyle()` in Blazor. When the requested strategy is `absolute`, `getOffsetParent()` was reading `fixed` and returning `null` / `window` instead of the true offset parent, so coordinates were computed in the wrong space. The call to `lib.computePosition()` is now wrapped with a temporary `position` override that sets the element's style to match the requested strategy, then restores the original value in a `finally` block. Because JS is single-threaded and no layout/paint occurs between the set and restore within a single synchronous execution sequence, there are no visual side-effects.
+
+---
+
+### ♻️ Refactor: `SidebarDemo` — remove redundant outer wrapper from demo blocks
+
+Multiple `DemoBlock` sections in `SidebarDemo.razor` contained an extra `<div class="border rounded-lg p-6 bg-background">` wrapping the inner demo container. The inner container already carries its own border, rounded corners, and background, making the outer wrapper redundant and adding unwanted padding. Removed from all affected sections.
+
+---
+
 ## 2026-3-3 – NavigationMenu: Hover Sensitivity & Trigger Interaction Fixes
 
 > **Primitive change.** Affects `NavigationMenuTriggerPrimitive` and `NavigationMenuContext` in `NeoUI.Blazor.Primitives`, and `NavigationMenuTrigger` in `NeoUI.Blazor`. No breaking changes to public APIs.

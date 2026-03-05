@@ -160,12 +160,16 @@ export async function computePosition(reference, floating, options = {}) {
       }));
     }
 
-    // Add viewport constraint middleware to ensure element stays within viewport bounds
-    // This runs after flip/shift to handle any remaining viewport overflow
+    // Add viewport constraint middleware to ensure element stays within viewport bounds.
+    // This runs after flip/shift to handle any remaining viewport overflow.
+    // NOTE: For 'absolute' strategy, Floating UI coordinates are in the floating element's
+    // offset-parent space (document space when offset-parent = <html>). 'fixed' strategy
+    // coordinates are always in viewport space. We normalise to viewport space for all
+    // boundary checks by subtracting the page scroll offset, then convert back.
     middleware.push({
       name: 'blazorViewportConstraint',
       fn(state) {
-        const { x, y, rects } = state;
+        const { x, y, rects, strategy: stateStrategy } = state;
         const floatingWidth = rects.floating.width;
         const floatingHeight = rects.floating.height;
         const viewportHeight = window.innerHeight;
@@ -173,15 +177,21 @@ export async function computePosition(reference, floating, options = {}) {
         // Use padding from options (default 8px) for viewport boundary calculations
         const viewportPadding = padding;
 
-        let adjustedX = x;
-        let adjustedY = y;
+        // For 'absolute' strategy, coordinates include the document scroll offset relative
+        // to the offset parent. Subtract it so all boundary checks are in viewport space.
+        const scrollX = stateStrategy === 'fixed' ? 0 : (window.scrollX ?? window.pageXOffset ?? 0);
+        const scrollY = stateStrategy === 'fixed' ? 0 : (window.scrollY ?? window.pageYOffset ?? 0);
+
+        // Work in viewport space
+        let vpX = x - scrollX;
+        let vpY = y - scrollY;
         const data = {};
 
-        // Check if element extends beyond viewport boundaries
-        const exceedsBottom = y + floatingHeight > viewportHeight - viewportPadding;
-        const exceedsTop = y < viewportPadding;
-        const exceedsRight = x + floatingWidth > viewportWidth - viewportPadding;
-        const exceedsLeft = x < viewportPadding;
+        // Check if element extends beyond viewport boundaries (viewport coordinates)
+        const exceedsBottom = vpY + floatingHeight > viewportHeight - viewportPadding;
+        const exceedsTop = vpY < viewportPadding;
+        const exceedsRight = vpX + floatingWidth > viewportWidth - viewportPadding;
+        const exceedsLeft = vpX < viewportPadding;
 
         // Handle vertical overflow
         if (exceedsBottom || exceedsTop) {
@@ -191,16 +201,16 @@ export async function computePosition(reference, floating, options = {}) {
             data.needsVerticalScroll = true;
             data.maxHeight = maxHeight;
             // Position at top of viewport with padding
-            adjustedY = viewportPadding;
+            vpY = viewportPadding;
           } else {
             // Content fits in viewport but positioned poorly - reposition it
             if (exceedsBottom) {
               // Shift up to fit
               const newTop = viewportHeight - floatingHeight - viewportPadding;
-              adjustedY = Math.max(viewportPadding, newTop);
+              vpY = Math.max(viewportPadding, newTop);
             } else if (exceedsTop) {
               // Shift down to fit
-              adjustedY = viewportPadding;
+              vpY = viewportPadding;
             }
           }
         }
@@ -213,33 +223,55 @@ export async function computePosition(reference, floating, options = {}) {
             data.needsHorizontalScroll = true;
             data.maxWidth = maxWidth;
             // Position at left edge of viewport with padding
-            adjustedX = viewportPadding;
+            vpX = viewportPadding;
           } else {
             // Content fits in viewport but positioned poorly - reposition it
             if (exceedsRight) {
               // Shift left to fit
               const newLeft = viewportWidth - floatingWidth - viewportPadding;
-              adjustedX = Math.max(viewportPadding, newLeft);
+              vpX = Math.max(viewportPadding, newLeft);
             } else if (exceedsLeft) {
               // Shift right to fit
-              adjustedX = viewportPadding;
+              vpX = viewportPadding;
             }
           }
         }
 
+        // Convert back to strategy's coordinate space
         return {
-          x: adjustedX,
-          y: adjustedY,
+          x: vpX + scrollX,
+          y: vpY + scrollY,
           data
         };
       }
     });
 
-    const result = await lib.computePosition(reference, floating, {
-      placement,
-      middleware,
-      strategy
-    });
+    // Temporarily set the floating element's CSS position to match the requested strategy
+    // before calling Floating UI. The element is hidden off-screen with position:fixed by
+    // GetInitialStyle() in Blazor, but Floating UI's getOffsetParent() reads the element's
+    // *current* CSS position to resolve the containing block. If the element is position:fixed
+    // but the strategy is 'absolute', getOffsetParent() returns null/window instead of the
+    // real offset parent, causing coordinates to be computed in the wrong space.
+    // Restoring after ensures no visual side-effects (JS is single-threaded; no repaint occurs
+    // between setting and restoring within a single synchronous execution sequence).
+    const originalPosition = floating.style.position;
+    const needsPositionFix = originalPosition !== strategy;
+    if (needsPositionFix) {
+      floating.style.position = strategy;
+    }
+
+    let result;
+    try {
+      result = await lib.computePosition(reference, floating, {
+        placement,
+        middleware,
+        strategy
+      });
+    } finally {
+      if (needsPositionFix) {
+        floating.style.position = originalPosition;
+      }
+    }
 
     return {
       x: result.x,
