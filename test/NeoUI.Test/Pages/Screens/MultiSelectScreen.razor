@@ -1,0 +1,149 @@
+@page "/screens/multi-select"
+@namespace NeoUI.Test.Pages.Screens
+@layout NeoUI.Test.Layout.ScreensLayout
+
+<div class="w-[480px] bg-background rounded-xl border shadow-lg overflow-hidden">
+
+    <div class="px-6 pt-6 pb-4 border-b">
+        <div class="flex items-center gap-3">
+            <div class="size-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                <LucideIcon Name="folder-plus" Size="18" Class="text-primary-foreground" />
+            </div>
+            <div>
+                <h1 class="text-base font-semibold leading-tight">New Project</h1>
+                <p class="text-xs text-muted-foreground">Set up your project details and team.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-6 py-5 space-y-5">
+
+        <div class="space-y-1.5">
+            <label class="text-sm font-medium">Project Name</label>
+            <Input Type="InputType.Text"
+                   @bind-Value="projectName"
+                   Placeholder="e.g. Acme Dashboard"
+                   Class="w-full" />
+        </div>
+
+        <div class="space-y-1.5">
+            <label class="text-sm font-medium">Tech Stack</label>
+            <MultiSelect TItem="Option"
+                         Items="_techStack"
+                         @bind-Values="selectedTech"
+                         ValueSelector="@(o => o.Value)"
+                         DisplaySelector="@(o => o.Label)"
+                         Placeholder="Select technologies..."
+                         SearchPlaceholder="Search technologies..."
+                         ShowSelectAll="true"
+                         SelectAllLabel="Select All"
+                         MaxDisplayTags="3"
+                         MatchTriggerWidth="true" />
+            <p class="text-xs text-muted-foreground">Choose the technologies used in this project.</p>
+        </div>
+
+        <div class="space-y-1.5">
+            <label class="text-sm font-medium">Team Members</label>
+            <MultiSelect TItem="Option"
+                         Items="_teamMembers"
+                         @bind-Values="selectedMembers"
+                         ValueSelector="@(o => o.Value)"
+                         DisplaySelector="@(o => o.Label)"
+                         Placeholder="Add team members..."
+                         SearchPlaceholder="Search members..."
+                         MaxDisplayTags="2"
+                         MatchTriggerWidth="true" />
+            <p class="text-xs text-muted-foreground">Invite people to collaborate on this project.</p>
+        </div>
+
+        <div class="space-y-1.5">
+            <label class="text-sm font-medium">Labels</label>
+            <MultiSelect TItem="Option"
+                         Items="_labels"
+                         @bind-Values="selectedLabels"
+                         ValueSelector="@(o => o.Value)"
+                         DisplaySelector="@(o => o.Label)"
+                         Placeholder="Add labels..."
+                         SearchPlaceholder="Search labels..."
+                         MatchTriggerWidth="true" />
+        </div>
+
+    </div>
+
+    <div class="px-6 pb-6 pt-1 flex items-center justify-between gap-3">
+        @if (_submitted)
+        {
+            <div class="flex items-center gap-1.5 text-sm text-green-600">
+                <LucideIcon Name="circle-check" Size="15" />
+                <span>Project created!</span>
+            </div>
+        }
+        else
+        {
+            <span class="text-xs text-muted-foreground">
+                @(selectedTech?.Count() is int t and > 0 ? $"{t} tech" : "")
+                @(selectedMembers?.Count() is int m and > 0 ? $" · {m} member{(m == 1 ? "" : "s")}" : "")
+            </span>
+        }
+        <div class="flex gap-2 ml-auto">
+            <Button Variant="ButtonVariant.Outline" OnClick="HandleCancel">Cancel</Button>
+            <Button Variant="ButtonVariant.Default" OnClick="HandleSubmit">Create Project</Button>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private string? projectName;
+    private IEnumerable<string>? selectedTech;
+    private IEnumerable<string>? selectedMembers;
+    private IEnumerable<string>? selectedLabels;
+    private bool _submitted;
+
+    private readonly List<Option> _techStack =
+    [
+        new("blazor",      "Blazor"),
+        new("dotnet",      ".NET"),
+        new("typescript",  "TypeScript"),
+        new("react",       "React"),
+        new("tailwind",    "Tailwind CSS"),
+        new("postgres",    "PostgreSQL"),
+        new("docker",      "Docker"),
+        new("azure",       "Azure"),
+    ];
+
+    private readonly List<Option> _teamMembers =
+    [
+        new("alice",   "Alice Chen"),
+        new("bob",     "Bob Martin"),
+        new("carol",   "Carol White"),
+        new("david",   "David Kim"),
+        new("emma",    "Emma Davis"),
+    ];
+
+    private readonly List<Option> _labels =
+    [
+        new("frontend",  "Frontend"),
+        new("backend",   "Backend"),
+        new("design",    "Design"),
+        new("infra",     "Infrastructure"),
+        new("alpha",     "Alpha"),
+        new("beta",      "Beta"),
+    ];
+
+    private void HandleSubmit()
+    {
+        _submitted = true;
+    }
+
+    private void HandleCancel()
+    {
+        projectName = null;
+        selectedTech = null;
+        selectedMembers = null;
+        selectedLabels = null;
+        _submitted = false;
+    }
+
+    private record Option(string Value, string Label);
+}
