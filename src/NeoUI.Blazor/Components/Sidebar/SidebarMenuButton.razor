@@ -144,7 +144,8 @@ else
         {
             <NavLink href="@Href"
                      class="@GetClasses()"
-                     data-active="@(effectiveActive ? "true" : "false")"
+                     data-active="@(effectiveActive ? "true" : "false")"                     
+                     data-size="@Size.ToValue()"
                      data-state="@(CollapsibleContext?.Open ?? false ? "open" : "closed")"
                      aria-current="@(effectiveActive ? "page" : null)"
                      aria-expanded="@(CollapsibleContext?.Open ?? false)"
@@ -158,7 +159,8 @@ else
         {
             <button type="button"
                     class="@GetClasses()"
-                    data-active="@effectiveActive"
+                    data-active="@(effectiveActive ? "true" : "false")"
+                    data-size="@Size.ToValue()"
                     data-state="@(CollapsibleContext?.Open ?? false ? "open" : "closed")"
                     aria-current="@(effectiveActive ? "page" : null)"
                     aria-expanded="@(CollapsibleContext?.Open ?? false)"
@@ -183,8 +185,8 @@ else
 
         var sizeClasses = Size.ToValue() switch
         {
-            "small" => "text-xs",
-            "large" => "text-base group-data-[collapsible=icon]:!p-3",
+            "sm" => "text-xs",
+            "lg" => "text-base group-data-[collapsible=icon]:!p-3",
             _ => ""
         };
 
