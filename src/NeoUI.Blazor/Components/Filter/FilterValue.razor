@@ -1,0 +1,133 @@
+@namespace NeoUI.Blazor.Filter
+
+@if (FieldDefinition?.CustomControl != null)
+{
+    @FieldDefinition.CustomControl(Condition)
+}
+else
+{
+    switch (FieldDefinition?.Type)
+    {
+        case FilterFieldType.Text:
+            <NeoUI.Blazor.Input @bind-Value="@TextValue"
+                   Placeholder="@(FieldDefinition?.Placeholder ?? "Enter value")"
+                   Class="h-9"
+                   Disabled="@IsValueNotNeeded()" />
+            break;
+
+        case FilterFieldType.Number:
+            if (Condition.Operator == FilterOperator.Between)
+            {
+                <div class="flex items-center gap-2">
+                    <NeoUI.Blazor.Input Type="InputType.Number"
+                           @bind-Value="@NumberValue"
+                           Placeholder="@(FieldDefinition?.Placeholder ?? "Min")"
+                           Min="@FieldDefinition?.Min?.ToString()"
+                           Max="@FieldDefinition?.Max?.ToString()"
+                           Class="h-9" />
+                    <span class="text-sm text-muted-foreground">and</span>
+                    <NeoUI.Blazor.Input Type="InputType.Number"
+                           @bind-Value="@SecondaryNumberValue"
+                           Placeholder="Max"
+                           Min="@FieldDefinition?.Min?.ToString()"
+                           Max="@FieldDefinition?.Max?.ToString()"
+                           Class="h-9" />
+                </div>
+            }
+            else
+            {
+                <NeoUI.Blazor.Input Type="InputType.Number"
+                       @bind-Value="@NumberValue"
+                       Placeholder="@(FieldDefinition?.Placeholder ?? "Enter number")"
+                       Min="@FieldDefinition?.Min?.ToString()"
+                       Max="@FieldDefinition?.Max?.ToString()"
+                       Class="h-9"
+                       Disabled="@IsValueNotNeeded()" />
+            }
+            break;
+
+        case FilterFieldType.Date:
+            <DatePicker @bind-SelectedDate="@DateValue"
+                        Placeholder="@(FieldDefinition?.Placeholder ?? "Select date")"
+                        Disabled="@IsValueNotNeeded()"
+                        ButtonSize="ButtonSize.Small" />
+            break;
+
+        case FilterFieldType.DateRange:
+            if (Condition.Operator == FilterOperator.Between)
+            {
+                <div class="flex items-center gap-2">
+                    <DatePicker @bind-SelectedDate="@DateValue"
+                                Placeholder="Start date"
+                                ButtonSize="ButtonSize.Small" />
+                    <span class="text-sm text-muted-foreground">to</span>
+                    <DatePicker @bind-SelectedDate="@SecondaryDateValue"
+                                Placeholder="End date"
+                                ButtonSize="ButtonSize.Small" />
+                </div>
+            }
+            else
+            {
+                <DatePicker @bind-SelectedDate="@DateValue"
+                            Placeholder="@(FieldDefinition?.Placeholder ?? "Select date")"
+                            Disabled="@IsValueNotNeeded()"
+                            ButtonSize="ButtonSize.Small" />
+            }
+            break;
+
+        case FilterFieldType.Boolean:
+            <Switch @bind-Checked="@BoolValue"
+                    Disabled="@IsValueNotNeeded()" />
+            break;
+
+        case FilterFieldType.Select:
+        case FilterFieldType.MultiSelect:
+            if (FieldDefinition?.Options != null && FieldDefinition.Options.Any())
+            {
+                if (FieldDefinition.Type == FilterFieldType.MultiSelect ||
+                    Condition.Operator is FilterOperator.IsAnyOf or FilterOperator.IsNoneOf)
+                {
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var option in FieldDefinition.Options)
+                        {
+                            var opt = option;
+                            var isSelected = MultiSelectValue.Contains(opt.Value);
+                            <button type="button"
+                                    class="@GetMultiSelectButtonClass(isSelected)"
+                                    @onclick="() => ToggleMultiSelectOption(opt.Value)"
+                                    disabled="@IsValueNotNeeded()">
+                                @opt.Label
+                            </button>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <Select @bind-Value="@SelectValue" TValue="string" Disabled="@IsValueNotNeeded()">
+                        <SelectTrigger Class="h-9">
+                            <SelectValue Placeholder="@(FieldDefinition?.Placeholder ?? "Select option")" />
+                        </SelectTrigger>
+                        <SelectContent TValue="string">
+                            @foreach (var option in FieldDefinition.Options)
+                            {
+                                var opt = option;
+                                <SelectItem Value="@opt.Value" TValue="string">@opt.Label</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
+                }
+            }
+            else
+            {
+                <div class="text-sm text-muted-foreground">No options available</div>
+            }
+            break;
+
+        default:
+            <NeoUI.Blazor.Input @bind-Value="@TextValue"
+                   Placeholder="Enter value"
+                   Class="h-9"
+                   Disabled="@IsValueNotNeeded()" />
+            break;
+    }
+}

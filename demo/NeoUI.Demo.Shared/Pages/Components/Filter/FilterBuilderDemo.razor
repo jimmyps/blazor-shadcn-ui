@@ -1,0 +1,231 @@
+@page "/components/filter"
+@namespace NeoUI.Demo.Shared.Pages.Components.Filter
+@inject NavigationManager NavigationManager
+
+<PageTitle>Filter Builder - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+
+    <DemoPageHeader
+        Title="Filter Builder"
+        Description="A flexible and declarative filter builder system with support for multiple field types, custom controls, and filter presets." />
+
+    @* Features Overview *@
+    <DemoSection Title="Features" Description="Everything the Filter Builder component provides out of the box.">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle>8 Field Types</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Text, Number, Date, DateRange, Boolean, Select, MultiSelect, and Custom controls.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Declarative API</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Define filter fields using child content with <code>FilterField</code> and <code>FilterPreset</code> components.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Filter Presets</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Create reusable filter configurations with icons and descriptions.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>LINQ Extensions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Apply filters to <code>IEnumerable</code> collections with <code>ApplyFilters()</code> extension.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Two-Way Binding</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Use <code>@@bind-Filters</code> and <code>OnFilterChange</code> for seamless state management.
+                    </p>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Active Chips</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground">
+                        Displays active filters as dismissible chips above the trigger button.
+                    </p>
+                </CardContent>
+            </Card>
+        </div>
+    </DemoSection>
+
+    @* Examples Navigation *@
+    <DemoSection Title="Examples" Description="Explore the full capabilities of the Filter Builder.">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Basic Example</CardTitle>
+                    <CardDescription>Simple product filtering with common fields</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Learn the basics of FilterBuilder with a simple product catalog example.
+                    </p>
+                    <Button Variant="ButtonVariant.Outline" OnClick="@(() => NavigationManager.NavigateTo("/components/filter/basic"))">
+                        View Example
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>All Field Types</CardTitle>
+                    <CardDescription>Showcase all 8 supported field types</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Explore all available field types and their operators.
+                    </p>
+                    <Button Variant="ButtonVariant.Outline" OnClick="@(() => NavigationManager.NavigateTo("/components/filter/all-types"))">
+                        View Example
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Custom Controls</CardTitle>
+                    <CardDescription>Use RenderFragment for custom inputs</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Create custom filter controls like sliders and rating inputs.
+                    </p>
+                    <Button Variant="ButtonVariant.Outline" OnClick="@(() => NavigationManager.NavigateTo("/components/filter/custom"))">
+                        View Example
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Filter Presets</CardTitle>
+                    <CardDescription>Reusable filter configurations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Create quick-access presets for common filter scenarios.
+                    </p>
+                    <Button Variant="ButtonVariant.Outline" OnClick="@(() => NavigationManager.NavigateTo("/components/filter/presets"))">
+                        View Example
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>State Persistence</CardTitle>
+                    <CardDescription>Save and restore filter state</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Persist filters to localStorage for a better user experience.
+                    </p>
+                    <Button Variant="ButtonVariant.Outline" OnClick="@(() => NavigationManager.NavigateTo("/components/filter/persistence"))">
+                        View Example
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Nested Groups</CardTitle>
+                    <CardDescription>Complex AND/OR logic</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p class="text-sm text-muted-foreground mb-4">
+                        Build advanced filters with nested condition groups.
+                    </p>
+                    <Button Variant="ButtonVariant.Outline" OnClick="@(() => NavigationManager.NavigateTo("/components/filter/nested"))">
+                        View Example
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    </DemoSection>
+
+    @* Quick Start *@
+    <DemoSection Title="Quick Start" Description="Get started with the Filter Builder in minutes.">
+        <DemoBlock Code="@_quickStartCode">
+            <FilterBuilder TData="QuickStartProduct"
+                           @bind-Filters="_quickFilter"
+                           OnFilterChange="HandleQuickFilterChange">
+                <FilterFields>
+                    <FilterField Field="Name" Label="Product Name" Type="FilterFieldType.Text" Placeholder="Search by name..." />
+                    <FilterField Field="Price" Label="Price" Type="FilterFieldType.Number" Min="0" />
+                    <FilterField Field="Category" Label="Category" Type="FilterFieldType.Select" Options="@_quickCategoryOptions" />
+                </FilterFields>
+            </FilterBuilder>
+            @if (_quickFilter.Conditions.Any())
+            {
+                <p class="mt-3 text-xs text-muted-foreground">Active conditions: @_quickFilter.Conditions.Count</p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    @* FilterBuilder Props *@
+    <DemoSection Title="FilterBuilder Parameters" Description="All parameters for the root FilterBuilder component.">
+        <DemoPropsTable Rows="@_filterBuilderProps" />
+    </DemoSection>
+
+    @* FilterField Props *@
+    <DemoSection Title="FilterField Parameters" Description="All parameters for each FilterField child component.">
+        <DemoPropsTable Rows="@_filterFieldProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private FilterGroup _quickFilter = new();
+
+    private static readonly List<SelectOption> _quickCategoryOptions =
+    [
+        new("Electronics", "Electronics"),
+        new("Clothing",    "Clothing"),
+        new("Books",       "Books"),
+        new("Home",        "Home & Garden"),
+        new("Sports",      "Sports & Outdoors"),
+    ];
+
+    private void HandleQuickFilterChange(FilterGroup filters) { }
+
+    public class QuickStartProduct
+    {
+        public string Name { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public string Category { get; set; } = string.Empty;
+    }
+}
