@@ -3,7 +3,9 @@ This repository is licensed under the MIT License (see LICENSE).
 Portions of this work are derived from or incorporate material from the following
 project(s), which are licensed under the Apache License, Version 2.0:
 
-- https://github.com/blazorui-net/ui (BlazorUI) — Copyright 2025-present Mathew Taylor
+- https://github.com/blazorblueprintui/ui (Blazor Blueprint)
+
+A copy of the Apache License 2.0 is provided in LICENSES/Apache-2.0.txt.
 
 This file is provided to preserve required attribution and notice information
 from Apache-2.0 licensed upstream sources. When redistributing substantial
