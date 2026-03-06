@@ -101,6 +101,6 @@ public static class FilterExtensions
                 _ => null
             };
         }
-        catch { return null; }
+        catch { return null; /* Type conversion failed for this condition — skip it */ }
     }
 }

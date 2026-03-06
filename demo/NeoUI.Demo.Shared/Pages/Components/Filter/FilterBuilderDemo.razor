@@ -97,7 +97,9 @@
                             {
                                 var star = i;
                                 var current = condition.Value?.ToString();
-                                <button class="@(current == star.ToString() ? "text-yellow-400" : "text-muted-foreground") text-xl hover:text-yellow-400 transition-colors"
+                                <button type="button"
+                                        class="@(current == star.ToString() ? "text-yellow-400" : "text-muted-foreground") text-xl hover:text-yellow-400 transition-colors"
+                                        aria-label="@($"Rate {star} out of 5")"
                                         @onclick="() => SetRatingValue(condition, star)">
                                     ★
                                 </button>

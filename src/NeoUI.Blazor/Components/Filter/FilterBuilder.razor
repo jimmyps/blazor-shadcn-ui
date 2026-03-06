@@ -59,7 +59,7 @@
                     @foreach (var f in _fields)
                     {
                         var fd = f;
-                        <button class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent cursor-default outline-none"
+                        <button type="button" class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent cursor-pointer outline-none"
                                 @onclick="() => SelectField(fd)">
                             <Filter Size="13" Class="text-muted-foreground" />
                             @fd.Label
@@ -199,7 +199,7 @@
                 @foreach (var preset in _presets)
                 {
                     var p = preset;
-                    <button class="flex w-full flex-col items-start gap-0.5 rounded-sm px-2 py-1.5 text-sm hover:bg-accent cursor-default outline-none"
+                    <button type="button" class="flex w-full flex-col items-start gap-0.5 rounded-sm px-2 py-1.5 text-sm hover:bg-accent cursor-pointer outline-none"
                             @onclick="() => ApplyPreset(p)">
                         <span class="font-medium">@p.Name</span>
                         @if (!string.IsNullOrEmpty(p.Description))
