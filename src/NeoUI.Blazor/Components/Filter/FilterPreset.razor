@@ -1,0 +1,44 @@
+@namespace NeoUI.Blazor.Filter
+@*
+    FilterPreset — declarative child component that registers a preset filter
+    with the parent FilterBuilder. Renders nothing itself.
+*@
+
+@code {
+    [CascadingParameter]
+    private FilterBuilder? Parent { get; set; }
+
+    /// <summary>Display name for the preset.</summary>
+    [Parameter, EditorRequired]
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Pre-configured FilterGroup this preset applies.</summary>
+    [Parameter, EditorRequired]
+    public FilterGroup Filters { get; set; } = new();
+
+    /// <summary>Optional icon name (Lucide icon).</summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>Optional description shown in the preset menu.</summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Parent?.RegisterPreset(BuildDefinition());
+    }
+
+    protected override void OnParametersSet()
+    {
+        Parent?.UpdatePreset(BuildDefinition());
+    }
+
+    private FilterPresetDefinition BuildDefinition() => new()
+    {
+        Name = Name,
+        Icon = Icon,
+        Filters = Filters,
+        Description = Description
+    };
+}

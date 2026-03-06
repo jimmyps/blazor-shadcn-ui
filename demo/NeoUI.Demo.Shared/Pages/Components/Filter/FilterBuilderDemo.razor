@@ -1,0 +1,207 @@
+@page "/components/filter-builder"
+@namespace NeoUI.Demo.Shared.Pages.Components.Filter
+
+<PageTitle>Filter Builder - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Filter Builder"
+        Description="A declarative, composable filter builder with LINQ expression support. Define fields with FilterField and optional presets with FilterPreset as child components." />
+
+    @* ── Basic ─────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Basic"
+        Description="Text, number, and date fields with default operators.">
+        <DemoBlock Code="@_basicCode">
+            <FilterBuilder @bind-Value="_filter">
+                <FilterField Field="Name" Label="Name" Type="FilterFieldType.Text" />
+                <FilterField Field="Age" Label="Age" Type="FilterFieldType.Number" />
+                <FilterField Field="CreatedAt" Label="Created" Type="FilterFieldType.Date" />
+            </FilterBuilder>
+            @if (_filter.Conditions.Any())
+            {
+                <p class="mt-3 text-xs text-muted-foreground">
+                    Active conditions: @_filter.Conditions.Count
+                    (@(_filter.Logic == LogicalOperator.And ? "AND" : "OR"))
+                </p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── With Presets ──────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="With Presets"
+        Description="Click 'Presets' to apply a saved filter group in one click.">
+        <DemoBlock Code="@_withPresetsCode">
+            <FilterBuilder @bind-Value="_filterPresets" ShowPresets="true">
+                <FilterField Field="Status" Label="Status" Type="FilterFieldType.Select"
+                             Options="@_statusOptions" />
+                <FilterField Field="Priority" Label="Priority" Type="FilterFieldType.Select"
+                             Options="@_priorityOptions" />
+                <FilterPreset Name="Active Items"
+                              Filters="@_activePreset"
+                              Description="Show only active records" />
+                <FilterPreset Name="High Priority"
+                              Filters="@_highPriorityPreset"
+                              Description="Show high priority items" />
+                <FilterPreset Name="Active & High Priority"
+                              Filters="@_activeHighPriorityPreset"
+                              Description="Active records with high priority" />
+            </FilterBuilder>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Select & Multi-Select ─────────────────────────────────────────── *@
+    <DemoSection
+        Title="Select &amp; Multi-Select Fields"
+        Description="Dropdown field types for single and multiple selection.">
+        <DemoBlock Code="@_selectFieldsCode">
+            <FilterBuilder @bind-Value="_filterSelect">
+                <FilterField Field="Category" Label="Category"
+                             Type="FilterFieldType.Select"
+                             Options="@_categoryOptions" />
+                <FilterField Field="Tags" Label="Tags"
+                             Type="FilterFieldType.MultiSelect"
+                             Options="@_tagOptions" />
+                <FilterField Field="IsActive" Label="Active" Type="FilterFieldType.Boolean" />
+            </FilterBuilder>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Pre-populated (Read-only display) ────────────────────────────── *@
+    <DemoSection
+        Title="Pre-populated Filter"
+        Description="Display an existing filter state. Conditions are shown as dismissible chips.">
+        <DemoBlock Code="@_readonlyCode">
+            <FilterBuilder @bind-Value="_prePopulated" ShowGroupLogic="true">
+                <FilterField Field="Name" Label="Name" Type="FilterFieldType.Text" />
+                <FilterField Field="Status" Label="Status" Type="FilterFieldType.Select"
+                             Options="@_statusOptions" />
+                <FilterField Field="Age" Label="Age" Type="FilterFieldType.Number" />
+            </FilterBuilder>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom Control ────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Custom Control"
+        Description="Use a RenderFragment&lt;FilterCondition&gt; child to replace the default value input with any custom UI.">
+        <DemoBlock Code="@_customControlCode">
+            <FilterBuilder @bind-Value="_filterCustom">
+                <FilterField Field="Name" Label="Name" Type="FilterFieldType.Text" />
+                <FilterField Field="Rating" Label="Rating" Type="FilterFieldType.Custom">
+                    <ChildContent Context="condition">
+                        <div class="flex items-center gap-0.5">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                var star = i;
+                                var current = condition.Value?.ToString();
+                                <button class="@(current == star.ToString() ? "text-yellow-400" : "text-muted-foreground") text-xl hover:text-yellow-400 transition-colors"
+                                        @onclick="() => SetRatingValue(condition, star)">
+                                    ★
+                                </button>
+                            }
+                        </div>
+                    </ChildContent>
+                </FilterField>
+            </FilterBuilder>
+            @if (_filterCustom.Conditions.Any(c => c.Field == "Rating"))
+            {
+                var ratingCond = _filterCustom.Conditions.First(c => c.Field == "Rating");
+                <p class="mt-3 text-xs text-muted-foreground">Rating filter value: @ratingCond.Value</p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── FilterBuilder Props ────────────────────────────────────────────── *@
+    <DemoSection Title="FilterBuilder Parameters" Description="Props for the root FilterBuilder component.">
+        <DemoPropsTable Rows="@_filterBuilderProps" />
+    </DemoSection>
+
+    @* ── FilterField Props ─────────────────────────────────────────────── *@
+    <DemoSection Title="FilterField Parameters" Description="Props for each FilterField child component.">
+        <DemoPropsTable Rows="@_filterFieldProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    // ── Basic demo ────────────────────────────────────────────────────────
+    private FilterGroup _filter = new();
+
+    // ── Presets demo ──────────────────────────────────────────────────────
+    private FilterGroup _filterPresets = new();
+
+    private static readonly List<SelectOption> _statusOptions =
+    [
+        new("active",   "Active"),
+        new("inactive", "Inactive"),
+        new("pending",  "Pending"),
+    ];
+
+    private static readonly List<SelectOption> _priorityOptions =
+    [
+        new("low",    "Low"),
+        new("medium", "Medium"),
+        new("high",   "High"),
+    ];
+
+    private static readonly FilterGroup _activePreset = new()
+    {
+        Conditions = [new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "active" }]
+    };
+    private static readonly FilterGroup _highPriorityPreset = new()
+    {
+        Conditions = [new FilterCondition { Field = "Priority", Operator = FilterOperator.Equals, Value = "high" }]
+    };
+    private static readonly FilterGroup _activeHighPriorityPreset = new()
+    {
+        Logic = LogicalOperator.And,
+        Conditions =
+        [
+            new FilterCondition { Field = "Status",   Operator = FilterOperator.Equals, Value = "active" },
+            new FilterCondition { Field = "Priority", Operator = FilterOperator.Equals, Value = "high" },
+        ]
+    };
+
+    // ── Select demo ───────────────────────────────────────────────────────
+    private FilterGroup _filterSelect = new();
+
+    private static readonly List<SelectOption> _categoryOptions =
+    [
+        new("electronics", "Electronics"),
+        new("clothing",    "Clothing"),
+        new("food",        "Food & Beverage"),
+        new("books",       "Books"),
+    ];
+
+    private static readonly List<SelectOption> _tagOptions =
+    [
+        new("sale",       "On Sale"),
+        new("new",        "New Arrival"),
+        new("featured",   "Featured"),
+        new("clearance",  "Clearance"),
+    ];
+
+    // ── Pre-populated demo ────────────────────────────────────────────────
+    private FilterGroup _prePopulated = new()
+    {
+        Logic = LogicalOperator.And,
+        Conditions =
+        [
+            new FilterCondition { Field = "Name",   Operator = FilterOperator.Contains, Value = "John" },
+            new FilterCondition { Field = "Status", Operator = FilterOperator.Equals,   Value = "active" },
+            new FilterCondition { Field = "Age",    Operator = FilterOperator.GreaterThanOrEqual, Value = "18" },
+        ]
+    };
+
+    // ── Custom control demo ───────────────────────────────────────────────
+    private FilterGroup _filterCustom = new();
+
+    private void SetRatingValue(FilterCondition condition, int star)
+    {
+        condition.Value = star.ToString();
+    }
+}

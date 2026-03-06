@@ -255,6 +255,7 @@ public static class ComponentRegistry
             new("date-picker",      "Date Picker",      "Date selection with calendar in popover",                                       "calendar-days",         C, AI),
             new("date-range-picker","Date Range Picker","Select date ranges with optional presets and two-calendar view",                "calendar-range",        C, AI),
             new("fileupload",       "File Upload",      "File upload with drag-and-drop, validation, and previews",                      "upload",                C, AI),
+            new("filter-builder",   "Filter Builder",   "A declarative, composable filter builder with LINQ expression support.",        "filter",                C, AI),
             new("input-group",      "Input Group",      "Enhanced inputs with icons, buttons, and addons",                               "blocks",                C, AI),
             new("input-otp",        "Input OTP",        "One-time password input with individual character slots",                       "shield-check",          C, AI),
             new("markdown-editor",  "Markdown Editor",  "Write/preview tabs editor with markdown syntax support",                        "file-text",             C, AI),

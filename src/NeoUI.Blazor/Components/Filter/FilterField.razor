@@ -1,0 +1,79 @@
+@namespace NeoUI.Blazor.Filter
+@*
+    FilterField — declarative child component that registers a field definition
+    with the parent FilterBuilder. Renders nothing itself.
+*@
+
+@code {
+    [CascadingParameter]
+    private FilterBuilder? Parent { get; set; }
+
+    /// <summary>Property name on the data model.</summary>
+    [Parameter, EditorRequired]
+    public string Field { get; set; } = string.Empty;
+
+    /// <summary>Human-readable label shown in the UI.</summary>
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>Type of field, controls default operators and value input.</summary>
+    [Parameter]
+    public FilterFieldType Type { get; set; } = FilterFieldType.Text;
+
+    /// <summary>Allowed operators. Auto-populated from Type when null.</summary>
+    [Parameter]
+    public IEnumerable<FilterOperator>? Operators { get; set; }
+
+    /// <summary>Default operator pre-selected when adding a new condition for this field.</summary>
+    [Parameter]
+    public FilterOperator? DefaultOperator { get; set; }
+
+    /// <summary>Options for Select/MultiSelect fields.</summary>
+    [Parameter]
+    public IEnumerable<SelectOption>? Options { get; set; }
+
+    /// <summary>Placeholder text for the value input.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>Minimum allowed value (Number/Date fields).</summary>
+    [Parameter]
+    public object? Min { get; set; }
+
+    /// <summary>Maximum allowed value (Number/Date fields).</summary>
+    [Parameter]
+    public object? Max { get; set; }
+
+    /// <summary>Step increment (Number fields).</summary>
+    [Parameter]
+    public object? Step { get; set; }
+
+    /// <summary>Custom value input control. When provided, overrides the default input.</summary>
+    [Parameter]
+    public RenderFragment<FilterCondition>? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Parent?.RegisterField(BuildDefinition());
+    }
+
+    protected override void OnParametersSet()
+    {
+        Parent?.UpdateField(BuildDefinition());
+    }
+
+    private FilterFieldDefinition BuildDefinition() => new()
+    {
+        Field = Field,
+        Label = Label,
+        Type = Type,
+        Operators = Operators?.ToList() ?? FilterBuilder.GetDefaultOperators(Type),
+        DefaultOperator = DefaultOperator,
+        Options = Options?.ToList(),
+        Placeholder = Placeholder,
+        Min = Min,
+        Max = Max,
+        Step = Step,
+        CustomControl = ChildContent
+    };
+}

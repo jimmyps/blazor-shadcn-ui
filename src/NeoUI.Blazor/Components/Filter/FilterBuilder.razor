@@ -1,0 +1,571 @@
+@namespace NeoUI.Blazor.Filter
+@using NeoUI.Icons.Lucide
+@using NeoUI.Blazor.Primitives.Services
+
+@* Render child content (FilterField / FilterPreset registrations) — renders nothing visible *@
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+<div class="@ClassNames.cn("flex flex-wrap items-center gap-2", Class)">
+
+    @* AND/OR toggle when multiple conditions and ShowGroupLogic is true *@
+    @if (ShowGroupLogic && _value.Conditions.Count > 1)
+    {
+        <div class="flex items-center rounded-md border bg-muted/50 text-xs font-medium overflow-hidden">
+            <button class="@ClassNames.cn("px-2 py-1 transition-colors", _value.Logic == LogicalOperator.And ? "bg-primary text-primary-foreground" : "hover:bg-muted")"
+                    @onclick="() => SetLogic(LogicalOperator.And)">
+                AND
+            </button>
+            <button class="@ClassNames.cn("px-2 py-1 transition-colors", _value.Logic == LogicalOperator.Or ? "bg-primary text-primary-foreground" : "hover:bg-muted")"
+                    @onclick="() => SetLogic(LogicalOperator.Or)">
+                OR
+            </button>
+        </div>
+    }
+
+    @* Active condition chips *@
+    @foreach (var condition in _value.Conditions)
+    {
+        var field = _fields.FirstOrDefault(f => f.Field == condition.Field);
+        var conditionId = condition.Id;
+        <button class="inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1 text-xs font-medium hover:bg-accent transition-colors cursor-pointer"
+                @onclick="() => StartEditCondition(condition)">
+            <span class="text-muted-foreground">@(field?.Label ?? condition.Field)</span>
+            <span class="opacity-60">@GetOperatorLabel(condition.Operator)</span>
+            <span>@GetValueLabel(condition, field)</span>
+            <span class="ml-0.5 flex items-center rounded-full p-0.5 hover:bg-destructive/20 hover:text-destructive"
+                  @onclick:stopPropagation="true"
+                  @onclick="() => RemoveCondition(conditionId)">
+                <X Size="10" />
+            </span>
+        </button>
+    }
+
+    @* Add filter button with popover *@
+    <Popover @bind-Open="_popoverOpen" Modal="false">
+        <PopoverTrigger>
+            <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small"
+                    Class="@ClassNames.cn("h-7 gap-1.5 text-xs border-dashed", _value.Conditions.Any() ? "" : "")">
+                <Plus Size="13" />
+                Add filter
+            </Button>
+        </PopoverTrigger>
+        <PopoverContent Class="w-72 p-0" Align="PopoverAlign.Start" Offset="6">
+            @if (_editStep == FilterEditStep.PickField)
+            {
+                <div class="p-1">
+                    <p class="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Filter by</p>
+                    @foreach (var f in _fields)
+                    {
+                        var fd = f;
+                        <button class="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm hover:bg-accent cursor-default outline-none"
+                                @onclick="() => SelectField(fd)">
+                            <Filter Size="13" Class="text-muted-foreground" />
+                            @fd.Label
+                        </button>
+                    }
+                    @if (!_fields.Any())
+                    {
+                        <p class="px-2 py-2 text-xs text-muted-foreground">No fields configured.</p>
+                    }
+                </div>
+            }
+            else if (_editStep == FilterEditStep.Configure && _pendingField != null && _pendingCondition != null)
+            {
+                <div class="p-3 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <p class="text-sm font-semibold">@_pendingField.Label</p>
+                        @if (!_isEditing)
+                        {
+                            <button class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                    @onclick="BackToFieldPicker">
+                                Change
+                            </button>
+                        }
+                    </div>
+
+                    @* Operator selector *@
+                    @if (_pendingField.Operators.Count > 1)
+                    {
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-muted-foreground">Operator</label>
+                            <Select @bind-Value="_pendingOperatorStr" TValue="string" Class="w-full h-8 text-xs">
+                                <SelectTrigger Class="h-8 text-xs">
+                                    <SelectValue Placeholder="Select operator..." />
+                                </SelectTrigger>
+                                <SelectContent TValue="string">
+                                    @foreach (var op in _pendingField.Operators)
+                                    {
+                                        var opStr = op.ToString();
+                                        <SelectItem TValue="string" Value="@opStr">@GetOperatorLabel(op)</SelectItem>
+                                    }
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    }
+
+                    @* Value input — custom control or default *@
+                    @if (!IsNoValueOperator(GetPendingOperator()))
+                    {
+                        <div class="space-y-1">
+                            <label class="text-xs font-medium text-muted-foreground">Value</label>
+
+                            @if (_pendingField.CustomControl != null)
+                            {
+                                @_pendingField.CustomControl(_pendingCondition)
+                            }
+                            else if (_pendingField.Type == FilterFieldType.Select && _pendingField.Options != null)
+                            {
+                                <Select @bind-Value="_pendingValueStr" TValue="string" Class="w-full">
+                                    <SelectTrigger Class="h-8 text-xs">
+                                        <SelectValue Placeholder="@(_pendingField.Placeholder ?? "Select value...")" />
+                                    </SelectTrigger>
+                                    <SelectContent TValue="string">
+                                        @foreach (var opt in _pendingField.Options)
+                                        {
+                                            var optValue = opt.Value;
+                                            <SelectItem TValue="string" Value="@optValue">@opt.Label</SelectItem>
+                                        }
+                                    </SelectContent>
+                                </Select>
+                            }
+                            else if (_pendingField.Type == FilterFieldType.Boolean)
+                            {
+                                @* Boolean handled by operator (IsTrue/IsFalse), no value needed *@
+                            }
+                            else if (_pendingField.Type == FilterFieldType.Date)
+                            {
+                                <NeoUI.Blazor.Input @bind-Value="_pendingValueStr"
+                                       Type="InputType.Date"
+                                       Class="h-8 text-xs w-full"
+                                       Placeholder="@(_pendingField.Placeholder ?? "")" />
+                                @if (GetPendingOperator() is FilterOperator.Between or FilterOperator.NotBetween)
+                                {
+                                    <NeoUI.Blazor.Input @bind-Value="_pendingSecondaryValueStr"
+                                           Type="InputType.Date"
+                                           Class="h-8 text-xs w-full mt-1"
+                                           Placeholder="End date" />
+                                }
+                            }
+                            else if (_pendingField.Type == FilterFieldType.Number)
+                            {
+                                <NeoUI.Blazor.Input @bind-Value="_pendingValueStr"
+                                       Type="InputType.Number"
+                                       Class="h-8 text-xs w-full"
+                                       Placeholder="@(_pendingField.Placeholder ?? "Enter number...")" />
+                                @if (GetPendingOperator() is FilterOperator.Between or FilterOperator.NotBetween)
+                                {
+                                    <NeoUI.Blazor.Input @bind-Value="_pendingSecondaryValueStr"
+                                           Type="InputType.Number"
+                                           Class="h-8 text-xs w-full mt-1"
+                                           Placeholder="Max value" />
+                                }
+                            }
+                            else
+                            {
+                                <NeoUI.Blazor.Input @bind-Value="_pendingValueStr"
+                                       Class="h-8 text-xs w-full"
+                                       Placeholder="@(_pendingField.Placeholder ?? "Enter value...")" />
+                            }
+                        </div>
+                    }
+
+                    @* Apply / Cancel *@
+                    <div class="flex gap-2 pt-1">
+                        <Button Size="ButtonSize.Small" Class="flex-1 h-7 text-xs" @onclick="ApplyCondition">
+                            @(_isEditing ? "Update" : "Apply")
+                        </Button>
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="h-7 text-xs" @onclick="CancelEdit">
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            }
+        </PopoverContent>
+    </Popover>
+
+    @* Presets dropdown *@
+    @if (ShowPresets && _presets.Any())
+    {
+        <Popover Modal="false">
+            <PopoverTrigger>
+                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" Class="h-7 gap-1 text-xs text-muted-foreground">
+                    Presets
+                    <ChevronDown Size="12" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent Class="w-56 p-1" Align="PopoverAlign.Start" Offset="6">
+                @foreach (var preset in _presets)
+                {
+                    var p = preset;
+                    <button class="flex w-full flex-col items-start gap-0.5 rounded-sm px-2 py-1.5 text-sm hover:bg-accent cursor-default outline-none"
+                            @onclick="() => ApplyPreset(p)">
+                        <span class="font-medium">@p.Name</span>
+                        @if (!string.IsNullOrEmpty(p.Description))
+                        {
+                            <span class="text-xs text-muted-foreground">@p.Description</span>
+                        }
+                    </button>
+                }
+            </PopoverContent>
+        </Popover>
+    }
+
+    @* Clear all *@
+    @if (_value.Conditions.Any())
+    {
+        <button class="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                @onclick="ClearAll">
+            Clear all
+        </button>
+    }
+
+    @* Empty state *@
+    @if (!_value.Conditions.Any() && !string.IsNullOrEmpty(Placeholder))
+    {
+        <span class="text-xs text-muted-foreground">@Placeholder</span>
+    }
+</div>
+
+@code {
+    private enum FilterEditStep { PickField, Configure }
+
+    // ── Parameters ──────────────────────────────────────────────────────────
+
+    /// <summary>Current filter state. Use @bind-Value for two-way binding.</summary>
+    [Parameter]
+    public FilterGroup? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<FilterGroup> ValueChanged { get; set; }
+
+    /// <summary>Child content — FilterField and FilterPreset declarations.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Text shown when no filters are active.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; } = "No filters applied";
+
+    /// <summary>Show preset dropdown when presets are registered.</summary>
+    [Parameter]
+    public bool ShowPresets { get; set; } = true;
+
+    /// <summary>Show AND/OR logic toggle when more than one condition is active.</summary>
+    [Parameter]
+    public bool ShowGroupLogic { get; set; } = true;
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    // ── State ────────────────────────────────────────────────────────────────
+
+    private readonly List<FilterFieldDefinition> _fields = new();
+    private readonly List<FilterPresetDefinition> _presets = new();
+    private FilterGroup _value = new();
+    private bool _popoverOpen;
+    private FilterEditStep _editStep = FilterEditStep.PickField;
+    private FilterFieldDefinition? _pendingField;
+    private FilterCondition? _pendingCondition;
+    private bool _isEditing;
+    private string? _editingConditionId;
+
+    // Pending form state
+    private string _pendingOperatorStr = string.Empty;
+    private string _pendingValueStr = string.Empty;
+    private string _pendingSecondaryValueStr = string.Empty;
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
+
+    protected override void OnParametersSet()
+    {
+        if (Value != null && !ReferenceEquals(Value, _value))
+            _value = Value;
+    }
+
+    // ── Registration API (called by FilterField/FilterPreset children) ───────
+
+    internal void RegisterField(FilterFieldDefinition def)
+    {
+        if (!_fields.Any(f => f.Field == def.Field))
+            _fields.Add(def);
+    }
+
+    internal void UpdateField(FilterFieldDefinition def)
+    {
+        var existing = _fields.FirstOrDefault(f => f.Field == def.Field);
+        if (existing != null)
+        {
+            var idx = _fields.IndexOf(existing);
+            _fields[idx] = def;
+        }
+    }
+
+    internal void RegisterPreset(FilterPresetDefinition def)
+    {
+        if (!_presets.Any(p => p.Name == def.Name))
+            _presets.Add(def);
+    }
+
+    internal void UpdatePreset(FilterPresetDefinition def)
+    {
+        var existing = _presets.FirstOrDefault(p => p.Name == def.Name);
+        if (existing != null)
+        {
+            var idx = _presets.IndexOf(existing);
+            _presets[idx] = def;
+        }
+    }
+
+    // ── Popover flow ─────────────────────────────────────────────────────────
+
+    private void SelectField(FilterFieldDefinition field)
+    {
+        _pendingField = field;
+        _pendingCondition = new FilterCondition { Field = field.Field };
+        _isEditing = false;
+        _editingConditionId = null;
+
+        var defaultOp = field.DefaultOperator ?? field.Operators.FirstOrDefault();
+        _pendingOperatorStr = defaultOp.ToString();
+        _pendingValueStr = string.Empty;
+        _pendingSecondaryValueStr = string.Empty;
+        _editStep = FilterEditStep.Configure;
+    }
+
+    private void StartEditCondition(FilterCondition condition)
+    {
+        var field = _fields.FirstOrDefault(f => f.Field == condition.Field);
+        if (field == null) return;
+
+        _pendingField = field;
+        _pendingCondition = condition;
+        _isEditing = true;
+        _editingConditionId = condition.Id;
+        _pendingOperatorStr = condition.Operator.ToString();
+        _pendingValueStr = condition.Value?.ToString() ?? string.Empty;
+        _pendingSecondaryValueStr = condition.SecondaryValue?.ToString() ?? string.Empty;
+        _editStep = FilterEditStep.Configure;
+        _popoverOpen = true;
+    }
+
+    private void BackToFieldPicker()
+    {
+        _editStep = FilterEditStep.PickField;
+        _pendingField = null;
+        _pendingCondition = null;
+    }
+
+    private void ApplyCondition()
+    {
+        if (_pendingField == null || _pendingCondition == null) return;
+
+        var op = GetPendingOperator();
+        var newCondition = new FilterCondition
+        {
+            Id = _isEditing ? _editingConditionId! : Guid.NewGuid().ToString(),
+            Field = _pendingField.Field,
+            Operator = op,
+            Value = string.IsNullOrEmpty(_pendingValueStr) ? null : (object)_pendingValueStr,
+            SecondaryValue = string.IsNullOrEmpty(_pendingSecondaryValueStr) ? null : (object)_pendingSecondaryValueStr
+        };
+
+        var newConditions = new List<FilterCondition>(_value.Conditions);
+        if (_isEditing)
+        {
+            var idx = newConditions.FindIndex(c => c.Id == _editingConditionId);
+            if (idx >= 0)
+                newConditions[idx] = newCondition;
+            else
+                newConditions.Add(newCondition);
+        }
+        else
+        {
+            newConditions.Add(newCondition);
+        }
+
+        _value = new FilterGroup
+        {
+            Id = _value.Id,
+            Logic = _value.Logic,
+            Conditions = newConditions,
+            NestedGroups = _value.NestedGroups
+        };
+
+        _ = ValueChanged.InvokeAsync(_value);
+        ResetPopover();
+    }
+
+    private void CancelEdit()
+    {
+        ResetPopover();
+    }
+
+    private void ResetPopover()
+    {
+        _popoverOpen = false;
+        _editStep = FilterEditStep.PickField;
+        _pendingField = null;
+        _pendingCondition = null;
+        _isEditing = false;
+        _editingConditionId = null;
+        _pendingOperatorStr = string.Empty;
+        _pendingValueStr = string.Empty;
+        _pendingSecondaryValueStr = string.Empty;
+    }
+
+    private void RemoveCondition(string conditionId)
+    {
+        var newConditions = _value.Conditions.Where(c => c.Id != conditionId).ToList();
+        _value = new FilterGroup
+        {
+            Id = _value.Id,
+            Logic = _value.Logic,
+            Conditions = newConditions,
+            NestedGroups = _value.NestedGroups
+        };
+        _ = ValueChanged.InvokeAsync(_value);
+    }
+
+    private void ClearAll()
+    {
+        _value = new FilterGroup { Id = _value.Id, Logic = _value.Logic };
+        _ = ValueChanged.InvokeAsync(_value);
+    }
+
+    private void SetLogic(LogicalOperator logic)
+    {
+        _value = new FilterGroup
+        {
+            Id = _value.Id,
+            Logic = logic,
+            Conditions = _value.Conditions,
+            NestedGroups = _value.NestedGroups
+        };
+        _ = ValueChanged.InvokeAsync(_value);
+    }
+
+    private void ApplyPreset(FilterPresetDefinition preset)
+    {
+        _value = new FilterGroup
+        {
+            Id = _value.Id,
+            Logic = preset.Filters.Logic,
+            Conditions = preset.Filters.Conditions.Select(c => new FilterCondition
+            {
+                Id = Guid.NewGuid().ToString(),
+                Field = c.Field,
+                Operator = c.Operator,
+                Value = c.Value,
+                SecondaryValue = c.SecondaryValue
+            }).ToList(),
+            NestedGroups = new List<FilterGroup>()
+        };
+        _ = ValueChanged.InvokeAsync(_value);
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private FilterOperator GetPendingOperator()
+    {
+        if (Enum.TryParse<FilterOperator>(_pendingOperatorStr, out var op))
+            return op;
+        return _pendingField?.Operators.FirstOrDefault() ?? FilterOperator.Equals;
+    }
+
+    private static bool IsNoValueOperator(FilterOperator op)
+        => op is FilterOperator.IsEmpty or FilterOperator.IsNotEmpty
+                or FilterOperator.IsTrue or FilterOperator.IsFalse;
+
+    internal static string GetOperatorLabel(FilterOperator op) => op switch
+    {
+        FilterOperator.Equals => "=",
+        FilterOperator.NotEquals => "≠",
+        FilterOperator.Contains => "contains",
+        FilterOperator.NotContains => "not contains",
+        FilterOperator.StartsWith => "starts with",
+        FilterOperator.EndsWith => "ends with",
+        FilterOperator.IsEmpty => "is empty",
+        FilterOperator.IsNotEmpty => "is not empty",
+        FilterOperator.GreaterThan => ">",
+        FilterOperator.LessThan => "<",
+        FilterOperator.GreaterThanOrEqual => "≥",
+        FilterOperator.LessThanOrEqual => "≤",
+        FilterOperator.Between => "between",
+        FilterOperator.NotBetween => "not between",
+        FilterOperator.IsAnyOf => "is any of",
+        FilterOperator.IsNoneOf => "is none of",
+        FilterOperator.IsAllOf => "is all of",
+        FilterOperator.IsTrue => "is true",
+        FilterOperator.IsFalse => "is false",
+        _ => op.ToString()
+    };
+
+    private string GetValueLabel(FilterCondition condition, FilterFieldDefinition? field)
+    {
+        if (IsNoValueOperator(condition.Operator)) return string.Empty;
+
+        var val = condition.Value?.ToString() ?? string.Empty;
+
+        // Try to resolve label from Select options
+        if (field?.Options != null)
+        {
+            var opt = field.Options.FirstOrDefault(o => o.Value == val);
+            if (opt != null) val = opt.Label;
+        }
+
+        if (condition.SecondaryValue != null)
+            return $"{val} – {condition.SecondaryValue}";
+
+        return val;
+    }
+
+    /// <summary>Returns the default operators for a given FilterFieldType.</summary>
+    internal static List<FilterOperator> GetDefaultOperators(FilterFieldType type) => type switch
+    {
+        FilterFieldType.Text => new()
+        {
+            FilterOperator.Contains, FilterOperator.NotContains,
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.StartsWith, FilterOperator.EndsWith,
+            FilterOperator.IsEmpty, FilterOperator.IsNotEmpty
+        },
+        FilterFieldType.Number => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.GreaterThan, FilterOperator.LessThan,
+            FilterOperator.GreaterThanOrEqual, FilterOperator.LessThanOrEqual,
+            FilterOperator.Between, FilterOperator.NotBetween
+        },
+        FilterFieldType.Date => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.GreaterThan, FilterOperator.LessThan,
+            FilterOperator.GreaterThanOrEqual, FilterOperator.LessThanOrEqual,
+            FilterOperator.Between, FilterOperator.NotBetween
+        },
+        FilterFieldType.DateRange => new()
+        {
+            FilterOperator.Between, FilterOperator.NotBetween
+        },
+        FilterFieldType.Boolean => new()
+        {
+            FilterOperator.IsTrue, FilterOperator.IsFalse
+        },
+        FilterFieldType.Select => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.IsAnyOf, FilterOperator.IsNoneOf
+        },
+        FilterFieldType.MultiSelect => new()
+        {
+            FilterOperator.IsAnyOf, FilterOperator.IsNoneOf, FilterOperator.IsAllOf
+        },
+        FilterFieldType.Custom => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals
+        },
+        _ => new() { FilterOperator.Equals }
+    };
+}
