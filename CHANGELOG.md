@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-6 — Performance: CascadingValue IsFixed alignment with upstream
+
+> **Library change.** Affects 9 component and primitive files across `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
+
+---
+
+### ♻️ Perf: Fix `IsFixed="false"` on stable `this` cascades in content and sub-content primitives
+
+Audited all `CascadingValue` usages across the library and identified 9 instances where `Value="this"` (or `Value="@this"`) was incorrectly marked `IsFixed="false"`. Component instance references (`this`) are structurally stable for the lifetime of the component and are not replaced on re-render. Marking them `false` caused Blazor to maintain unnecessary subscriber lists and perform cascade propagation checks on every render cycle for no benefit.
+
+All 9 occurrences have been corrected to `IsFixed="true"`, aligning with upstream's established convention. The remaining 35 context-object cascades (`@_context`, `Context`, `@SubContext`, etc.) are intentionally left as `IsFixed="false"` to match upstream's conservative approach for mutable state objects.
+
+**Affected files:**
+
+- `Combobox.razor`
+- `Motion.razor`
+- `ResizablePanelGroup.razor`
+- `ContextMenuContentPrimitive.razor`
+- `ContextMenuSubContentPrimitive.razor`
+- `DropdownMenuContentPrimitive.razor`
+- `DropdownMenuSubContentPrimitive.razor`
+- `MenubarContentPrimitive.razor`
+- `MenubarSubContentPrimitive.razor`
+
+---
+
 ## 2026-3-4 – Sidebar & Positioning: Bug Fixes
 
 > **Library change.** Affects `SidebarMenuButton` in `NeoUI.Blazor` and `positioning.js` in `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
