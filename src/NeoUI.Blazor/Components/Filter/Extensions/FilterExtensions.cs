@@ -21,6 +21,14 @@ public static class FilterExtensions
     public static IEnumerable<T> ApplyFilter<T>(this IEnumerable<T> source, FilterGroup? filter)
         => source.AsQueryable().ApplyFilter(filter);
 
+    /// <summary>Applies a FilterGroup to an IQueryable&lt;T&gt;. Alias for <see cref="ApplyFilter{T}(IQueryable{T}, FilterGroup?)"/>.</summary>
+    public static IQueryable<T> ApplyFilters<T>(this IQueryable<T> source, FilterGroup? filter)
+        => source.ApplyFilter(filter);
+
+    /// <summary>Applies a FilterGroup to an IEnumerable&lt;T&gt;. Alias for <see cref="ApplyFilter{T}(IEnumerable{T}, FilterGroup?)"/>.</summary>
+    public static IEnumerable<T> ApplyFilters<T>(this IEnumerable<T> source, FilterGroup? filter)
+        => source.ApplyFilter(filter);
+
     private static Expression? BuildGroupExpression<T>(FilterGroup group, ParameterExpression param)
     {
         var parts = new List<Expression>();

@@ -1,0 +1,177 @@
+@page "/components/filter/presets"
+@namespace NeoUI.Demo.Shared.Pages.Components.Filter
+
+<PageTitle>Filter Builder - Presets Example - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+
+    <DemoPageHeader
+        Title="Filter Presets"
+        Description="Create reusable filter configurations with icons for quick access to common filtering scenarios." />
+
+    <DemoSection Title="Order Management" Description="Use FilterPreset inside the FilterPresets fragment to register one-click filters.">
+        <DemoBlock Code="@_presetsCode">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Orders</h2>
+                    <FilterBuilder TData="Order"
+                                   @bind-Filters="activeFilters"
+                                   OnFilterChange="HandleFilterChange">
+                        <FilterFields>
+                            <FilterField Field="Status"    Label="Status"    Type="FilterFieldType.Select" Options="@statusOptions" />
+                            <FilterField Field="Priority"  Label="Priority"  Type="FilterFieldType.Select" Options="@priorityOptions" />
+                            <FilterField Field="Amount"    Label="Amount"    Type="FilterFieldType.Number" Min="0" />
+                            <FilterField Field="Customer"  Label="Customer"  Type="FilterFieldType.Text" />
+                        </FilterFields>
+                        <FilterPresets>
+                            <FilterPreset Name="High Priority Orders"
+                                          Icon="alert-circle"
+                                          Filters="@GetHighPriorityFilters()" />
+                            <FilterPreset Name="Pending Orders"
+                                          Icon="clock"
+                                          Filters="@GetPendingFilters()" />
+                            <FilterPreset Name="Large Orders"
+                                          Icon="trending-up"
+                                          Filters="@GetLargeOrdersFilters()" />
+                        </FilterPresets>
+                    </FilterBuilder>
+                </div>
+
+                <div class="text-sm text-muted-foreground">
+                    Showing @filteredOrders.Count of @allOrders.Count orders
+                </div>
+
+                <DataTable TData="Order" Data="@filteredOrders" InitialPageSize="10">
+                    <Columns>
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.OrderNumber)" Header="Order #" Sortable />
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Customer)" Header="Customer" Sortable />
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Status)" Header="Status" Sortable>
+                            <CellTemplate Context="order">
+                                <Badge Variant="@GetStatusVariant(order.Status)">@order.Status</Badge>
+                            </CellTemplate>
+                        </DataTableColumn>
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Priority)" Header="Priority" Sortable>
+                            <CellTemplate Context="order">
+                                <Badge Variant="@GetPriorityVariant(order.Priority)">@order.Priority</Badge>
+                            </CellTemplate>
+                        </DataTableColumn>
+                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)" Header="Amount" Sortable Alignment="ColumnAlignment.Right">
+                            <CellTemplate Context="order">
+                                <span>$@order.Amount.ToString("N2")</span>
+                            </CellTemplate>
+                        </DataTableColumn>
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.OrderDateDisplay)" Header="Date" Sortable />
+                    </Columns>
+                </DataTable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private FilterGroup activeFilters = new();
+    private List<Order> allOrders = new();
+    private List<Order> filteredOrders = new();
+
+    private readonly List<SelectOption> statusOptions =
+    [
+        new("Pending",    "Pending"),
+        new("Processing", "Processing"),
+        new("Shipped",    "Shipped"),
+        new("Delivered",  "Delivered"),
+        new("Cancelled",  "Cancelled"),
+    ];
+
+    private readonly List<SelectOption> priorityOptions =
+    [
+        new("Low",    "Low"),
+        new("Medium", "Medium"),
+        new("High",   "High"),
+    ];
+
+    protected override void OnInitialized()
+    {
+        allOrders =
+        [
+            new() { Id = 1,  OrderNumber = "ORD-001", Customer = "Alice Johnson", Status = "Pending",    Priority = "High",   Amount = 1250.00m, OrderDate = new DateOnly(2024, 1, 15) },
+            new() { Id = 2,  OrderNumber = "ORD-002", Customer = "Bob Smith",     Status = "Processing", Priority = "Medium", Amount = 450.50m,  OrderDate = new DateOnly(2024, 1, 18) },
+            new() { Id = 3,  OrderNumber = "ORD-003", Customer = "Carol White",   Status = "Shipped",    Priority = "Low",    Amount = 89.99m,   OrderDate = new DateOnly(2024, 1, 20) },
+            new() { Id = 4,  OrderNumber = "ORD-004", Customer = "David Brown",   Status = "Delivered",  Priority = "High",   Amount = 3200.00m, OrderDate = new DateOnly(2024, 1, 10) },
+            new() { Id = 5,  OrderNumber = "ORD-005", Customer = "Eve Davis",     Status = "Pending",    Priority = "Medium", Amount = 175.25m,  OrderDate = new DateOnly(2024, 1, 22) },
+            new() { Id = 6,  OrderNumber = "ORD-006", Customer = "Frank Miller",  Status = "Cancelled",  Priority = "Low",    Amount = 299.99m,  OrderDate = new DateOnly(2024, 1, 5)  },
+            new() { Id = 7,  OrderNumber = "ORD-007", Customer = "Grace Lee",     Status = "Processing", Priority = "High",   Amount = 5500.00m, OrderDate = new DateOnly(2024, 1, 25) },
+            new() { Id = 8,  OrderNumber = "ORD-008", Customer = "Henry Wilson",  Status = "Pending",    Priority = "Medium", Amount = 650.00m,  OrderDate = new DateOnly(2024, 1, 26) },
+            new() { Id = 9,  OrderNumber = "ORD-009", Customer = "Iris Martinez", Status = "Shipped",    Priority = "High",   Amount = 2100.75m, OrderDate = new DateOnly(2024, 1, 12) },
+            new() { Id = 10, OrderNumber = "ORD-010", Customer = "Jack Anderson", Status = "Delivered",  Priority = "Low",    Amount = 55.00m,   OrderDate = new DateOnly(2024, 1, 8)  },
+        ];
+        filteredOrders = allOrders.ToList();
+    }
+
+    private void HandleFilterChange(FilterGroup filters)
+    {
+        filteredOrders = allOrders.ApplyFilters(filters).ToList();
+    }
+
+    private static FilterGroup GetHighPriorityFilters() => new()
+    {
+        Conditions = [new FilterCondition { Field = "Priority", Operator = FilterOperator.Equals, Value = "High" }]
+    };
+
+    private static FilterGroup GetPendingFilters() => new()
+    {
+        Conditions = [new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Pending" }]
+    };
+
+    private static FilterGroup GetLargeOrdersFilters() => new()
+    {
+        Conditions = [new FilterCondition { Field = "Amount", Operator = FilterOperator.GreaterThan, Value = 1000m }]
+    };
+
+    private static BadgeVariant GetStatusVariant(string status) => status switch
+    {
+        "Delivered"  => BadgeVariant.Default,
+        "Shipped"    => BadgeVariant.Secondary,
+        "Processing" => BadgeVariant.Secondary,
+        "Cancelled"  => BadgeVariant.Destructive,
+        _            => BadgeVariant.Outline,
+    };
+
+    private static BadgeVariant GetPriorityVariant(string priority) => priority switch
+    {
+        "High"   => BadgeVariant.Destructive,
+        "Medium" => BadgeVariant.Secondary,
+        _        => BadgeVariant.Outline,
+    };
+
+    private static readonly string _presetsCode = """
+        <FilterBuilder TData="Order"
+                       @bind-Filters="activeFilters"
+                       OnFilterChange="HandleFilterChange">
+            <FilterFields>
+                <FilterField Field="Status"   Label="Status"   Type="FilterFieldType.Select" Options="@statusOptions" />
+                <FilterField Field="Priority" Label="Priority" Type="FilterFieldType.Select" Options="@priorityOptions" />
+                <FilterField Field="Amount"   Label="Amount"   Type="FilterFieldType.Number" Min="0" />
+                <FilterField Field="Customer" Label="Customer" Type="FilterFieldType.Text" />
+            </FilterFields>
+            <FilterPresets>
+                <FilterPreset Name="High Priority Orders" Icon="alert-circle" Filters="@GetHighPriorityFilters()" />
+                <FilterPreset Name="Pending Orders"       Icon="clock"        Filters="@GetPendingFilters()" />
+                <FilterPreset Name="Large Orders"         Icon="trending-up"  Filters="@GetLargeOrdersFilters()" />
+            </FilterPresets>
+        </FilterBuilder>
+        """;
+
+    public class Order
+    {
+        public int Id { get; set; }
+        public string OrderNumber { get; set; } = string.Empty;
+        public string Customer { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+        public DateOnly OrderDate { get; set; }
+        public string OrderDateDisplay => OrderDate.ToString("MMM dd, yyyy");
+    }
+}

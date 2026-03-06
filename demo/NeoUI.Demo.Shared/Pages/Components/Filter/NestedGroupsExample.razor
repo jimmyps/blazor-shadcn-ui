@@ -1,0 +1,56 @@
+@page "/components/filter/nested"
+@namespace NeoUI.Demo.Shared.Pages.Components.Filter
+
+<PageTitle>Filter Builder - Nested Groups - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+
+    <DemoPageHeader
+        Title="Nested Groups"
+        Description="Build complex filter logic with nested condition groups using AND/OR operators." />
+
+    <DemoSection Title="Coming Soon" Description="Nested group editing UI is planned for a future release. FilterGroup already supports nested groups in the model.">
+        <div class="bg-muted p-6 rounded-lg">
+            <pre class="text-sm overflow-x-auto font-mono"><code>@_nestedCode</code></pre>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="LINQ Support" Description="The ApplyFilters extension fully resolves nested groups at runtime.">
+        <div class="bg-muted p-6 rounded-lg">
+            <pre class="text-sm overflow-x-auto font-mono"><code>@_linqCode</code></pre>
+        </div>
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private static readonly string _nestedCode = """
+        // (Status = "Pending" OR Status = "Processing") AND Amount > 1000
+        var filters = new FilterGroup
+        {
+            Logic = LogicalOperator.And,
+            Conditions = new List<FilterCondition>
+            {
+                new FilterCondition { Field = "Amount", Operator = FilterOperator.GreaterThan, Value = 1000 }
+            },
+            NestedGroups = new List<FilterGroup>
+            {
+                new FilterGroup
+                {
+                    Logic = LogicalOperator.Or,
+                    Conditions = new List<FilterCondition>
+                    {
+                        new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Pending" },
+                        new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Processing" }
+                    }
+                }
+            }
+        };
+        """;
+
+    private static readonly string _linqCode = """
+        // Apply the nested filter group to any IEnumerable<T> or IQueryable<T>
+        var results = allOrders.ApplyFilters(filters).ToList();
+        """;
+}

@@ -6,7 +6,7 @@
 
 @code {
     [CascadingParameter]
-    private FilterBuilder? Parent { get; set; }
+    private IFilterBuilderContext? Parent { get; set; }
 
     /// <summary>Display name for the preset.</summary>
     [Parameter, EditorRequired]
@@ -16,29 +16,22 @@
     [Parameter, EditorRequired]
     public FilterGroup Filters { get; set; } = new();
 
-    /// <summary>Optional icon name (Lucide icon).</summary>
+    /// <summary>Optional Lucide icon name.</summary>
     [Parameter]
     public string? Icon { get; set; }
 
-    /// <summary>Optional description shown in the preset menu.</summary>
+    /// <summary>Optional description shown in the preset list.</summary>
     [Parameter]
     public string? Description { get; set; }
 
     protected override void OnInitialized()
     {
-        Parent?.RegisterPreset(BuildDefinition());
+        Parent?.RegisterPreset(new FilterPresetDefinition
+        {
+            Name = Name,
+            Icon = Icon,
+            Filters = Filters,
+            Description = Description
+        });
     }
-
-    protected override void OnParametersSet()
-    {
-        Parent?.UpdatePreset(BuildDefinition());
-    }
-
-    private FilterPresetDefinition BuildDefinition() => new()
-    {
-        Name = Name,
-        Icon = Icon,
-        Filters = Filters,
-        Description = Description
-    };
 }
