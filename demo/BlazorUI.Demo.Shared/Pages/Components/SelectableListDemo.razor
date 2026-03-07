@@ -1,0 +1,415 @@
+@page "/components/selectable-list"
+@using BlazorUI.Components.SelectableList
+@using BlazorUI.Components.Command
+@using BlazorUI.Icons.Lucide.Components
+
+<PageTitle>SelectableList Component - BlazorUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+    <div>
+        <div class="space-y-3">
+            <h1 class="text-4xl font-bold tracking-tight">SelectableList Component</h1>
+            <p class="text-xl text-muted-foreground">
+                An elegant, declarative component for creating styled selectable lists with built-in search and keyboard navigation.
+            </p>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+    </div>
+
+    <!-- Basic Usage -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Basic Usage</h2>
+            <p class="text-sm text-muted-foreground">
+                Simple selectable list with custom item templates.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList Items="@plans"
+                            ValueSelector="@(p => p.Id)"
+                            @bind-SelectedValue="@selectedPlanId"
+                            ContainerClass="border rounded-lg">
+                <ItemTemplate Context="plan">
+                    <div class="flex flex-col gap-1">
+                        <span class="font-medium">@plan.Name</span>
+                        <span class="text-sm text-muted-foreground">@plan.Description</span>
+                        <span class="text-sm font-semibold text-primary">@plan.Price</span>
+                    </div>
+                </ItemTemplate>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected plan: <strong>@(selectedPlanId ?? "none")</strong>
+        </p>
+    </div>
+
+    <!-- With Search -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Search</h2>
+            <p class="text-sm text-muted-foreground">
+                Enable search to filter items dynamically.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList Items="@frameworks"
+                            ValueSelector="@(f => f.Id)"
+                            @bind-SelectedValue="@selectedFramework"
+                            ShowSearch="true"
+                            SearchPlaceholder="Search frameworks..."
+                            ContainerClass="border rounded-lg">
+                <ItemTemplate Context="framework">
+                    <div class="flex items-center gap-2">
+                        <span>@framework.Name</span>
+                    </div>
+                </ItemTemplate>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected framework: <strong>@(selectedFramework ?? "none")</strong>
+        </p>
+    </div>
+
+    <!-- With Grouping -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">With Grouping</h2>
+            <p class="text-sm text-muted-foreground">
+                Organize items into labeled groups for better organization.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList Items="@settings"
+                            ValueSelector="@(s => s.Id)"
+                            GroupSelector="@(s => s.Category)"
+                            @bind-SelectedValue="@selectedSetting"
+                            ShowSearch="true"
+                            SearchPlaceholder="Search settings..."
+                            ContainerClass="border rounded-lg">
+                <ItemTemplate Context="setting">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
+                            <LucideIcon Name="@setting.Icon" Size="16" Class="text-primary" />
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-medium">@setting.Name</div>
+                            <div class="text-xs text-muted-foreground">@setting.Description</div>
+                        </div>
+                    </div>
+                </ItemTemplate>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected setting: <strong>@(selectedSetting ?? "none")</strong>
+        </p>
+    </div>
+
+    <!-- Disabled Items -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Disabled Items</h2>
+            <p class="text-sm text-muted-foreground">
+                Mark specific items as disabled based on a condition.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList Items="@features"
+                            ValueSelector="@(f => f.Id)"
+                            IsDisabled="@(f => !f.Available)"
+                            @bind-SelectedValue="@selectedFeature"
+                            ContainerClass="border rounded-lg">
+                <ItemTemplate Context="feature">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-medium">@feature.Name</div>
+                            <div class="text-sm text-muted-foreground">@feature.Description</div>
+                        </div>
+                        @if (!feature.Available)
+                        {
+                            <span class="text-xs text-muted-foreground">Coming Soon</span>
+                        }
+                    </div>
+                </ItemTemplate>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected feature: <strong>@(selectedFeature ?? "none")</strong>
+        </p>
+    </div>
+
+    <!-- Rich Item Templates -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Rich Item Templates</h2>
+            <p class="text-sm text-muted-foreground">
+                Create complex layouts with badges, icons, and multi-line content.
+            </p>
+        </div>
+        <div class="max-w-2xl">
+            <SelectableList Items="@pricingPlans"
+                            ValueSelector="@(p => p.Id)"
+                            @bind-SelectedValue="@selectedPricingPlan"
+                            ShowSearch="true"
+                            ContainerClass="border rounded-lg"
+                            ItemClass="py-3">
+                <ItemTemplate Context="plan">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-lg font-semibold">@plan.Name</span>
+                                @if (plan.Popular)
+                                {
+                                    <span class="px-2 py-0.5 text-xs font-medium bg-primary text-primary-foreground rounded">
+                                        Popular
+                                    </span>
+                                }
+                            </div>
+                            <p class="text-sm text-muted-foreground mb-2">@plan.Description</p>
+                            <ul class="space-y-1">
+                                @foreach (var feature in plan.Features)
+                                {
+                                    <li class="text-xs text-muted-foreground flex items-center gap-1.5">
+                                        <LucideIcon Name="check" Size="12" Class="text-primary" />
+                                        @feature
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold">@plan.Price</div>
+                            <div class="text-xs text-muted-foreground">per month</div>
+                        </div>
+                    </div>
+                </ItemTemplate>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected pricing plan: <strong>@(selectedPricingPlan ?? "none")</strong>
+        </p>
+    </div>
+
+    <!-- Manual Composition -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Manual Composition</h2>
+            <p class="text-sm text-muted-foreground">
+                Use CommandGroup and CommandItem directly for full control over structure.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList TItem="object" @bind-SelectedValue="@selectedManualAction" ContainerClass="border rounded-lg">
+                <CommandGroup Heading="Actions">
+                    <CommandItem Value="new-file">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="file-plus" Size="16" />
+                            <span>New File</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="new-folder">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="folder-plus" Size="16" />
+                            <span>New Folder</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup Heading="Edit">
+                    <CommandItem Value="copy">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="copy" Size="16" />
+                            <span>Copy</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="paste">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="clipboard" Size="16" />
+                            <span>Paste</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected action: <strong>@(selectedManualAction ?? "none")</strong>
+        </p>
+    </div>
+
+    <!-- Manual Composition with Search -->
+    <div class="space-y-4">
+        <div class="space-y-2">
+            <h2 class="text-2xl font-semibold">Manual Composition with Search</h2>
+            <p class="text-sm text-muted-foreground">
+                Combine manual composition with search functionality for advanced use cases.
+            </p>
+        </div>
+        <div class="max-w-md">
+            <SelectableList TItem="object" @bind-SelectedValue="@selectedCommand" 
+                            ShowSearch="true" 
+                            SearchPlaceholder="Search commands..."
+                            ContainerClass="border rounded-lg">
+                <CommandGroup Heading="Suggestions">
+                    <CommandItem Value="calendar" SearchText="calendar schedule events">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="calendar" Size="16" />
+                            <span>Calendar</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="calculator" SearchText="calculator math compute">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="calculator" Size="16" />
+                            <span>Calculator</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="emoji" SearchText="emoji smile face">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="smile" Size="16" />
+                            <span>Search Emoji</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup Heading="Settings">
+                    <CommandItem Value="profile-manual" SearchText="profile user account settings">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="user" Size="16" />
+                            <span>Profile</span>
+                        </div>
+                    </CommandItem>
+                    <CommandItem Value="security-manual" SearchText="security privacy password">
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="shield" Size="16" />
+                            <span>Security</span>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+            </SelectableList>
+        </div>
+        <p class="text-sm text-muted-foreground">
+            Selected command: <strong>@(selectedCommand ?? "none")</strong>
+        </p>
+    </div>
+</div>
+
+@code {
+    private string? selectedPlanId = "free";
+    private string? selectedFramework = "react";
+    private string? selectedSetting = "profile";
+    private string? selectedFeature = "basic";
+    private string? selectedPricingPlan = "pro";
+    private string? selectedManualAction;
+    private string? selectedCommand;
+
+    private class Plan
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Price { get; set; } = "";
+    }
+
+    private class Framework
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+    }
+
+    private class Setting
+    {
+        public string Id { get; set; } = "";
+        public string Category { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Icon { get; set; } = "";
+    }
+
+    private class Feature
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public bool Available { get; set; }
+    }
+
+    private class PricingPlan
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string Price { get; set; } = "";
+        public bool Popular { get; set; }
+        public List<string> Features { get; set; } = new();
+    }
+
+    private List<Plan> plans = new()
+    {
+        new Plan { Id = "free", Name = "Free", Description = "For personal use", Price = "$0" },
+        new Plan { Id = "pro", Name = "Pro", Description = "For professionals", Price = "$19" },
+        new Plan { Id = "team", Name = "Team", Description = "For teams", Price = "$49" },
+        new Plan { Id = "enterprise", Name = "Enterprise", Description = "For large organizations", Price = "$99" }
+    };
+
+    private List<Framework> frameworks = new()
+    {
+        new Framework { Id = "react", Name = "React" },
+        new Framework { Id = "vue", Name = "Vue" },
+        new Framework { Id = "angular", Name = "Angular" },
+        new Framework { Id = "svelte", Name = "Svelte" },
+        new Framework { Id = "blazor", Name = "Blazor" },
+        new Framework { Id = "next", Name = "Next.js" },
+        new Framework { Id = "nuxt", Name = "Nuxt.js" },
+        new Framework { Id = "remix", Name = "Remix" }
+    };
+
+    private List<Setting> settings = new()
+    {
+        new Setting { Id = "profile", Category = "Account", Name = "Profile", Description = "Manage your profile", Icon = "user" },
+        new Setting { Id = "security", Category = "Account", Name = "Security", Description = "Security settings", Icon = "shield" },
+        new Setting { Id = "billing", Category = "Account", Name = "Billing", Description = "Payment methods", Icon = "credit-card" },
+        new Setting { Id = "theme", Category = "Appearance", Name = "Theme", Description = "Customize appearance", Icon = "palette" },
+        new Setting { Id = "language", Category = "Appearance", Name = "Language", Description = "Change language", Icon = "globe" },
+        new Setting { Id = "notifications", Category = "Preferences", Name = "Notifications", Description = "Email & push", Icon = "bell" },
+        new Setting { Id = "privacy", Category = "Preferences", Name = "Privacy", Description = "Data & privacy", Icon = "lock" }
+    };
+
+    private List<Feature> features = new()
+    {
+        new Feature { Id = "basic", Name = "Basic Analytics", Description = "View basic metrics", Available = true },
+        new Feature { Id = "advanced", Name = "Advanced Analytics", Description = "Detailed insights", Available = true },
+        new Feature { Id = "ai", Name = "AI Insights", Description = "Powered by machine learning", Available = false },
+        new Feature { Id = "export", Name = "Data Export", Description = "Export to CSV/Excel", Available = true },
+        new Feature { Id = "api", Name = "API Access", Description = "Programmatic access", Available = false }
+    };
+
+    private List<PricingPlan> pricingPlans = new()
+    {
+        new PricingPlan
+        {
+            Id = "starter",
+            Name = "Starter",
+            Description = "Perfect for trying out our service",
+            Price = "$9",
+            Popular = false,
+            Features = new() { "Up to 10 projects", "1 GB storage", "Basic support" }
+        },
+        new PricingPlan
+        {
+            Id = "pro",
+            Name = "Pro",
+            Description = "Best for professionals and small teams",
+            Price = "$29",
+            Popular = true,
+            Features = new() { "Unlimited projects", "10 GB storage", "Priority support", "Advanced analytics" }
+        },
+        new PricingPlan
+        {
+            Id = "enterprise",
+            Name = "Enterprise",
+            Description = "For large organizations with custom needs",
+            Price = "$99",
+            Popular = false,
+            Features = new() { "Unlimited everything", "Custom storage", "24/7 support", "Custom integrations", "SLA guarantee" }
+        }
+    };
+}
