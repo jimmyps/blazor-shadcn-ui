@@ -129,7 +129,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         StateHasChanged();
     }
 
-    private Task HandleConditionChanged(FilterCondition _condition)
+    private Task HandleConditionChanged(FilterCondition condition)
     {
         _ = NotifyFiltersChanged();
         return Task.CompletedTask;

@@ -147,7 +147,7 @@ else if (!IsValueNotNeeded())
                         @onchange="HandleSelectChange">
                     @if (string.IsNullOrEmpty(SelectValue))
                     {
-                        <option value="" disabled selected>@(FieldDefinition.Placeholder ?? "Select...")</option>
+                        <option value="" disabled>@(FieldDefinition.Placeholder ?? "Select...")</option>
                     }
                     @foreach (var option in FieldDefinition.Options)
                     {

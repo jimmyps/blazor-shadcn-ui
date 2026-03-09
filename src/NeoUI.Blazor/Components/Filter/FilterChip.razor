@@ -72,10 +72,11 @@
     {
         _availableOperators = FieldDefinition?.Operators ?? new List<FilterOperator>();
 
-        // Ensure current operator is valid for this field
+        // Ensure current operator is valid for this field; notify parent if corrected.
         if (_availableOperators.Any() && !_availableOperators.Contains(Condition.Operator))
         {
             Condition.Operator = FieldDefinition?.DefaultOperator ?? _availableOperators.First();
+            _ = NotifyChanged();
         }
     }
 
