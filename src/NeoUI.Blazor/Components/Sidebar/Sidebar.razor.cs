@@ -114,9 +114,9 @@ public partial class Sidebar : ComponentBase, IDisposable
         // Variant-specific layout classes with independent scrolling
         var layoutClasses = Context?.Variant switch
         {
-            SidebarVariant.Floating => "fixed top-2 bottom-2 z-10 h-[calc(100vh-1rem)] overflow-y-auto",
-            SidebarVariant.Inset => "relative h-full overflow-y-auto",
-            _ => "sticky top-0 h-screen overflow-y-auto"
+            SidebarVariant.Floating => "fixed top-2 bottom-2 z-10 h-[calc(100vh-1rem)]",
+            SidebarVariant.Inset => "relative h-full",
+            _ => "sticky top-0 h-screen"
         };
 
         // Add left/right positioning for floating/default variants
