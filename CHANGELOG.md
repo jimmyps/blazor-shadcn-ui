@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-9 — Sidebar & Trigger: Three Bug Fixes
+
+> **Library change.** Affects `Sidebar`, `SidebarMenuButton`, `Button`, and `LinkButton` in `NeoUI.Blazor`, and `DropdownMenuContentPrimitive` in `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
+
+---
+
+### 🐛 Fix: `SidebarMenuButton` / `Button` / `LinkButton` — stale `ElementReference` when used as `AsChild` trigger
+
+`Button`, `LinkButton`, and `SidebarMenuButton` only called `TriggerContext.SetTriggerElement` on `firstRender`. When the render tree structure changed on a subsequent render — in particular, `SidebarMenuButton` adds or removes a `<TooltipPrimitive>` wrapper depending on `ShouldShowTooltip()` (which toggles with the sidebar collapsed/expanded state) — Blazor recreated the underlying `<button>` element with a new `ElementReference` ID. The stale ID was never re-registered, so `_asChildTriggerRef` in the trigger primitive (and therefore `Context.State.TriggerElement` / `FloatingPortal.AnchorElement`) pointed to a DOM element that no longer existed. C# saw `HasValue = true` (non-empty ID string) but JS `__internalId` lookup returned `null`, causing the floating content to mis-position or fail to appear entirely.
+
+Fixed by removing the `firstRender &&` guard in `OnAfterRender` for all three components. `SetTriggerElement` already has an ID-equality guard in the context layer, so calling it on every render is a no-op when the element is stable and only fires a state update when the ID genuinely changes. This matches the pattern already used by `TooltipTriggerPrimitive`.
+
+---
+
+### 🐛 Fix: `Sidebar` — `SidebarRail` causes horizontal scrollbar
+
+The `<aside>` element had `overflow-y-auto` and `h-screen` in its layout classes. `overflow-y-auto` creates a block formatting context; the `SidebarRail` button is `position: absolute` at `right: -1rem` (straddling the sidebar edge), so it overflowed the BFC horizontally, producing a horizontal scrollbar on the `<aside>`. The `h-screen` also forced 100vh height even inside constrained containers such as the 580px dashboard shell.
+
+`SidebarContent` already carries `overflow-auto flex-1 min-h-0` — the correct place for sidebar scroll containment. Removed `overflow-y-auto` and `h-screen` from the default variant layout classes (replaced with `min-h-full`), and removed `overflow-y-auto` from the Floating and Inset variants as well. Aligns with upstream's layout class pattern.
+
+---
+
+### ✨ Feat: `DropdownMenuContentPrimitive` — `ForceMount` default changed to `true`
+
+Changed the default value of `ForceMount` from `false` to `true` in `DropdownMenuContentPrimitive`, matching `SelectContentPrimitive`. With `ForceMount=false` (previous default), the portal was mounted fresh on every open: `MountPortalAsync` added ~32ms of overhead (PortalHost render cycle + `Task.Yield`), during which the CSS entrance animation had already started on the freshly-inserted element. By the time the element became visible, the animation was ~35–45% complete, producing a visible mid-animation pop-in. With `ForceMount=true`, the portal is pre-mounted at startup and `SetupAsync` runs immediately on open (same render cycle as the `data-state` transition), reducing the animation lead-time to ~20ms and eliminating the choppy first-show.
+
+---
+
 ## 2026-3-6 — Performance: CascadingValue IsFixed alignment with upstream
 
 > **Library change.** Affects 9 component and primitive files across `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
