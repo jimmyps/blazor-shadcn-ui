@@ -298,6 +298,23 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     }
 
     /// <summary>
+    /// Triggers a BlazorServerSide data fetch by notifying JavaScript.
+    /// Only applicable for BlazorServerSide row model.
+    /// </summary>
+    public async Task TriggerBlazorServerSideFetchAsync()
+    {
+        if (_gridInstance == null)
+        {
+            Console.WriteLine("[AgDataGridRenderer] Cannot trigger BlazorServerSide fetch - grid instance is null");
+            return;
+        }
+        
+        Console.WriteLine("[AgDataGridRenderer] Triggering BlazorServerSide fetch");
+        await _gridInstance.InvokeVoidAsync("triggerBlazorServerSideFetch");
+        Console.WriteLine("[AgDataGridRenderer] BlazorServerSide fetch triggered");
+    }
+
+    /// <summary>
     /// Called by JavaScript when grid state changes (sorting, filtering, selection).
     /// </summary>
     /// <param name="state">The new grid state.</param>
@@ -307,6 +324,44 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         if (_currentDefinition?.OnStateChanged.HasDelegate == true)
         {
             await _currentDefinition.OnStateChanged.InvokeAsync(state);
+        }
+    }
+
+    /// <summary>
+    /// Called by JavaScript for BlazorServerSide mode.
+    /// Single round trip: receives grid state, fetches data, returns serialisable response.
+    /// JavaScript applies setGridOption('rowData', items) locally — no second interop call needed.
+    /// </summary>
+    /// <param name="state">The current grid state from JavaScript.</param>
+    /// <returns>An object with items, totalCount, pageNumber, and pageSize.</returns>
+    [JSInvokable("OnStateChangedAndFetchData")]
+    public async Task<object?> OnStateChangedAndFetchData(DataGridState state)
+    {
+        // 1. Notify state observers (same as existing OnDataGridStateChanged)
+        if (_currentDefinition?.OnStateChanged.HasDelegate == true)
+            await _currentDefinition.OnStateChanged.InvokeAsync(state);
+
+        // 2. Fetch data
+        if (_currentDefinition?.BlazorServerSideFetchHandler == null)
+            return null;
+
+        try
+        {
+            var response = await _currentDefinition.BlazorServerSideFetchHandler(state);
+            var enhancedItems = EnhanceDataWithFormatting(response.Items?.ToList() ?? []);
+
+            return new
+            {
+                items      = enhancedItems,
+                totalCount = response.TotalCount,
+                pageNumber = state.PageNumber,
+                pageSize   = state.PageSize
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[AgDataGridRenderer] BlazorServerSide fetch failed: {ex.Message}");
+            return new { items = Array.Empty<object>(), totalCount = 0, pageNumber = state.PageNumber, pageSize = state.PageSize };
         }
     }
 
@@ -684,7 +739,9 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             idField = ToCamelCase(definition.IdField),
             // Theme and theme parameters
             theme = definition.Theme.ToString(),
-            themeParams = definition.ThemeParams
+            themeParams = definition.ThemeParams,
+            // BlazorServerSide flag: uses clientSide row model with C# orchestration
+            blazorServerSide = definition.RowModelType == "clientSide" && definition.BlazorServerSideFetchHandler != null
         };
     }
 

@@ -292,6 +292,11 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         // Create AG DataGrid instance - returns the API directly
         const gridApi = agCreateGrid(element, gridOptions);
         
+        // BlazorServerSide: trigger initial data load immediately after grid is ready
+        if (config.blazorServerSide) {
+            setTimeout(() => gridOptions.__triggerBlazorFetch(gridApi), 0);
+        }
+        
         // Return wrapper object with API methods
         return {
             setRowData: (data) => {
@@ -344,6 +349,12 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
                 }
             },
             
+            triggerBlazorServerSideFetch: () => {
+                if (config.blazorServerSide) {
+                    gridOptions.__triggerBlazorFetch(gridApi);
+                }
+            },
+            
             destroy: () => {
                 gridApi.destroy();
             }
@@ -361,6 +372,42 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
 function buildGridOptionsWithEvents(config, dotNetRef) {
     // Flag to prevent selection event during programmatic sync
     let isSyncingSelection = false;
+    
+    // Flag to prevent re-entrant BlazorServerSide fetches when pagination events fire rapidly
+    let isFetchingServerData = false;
+    
+    /**
+     * BlazorServerSide mode: single awaited round trip.
+     * Sends state to C#, receives { items, totalCount } as return value.
+     * Applies rowData locally — no second interop call needed.
+     * Re-entrancy guard (isFetchingServerData) prevents stacked calls when
+     * pagination events fire rapidly (e.g. onPaginationChanged after setGridOption('rowData')).
+     */
+    async function notifyStateChangedAndFetchData(api) {
+        if (!api) return;
+        if (isFetchingServerData) return;
+        isFetchingServerData = true;
+        
+        api.showLoadingOverlay();
+        
+        try {
+            const state = getDataGridState(api);
+            const result = await dotNetRef.invokeMethodAsync('OnStateChangedAndFetchData', state);
+            
+            if (result?.items) {
+                api.setGridOption('rowData', result.items);
+            } else {
+                api.setGridOption('rowData', []);
+            }
+            
+            api.hideOverlay();
+        } catch (err) {
+            console.error('[AG Grid] BlazorServerSide fetch failed:', err.message);
+            api.showNoRowsOverlay();
+        } finally {
+            isFetchingServerData = false;
+        }
+    }
     
     // Register custom cell renderer and value formatter
     const components = {
@@ -483,16 +530,25 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             resizable: true,
             // ✅ Suppress header menus if configured (for controlled filtering)
             suppressHeaderMenuButton: config.suppressHeaderMenus || false,
+            // For BlazorServerSide: suppress AG Grid's own in-memory sort/filter processing
+            // Data arrives pre-sorted/filtered from the server
+            ...(config.blazorServerSide ? {
+                comparator: () => 0,
+                filterValueGetter: undefined
+            } : {})
         },
         
         // Event handlers - these receive events with the API attached
-        onSortChanged: (event) => notifyStateChanged(event.api, dotNetRef),
-        onFilterChanged: (event) => notifyStateChanged(event.api, dotNetRef),
-        onPaginationChanged: (event) => notifyStateChanged(event.api, dotNetRef),
-        onColumnMoved: (event) => notifyStateChanged(event.api, dotNetRef),
-        onColumnResized: (event) => notifyStateChanged(event.api, dotNetRef),
-        onColumnPinned: (event) => notifyStateChanged(event.api, dotNetRef),
-        onColumnVisible: (event) => notifyStateChanged(event.api, dotNetRef),
+        // For BlazorServerSide: sort/filter/pagination events trigger a C# fetch (single round trip)
+        // For all other modes: just notify .NET of the state change
+        onSortChanged:       (event) => config.blazorServerSide ? notifyStateChangedAndFetchData(event.api) : notifyStateChanged(event.api, dotNetRef),
+        onFilterChanged:     (event) => config.blazorServerSide ? notifyStateChangedAndFetchData(event.api) : notifyStateChanged(event.api, dotNetRef),
+        onPaginationChanged: (event) => config.blazorServerSide ? notifyStateChangedAndFetchData(event.api) : notifyStateChanged(event.api, dotNetRef),
+        // Column moves always notify state only — never trigger a data fetch
+        onColumnMoved:       (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnResized:     (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnPinned:      (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnVisible:     (event) => notifyStateChanged(event.api, dotNetRef),
         onSelectionChanged: (event) => {
             // Skip event if we're currently syncing selection from parent
             if (isSyncingSelection) {
@@ -506,7 +562,10 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         
         // Store the sync flag in grid options so applyDataGridState can access it
         __isSyncingSelection: () => isSyncingSelection,
-        __setIsSyncingSelection: (value) => { isSyncingSelection = value; }
+        __setIsSyncingSelection: (value) => { isSyncingSelection = value; },
+        
+        // Expose the BlazorServerSide fetch function so the wrapper can call it for refresh
+        __triggerBlazorFetch: (api) => notifyStateChangedAndFetchData(api)
     };
     
     // Server-side datasource

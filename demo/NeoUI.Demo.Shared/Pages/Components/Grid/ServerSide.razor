@@ -15,6 +15,34 @@
         </p>
     </div>
 
+    @* BlazorServerSide comparison callout *@
+    <Alert Variant="AlertVariant.Default">
+        <Icon>
+            <LucideIcon Name="zap" Size="16" />
+        </Icon>
+        <ChildContent>
+            <AlertTitle>Consider BlazorServerSide First</AlertTitle>
+            <AlertDescription>
+                <p class="mb-2">
+                    For most server-side scenarios, the new
+                    <a href="/components/datagrid/blazor-server-side" class="underline font-semibold">Blazor Server-Side</a>
+                    row model (<code class="font-mono text-xs">DataGridRowModelType.BlazorServerSide</code>) is the better choice:
+                </p>
+                <ul class="list-disc list-inside space-y-1 text-sm mb-2">
+                    <li><strong>No Enterprise license</strong> — uses AG Grid Community only (~100KB smaller bundle)</li>
+                    <li><strong>Single JS↔C# round trip</strong> per page/sort/filter interaction</li>
+                    <li>Supports paging, sorting, filtering, and any async data source</li>
+                </ul>
+                <p class="text-sm">
+                    Use this <strong>Enterprise Server-Side</strong> model only when you need advanced AG Grid features such as
+                    server-side <strong>row grouping</strong>, <strong>tree data</strong>, <strong>pivoting</strong>, or
+                    lazy-loading of grouped rows.
+                    <a href="/components/datagrid/blazor-server-side" class="underline font-semibold ml-1">See BlazorServerSide →</a>
+                </p>
+            </AlertDescription>
+        </ChildContent>
+    </Alert>
+
     @* AG Grid Enterprise Notice *@
     <Alert Variant="AlertVariant.Warning">
         <Icon>

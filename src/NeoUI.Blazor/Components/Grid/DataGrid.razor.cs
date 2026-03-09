@@ -291,6 +291,16 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public Func<DataGridDataRequest<TItem>, Task<DataGridDataResponse<TItem>>>? OnServerDataRequest { get; set; }
+
+    /// <summary>
+    /// Gets or sets an external server data provider for BlazorServerSide mode.
+    /// When set, overrides OnServerDataRequest. Implement IDataGridServerDataProvider{TItem}
+    /// (or subclass HttpDataGridProvider{TItem}) to target any data source.
+    /// If neither ServerDataProvider nor OnServerDataRequest is set, the virtual
+    /// OnFetchServerDataAsync method is called (override in a subclass for code-behind style).
+    /// </summary>
+    [Parameter]
+    public NeoUI.Blazor.Services.Grid.IDataGridServerDataProvider<TItem>? ServerDataProvider { get; set; }
     
     /// <summary>
     /// Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version).
@@ -316,6 +326,19 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public EventCallback<IReadOnlyCollection<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of server-side rows (for external paginator display).
+    /// Automatically updated after each BlazorServerSide data fetch.
+    /// </summary>
+    [Parameter]
+    public int TotalServerRowCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when TotalServerRowCount changes (for two-way binding).
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> TotalServerRowCountChanged { get; set; }
 
     /// <summary>
     /// Gets the computed CSS classes for the grid container.
@@ -813,6 +836,34 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             _gridDefinition.RowModelType = "infinite";
             _gridDefinition.ServerDataRequestHandler = OnServerDataRequest;
         }
+        else if (RowModelType == DataGridRowModelType.BlazorServerSide)
+        {
+            // Use clientSide row model — no Enterprise module needed
+            _gridDefinition.RowModelType = "clientSide";
+            
+            // Wire the single-trip fetch handler (priority: ServerDataProvider > OnServerDataRequest > virtual method)
+            _gridDefinition.BlazorServerSideFetchHandler = async (state) =>
+            {
+                var request = MapStateToDataRequest(state);
+                
+                DataGridDataResponse<TItem> response;
+                if (ServerDataProvider != null)
+                    response = await ServerDataProvider.GetDataAsync(request);
+                else if (OnServerDataRequest != null)
+                    response = await OnServerDataRequest(request);
+                else
+                    response = await OnFetchServerDataAsync(request);
+                
+                // Update total count for two-way binding
+                if (TotalServerRowCountChanged.HasDelegate && response.TotalCount != TotalServerRowCount)
+                {
+                    TotalServerRowCount = response.TotalCount;
+                    await TotalServerRowCountChanged.InvokeAsync(response.TotalCount);
+                }
+                
+                return response;
+            };
+        }
         else
         {
             _gridDefinition.RowModelType = "clientSide";
@@ -822,6 +873,27 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.ResolveItemsByIds = (ids) => ResolveItemsByIds(ids);
     }
     
+    /// <summary>
+    /// Maps a DataGridState to a DataGridDataRequest for BlazorServerSide mode.
+    /// </summary>
+    private DataGridDataRequest<TItem> MapStateToDataRequest(DataGridState state) => new()
+    {
+        StartIndex        = (state.PageNumber - 1) * state.PageSize,
+        Count             = state.PageSize,
+        PageNumber        = state.PageNumber,
+        PageSize          = state.PageSize,
+        SortDescriptors   = state.SortDescriptors   ?? [],
+        FilterDescriptors = state.FilterDescriptors ?? []
+    };
+
+    /// <summary>
+    /// Override in a subclass to provide server-side data without using OnServerDataRequest or ServerDataProvider.
+    /// Called when RowModelType is BlazorServerSide and no other handler is configured.
+    /// </summary>
+    /// <param name="request">The data request from the grid.</param>
+    protected virtual Task<DataGridDataResponse<TItem>> OnFetchServerDataAsync(DataGridDataRequest<TItem> request)
+        => Task.FromResult(new DataGridDataResponse<TItem>());
+
     /// <summary>
     /// Resolves a collection of IDs to their corresponding original item instances.
     /// Used by the renderer to convert deserialized items back to original references.
@@ -892,19 +964,23 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             
             // ✅ Only set initial data for CLIENT-SIDE row models
             // Server-side and infinite row models fetch data via datasource callbacks
-            if (_gridDefinition.RowModelType == "clientSide")
+            if (_gridDefinition.RowModelType == "clientSide" && _gridDefinition.BlazorServerSideFetchHandler == null)
             {
-                // Set initial data, track count, and subscribe if observable
+                // Pure client-side: load all Items immediately
                 _currentItems = Items;
                 _previousItemsHash = Items?.Count() ?? 0;
                 SubscribeToCollection();
                 
                 await _gridRenderer.UpdateDataAsync(Items);
             }
+            else if (_gridDefinition.BlazorServerSideFetchHandler != null)
+            {
+                // BlazorServerSide: JS will trigger initial fetch via setTimeout after grid is ready
+                Console.WriteLine("[Grid] BlazorServerSide mode initialized - awaiting JS-triggered initial fetch");
+            }
             else
             {
-                // For server-side row models, don't provide Items or call UpdateDataAsync
-                // The grid will automatically call the datasource.getRows() callback
+                // Enterprise ServerSide / Infinite: datasource callback
                 Console.WriteLine($"[Grid] Server-side row model initialized - awaiting datasource callback");
             }
         }
@@ -1214,6 +1290,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         if (RowModelType == DataGridRowModelType.ServerSide)
         {
             await _gridRenderer.RefreshServerSideCacheAsync();
+        }
+        else if (RowModelType == DataGridRowModelType.BlazorServerSide)
+        {
+            await _gridRenderer.TriggerBlazorServerSideFetchAsync();
         }
         else
         {

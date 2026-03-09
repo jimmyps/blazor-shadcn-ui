@@ -67,4 +67,11 @@ public interface IDataGridRenderer<TItem> : IDataGridRenderer
     /// </summary>
     /// <returns>A task that represents the asynchronous refresh operation.</returns>
     Task RefreshServerSideCacheAsync();
+
+    /// <summary>
+    /// Triggers a BlazorServerSide data fetch by notifying JavaScript to call OnStateChangedAndFetchData.
+    /// Only applicable for BlazorServerSide row model.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous fetch trigger operation.</returns>
+    Task TriggerBlazorServerSideFetchAsync();
 }

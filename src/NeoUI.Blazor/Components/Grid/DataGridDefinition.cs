@@ -93,6 +93,13 @@ public class DataGridDefinition<TItem>
     public Func<DataGridDataRequest<TItem>, Task<DataGridDataResponse<TItem>>>? ServerDataRequestHandler { get; set; }
 
     /// <summary>
+    /// Gets or sets the BlazorServerSide data fetch handler.
+    /// Called by AgDataGridRenderer when OnStateChangedAndFetchData is invoked from JS.
+    /// Receives current grid state, fetches data, returns { items, totalCount }.
+    /// </summary>
+    public Func<DataGridState, Task<DataGridDataResponse<TItem>>>? BlazorServerSideFetchHandler { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback invoked when the selection changes.
     /// </summary>
     public EventCallback<IReadOnlyCollection<TItem>> OnSelectionChanged { get; set; }
