@@ -7,60 +7,52 @@
 
     <DemoPageHeader
         Title="Filter Presets"
-        Description="Create reusable filter configurations with icons for quick access to common filtering scenarios." />
+        Description="Register named filter presets via FilterPresets child content. They appear in a Presets dropdown next to the filter chips." />
 
-    <DemoSection Title="Order Management" Description="Use FilterPreset inside the FilterPresets fragment to register one-click filters.">
+    <DemoSection Title="Order Management" Description="Click the 'Presets' button to apply a pre-configured filter in one click.">
         <DemoBlock Code="@_presetsCode">
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
                     <h2 class="text-lg font-semibold">Orders</h2>
-                    <FilterBuilder TData="Order"
-                                   @bind-Filters="activeFilters"
-                                   OnFilterChange="HandleFilterChange">
-                        <FilterFields>
-                            <FilterField Field="Status"    Label="Status"    Type="FilterFieldType.Select" Options="@statusOptions" />
-                            <FilterField Field="Priority"  Label="Priority"  Type="FilterFieldType.Select" Options="@priorityOptions" />
-                            <FilterField Field="Amount"    Label="Amount"    Type="FilterFieldType.Number" Min="0" />
-                            <FilterField Field="Customer"  Label="Customer"  Type="FilterFieldType.Text" />
-                        </FilterFields>
-                        <FilterPresets>
-                            <FilterPreset Name="High Priority Orders"
-                                          Icon="alert-circle"
-                                          Filters="@GetHighPriorityFilters()" />
-                            <FilterPreset Name="Pending Orders"
-                                          Icon="clock"
-                                          Filters="@GetPendingFilters()" />
-                            <FilterPreset Name="Large Orders"
-                                          Icon="trending-up"
-                                          Filters="@GetLargeOrdersFilters()" />
-                        </FilterPresets>
-                    </FilterBuilder>
+                    <span class="text-sm text-muted-foreground">@filteredOrders.Count of @allOrders.Count shown</span>
                 </div>
 
-                <div class="text-sm text-muted-foreground">
-                    Showing @filteredOrders.Count of @allOrders.Count orders
-                </div>
+                <FilterBuilder TData="Order"
+                               @bind-Filters="activeFilters"
+                               OnFilterChange="HandleFilterChange">
+                    <FilterFields>
+                        <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"  Options="@statusOptions" />
+                        <FilterField Field="Priority" Label="Priority" Icon="alert-circle" Type="FilterFieldType.Select"  Options="@priorityOptions" />
+                        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"  EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="Customer" Label="Customer" Icon="user"         Type="FilterFieldType.Text" />
+                    </FilterFields>
+                    <FilterPresets>
+                        <FilterPreset Name="High Priority"   Icon="alert-circle"  Filters="@GetHighPriorityFilters()" />
+                        <FilterPreset Name="Pending Orders"  Icon="clock"         Filters="@GetPendingFilters()" />
+                        <FilterPreset Name="Large Orders"    Icon="trending-up"   Filters="@GetLargeOrdersFilters()" />
+                    </FilterPresets>
+                </FilterBuilder>
 
                 <DataTable TData="Order" Data="@filteredOrders" InitialPageSize="10">
                     <Columns>
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.OrderNumber)" Header="Order #" Sortable />
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Customer)" Header="Customer" Sortable />
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Status)" Header="Status" Sortable>
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.OrderNumber)"    Header="Order #"  Sortable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)"       Header="Customer" Sortable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"         Header="Status"   Sortable>
                             <CellTemplate Context="order">
                                 <Badge Variant="@GetStatusVariant(order.Status)">@order.Status</Badge>
                             </CellTemplate>
                         </DataTableColumn>
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Priority)" Header="Priority" Sortable>
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Priority)"       Header="Priority" Sortable>
                             <CellTemplate Context="order">
                                 <Badge Variant="@GetPriorityVariant(order.Priority)">@order.Priority</Badge>
                             </CellTemplate>
                         </DataTableColumn>
-                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)" Header="Amount" Sortable Alignment="ColumnAlignment.Right">
+                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"         Header="Amount"   Sortable Alignment="ColumnAlignment.Right">
                             <CellTemplate Context="order">
                                 <span>$@order.Amount.ToString("N2")</span>
                             </CellTemplate>
                         </DataTableColumn>
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.OrderDateDisplay)" Header="Date" Sortable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.OrderDateDisplay)" Header="Date"   Sortable />
                     </Columns>
                 </DataTable>
             </div>
@@ -146,19 +138,17 @@
     };
 
     private static readonly string _presetsCode = """
-        <FilterBuilder TData="Order"
-                       @bind-Filters="activeFilters"
-                       OnFilterChange="HandleFilterChange">
+        <FilterBuilder TData="Order" @bind-Filters="activeFilters" OnFilterChange="HandleFilterChange">
             <FilterFields>
-                <FilterField Field="Status"   Label="Status"   Type="FilterFieldType.Select" Options="@statusOptions" />
-                <FilterField Field="Priority" Label="Priority" Type="FilterFieldType.Select" Options="@priorityOptions" />
-                <FilterField Field="Amount"   Label="Amount"   Type="FilterFieldType.Number" Min="0" />
-                <FilterField Field="Customer" Label="Customer" Type="FilterFieldType.Text" />
+                <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"  Options="@statusOptions" />
+                <FilterField Field="Priority" Label="Priority" Icon="alert-circle" Type="FilterFieldType.Select"  Options="@priorityOptions" />
+                <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"
+                             EditorType="FilterEditorType.Currency" Min="0" />
             </FilterFields>
             <FilterPresets>
-                <FilterPreset Name="High Priority Orders" Icon="alert-circle" Filters="@GetHighPriorityFilters()" />
-                <FilterPreset Name="Pending Orders"       Icon="clock"        Filters="@GetPendingFilters()" />
-                <FilterPreset Name="Large Orders"         Icon="trending-up"  Filters="@GetLargeOrdersFilters()" />
+                <FilterPreset Name="High Priority"  Icon="alert-circle" Filters="@GetHighPriorityFilters()" />
+                <FilterPreset Name="Pending Orders" Icon="clock"        Filters="@GetPendingFilters()" />
+                <FilterPreset Name="Large Orders"   Icon="trending-up"  Filters="@GetLargeOrdersFilters()" />
             </FilterPresets>
         </FilterBuilder>
         """;

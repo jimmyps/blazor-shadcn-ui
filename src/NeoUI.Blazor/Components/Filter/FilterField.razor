@@ -12,13 +12,25 @@
     [Parameter, EditorRequired]
     public string Field { get; set; } = string.Empty;
 
-    /// <summary>Human-readable label shown in the UI.</summary>
+    /// <summary>Human-readable label shown in the filter chip and field picker.</summary>
     [Parameter, EditorRequired]
     public string Label { get; set; } = string.Empty;
 
-    /// <summary>Type of field, controls default operators and value input.</summary>
+    /// <summary>Optional Lucide icon name shown in the filter chip and field picker.</summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>Type of field, controls default operators.</summary>
     [Parameter]
     public FilterFieldType Type { get; set; } = FilterFieldType.Text;
+
+    /// <summary>
+    /// Editor widget for the value input. Defaults to <see cref="FilterEditorType.Auto"/> which
+    /// infers the appropriate component from <see cref="Type"/>.
+    /// Override to use a different input (e.g. <see cref="FilterEditorType.Currency"/> for a decimal price field).
+    /// </summary>
+    [Parameter]
+    public FilterEditorType EditorType { get; set; } = FilterEditorType.Auto;
 
     /// <summary>Allowed operators. Auto-populated from Type when null.</summary>
     [Parameter]
@@ -48,7 +60,10 @@
     [Parameter]
     public object? Step { get; set; }
 
-    /// <summary>Custom value input control. When provided, overrides the default input.</summary>
+    /// <summary>
+    /// Custom value input control. When provided (and EditorType is Custom), renders instead of the default widget.
+    /// The <c>FilterCondition</c> context gives access to <c>condition.Value</c> for two-way binding.
+    /// </summary>
     [Parameter]
     public RenderFragment<FilterCondition>? ChildContent { get; set; }
 
@@ -61,7 +76,9 @@
     {
         Field = Field,
         Label = Label,
+        Icon = Icon,
         Type = Type,
+        EditorType = EditorType,
         Operators = Operators?.ToList() ?? GetDefaultOperators(Type),
         DefaultOperator = DefaultOperator,
         Options = Options?.ToList(),

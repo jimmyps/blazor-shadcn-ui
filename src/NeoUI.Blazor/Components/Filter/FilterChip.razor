@@ -1,81 +1,129 @@
 @namespace NeoUI.Blazor.Filter
 @using NeoUI.Icons.Lucide
 
-<div class="@CssClass">
-    <span class="text-xs font-medium">@GetFilterText()</span>
-    @if (OnRemove.HasDelegate)
+@*
+    FilterChip — an interactive segmented chip for one active filter condition.
+
+    Visual layout:
+    ┌────────────────────────────────────────────────────────┐
+    │ [icon?] Field Label │ operator select │ value input │ × │
+    └────────────────────────────────────────────────────────┘
+*@
+
+<div class="@ChipCssClass">
+    @* ── Field label segment ── *@
+    <span class="flex items-center gap-1.5 px-2.5 bg-muted/40 border-r border-input text-xs font-medium text-muted-foreground shrink-0">
+        @if (!string.IsNullOrEmpty(FieldDefinition?.Icon))
+        {
+            <LucideIcon Name="@FieldDefinition.Icon" Size="12" Class="opacity-70 shrink-0" />
+        }
+        @(FieldDefinition?.Label ?? Condition.Field)
+    </span>
+
+    @* ── Operator selector (native select, styled transparent) ── *@
+    <select class="h-full border-r border-input px-2 bg-transparent outline-none cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors"
+            value="@Condition.Operator.ToString()"
+            @onchange="HandleOperatorChange">
+        @foreach (var op in _availableOperators)
+        {
+            <option value="@op.ToString()">@GetOperatorLabel(op)</option>
+        }
+    </select>
+
+    @* ── Value input segment ── *@
+    @if (!IsValueless)
     {
-        <button type="button"
-                class="ml-1 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                @onclick="OnRemove"
-                aria-label="Remove filter">
-            <X Size="12" />
-        </button>
+        <span class="flex items-center flex-1 min-w-0">
+            <FilterValue Condition="@Condition"
+                         FieldDefinition="@FieldDefinition"
+                         ConditionChanged="@HandleConditionChanged"
+                         Compact="true" />
+        </span>
     }
+
+    @* ── Remove button ── *@
+    <button type="button"
+            class="flex items-center justify-center px-1.5 border-l border-input text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0"
+            @onclick="OnRemove"
+            aria-label="Remove filter">
+        <X Size="12" />
+    </button>
 </div>
 
 @code {
-    [Parameter] public FilterCondition Condition { get; set; } = new();
+    [Parameter, EditorRequired] public FilterCondition Condition { get; set; } = new();
     [Parameter] public FilterFieldDefinition? FieldDefinition { get; set; }
     [Parameter] public EventCallback OnRemove { get; set; }
+    [Parameter] public EventCallback<FilterCondition> ConditionChanged { get; set; }
     [Parameter] public string? Class { get; set; }
 
-    private string CssClass => ClassNames.cn(
-        "inline-flex items-center gap-1 rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors",
-        "bg-secondary text-secondary-foreground",
+    private List<FilterOperator> _availableOperators = new();
+
+    private string ChipCssClass => ClassNames.cn(
+        "inline-flex items-stretch h-8 text-sm border border-input rounded-md bg-background overflow-hidden",
         Class
     );
 
-    private string GetFilterText()
-    {
-        var fieldLabel = FieldDefinition?.Label ?? Condition.Field;
-        var operatorText = GetOperatorText(Condition.Operator);
-        var valueText = GetValueText();
+    private bool IsValueless => Condition.Operator is
+        FilterOperator.IsEmpty or FilterOperator.IsNotEmpty or
+        FilterOperator.IsTrue or FilterOperator.IsFalse;
 
-        if (Condition.Operator is FilterOperator.IsEmpty or FilterOperator.IsNotEmpty
-                                or FilterOperator.IsTrue or FilterOperator.IsFalse)
+    protected override void OnParametersSet()
+    {
+        _availableOperators = FieldDefinition?.Operators ?? new List<FilterOperator>();
+
+        // Ensure current operator is valid for this field
+        if (_availableOperators.Any() && !_availableOperators.Contains(Condition.Operator))
         {
-            return $"{fieldLabel} {operatorText}";
+            Condition.Operator = FieldDefinition?.DefaultOperator ?? _availableOperators.First();
         }
-
-        return $"{fieldLabel} {operatorText} {valueText}";
     }
 
-    private static string GetOperatorText(FilterOperator op) => op switch
+    private async Task HandleOperatorChange(ChangeEventArgs e)
     {
-        FilterOperator.Equals => "equals",
-        FilterOperator.NotEquals => "not equals",
-        FilterOperator.Contains => "contains",
-        FilterOperator.NotContains => "not contains",
-        FilterOperator.StartsWith => "starts with",
-        FilterOperator.EndsWith => "ends with",
-        FilterOperator.IsEmpty => "is empty",
-        FilterOperator.IsNotEmpty => "is not empty",
-        FilterOperator.GreaterThan => ">",
-        FilterOperator.LessThan => "<",
-        FilterOperator.GreaterThanOrEqual => ">=",
-        FilterOperator.LessThanOrEqual => "<=",
-        FilterOperator.Between => "between",
-        FilterOperator.NotBetween => "not between",
-        FilterOperator.IsAnyOf => "is any of",
-        FilterOperator.IsNoneOf => "is none of",
-        FilterOperator.IsAllOf => "is all of",
-        FilterOperator.IsTrue => "is true",
-        FilterOperator.IsFalse => "is false",
-        _ => op.ToString()
+        if (Enum.TryParse<FilterOperator>(e.Value?.ToString(), out var op))
+        {
+            Condition.Operator = op;
+            // Clear secondary value when operator changes away from Between
+            if (op is not FilterOperator.Between and not FilterOperator.NotBetween)
+                Condition.SecondaryValue = null;
+            await NotifyChanged();
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleConditionChanged(FilterCondition condition)
+    {
+        await NotifyChanged();
+    }
+
+    private async Task NotifyChanged()
+    {
+        if (ConditionChanged.HasDelegate)
+            await ConditionChanged.InvokeAsync(Condition);
+    }
+
+    private static string GetOperatorLabel(FilterOperator op) => op switch
+    {
+        FilterOperator.Equals             => "is",
+        FilterOperator.NotEquals          => "is not",
+        FilterOperator.Contains           => "contains",
+        FilterOperator.NotContains        => "does not contain",
+        FilterOperator.StartsWith         => "starts with",
+        FilterOperator.EndsWith           => "ends with",
+        FilterOperator.IsEmpty            => "is empty",
+        FilterOperator.IsNotEmpty         => "is not empty",
+        FilterOperator.GreaterThan        => "is greater than",
+        FilterOperator.LessThan           => "is less than",
+        FilterOperator.GreaterThanOrEqual => "is ≥",
+        FilterOperator.LessThanOrEqual    => "is ≤",
+        FilterOperator.Between            => "is between",
+        FilterOperator.NotBetween         => "is not between",
+        FilterOperator.IsAnyOf            => "is any of",
+        FilterOperator.IsNoneOf           => "is none of",
+        FilterOperator.IsAllOf            => "is all of",
+        FilterOperator.IsTrue             => "is true",
+        FilterOperator.IsFalse            => "is false",
+        _                                 => op.ToString()
     };
-
-    private string GetValueText()
-    {
-        if (Condition.Value == null)
-            return "";
-
-        if (Condition.Operator == FilterOperator.Between && Condition.SecondaryValue != null)
-            return $"{Condition.Value} and {Condition.SecondaryValue}";
-
-        if (Condition.Value is List<string> list)
-            return string.Join(", ", list);
-
-        return Condition.Value.ToString() ?? "";
-    }
 }

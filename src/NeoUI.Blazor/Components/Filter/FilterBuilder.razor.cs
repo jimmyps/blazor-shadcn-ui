@@ -3,15 +3,20 @@ using Microsoft.AspNetCore.Components;
 namespace NeoUI.Blazor.Filter;
 
 /// <summary>
-/// A flexible and declarative filter builder component.
+/// A declarative, composable filter builder that renders as an inline canvas toolbar.
+/// Conditions are applied immediately — no Apply/Cancel steps needed.
 /// </summary>
 /// <typeparam name="TData">The data model type being filtered.</typeparam>
 public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext where TData : class
 {
-    private bool _isOpen;
     private readonly List<FilterFieldDefinition> _fields = new();
     private readonly List<FilterPresetDefinition> _presets = new();
-    private FilterGroup _workingFilters = new();
+
+    // Live condition list — the single source of truth for the filter state.
+    private List<FilterCondition> _conditions = new();
+
+    // Track the last Filters we emitted so we don't re-sync our own changes.
+    private HashSet<string> _lastEmittedIds = new();
 
     // ── Parameters ──────────────────────────────────────────────────────────
 
@@ -19,61 +24,57 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     [Parameter]
     public FilterGroup? Filters { get; set; }
 
-    /// <summary>Callback fired when the filter state changes (two-way binding).</summary>
+    /// <summary>Callback for two-way binding of the filter state.</summary>
     [Parameter]
     public EventCallback<FilterGroup> FiltersChanged { get; set; }
 
-    /// <summary>Callback fired immediately when Apply Filters is clicked.</summary>
+    /// <summary>Fires immediately whenever the active conditions change.</summary>
     [Parameter]
     public EventCallback<FilterGroup> OnFilterChange { get; set; }
 
-    /// <summary>Child content for FilterField declarations.</summary>
+    /// <summary>Child content slot for <see cref="FilterField"/> declarations.</summary>
     [Parameter]
     public RenderFragment? FilterFields { get; set; }
 
-    /// <summary>Child content for FilterPreset declarations.</summary>
+    /// <summary>Child content slot for <see cref="FilterPreset"/> declarations.</summary>
     [Parameter]
     public RenderFragment? FilterPresets { get; set; }
 
-    /// <summary>Label shown on the trigger button.</summary>
+    /// <summary>Label shown on the add-filter button when no conditions are active.</summary>
     [Parameter]
-    public string ButtonText { get; set; } = "Filters";
-
-    /// <summary>Visual variant of the trigger button.</summary>
-    [Parameter]
-    public ButtonVariant ButtonVariant { get; set; } = ButtonVariant.Outline;
-
-    /// <summary>Size of the trigger button.</summary>
-    [Parameter]
-    public ButtonSize ButtonSize { get; set; } = ButtonSize.Default;
-
-    /// <summary>When true, active filter chips are shown above the trigger button.</summary>
-    [Parameter]
-    public bool ShowChips { get; set; } = true;
+    public string ButtonText { get; set; } = "Filter";
 
     /// <summary>Additional CSS classes for the wrapper element.</summary>
     [Parameter]
     public string? Class { get; set; }
 
-    // ── Computed props ───────────────────────────────────────────────────────
+    // ── Computed ─────────────────────────────────────────────────────────────
 
-    private FilterGroup CurrentFilters => Filters ?? new FilterGroup();
-
-    private string WrapperCssClass => ClassNames.cn("space-y-2", Class);
-
-    private string ButtonCssClass => ClassNames.cn("gap-2");
+    private string WrapperCssClass => ClassNames.cn(Class);
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
     protected override void OnInitialized()
     {
-        _workingFilters = CloneFilterGroup(CurrentFilters);
+        if (Filters != null)
+        {
+            _conditions = Filters.Conditions.Select(CloneCondition).ToList();
+            _lastEmittedIds = _conditions.Select(c => c.Id).ToHashSet();
+        }
     }
 
     protected override void OnParametersSet()
     {
-        if (Filters != null)
-            _workingFilters = CloneFilterGroup(Filters);
+        if (Filters == null) return;
+
+        // Only re-sync from external Filters if their condition IDs differ from what we last emitted.
+        // This prevents us from overwriting local edits with our own notification.
+        var externalIds = Filters.Conditions.Select(c => c.Id).ToHashSet();
+        if (!externalIds.SetEquals(_lastEmittedIds))
+        {
+            _conditions = Filters.Conditions.Select(CloneCondition).ToList();
+            _lastEmittedIds = _conditions.Select(c => c.Id).ToHashSet();
+        }
     }
 
     // ── IFilterBuilderContext ────────────────────────────────────────────────
@@ -92,111 +93,73 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
             _presets.Add(preset);
     }
 
-    // ── Internal helpers ─────────────────────────────────────────────────────
+    // ── Actions ───────────────────────────────────────────────────────────────
 
-    private List<FilterCondition> GetActiveConditions()
-        => CurrentFilters.Conditions.Where(c => !string.IsNullOrEmpty(c.Field)).ToList();
-
-    private void AddCondition()
+    private void AddCondition(FilterFieldDefinition field)
     {
-        var newCondition = new FilterCondition();
-        if (_fields.Any())
+        var newCond = new FilterCondition
         {
-            var firstField = _fields.First();
-            newCondition.Field = firstField.Field;
-            newCondition.Operator = firstField.DefaultOperator ?? firstField.Operators.FirstOrDefault();
-        }
-        _workingFilters.Conditions.Add(newCondition);
-        StateHasChanged();
-    }
-
-    private void RemoveWorkingCondition(FilterCondition condition)
-    {
-        _workingFilters.Conditions.Remove(condition);
+            Field = field.Field,
+            Operator = field.DefaultOperator ?? field.Operators.FirstOrDefault()
+        };
+        _conditions.Add(newCond);
+        _ = NotifyFiltersChanged();
         StateHasChanged();
     }
 
     private void RemoveCondition(FilterCondition condition)
     {
-        var activeList = new List<FilterCondition>(CurrentFilters.Conditions);
-        activeList.RemoveAll(c => c.Id == condition.Id);
-        var updated = new FilterGroup
-        {
-            Id = CurrentFilters.Id,
-            Logic = CurrentFilters.Logic,
-            Conditions = activeList,
-            NestedGroups = CurrentFilters.NestedGroups
-        };
-        _ = NotifyFiltersChanged(updated);
+        _conditions.Remove(condition);
+        _ = NotifyFiltersChanged();
         StateHasChanged();
     }
 
     private async Task ClearAll()
     {
-        _workingFilters.Conditions.Clear();
-        var updated = new FilterGroup { Id = CurrentFilters.Id, Logic = CurrentFilters.Logic };
-        await NotifyFiltersChanged(updated);
-        StateHasChanged();
-    }
-
-    private async Task Apply()
-    {
-        var updated = new FilterGroup
-        {
-            Id = CurrentFilters.Id,
-            Logic = CurrentFilters.Logic,
-            Conditions = _workingFilters.Conditions.Select(CloneCondition).ToList(),
-            NestedGroups = CurrentFilters.NestedGroups
-        };
-        await NotifyFiltersChanged(updated);
-        _isOpen = false;
-        StateHasChanged();
-    }
-
-    private void Cancel()
-    {
-        _workingFilters = CloneFilterGroup(CurrentFilters);
-        _isOpen = false;
+        _conditions.Clear();
+        await NotifyFiltersChanged();
         StateHasChanged();
     }
 
     private void ApplyPreset(FilterPresetDefinition preset)
     {
-        _workingFilters.Conditions.Clear();
-        _workingFilters.Conditions.AddRange(preset.Filters.Conditions.Select(CloneCondition));
+        _conditions.Clear();
+        _conditions.AddRange(preset.Filters.Conditions.Select(CloneCondition));
+        _ = NotifyFiltersChanged();
         StateHasChanged();
     }
 
-    private Task HandleConditionChanged(FilterCondition condition)
+    private Task HandleConditionChanged(FilterCondition _condition)
     {
-        StateHasChanged();
+        _ = NotifyFiltersChanged();
         return Task.CompletedTask;
     }
 
-    private async Task NotifyFiltersChanged(FilterGroup updated)
+    private async Task NotifyFiltersChanged()
     {
+        var updated = new FilterGroup
+        {
+            Id = Filters?.Id ?? Guid.NewGuid().ToString(),
+            Logic = Filters?.Logic ?? LogicalOperator.And,
+            Conditions = _conditions.Select(CloneCondition).ToList(),
+            NestedGroups = Filters?.NestedGroups ?? new()
+        };
+        _lastEmittedIds = updated.Conditions.Select(c => c.Id).ToHashSet();
+
         if (FiltersChanged.HasDelegate)
             await FiltersChanged.InvokeAsync(updated);
         if (OnFilterChange.HasDelegate)
             await OnFilterChange.InvokeAsync(updated);
     }
 
-    // ── Cloning ──────────────────────────────────────────────────────────────
+    // ── Cloning ───────────────────────────────────────────────────────────────
 
-    private static FilterGroup CloneFilterGroup(FilterGroup group) => new()
+    private static FilterCondition CloneCondition(FilterCondition c) => new()
     {
-        Id = group.Id,
-        Logic = group.Logic,
-        Conditions = group.Conditions.Select(CloneCondition).ToList(),
-        NestedGroups = group.NestedGroups.Select(CloneFilterGroup).ToList()
-    };
-
-    private static FilterCondition CloneCondition(FilterCondition condition) => new()
-    {
-        Id = condition.Id,
-        Field = condition.Field,
-        Operator = condition.Operator,
-        Value = condition.Value,
-        SecondaryValue = condition.SecondaryValue
+        Id = c.Id,
+        Field = c.Field,
+        Operator = c.Operator,
+        Value = c.Value,
+        SecondaryValue = c.SecondaryValue
     };
 }
