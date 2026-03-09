@@ -531,7 +531,8 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             // ✅ Suppress header menus if configured (for controlled filtering)
             suppressHeaderMenuButton: config.suppressHeaderMenus || false,
             // For BlazorServerSide: suppress AG Grid's own in-memory sort/filter processing
-            // Data arrives pre-sorted/filtered from the server
+            // Data arrives pre-sorted/filtered from the server, so client-side sorting should be a no-op.
+            // comparator: () => 0 tells AG Grid "all rows are equal" — effectively disabling in-memory sort.
             ...(config.blazorServerSide ? {
                 comparator: () => 0,
                 filterValueGetter: undefined

@@ -876,15 +876,22 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Maps a DataGridState to a DataGridDataRequest for BlazorServerSide mode.
     /// </summary>
-    private DataGridDataRequest<TItem> MapStateToDataRequest(DataGridState state) => new()
+    private DataGridDataRequest<TItem> MapStateToDataRequest(DataGridState state)
     {
-        StartIndex        = (state.PageNumber - 1) * state.PageSize,
-        Count             = state.PageSize,
-        PageNumber        = state.PageNumber,
-        PageSize          = state.PageSize,
-        SortDescriptors   = state.SortDescriptors   ?? [],
-        FilterDescriptors = state.FilterDescriptors ?? []
-    };
+        var pageNumber = Math.Max(1, state.PageNumber);
+        var pageSize   = Math.Max(1, state.PageSize);
+        // Guard against integer overflow when computing StartIndex
+        var startIndex = checked((pageNumber - 1) * pageSize);
+        return new()
+        {
+            StartIndex        = startIndex,
+            Count             = pageSize,
+            PageNumber        = pageNumber,
+            PageSize          = pageSize,
+            SortDescriptors   = state.SortDescriptors   ?? [],
+            FilterDescriptors = state.FilterDescriptors ?? []
+        };
+    }
 
     /// <summary>
     /// Override in a subclass to provide server-side data without using OnServerDataRequest or ServerDataProvider.
