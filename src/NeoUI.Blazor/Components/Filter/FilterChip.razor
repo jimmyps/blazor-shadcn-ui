@@ -9,7 +9,7 @@
 
 <div class="@ChipCssClass">
     @* ── Field label segment ── *@
-    <span class="flex items-center gap-1.5 pl-2.5 pr-2 bg-muted/40 border-r border-input text-xs font-medium text-muted-foreground shrink-0 self-stretch items-center">
+    <span class="flex items-center gap-1.5 pl-2.5 pr-2 bg-muted/40 border-r border-input text-sm font-medium text-muted-foreground shrink-0 self-stretch">
         @if (!string.IsNullOrEmpty(FieldDefinition?.Icon))
         {
             <LucideIcon Name="@FieldDefinition.Icon" Size="12" Class="opacity-70 shrink-0" />
@@ -19,15 +19,15 @@
 
     @* ── Operator — Select component, auto-width, no border ── *@
     <span class="border-r border-input shrink-0 self-stretch flex items-center">
-        <Select @bind-Value="@OperatorValue" TValue="string">
-            <SelectTrigger Class="@OperatorSelectClass">
+        <Select @bind-Value="@OperatorValue" TValue="string" Class="h-full">
+            <SelectTrigger Borderless="true" Class="@OperatorSelectClass">
                 <SelectValue />
             </SelectTrigger>
-            <SelectContent TValue="string" Class="min-w-[8rem]">
+            <SelectContent TValue="string" Class="w-auto min-w-max">
                 @foreach (var op in _availableOperators)
                 {
                     var opItem = op;
-                    <SelectItem Value="@opItem.ToString()" TValue="string">@GetOperatorLabel(opItem)</SelectItem>
+                    <SelectItem Value="@opItem.ToString()" TValue="string" Text="@GetOperatorLabel(opItem)" />
                 }
             </SelectContent>
         </Select>
@@ -36,7 +36,7 @@
     @* ── Value input segment ── *@
     @if (!IsValueless)
     {
-        <span class="flex items-center flex-none min-w-0">
+        <span class="flex items-stretch flex-none min-w-0 border-r border-input">
             <FilterValue Condition="@Condition"
                          FieldDefinition="@FieldDefinition"
                          ConditionChanged="@HandleConditionChanged"
@@ -46,10 +46,10 @@
 
     @* ── Remove button ── *@
     <button type="button"
-            class="flex items-center justify-center px-1.5 border-l border-input text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0 self-stretch"
+            class="flex items-center justify-center px-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0 self-stretch"
             @onclick="OnRemove"
             aria-label="Remove filter">
-        <X Size="12" />
+        <LucideIcon Name="x" Size="12" />
     </button>
 </div>
 
@@ -58,20 +58,27 @@
     [Parameter] public FilterFieldDefinition? FieldDefinition { get; set; }
     [Parameter] public EventCallback OnRemove { get; set; }
     [Parameter] public EventCallback<FilterCondition> ConditionChanged { get; set; }
+    [Parameter] public FilterChipSize Size { get; set; } = FilterChipSize.Small;
     [Parameter] public string? Class { get; set; }
 
     private List<FilterOperator> _availableOperators = new();
 
     private string ChipCssClass => ClassNames.cn(
         "inline-flex items-stretch text-sm border border-input rounded-md bg-background",
+        Size switch
+        {
+            FilterChipSize.Small  => "h-7",
+            FilterChipSize.Medium => "h-8",
+            FilterChipSize.Large  => "h-9",
+            _                     => "h-7",
+        },
         Class
     );
 
-    /// <summary>CSS for the operator Select trigger: borderless, auto-width, hover background only.</summary>
+    /// <summary>CSS for the operator Select trigger: sizing/layout and hover override. Ring suppression handled by Borderless.</summary>
     private const string OperatorSelectClass =
-        "h-full w-auto min-w-0 border-0 shadow-none rounded-none px-2 text-xs text-muted-foreground " +
-        "hover:bg-muted/50 hover:text-foreground focus-visible:ring-0 " +
-        "data-[state=open]:ring-0 [&[aria-expanded=true]]:ring-0 [&[aria-expanded=true]]:hover:bg-muted/50";
+        "h-full w-auto min-w-0 rounded-none px-2 text-sm text-muted-foreground " +
+        "hover:bg-muted/50 hover:text-foreground [&[aria-expanded=true]]:hover:bg-muted/50";
 
     private bool IsValueless => Condition.Operator is
         FilterOperator.IsEmpty or FilterOperator.IsNotEmpty or

@@ -26,6 +26,36 @@ public partial class FilterBuilderDemo
         }
         """;
 
+    private static readonly string _mediumChipCode = """
+        <FilterBuilder TData="Product"
+                       @bind-Filters="activeFilters"
+                       ChipSize="FilterChipSize.Medium"
+                       OnFilterChange="HandleFilterChange">
+            <FilterFields>
+                <FilterField Field="Name"   Label="Name"   Icon="tag"         Type="FilterFieldType.Text" />
+                <FilterField Field="Price"  Label="Price"  Icon="dollar-sign" Type="FilterFieldType.Number"
+                             EditorType="FilterEditorType.Currency" Min="0" />
+                <FilterField Field="Status" Label="Status" Icon="activity"    Type="FilterFieldType.Select"
+                             Options="@statusOptions" />
+            </FilterFields>
+        </FilterBuilder>
+        """;
+
+    private static readonly string _largeChipCode = """
+        <FilterBuilder TData="Product"
+                       @bind-Filters="activeFilters"
+                       ChipSize="FilterChipSize.Large"
+                       OnFilterChange="HandleFilterChange">
+            <FilterFields>
+                <FilterField Field="Name"   Label="Name"   Icon="tag"         Type="FilterFieldType.Text" />
+                <FilterField Field="Price"  Label="Price"  Icon="dollar-sign" Type="FilterFieldType.Number"
+                             EditorType="FilterEditorType.Currency" Min="0" />
+                <FilterField Field="Status" Label="Status" Icon="activity"    Type="FilterFieldType.Select"
+                             Options="@statusOptions" />
+            </FilterFields>
+        </FilterBuilder>
+        """;
+
     private static readonly IReadOnlyList<DemoPropRow> _filterBuilderProps =
     [
         new("TData",          "type parameter",                    null,             "The data model type being filtered."),

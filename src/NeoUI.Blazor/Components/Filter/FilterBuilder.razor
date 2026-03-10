@@ -67,6 +67,31 @@
                     </DropdownMenuContent>
                 </DropdownMenu>
             }
+
+            @* Presets — tab variant (inline, same row as filter button) *@
+            @if (PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any())
+            {
+                <div class="@TabsContainerClass">
+                    <button type="button"
+                            class="@GetTabClass(null)"
+                            @onclick="@ClearAll">
+                        All
+                    </button>
+                    @foreach (var preset in _presets)
+                    {
+                        var p = preset;
+                        <button type="button"
+                                class="@GetTabClass(p.Name)"
+                                @onclick="@(() => ApplyPreset(p))">
+                            @if (!string.IsNullOrEmpty(p.Icon))
+                            {
+                                <LucideIcon Name="@p.Icon" Size="12" Class="opacity-70 shrink-0" />
+                            }
+                            @p.Name
+                        </button>
+                    }
+                </div>
+            }
         </div>
 
         @* Clear button — always at far right, only visible when conditions are active *@
@@ -82,39 +107,15 @@
         }
     </div>
 
-    @* ── Presets — tab variant (shown below top row) ── *@
-    @if (PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any())
-    {
-        <div class="flex items-center gap-0 mt-2 border-b">
-            <button type="button"
-                    class="@GetTabClass(null)"
-                    @onclick="@ClearAll">
-                All
-            </button>
-            @foreach (var preset in _presets)
-            {
-                var p = preset;
-                <button type="button"
-                        class="@GetTabClass(p.Name)"
-                        @onclick="@(() => ApplyPreset(p))">
-                    @if (!string.IsNullOrEmpty(p.Icon))
-                    {
-                        <LucideIcon Name="@p.Icon" Size="12" Class="mr-1 opacity-70 shrink-0" />
-                    }
-                    @p.Name
-                </button>
-            }
-        </div>
-    }
-
     @* ── Active filter chips — one per row ── *@
     @foreach (var condition in _conditions.ToList())
     {
         var cond = condition;
         var fieldDef = _fields.FirstOrDefault(f => f.Field == cond.Field);
-        <div class="mt-2">
+        <div @key="cond.Id" class="mt-2">
             <FilterChip Condition="@cond"
                         FieldDefinition="@fieldDef"
+                        Size="@ChipSize"
                         ConditionChanged="@HandleConditionChanged"
                         OnRemove="@(() => RemoveCondition(cond))" />
         </div>

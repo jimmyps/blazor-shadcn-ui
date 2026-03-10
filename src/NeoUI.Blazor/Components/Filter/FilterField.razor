@@ -62,10 +62,11 @@
 
     /// <summary>
     /// Custom value input control. When provided (and EditorType is Custom), renders instead of the default widget.
-    /// The <c>FilterCondition</c> context gives access to <c>condition.Value</c> for two-way binding.
+    /// Use <c>Context="ctx"</c> — set <c>ctx.Condition.Value</c> then call <c>await ctx.NotifyChanged()</c>
+    /// to propagate the change back to FilterBuilder.
     /// </summary>
     [Parameter]
-    public RenderFragment<FilterCondition>? ChildContent { get; set; }
+    public RenderFragment<FilterCustomContext>? ChildContent { get; set; }
 
     protected override void OnInitialized()
     {

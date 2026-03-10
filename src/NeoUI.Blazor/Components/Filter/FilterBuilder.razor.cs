@@ -44,6 +44,9 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// <summary>Additional CSS classes for the wrapper element.</summary>
     [Parameter] public string? Class { get; set; }
 
+    /// <summary>Size applied to every <see cref="FilterChip"/> rendered by this builder.</summary>
+    [Parameter] public FilterChipSize ChipSize { get; set; } = FilterChipSize.Small;
+
     // ── Computed ─────────────────────────────────────────────────────────────
 
     private string WrapperCssClass => ClassNames.cn(Class);
@@ -68,6 +71,15 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
             _conditions = Filters.Conditions.Select(CloneCondition).ToList();
             _lastEmittedIds = _conditions.Select(c => c.Id).ToHashSet();
         }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // Child FilterField/FilterPreset components call RegisterField/RegisterPreset during their
+        // OnInitialized, which runs after the parent's first BuildRenderTree pass. A second render
+        // is required so the field picker, preset tabs, and dropdown reflect the registered items.
+        if (firstRender)
+            StateHasChanged();
     }
 
     // ── IFilterBuilderContext ────────────────────────────────────────────────
@@ -147,18 +159,37 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
             await OnFilterChange.InvokeAsync(updated);
     }
 
-    // ── Tab helper ────────────────────────────────────────────────────────────
+    // ── Tab helpers ────────────────────────────────────────────────────────────
+
+    /// <summary>CSS classes for the preset tab bar container, sized to match <see cref="ChipSize"/>.</summary>
+    private string TabsContainerClass => ClassNames.cn(
+        "inline-flex items-center rounded-md bg-muted p-0.5",
+        ChipSize switch
+        {
+            FilterChipSize.Small  => "h-8",
+            FilterChipSize.Medium => "h-9",
+            FilterChipSize.Large  => "h-10",
+            _                     => "h-8",
+        });
 
     /// <summary>Returns CSS classes for a preset tab button. Pass null for the "All" tab.</summary>
     private string GetTabClass(string? presetName)
     {
         var isActive = presetName == _activePresetName;
+        var itemHeight = ChipSize switch
+        {
+            FilterChipSize.Small  => "h-7",
+            FilterChipSize.Medium => "h-8",
+            FilterChipSize.Large  => "h-9",
+            _                     => "h-7",
+        };
         return ClassNames.cn(
-            "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
-            "-mb-px border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-t-sm",
+            "inline-flex items-center gap-1 whitespace-nowrap rounded-sm px-2.5 text-sm font-medium transition-all",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            itemHeight,
             isActive
-                ? "border-primary text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
         );
     }
 

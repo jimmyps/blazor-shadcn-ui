@@ -15,10 +15,10 @@
                 <FilterFields>
                     <FilterField Field="Name" Label="Name" Type="FilterFieldType.Text" />
                     <FilterField Field="Rating" Label="Rating" Icon="star" Type="FilterFieldType.Custom">
-                        <ChildContent Context="condition">
+                        <ChildContent Context="ctx">
                             <span class="px-2 flex items-center self-stretch">
-                                <Rating Value="@GetRatingValue(condition)"
-                                        ValueChanged="@(v => SetRating(condition, (int)v))"
+                                <Rating Value="@GetRatingValue(ctx.Condition)"
+                                        ValueChanged="@(v => SetRating(ctx, (int)v))"
                                         MaxRating="5"
                                         AllowClear="true"
                                         Size="RatingSize.Small" />
@@ -50,17 +50,18 @@
     private static double GetRatingValue(FilterCondition condition)
         => condition.Value is double d ? d : (double.TryParse(condition.Value?.ToString(), out var p) ? p : 0);
 
-    private void SetRating(FilterCondition condition, int star)
+    private void SetRating(FilterCustomContext ctx, int star)
     {
-        condition.Value = (double)star;
+        ctx.Condition.Value = (double)star;
+        _ = ctx.NotifyChanged();
     }
 
     private static readonly string _customCode = """
         <FilterField Field="Rating" Label="Rating" Icon="star" Type="FilterFieldType.Custom">
-            <ChildContent Context="condition">
+            <ChildContent Context="ctx">
                 <span class="px-2 flex items-center self-stretch">
-                    <Rating Value="@GetRatingValue(condition)"
-                            ValueChanged="@(v => SetRating(condition, (int)v))"
+                    <Rating Value="@GetRatingValue(ctx.Condition)"
+                            ValueChanged="@(v => SetRating(ctx, (int)v))"
                             MaxRating="5"
                             AllowClear="true"
                             Size="RatingSize.Small" />
@@ -73,9 +74,11 @@
         <FilterField Field="MyField"
                      Label="My Custom Field"
                      Type="FilterFieldType.Custom">
-            <ChildContent Context="condition">
-                @* 'condition' is a FilterCondition — set condition.Value to the selected value *@
-                <MyCustomInput @bind-Value="condition.Value" />
+            <ChildContent Context="ctx">
+                @* 'ctx.Condition' is the live FilterCondition.
+                   Set ctx.Condition.Value, then call ctx.NotifyChanged() to propagate. *@
+                <MyCustomInput Value="@ctx.Condition.Value"
+                               ValueChanged="@(v => { ctx.Condition.Value = v; _ = ctx.NotifyChanged(); })" />
             </ChildContent>
         </FilterField>
         """;

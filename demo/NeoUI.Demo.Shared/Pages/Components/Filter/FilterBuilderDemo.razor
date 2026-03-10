@@ -10,7 +10,7 @@
         Description="A declarative inline filter canvas. Define fields with FilterField, add optional presets with FilterPreset, and let the component render an interactive chip-based toolbar — no Apply button needed." />
 
     @* Quick demo *@
-    <DemoSection Title="Quick Start" Description="Click 'Filter' to open the field picker, then adjust operator and value inline in each chip.">
+    <DemoSection Title="Quick Start" Description="Click 'Filter' to open the field picker, then adjust operator and value inline in each chip. Use ChipSize to control chip height — Small is the default (28 px).">
         <DemoBlock Code="@_quickStartCode">
             <FilterBuilder TData="DemoItem"
                            @bind-Filters="_demoFilters"
@@ -21,7 +21,7 @@
                                  Options="@_statusOptions" />
                     <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"
                                  EditorType="FilterEditorType.Currency" Min="0" />
-                    <FilterField Field="IsActive" Label="Active"   Icon="check-circle" Type="FilterFieldType.Boolean" />
+                    <FilterField Field="IsActive" Label="Active"   Icon="circle-check" Type="FilterFieldType.Boolean" />
                 </FilterFields>
                 <FilterPresets>
                     <FilterPreset Name="Active High-Value" Icon="trending-up" Filters="@_highValuePreset" />
@@ -39,6 +39,66 @@
                 </div>
             }
         </DemoBlock>
+
+        <div class="mt-6">
+            <p class="text-sm font-medium mb-3">Medium <span class="text-muted-foreground font-normal">(32 px)</span></p>
+            <DemoBlock Code="@_mediumChipCode">
+                <FilterBuilder TData="DemoItem"
+                               @bind-Filters="_mediumFilters"
+                               ChipSize="FilterChipSize.Medium"
+                               OnFilterChange="HandleMediumFilterChange">
+                    <FilterFields>
+                        <FilterField Field="Name"     Label="Name"     Icon="tag"          Type="FilterFieldType.Text" />
+                        <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"
+                                     Options="@_statusOptions" />
+                        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="IsActive" Label="Active"   Icon="circle-check" Type="FilterFieldType.Boolean" />
+                    </FilterFields>
+                </FilterBuilder>
+
+                @if (_mediumFilters.Conditions.Any())
+                {
+                    <div class="mt-3 p-3 rounded-md bg-muted/40 text-xs text-muted-foreground font-mono">
+                        @_mediumFilters.Conditions.Count condition(s) active
+                        @foreach (var c in _mediumFilters.Conditions)
+                        {
+                            <div class="mt-1">@c.Field @c.Operator @c.Value</div>
+                        }
+                    </div>
+                }
+            </DemoBlock>
+        </div>
+
+        <div class="mt-6">
+            <p class="text-sm font-medium mb-3">Large <span class="text-muted-foreground font-normal">(36 px)</span></p>
+            <DemoBlock Code="@_largeChipCode">
+                <FilterBuilder TData="DemoItem"
+                               @bind-Filters="_largeFilters"
+                               ChipSize="FilterChipSize.Large"
+                               OnFilterChange="HandleLargeFilterChange">
+                    <FilterFields>
+                        <FilterField Field="Name"     Label="Name"     Icon="tag"          Type="FilterFieldType.Text" />
+                        <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"
+                                     Options="@_statusOptions" />
+                        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="IsActive" Label="Active"   Icon="circle-check" Type="FilterFieldType.Boolean" />
+                    </FilterFields>
+                </FilterBuilder>
+
+                @if (_largeFilters.Conditions.Any())
+                {
+                    <div class="mt-3 p-3 rounded-md bg-muted/40 text-xs text-muted-foreground font-mono">
+                        @_largeFilters.Conditions.Count condition(s) active
+                        @foreach (var c in _largeFilters.Conditions)
+                        {
+                            <div class="mt-1">@c.Field @c.Operator @c.Value</div>
+                        }
+                    </div>
+                }
+            </DemoBlock>
+        </div>
     </DemoSection>
 
     @* Features *@
@@ -91,7 +151,9 @@
 </div>
 
 @code {
-    private FilterGroup _demoFilters = new();
+    private FilterGroup _demoFilters   = new();
+    private FilterGroup _mediumFilters = new();
+    private FilterGroup _largeFilters  = new();
 
     private readonly List<SelectOption> _statusOptions =
     [
@@ -109,7 +171,9 @@
         ]
     };
 
-    private void HandleDemoFilterChange(FilterGroup filters) { }
+    private void HandleDemoFilterChange(FilterGroup filters)   { }
+    private void HandleMediumFilterChange(FilterGroup filters) { }
+    private void HandleLargeFilterChange(FilterGroup filters)  { }
 
     private record Feature(string Title, string Description);
 

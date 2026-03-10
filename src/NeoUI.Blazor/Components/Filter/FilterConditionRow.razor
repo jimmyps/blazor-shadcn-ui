@@ -5,14 +5,14 @@
     @* Field Selector *@
     <div class="min-w-[140px]">
         <Select @bind-Value="@Condition.Field" TValue="string" Disabled="@(!AvailableFields.Any())">
-            <SelectTrigger Class="h-9">
+            <SelectTrigger Borderless="true" Class="h-8">
                 <SelectValue Placeholder="Select field" />
             </SelectTrigger>
-            <SelectContent TValue="string">
+            <SelectContent TValue="string" Class="w-auto min-w-max">
                 @foreach (var field in AvailableFields)
                 {
                     var f = field;
-                    <SelectItem Value="@f.Field" TValue="string">@f.Label</SelectItem>
+                    <SelectItem Value="@f.Field" TValue="string" Text="@f.Label" />
                 }
             </SelectContent>
         </Select>
@@ -21,14 +21,14 @@
     @* Operator Selector *@
     <div class="min-w-[140px]">
         <Select @bind-Value="@OperatorValue" TValue="string" Disabled="@(!GetAvailableOperators().Any())">
-            <SelectTrigger Class="h-9">
+            <SelectTrigger Borderless="true" Class="h-8">
                 <SelectValue Placeholder="Select operator" />
             </SelectTrigger>
-            <SelectContent TValue="string">
+            <SelectContent TValue="string" Class="w-auto min-w-max">
                 @foreach (var op in GetAvailableOperators())
                 {
                     var o = op;
-                    <SelectItem Value="@o.ToString()" TValue="string">@GetOperatorLabel(o)</SelectItem>
+                    <SelectItem Value="@o.ToString()" TValue="string" Text="@GetOperatorLabel(o)" />
                 }
             </SelectContent>
         </Select>

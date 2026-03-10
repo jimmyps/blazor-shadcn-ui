@@ -3,7 +3,7 @@
 @* Custom control *@
 @if (EffectiveEditorType == FilterEditorType.Custom && FieldDefinition?.CustomControl != null)
 {
-    @FieldDefinition.CustomControl(Condition)
+    @FieldDefinition.CustomControl(new FilterCustomContext(Condition, NotifyConditionChanged))
 }
 else if (!IsValueNotNeeded())
 {
@@ -137,14 +137,14 @@ else if (!IsValueNotNeeded())
         @if (FieldDefinition?.Options != null && FieldDefinition.Options.Any())
         {
             <Select @bind-Value="@SelectValue" TValue="string">
-                <SelectTrigger Class="@SelectCompact">
+                <SelectTrigger Borderless="true" Class="@SelectCompact">
                     <SelectValue Placeholder="@(FieldDefinition.Placeholder ?? "Select...")" />
                 </SelectTrigger>
-                <SelectContent TValue="string">
+                <SelectContent TValue="string" Class="w-auto min-w-max">
                     @foreach (var option in FieldDefinition.Options)
                     {
                         var opt = option;
-                        <SelectItem Value="@opt.Value" TValue="string">@opt.Label</SelectItem>
+                        <SelectItem Value="@opt.Value" TValue="string" Text="@opt.Label" />
                     }
                 </SelectContent>
             </Select>

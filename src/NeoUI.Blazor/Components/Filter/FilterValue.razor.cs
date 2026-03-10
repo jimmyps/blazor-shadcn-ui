@@ -50,20 +50,20 @@ public partial class FilterValue : ComponentBase
 
     // ── Compact CSS helpers ───────────────────────────────────────────────────
 
-    /// <summary>CSS for input controls inside a chip: keep border, auto-width, compact height.</summary>
+    /// <summary>CSS for input controls: no border by default or on hover, border visible only on focus.</summary>
     private string InputCompact => Compact
-        ? "rounded-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none h-full py-0 text-sm px-2 w-auto min-w-[60px] max-w-[160px]"
-        : "";
+        ? "rounded-none bg-transparent shadow-none h-full py-0 text-sm px-2 w-auto min-w-[60px] max-w-[160px] border-transparent"
+        : "border-transparent shadow-none";
 
-    /// <summary>CSS for Select trigger inside a chip: no border, auto-width, hover background only.</summary>
+    /// <summary>CSS for Select trigger: sizing/layout overrides. Border and ring suppression is handled by Borderless="true" on the trigger.</summary>
     private string SelectCompact => Compact
-        ? "h-full w-auto min-w-0 border-0 shadow-none rounded-none px-2 text-sm hover:bg-muted/50 focus-visible:ring-0 data-[state=open]:ring-0 [&[aria-expanded=true]]:ring-0 [&[aria-expanded=true]]:hover:bg-muted/50"
-        : "";
+        ? "h-full w-auto min-w-0 rounded-none px-2 text-sm hover:bg-muted/50 [&[aria-expanded=true]]:hover:bg-muted/50"
+        : "h-8";
 
-    /// <summary>CSS for MultiSelect trigger inside a chip: no border, auto-width, hover background only.</summary>
+    /// <summary>CSS for MultiSelect trigger: no border or ring at any time, background changes only.</summary>
     private string MultiSelectCompact => Compact
-        ? "border-0 shadow-none rounded-none hover:bg-muted/50 focus-within:ring-0 min-w-[80px] max-w-[200px]"
-        : "";
+        ? "h-full border-0 shadow-none rounded-none hover:bg-muted/50 focus-within:ring-0 min-w-[80px] max-w-[200px] min-h-0"
+        : "border-0 shadow-none focus:ring-0 focus-visible:ring-0 focus-within:ring-0 h-8 min-h-0";
 
     // ── String properties ────────────────────────────────────────────────────
 

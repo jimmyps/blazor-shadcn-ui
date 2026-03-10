@@ -57,6 +57,14 @@ public static class FilterExtensions
         var propType = prop.PropertyType;
         var underlyingType = Nullable.GetUnderlyingType(propType) ?? propType;
 
+        // MultiSelect: property is a string collection and value is a list of selected strings
+        if (condition.Value is List<string> multiValues && multiValues.Count > 0
+            && underlyingType != typeof(string)
+            && typeof(IEnumerable<string>).IsAssignableFrom(underlyingType))
+        {
+            return BuildMultiSelectExpression(member, multiValues);
+        }
+
         Expression? result = condition.Operator switch
         {
             FilterOperator.IsEmpty => IsNullOrEmpty(member, propType),
@@ -66,6 +74,25 @@ public static class FilterExtensions
             _ => BuildComparisonExpression(condition, member, propType, underlyingType)
         };
         return result;
+    }
+
+    /// <summary>
+    /// Builds: Enumerable.Any(member, s => selectedValues.Contains(s))
+    /// i.e. the collection property contains at least one of the selected values.
+    /// </summary>
+    private static Expression BuildMultiSelectExpression(MemberExpression member, List<string> selectedValues)
+    {
+        var anyMethod = typeof(Enumerable)
+            .GetMethods()
+            .First(m => m.Name == "Any" && m.GetParameters().Length == 2)
+            .MakeGenericMethod(typeof(string));
+
+        var sParam = Expression.Parameter(typeof(string), "s");
+        var selectedConst = Expression.Constant(selectedValues, typeof(List<string>));
+        var containsCall = Expression.Call(selectedConst, typeof(List<string>).GetMethod("Contains")!, sParam);
+        var predicate = Expression.Lambda<Func<string, bool>>(containsCall, sParam);
+
+        return Expression.Call(anyMethod, member, predicate);
     }
 
     private static Expression IsNullOrEmpty(Expression member, Type propType)
