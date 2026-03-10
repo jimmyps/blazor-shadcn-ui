@@ -65,6 +65,11 @@ public partial class FilterValue : ComponentBase
         ? "h-full border-0 shadow-none rounded-none hover:bg-muted/50 focus-within:ring-0 min-w-[80px] max-w-[200px] min-h-0"
         : "border-0 shadow-none focus:ring-0 focus-visible:ring-0 focus-within:ring-0 h-8 min-h-0";
 
+    /// <summary>CSS for Combobox trigger: borderless and flush in compact mode.</summary>
+    private string ComboboxCompact => Compact
+        ? "h-full !border-transparent !bg-transparent !shadow-none rounded-none px-2 min-w-[80px] max-w-[200px]"
+        : "h-8";
+
     // ── String properties ────────────────────────────────────────────────────
 
     private string? TextValue
@@ -151,6 +156,14 @@ public partial class FilterValue : ComponentBase
     // ── Select (single) ──────────────────────────────────────────────────────
 
     private string? SelectValue
+    {
+        get => Condition.Value?.ToString();
+        set { Condition.Value = value; _ = NotifyConditionChanged(); }
+    }
+
+    // ── Combobox (searchable single-select) ──────────────────────────────────
+
+    private string? ComboboxValue
     {
         get => Condition.Value?.ToString();
         set { Condition.Value = value; _ = NotifyConditionChanged(); }

@@ -51,6 +51,13 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 
     private string WrapperCssClass => ClassNames.cn(Class);
 
+    /// <summary>
+    /// Show the "Filter" text label only when: no conditions are active AND the tabs variant
+    /// is not in use. When tabs are showing the text is always hidden so the button stays
+    /// icon-only and the toolbar width never shifts as the user switches presets.
+    /// </summary>
+    private bool ShowButtonText => !_conditions.Any() && !(PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any());
+
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
     protected override void OnInitialized()
@@ -107,6 +114,26 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
             Operator = field.DefaultOperator ?? field.Operators.FirstOrDefault()
         };
         _conditions.Add(newCond);
+        _ = NotifyFiltersChanged();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Adds a condition with a pre-selected option value — called when the user clicks an
+    /// option directly from the submenu shortcut in the field picker.
+    /// </summary>
+    private void AddConditionWithValue(FilterFieldDefinition field, string optionValue)
+    {
+        _activePresetName = null;
+        object value = field.Type == FilterFieldType.MultiSelect
+            ? new List<string> { optionValue }
+            : optionValue;
+        _conditions.Add(new FilterCondition
+        {
+            Field = field.Field,
+            Operator = field.DefaultOperator ?? field.Operators.FirstOrDefault(),
+            Value = value
+        });
         _ = NotifyFiltersChanged();
         StateHasChanged();
     }

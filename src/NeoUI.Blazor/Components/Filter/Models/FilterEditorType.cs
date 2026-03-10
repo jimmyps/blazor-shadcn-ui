@@ -33,6 +33,9 @@ public enum FilterEditorType
     /// <summary>Single-selection <c>&lt;select&gt;</c> element. Options come from <see cref="FilterFieldDefinition.Options"/>.</summary>
     Select,
 
+    /// <summary>Searchable <see cref="NeoUI.Blazor.Combobox{TItem}"/> for single-value selection with type-to-search. Options come from <see cref="FilterFieldDefinition.Options"/>.</summary>
+    Combobox,
+
     /// <summary><see cref="NeoUI.Blazor.MultiSelect{TItem}"/> for multiple-value selection. Options come from <see cref="FilterFieldDefinition.Options"/>.</summary>
     MultiSelect,
 

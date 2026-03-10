@@ -20,7 +20,7 @@
                             Class="h-8 gap-1.5 px-2.5 text-muted-foreground hover:text-foreground"
                             Disabled="@(!_fields.Any())">
                         <LucideIcon Name="list-filter" Size="14" />
-                        @if (!_conditions.Any())
+                        @if (ShowButtonText)
                         {
                             <span class="text-sm">@ButtonText</span>
                         }
@@ -30,13 +30,42 @@
                     @foreach (var field in _fields)
                     {
                         var f = field;
-                        <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddCondition(f))">
-                            @if (!string.IsNullOrEmpty(f.Icon))
-                            {
-                                <LucideIcon Name="@f.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
-                            }
-                            <span>@f.Label</span>
-                        </DropdownMenuItem>
+                        @if (f.Options != null && f.Options.Any())
+                        {
+                            @* Fields with options → submenu showing each option as a one-click shortcut *@
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger>
+                                    @if (!string.IsNullOrEmpty(f.Icon))
+                                    {
+                                        <LucideIcon Name="@f.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
+                                    }
+                                    <span>@f.Label</span>
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuSubContent>
+                                    @foreach (var option in f.Options)
+                                    {
+                                        var opt = option;
+                                        <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddConditionWithValue(f, opt.Value))">
+                                            @opt.Label
+                                        </DropdownMenuItem>
+                                    }
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddCondition(f))">
+                                        <span class="text-xs text-muted-foreground">Custom...</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                            </DropdownMenuSub>
+                        }
+                        else
+                        {
+                            <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddCondition(f))">
+                                @if (!string.IsNullOrEmpty(f.Icon))
+                                {
+                                    <LucideIcon Name="@f.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
+                                }
+                                <span>@f.Label</span>
+                            </DropdownMenuItem>
+                        }
                     }
                 </DropdownMenuContent>
             </DropdownMenu>

@@ -154,6 +154,26 @@ else if (!IsValueNotNeeded())
             <span class="text-xs text-muted-foreground px-2">No options</span>
         }
     }
+    @* ── Combobox — searchable single-select ── *@
+    else if (EffectiveEditorType == FilterEditorType.Combobox)
+    {
+        @if (FieldDefinition?.Options != null && FieldDefinition.Options.Any())
+        {
+            <Combobox TItem="SelectOption"
+                      Items="@(FieldDefinition.Options)"
+                      @bind-Value="@ComboboxValue"
+                      ValueSelector="@(o => o.Value)"
+                      DisplaySelector="@(o => o.Label)"
+                      Placeholder="@(FieldDefinition.Placeholder ?? "Select...")"
+                      MatchTriggerWidth="false"
+                      PopoverWidth="w-[200px]"
+                      Class="@ComboboxCompact" />
+        }
+        else
+        {
+            <span class="text-xs text-muted-foreground px-2">No options</span>
+        }
+    }
     @* ── MultiSelect — borderless trigger in compact ── *@
     else if (EffectiveEditorType == FilterEditorType.MultiSelect)
     {
