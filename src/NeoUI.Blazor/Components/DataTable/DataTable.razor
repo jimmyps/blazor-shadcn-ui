@@ -53,7 +53,7 @@
                                                  Class="@TableCssClass"
                                                  AriaLabel="@AriaLabel">
                     <TableHeader>
-                        <TableRow TData="TData" Class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                        <TableRow TData="TData" Class="border-b bg-muted/50 transition-colors">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
                                 <TableHeaderCell TData="TData" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">

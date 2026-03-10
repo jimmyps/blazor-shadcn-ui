@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-11 – Select, MultiSelect & DataTable: Component-Level Refinements
+
+> **Library changes.** Affects `SelectTrigger`, `SelectItem`, `MultiSelect`, and `DataTable` in `NeoUI.Blazor`. No breaking changes to public APIs.
+
+---
+
+### ✨ Feature: `SelectTrigger` — new `Borderless` parameter
+
+Added a `Borderless` boolean parameter to `SelectTrigger`. When `true`, the component's border, box-shadow, and all focus/open-state ring styles are suppressed — leaving only background-hover feedback as the only visual cue. Intended for in-context placements where the host element (e.g. a `FilterChip`) already owns the visible border, and a redundant inner ring would look disconnected.
+
+---
+
+### 🐛 Fix: `SelectItem` — check-mark icon overlapping item label text
+
+The selected-state check icon is absolutely positioned at the right edge (`inset-y-0 right-0 pr-3`). The item label `<span>` previously carried no matching right-padding reservation, so the icon could overlay the trailing characters of long labels. The label span now uses `pr-10` to always clear the icon's footprint regardless of label length.
+
+---
+
+### ✨ Feature: `MultiSelect` — tooltip on the `+N more` overflow indicator
+
+The `+N more` badge shown when selected items exceed `MaxDisplayTags` now renders a `Tooltip` on hover that lists the full display names of the hidden items. The implementation uses the existing `TooltipProvider / Tooltip / TooltipTrigger / TooltipContent` component stack for visual and behavioural consistency. `TooltipTrigger`'s wrapper renders with `class="contents"` (`display: contents`), keeping it layout-transparent inside the flex tag row. A `GetDisplayText(string value)` lookup helper was added to `MultiSelect.razor.cs` to resolve stored value strings back to human-readable labels for the tooltip body.
+
+---
+
+### ✨ Feature: `DataTable` — muted header background applied at component level
+
+The `TableRow` that renders column headers now carries `bg-muted/50` directly in `DataTable.razor`. Previously this tint had to be applied manually by each consumer via `Class` overrides or wrapper styles. The `hover:bg-muted/50` and `data-[state=selected]:bg-muted` classes have been removed from the header row — hover-state colour changes and selection highlighting are body-row concerns only.
+
+---
+
+
+
 ## 2026-3-6 — Performance: CascadingValue IsFixed alignment with upstream
 
 > **Library change.** Affects 9 component and primitive files across `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
@@ -30,7 +62,7 @@ All 9 occurrences have been corrected to `IsFixed="true"`, aligning with upstrea
 
 ## 2026-3-4 – Sidebar & Positioning: Bug Fixes
 
-> **Library change.** Affects `SidebarMenuButton` in `NeoUI.Blazor` and `positioning.js` in `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
+> **Library change.** Affects `SidebarMenuButton`
 
 ---
 
