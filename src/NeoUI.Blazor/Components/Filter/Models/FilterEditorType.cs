@@ -30,7 +30,7 @@ public enum FilterEditorType
     /// <summary>Simple True/False toggle for boolean fields.</summary>
     Boolean,
 
-    /// <summary>Single-selection <c>&lt;select&gt;</c> element. Options come from <see cref="FilterFieldDefinition.Options"/>.</summary>
+    /// <summary>Single-selection <see cref="NeoUI.Blazor.Select{TValue}"/> component (borderless in chip). Options come from <see cref="FilterFieldDefinition.Options"/>.</summary>
     Select,
 
     /// <summary>Searchable <see cref="NeoUI.Blazor.Combobox{TItem}"/> for single-value selection with type-to-search. Options come from <see cref="FilterFieldDefinition.Options"/>.</summary>
@@ -39,6 +39,6 @@ public enum FilterEditorType
     /// <summary><see cref="NeoUI.Blazor.MultiSelect{TItem}"/> for multiple-value selection. Options come from <see cref="FilterFieldDefinition.Options"/>.</summary>
     MultiSelect,
 
-    /// <summary>Custom <see cref="Microsoft.AspNetCore.Components.RenderFragment{FilterCondition}"/> provided via <c>ChildContent</c> on <see cref="FilterField"/>.</summary>
+    /// <summary>Custom <see cref="Microsoft.AspNetCore.Components.RenderFragment{FilterCustomContext}"/> provided via <c>ChildContent</c> on <see cref="FilterField"/>. Use <see cref="FilterCustomContext.Condition"/> to read/write the value and call <see cref="FilterCustomContext.NotifyChanged"/> to propagate changes.</summary>
     Custom
 }

@@ -108,7 +108,9 @@ public static class FilterExtensions
         try
         {
             var converted = Convert.ChangeType(condition.Value, underlyingType);
-            var constant = Expression.Constant(converted, propType);
+            // Build a constant compatible with propType. For Nullable<T> properties, Expression.Constant
+            // requires the value to be of the nullable type, so we convert from the underlying type.
+            var constant = BuildConstant(converted, underlyingType, propType);
             return condition.Operator switch
             {
                 FilterOperator.Equals => Expression.Equal(member, constant),
@@ -132,14 +134,27 @@ public static class FilterExtensions
                 FilterOperator.Between when condition.SecondaryValue != null =>
                     Expression.AndAlso(
                         Expression.GreaterThanOrEqual(member, constant),
-                        Expression.LessThanOrEqual(member, Expression.Constant(Convert.ChangeType(condition.SecondaryValue, underlyingType), propType))),
+                        Expression.LessThanOrEqual(member, BuildConstant(Convert.ChangeType(condition.SecondaryValue, underlyingType), underlyingType, propType))),
                 FilterOperator.NotBetween when condition.SecondaryValue != null =>
                     Expression.OrElse(
                         Expression.LessThan(member, constant),
-                        Expression.GreaterThan(member, Expression.Constant(Convert.ChangeType(condition.SecondaryValue, underlyingType), propType))),
+                        Expression.GreaterThan(member, BuildConstant(Convert.ChangeType(condition.SecondaryValue, underlyingType), underlyingType, propType))),
                 _ => null
             };
         }
         catch { return null; /* Type conversion failed for this condition — skip it */ }
+    }
+
+    /// <summary>
+    /// Creates an Expression constant of <paramref name="propType"/>.
+    /// For nullable properties (e.g. <c>decimal?</c>), wraps the underlying-type constant
+    /// in <see cref="Expression.Convert"/> so it is assignable to the nullable type.
+    /// </summary>
+    private static Expression BuildConstant(object converted, Type underlyingType, Type propType)
+    {
+        var baseConst = Expression.Constant(converted, underlyingType);
+        return propType == underlyingType
+            ? (Expression)baseConst
+            : Expression.Convert(baseConst, propType);
     }
 }

@@ -44,14 +44,18 @@ A declarative, composable filter builder that renders as an **inline canvas tool
 
 ## UI Layout
 
+Each active condition is rendered on its **own row** as a segmented chip:
+
 ```
-[≡ Filter]  [icon Label | operator ▼ | value | ×]  [icon Label2 | op2 ▼ | val2 | ×]  [✕ Clear]
+[≡ Filter]                                            [✕ Clear]
+[icon Label] | [operator Select ▾] | [value input] | [×]
+[icon Label] | [operator Select ▾] | [value input] | [×]
 ```
 
 - **`[≡ Filter]` button** — opens a dropdown showing all registered fields. Shows "Filter" label when no chips are active.
-- **Each chip** — segmented pill: field label (with optional icon) | operator native select | value input | ×
-- **`[✕ Clear]` button** — appears only when at least one condition is active
-- **`Presets` dropdown** — appears only when `FilterPresets` child content is provided
+- **Each chip** — segmented pill (one per row): field label (with optional icon) | operator Select | value input | ×
+- **`[✕ Clear]` button** — pinned to the top-right; appears only when at least one condition is active
+- **`Presets` dropdown / Tabs** — appears only when `FilterPresets` child content is provided; style controlled by `PresetsVariant`
 
 ## Component API
 
@@ -63,8 +67,10 @@ A declarative, composable filter builder that renders as an **inline canvas tool
 | `FiltersChanged` | `EventCallback<FilterGroup>` | — | Two-way binding callback. |
 | `OnFilterChange` | `EventCallback<FilterGroup>` | — | Fires immediately when any condition changes. |
 | `FilterFields` | `RenderFragment?` | `null` | Slot for `FilterField` child declarations. |
-| `FilterPresets` | `RenderFragment?` | `null` | Slot for `FilterPreset` children. Adds a Presets dropdown. |
+| `FilterPresets` | `RenderFragment?` | `null` | Slot for `FilterPreset` children. Adds a Presets button or tab bar. |
 | `ButtonText` | `string` | `"Filter"` | Label on the add-filter button (when no conditions are active). |
+| `PresetsVariant` | `FilterPresetsVariant` | `Dropdown` | How presets are rendered: `Dropdown` (button + menu) or `Tabs` (horizontal tab bar with implicit "All" tab). |
+| `ChipSize` | `FilterChipSize` | `Small` | Height of every chip: `Small` (h-7), `Medium` (h-8), `Large` (h-9). |
 | `Class` | `string?` | `null` | Additional CSS classes for the wrapper. |
 
 ### FilterField
@@ -81,7 +87,7 @@ A declarative, composable filter builder that renders as an **inline canvas tool
 | `Options` | `IEnumerable<SelectOption>?` | | Options for Select / MultiSelect fields. |
 | `Placeholder` | `string?` | | Placeholder text for the value input. |
 | `Min` / `Max` / `Step` | `object?` | | Constraints for Number fields. |
-| `ChildContent` | `RenderFragment<FilterCondition>?` | | Custom value input for `FilterFieldType.Custom`. |
+| `ChildContent` | `RenderFragment<FilterCustomContext>?` | | Custom value input for `FilterFieldType.Custom`. The context provides `Condition` (read/write) and `NotifyChanged()` to propagate updates. |
 
 ### FilterPreset
 
@@ -104,9 +110,9 @@ A declarative, composable filter builder that renders as an **inline canvas tool
 | `Date` | `DatePicker` | Single date |
 | `DateRange` | `DateRangePicker` | From/to date range |
 | `Boolean` | `Switch` | True/false |
-| `Select` | native `<select>` | Single value from a list |
-| `MultiSelect` | `MultiSelect<SelectOption>` | Multiple values |
-| `Custom` | `RenderFragment<FilterCondition>` | Any custom control |
+| `Select` | `Select<string>` (borderless) | Single value from a list |
+| `MultiSelect` | `MultiSelect<SelectOption>` (borderless) | Multiple values |
+| `Custom` | `RenderFragment<FilterCustomContext>` | Any custom control |
 
 ## LINQ Extensions
 
@@ -134,13 +140,17 @@ var results = dbContext.Products.ApplyFilters(activeFilters).ToList();
 
 ## Custom Value Control
 
-Use `ChildContent` on a `FilterFieldType.Custom` field to provide any Blazor control:
+Use `ChildContent` on a `FilterFieldType.Custom` field to provide any Blazor control.
+The context is a `FilterCustomContext` with a `Condition` property and a `NotifyChanged()` callback:
 
 ```razor
-<FilterField Field="Rating" Label="Rating" Type="FilterFieldType.Custom">
-    <ChildContent Context="condition">
-        <StarRating @bind-Value="@((int)(condition.Value ?? 0))"
-                    OnChange="@(v => condition.Value = v)" />
+<FilterField Field="Rating" Label="Rating" Icon="star" Type="FilterFieldType.Custom">
+    <ChildContent Context="ctx">
+        <Rating Value="@GetRating(ctx.Condition)"
+                ValueChanged="@(async v => { ctx.Condition.Value = (double)v; await ctx.NotifyChanged(); })"
+                MaxRating="5"
+                AllowClear="true"
+                Size="RatingSize.Small" />
     </ChildContent>
 </FilterField>
 ```
