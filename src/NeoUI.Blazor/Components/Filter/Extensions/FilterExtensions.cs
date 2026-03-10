@@ -91,13 +91,17 @@ public static class FilterExtensions
                 FilterOperator.GreaterThanOrEqual => Expression.GreaterThanOrEqual(member, constant),
                 FilterOperator.LessThanOrEqual => Expression.LessThanOrEqual(member, constant),
                 FilterOperator.Contains when underlyingType == typeof(string) =>
-                    Expression.Call(member, typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) })!, constant),
+                    Expression.Call(member, typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) })!,
+                        constant, Expression.Constant(StringComparison.OrdinalIgnoreCase)),
                 FilterOperator.NotContains when underlyingType == typeof(string) =>
-                    Expression.Not(Expression.Call(member, typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) })!, constant)),
+                    Expression.Not(Expression.Call(member, typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string), typeof(StringComparison) })!,
+                        constant, Expression.Constant(StringComparison.OrdinalIgnoreCase))),
                 FilterOperator.StartsWith when underlyingType == typeof(string) =>
-                    Expression.Call(member, typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string) })!, constant),
+                    Expression.Call(member, typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string), typeof(StringComparison) })!,
+                        constant, Expression.Constant(StringComparison.OrdinalIgnoreCase)),
                 FilterOperator.EndsWith when underlyingType == typeof(string) =>
-                    Expression.Call(member, typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string) })!, constant),
+                    Expression.Call(member, typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string), typeof(StringComparison) })!,
+                        constant, Expression.Constant(StringComparison.OrdinalIgnoreCase)),
                 FilterOperator.Between when condition.SecondaryValue != null =>
                     Expression.AndAlso(
                         Expression.GreaterThanOrEqual(member, constant),

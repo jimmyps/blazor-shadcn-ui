@@ -46,7 +46,7 @@
                     </FilterFields>
                 </FilterBuilder>
 
-                <DataTable TData="Employee" Data="@filteredEmployees" InitialPageSize="10">
+                <DataTable TData="Employee" Data="@filteredEmployees" InitialPageSize="10" ShowToolbar="false">
                     <Columns>
                         <DataTableColumn TData="Employee" TValue="string"  Property="@(e => e.Name)"             Header="Name"       Sortable />
                         <DataTableColumn TData="Employee" TValue="string"  Property="@(e => e.Department)"       Header="Department" Sortable>

@@ -11,42 +11,38 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 {
     private readonly List<FilterFieldDefinition> _fields = new();
     private readonly List<FilterPresetDefinition> _presets = new();
-
-    // Live condition list — the single source of truth for the filter state.
     private List<FilterCondition> _conditions = new();
-
-    // Track the last Filters we emitted so we don't re-sync our own changes.
     private HashSet<string> _lastEmittedIds = new();
+    private string? _activePresetName;
 
     // ── Parameters ──────────────────────────────────────────────────────────
 
     /// <summary>Current filter state. Use @bind-Filters for two-way binding.</summary>
-    [Parameter]
-    public FilterGroup? Filters { get; set; }
+    [Parameter] public FilterGroup? Filters { get; set; }
 
     /// <summary>Callback for two-way binding of the filter state.</summary>
-    [Parameter]
-    public EventCallback<FilterGroup> FiltersChanged { get; set; }
+    [Parameter] public EventCallback<FilterGroup> FiltersChanged { get; set; }
 
     /// <summary>Fires immediately whenever the active conditions change.</summary>
-    [Parameter]
-    public EventCallback<FilterGroup> OnFilterChange { get; set; }
+    [Parameter] public EventCallback<FilterGroup> OnFilterChange { get; set; }
 
     /// <summary>Child content slot for <see cref="FilterField"/> declarations.</summary>
-    [Parameter]
-    public RenderFragment? FilterFields { get; set; }
+    [Parameter] public RenderFragment? FilterFields { get; set; }
 
     /// <summary>Child content slot for <see cref="FilterPreset"/> declarations.</summary>
-    [Parameter]
-    public RenderFragment? FilterPresets { get; set; }
+    [Parameter] public RenderFragment? FilterPresets { get; set; }
 
     /// <summary>Label shown on the add-filter button when no conditions are active.</summary>
-    [Parameter]
-    public string ButtonText { get; set; } = "Filter";
+    [Parameter] public string ButtonText { get; set; } = "Filter";
+
+    /// <summary>
+    /// How presets are rendered. <see cref="FilterPresetsVariant.Dropdown"/> (default) shows a Presets button.
+    /// <see cref="FilterPresetsVariant.Tabs"/> shows horizontal tab buttons below the filter bar.
+    /// </summary>
+    [Parameter] public FilterPresetsVariant PresetsVariant { get; set; } = FilterPresetsVariant.Dropdown;
 
     /// <summary>Additional CSS classes for the wrapper element.</summary>
-    [Parameter]
-    public string? Class { get; set; }
+    [Parameter] public string? Class { get; set; }
 
     // ── Computed ─────────────────────────────────────────────────────────────
 
@@ -66,9 +62,6 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     protected override void OnParametersSet()
     {
         if (Filters == null) return;
-
-        // Only re-sync from external Filters if their condition IDs differ from what we last emitted.
-        // This prevents us from overwriting local edits with our own notification.
         var externalIds = Filters.Conditions.Select(c => c.Id).ToHashSet();
         if (!externalIds.SetEquals(_lastEmittedIds))
         {
@@ -79,14 +72,12 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 
     // ── IFilterBuilderContext ────────────────────────────────────────────────
 
-    /// <inheritdoc/>
     public void RegisterField(FilterFieldDefinition field)
     {
         if (!_fields.Any(f => f.Field == field.Field))
             _fields.Add(field);
     }
 
-    /// <inheritdoc/>
     public void RegisterPreset(FilterPresetDefinition preset)
     {
         if (!_presets.Any(p => p.Name == preset.Name))
@@ -97,6 +88,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 
     private void AddCondition(FilterFieldDefinition field)
     {
+        _activePresetName = null;
         var newCond = new FilterCondition
         {
             Field = field.Field,
@@ -109,6 +101,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 
     private void RemoveCondition(FilterCondition condition)
     {
+        _activePresetName = null;
         _conditions.Remove(condition);
         _ = NotifyFiltersChanged();
         StateHasChanged();
@@ -116,6 +109,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 
     private async Task ClearAll()
     {
+        _activePresetName = null;
         _conditions.Clear();
         await NotifyFiltersChanged();
         StateHasChanged();
@@ -123,6 +117,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 
     private void ApplyPreset(FilterPresetDefinition preset)
     {
+        _activePresetName = preset.Name;
         _conditions.Clear();
         _conditions.AddRange(preset.Filters.Conditions.Select(CloneCondition));
         _ = NotifyFiltersChanged();
@@ -150,6 +145,21 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
             await FiltersChanged.InvokeAsync(updated);
         if (OnFilterChange.HasDelegate)
             await OnFilterChange.InvokeAsync(updated);
+    }
+
+    // ── Tab helper ────────────────────────────────────────────────────────────
+
+    /// <summary>Returns CSS classes for a preset tab button. Pass null for the "All" tab.</summary>
+    private string GetTabClass(string? presetName)
+    {
+        var isActive = presetName == _activePresetName;
+        return ClassNames.cn(
+            "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium transition-colors",
+            "-mb-px border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 rounded-t-sm",
+            isActive
+                ? "border-primary text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
+        );
     }
 
     // ── Cloning ───────────────────────────────────────────────────────────────

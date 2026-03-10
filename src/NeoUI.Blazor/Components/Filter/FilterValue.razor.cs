@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 
 namespace NeoUI.Blazor;
 
 /// <summary>
-/// Renders the appropriate value input for a filter condition, driven by
-/// the field's <see cref="FilterFieldDefinition.EditorType"/>.
+/// Renders the appropriate value input for a filter condition based on the field's EditorType.
 /// </summary>
 public partial class FilterValue : ComponentBase
 {
@@ -14,11 +12,10 @@ public partial class FilterValue : ComponentBase
     [Parameter] public EventCallback<FilterCondition> ConditionChanged { get; set; }
 
     /// <summary>
-    /// When <c>true</c>, uses borderless/transparent compact styling designed for use
-    /// inside a <see cref="FilterChip"/>.
+    /// When true, uses compact styling for use inside a <see cref="FilterChip"/>.
+    /// Inputs keep their border but use reduced padding; Select/MultiSelect are borderless.
     /// </summary>
-    [Parameter]
-    public bool Compact { get; set; }
+    [Parameter] public bool Compact { get; set; }
 
     // ── Computed helpers ─────────────────────────────────────────────────────
 
@@ -28,7 +25,6 @@ public partial class FilterValue : ComponentBase
         => Condition.Operator is FilterOperator.IsEmpty or FilterOperator.IsNotEmpty
                                or FilterOperator.IsTrue or FilterOperator.IsFalse;
 
-    /// <summary>Resolves the effective editor type from the field definition, defaulting via AutoInfer.</summary>
     private FilterEditorType EffectiveEditorType
     {
         get
@@ -52,9 +48,21 @@ public partial class FilterValue : ComponentBase
         }
     }
 
-    /// <summary>CSS class for compact-mode or full-size input.</summary>
-    private string CompactOrFullInput => Compact
-        ? "border-0 shadow-none rounded-none bg-transparent focus-visible:ring-0 h-full py-0 text-sm px-2 min-w-[80px] max-w-[180px] w-auto"
+    // ── Compact CSS helpers ───────────────────────────────────────────────────
+
+    /// <summary>CSS for input controls inside a chip: keep border, auto-width, compact height.</summary>
+    private string InputCompact => Compact
+        ? "rounded-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none h-full py-0 text-sm px-2 w-auto min-w-[60px] max-w-[160px]"
+        : "";
+
+    /// <summary>CSS for Select trigger inside a chip: no border, auto-width, hover background only.</summary>
+    private string SelectCompact => Compact
+        ? "h-full w-auto min-w-0 border-0 shadow-none rounded-none px-2 text-sm hover:bg-muted/50 focus-visible:ring-0 data-[state=open]:ring-0 [&[aria-expanded=true]]:ring-0 [&[aria-expanded=true]]:hover:bg-muted/50"
+        : "";
+
+    /// <summary>CSS for MultiSelect trigger inside a chip: no border, auto-width, hover background only.</summary>
+    private string MultiSelectCompact => Compact
+        ? "border-0 shadow-none rounded-none hover:bg-muted/50 focus-within:ring-0 min-w-[80px] max-w-[200px]"
         : "";
 
     // ── String properties ────────────────────────────────────────────────────
@@ -71,7 +79,7 @@ public partial class FilterValue : ComponentBase
         set { Condition.SecondaryValue = value; _ = NotifyConditionChanged(); }
     }
 
-    // ── Numeric (decimal?) properties ────────────────────────────────────────
+    // ── Numeric (decimal?) ────────────────────────────────────────────────────
 
     private decimal? NumericDecimalValue
     {
@@ -85,7 +93,7 @@ public partial class FilterValue : ComponentBase
         set { Condition.SecondaryValue = value; _ = NotifyConditionChanged(); }
     }
 
-    // ── Currency (decimal?) properties ───────────────────────────────────────
+    // ── Currency (decimal?) ───────────────────────────────────────────────────
 
     private decimal? CurrencyDecimalValue
     {
@@ -132,7 +140,7 @@ public partial class FilterValue : ComponentBase
         return null;
     }
 
-    // ── Boolean property ──────────────────────────────────────────────────────
+    // ── Boolean ──────────────────────────────────────────────────────────────
 
     private bool BoolValue
     {
@@ -140,7 +148,7 @@ public partial class FilterValue : ComponentBase
         set { Condition.Value = value; _ = NotifyConditionChanged(); }
     }
 
-    // ── Select (single) property ──────────────────────────────────────────────
+    // ── Select (single) ──────────────────────────────────────────────────────
 
     private string? SelectValue
     {
@@ -148,13 +156,7 @@ public partial class FilterValue : ComponentBase
         set { Condition.Value = value; _ = NotifyConditionChanged(); }
     }
 
-    private async Task HandleSelectChange(ChangeEventArgs e)
-    {
-        Condition.Value = e.Value?.ToString();
-        await NotifyConditionChanged();
-    }
-
-    // ── MultiSelect property ──────────────────────────────────────────────────
+    // ── MultiSelect ──────────────────────────────────────────────────────────
 
     private IEnumerable<string>? MultiSelectValues
     {

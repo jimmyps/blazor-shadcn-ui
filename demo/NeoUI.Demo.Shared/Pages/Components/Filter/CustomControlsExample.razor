@@ -14,21 +14,15 @@
             <FilterBuilder TData="CustomItem" @bind-Filters="_filters">
                 <FilterFields>
                     <FilterField Field="Name" Label="Name" Type="FilterFieldType.Text" />
-                    <FilterField Field="Rating" Label="Rating" Type="FilterFieldType.Custom">
+                    <FilterField Field="Rating" Label="Rating" Icon="star" Type="FilterFieldType.Custom">
                         <ChildContent Context="condition">
-                            <div class="flex items-center gap-0.5">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    var star = i;
-                                    var current = condition.Value?.ToString();
-                                    <button type="button"
-                                            class="@(current == star.ToString() ? "text-yellow-400" : "text-muted-foreground") text-xl hover:text-yellow-400 transition-colors"
-                                            aria-label="@($"Rate {star} out of 5")"
-                                            @onclick="() => SetRating(condition, star)">
-                                        ★
-                                    </button>
-                                }
-                            </div>
+                            <span class="px-2 flex items-center self-stretch">
+                                <Rating Value="@GetRatingValue(condition)"
+                                        ValueChanged="@(v => SetRating(condition, (int)v))"
+                                        MaxRating="5"
+                                        AllowClear="true"
+                                        Size="RatingSize.Small" />
+                            </span>
                         </ChildContent>
                     </FilterField>
                 </FilterFields>
@@ -53,24 +47,24 @@
 @code {
     private FilterGroup _filters = new();
 
+    private static double GetRatingValue(FilterCondition condition)
+        => condition.Value is double d ? d : (double.TryParse(condition.Value?.ToString(), out var p) ? p : 0);
+
     private void SetRating(FilterCondition condition, int star)
     {
-        condition.Value = star.ToString();
+        condition.Value = (double)star;
     }
 
     private static readonly string _customCode = """
-        <FilterField Field="Rating" Label="Rating" Type="FilterFieldType.Custom">
+        <FilterField Field="Rating" Label="Rating" Icon="star" Type="FilterFieldType.Custom">
             <ChildContent Context="condition">
-                <div class="flex items-center gap-0.5">
-                    @for (int i = 1; i <= 5; i++)
-                    {
-                        var star = i;
-                        <button type="button"
-                                @onclick="() => condition.Value = star.ToString()">
-                            ★
-                        </button>
-                    }
-                </div>
+                <span class="px-2 flex items-center self-stretch">
+                    <Rating Value="@GetRatingValue(condition)"
+                            ValueChanged="@(v => SetRating(condition, (int)v))"
+                            MaxRating="5"
+                            AllowClear="true"
+                            Size="RatingSize.Small" />
+                </span>
             </ChildContent>
         </FilterField>
         """;

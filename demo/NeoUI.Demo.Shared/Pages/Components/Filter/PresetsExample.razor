@@ -19,7 +19,8 @@
 
                 <FilterBuilder TData="Order"
                                @bind-Filters="activeFilters"
-                               OnFilterChange="HandleFilterChange">
+                               OnFilterChange="HandleFilterChange"
+                               PresetsVariant="FilterPresetsVariant.Tabs">
                     <FilterFields>
                         <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"  Options="@statusOptions" />
                         <FilterField Field="Priority" Label="Priority" Icon="alert-circle" Type="FilterFieldType.Select"  Options="@priorityOptions" />
@@ -33,7 +34,7 @@
                     </FilterPresets>
                 </FilterBuilder>
 
-                <DataTable TData="Order" Data="@filteredOrders" InitialPageSize="10">
+                <DataTable TData="Order" Data="@filteredOrders" InitialPageSize="10" ShowToolbar="false">
                     <Columns>
                         <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.OrderNumber)"    Header="Order #"  Sortable />
                         <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)"       Header="Customer" Sortable />

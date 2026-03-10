@@ -2,17 +2,14 @@
 @using NeoUI.Icons.Lucide
 
 @*
-    FilterChip — an interactive segmented chip for one active filter condition.
+    FilterChip — interactive segmented chip for one active filter condition.
 
-    Visual layout:
-    ┌────────────────────────────────────────────────────────┐
-    │ [icon?] Field Label │ operator select │ value input │ × │
-    └────────────────────────────────────────────────────────┘
+    Layout: [icon Label] | [operator Select] | [value input] | [×]
 *@
 
 <div class="@ChipCssClass">
     @* ── Field label segment ── *@
-    <span class="flex items-center gap-1.5 px-2.5 bg-muted/40 border-r border-input text-xs font-medium text-muted-foreground shrink-0">
+    <span class="flex items-center gap-1.5 pl-2.5 pr-2 bg-muted/40 border-r border-input text-xs font-medium text-muted-foreground shrink-0 self-stretch items-center">
         @if (!string.IsNullOrEmpty(FieldDefinition?.Icon))
         {
             <LucideIcon Name="@FieldDefinition.Icon" Size="12" Class="opacity-70 shrink-0" />
@@ -20,20 +17,26 @@
         @(FieldDefinition?.Label ?? Condition.Field)
     </span>
 
-    @* ── Operator selector (native select, styled transparent) ── *@
-    <select class="h-full border-r border-input px-2 bg-transparent outline-none cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors"
-            value="@Condition.Operator.ToString()"
-            @onchange="HandleOperatorChange">
-        @foreach (var op in _availableOperators)
-        {
-            <option value="@op.ToString()">@GetOperatorLabel(op)</option>
-        }
-    </select>
+    @* ── Operator — Select component, auto-width, no border ── *@
+    <span class="border-r border-input shrink-0 self-stretch flex items-center">
+        <Select @bind-Value="@OperatorValue" TValue="string">
+            <SelectTrigger Class="@OperatorSelectClass">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent TValue="string" Class="min-w-[8rem]">
+                @foreach (var op in _availableOperators)
+                {
+                    var opItem = op;
+                    <SelectItem Value="@opItem.ToString()" TValue="string">@GetOperatorLabel(opItem)</SelectItem>
+                }
+            </SelectContent>
+        </Select>
+    </span>
 
     @* ── Value input segment ── *@
     @if (!IsValueless)
     {
-        <span class="flex items-center flex-1 min-w-0">
+        <span class="flex items-center flex-none min-w-0">
             <FilterValue Condition="@Condition"
                          FieldDefinition="@FieldDefinition"
                          ConditionChanged="@HandleConditionChanged"
@@ -43,10 +46,10 @@
 
     @* ── Remove button ── *@
     <button type="button"
-            class="flex items-center justify-center px-1.5 border-l border-input text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0"
+            class="flex items-center justify-center px-1.5 border-l border-input text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0 self-stretch"
             @onclick="OnRemove"
             aria-label="Remove filter">
-        <LucideIcon Name="x" Size="12" />
+        <X Size="12" />
     </button>
 </div>
 
@@ -60,13 +63,36 @@
     private List<FilterOperator> _availableOperators = new();
 
     private string ChipCssClass => ClassNames.cn(
-        "inline-flex items-stretch h-8 text-sm border border-input rounded-md bg-background overflow-hidden",
+        "inline-flex items-stretch text-sm border border-input rounded-md bg-background",
         Class
     );
+
+    /// <summary>CSS for the operator Select trigger: borderless, auto-width, hover background only.</summary>
+    private const string OperatorSelectClass =
+        "h-full w-auto min-w-0 border-0 shadow-none rounded-none px-2 text-xs text-muted-foreground " +
+        "hover:bg-muted/50 hover:text-foreground focus-visible:ring-0 " +
+        "data-[state=open]:ring-0 [&[aria-expanded=true]]:ring-0 [&[aria-expanded=true]]:hover:bg-muted/50";
 
     private bool IsValueless => Condition.Operator is
         FilterOperator.IsEmpty or FilterOperator.IsNotEmpty or
         FilterOperator.IsTrue or FilterOperator.IsFalse;
+
+    // String-typed binding for the Select component
+    private string OperatorValue
+    {
+        get => Condition.Operator.ToString();
+        set
+        {
+            if (Enum.TryParse<FilterOperator>(value, out var op) && op != Condition.Operator)
+            {
+                Condition.Operator = op;
+                if (op is not FilterOperator.Between and not FilterOperator.NotBetween)
+                    Condition.SecondaryValue = null;
+                _ = NotifyChanged();
+                StateHasChanged();
+            }
+        }
+    }
 
     protected override void OnParametersSet()
     {
@@ -77,19 +103,6 @@
         {
             Condition.Operator = FieldDefinition?.DefaultOperator ?? _availableOperators.First();
             _ = NotifyChanged();
-        }
-    }
-
-    private async Task HandleOperatorChange(ChangeEventArgs e)
-    {
-        if (Enum.TryParse<FilterOperator>(e.Value?.ToString(), out var op))
-        {
-            Condition.Operator = op;
-            // Clear secondary value when operator changes away from Between
-            if (op is not FilterOperator.Between and not FilterOperator.NotBetween)
-                Condition.SecondaryValue = null;
-            await NotifyChanged();
-            StateHasChanged();
         }
     }
 
