@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace NeoUI.Blazor.Filter;
+namespace NeoUI.Blazor;
 
 /// <summary>LINQ extension methods for applying FilterGroup to IQueryable/IEnumerable.</summary>
 public static class FilterExtensions

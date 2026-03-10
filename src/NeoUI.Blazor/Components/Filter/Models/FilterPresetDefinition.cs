@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Filter;
+namespace NeoUI.Blazor;
 
 /// <summary>Internal definition for a filter preset.</summary>
 public class FilterPresetDefinition

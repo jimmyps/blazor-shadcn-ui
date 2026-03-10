@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Filter;
+namespace NeoUI.Blazor;
 
 /// <summary>Defines the type of filter field.</summary>
 public enum FilterFieldType

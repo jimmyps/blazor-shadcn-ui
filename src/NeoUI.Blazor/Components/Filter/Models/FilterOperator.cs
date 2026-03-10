@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Filter;
+namespace NeoUI.Blazor;
 
 /// <summary>Defines filter operators for different data types.</summary>
 public enum FilterOperator

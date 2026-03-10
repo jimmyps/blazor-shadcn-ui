@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace NeoUI.Blazor.Filter;
+namespace NeoUI.Blazor;
 
 /// <summary>Internal definition for a filter field extracted from FilterField child components.</summary>
 public class FilterFieldDefinition

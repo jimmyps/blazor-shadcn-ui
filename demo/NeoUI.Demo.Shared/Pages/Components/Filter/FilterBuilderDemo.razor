@@ -69,8 +69,8 @@
             @foreach (var example in _examples)
             {
                 var ex = example;
-                <Card Class="cursor-pointer hover:border-primary transition-colors"
-                      @onclick="@(() => NavigationManager.NavigateTo(ex.Route))">
+                <div @onclick="@(() => NavigationManager.NavigateTo(ex.Route))" class="cursor-pointer">
+                <Card Class="hover:border-primary transition-colors">
                     <CardHeader>
                         <CardTitle Class="text-base">@ex.Title</CardTitle>
                         <CardDescription>@ex.Description</CardDescription>
@@ -79,6 +79,7 @@
                         <Badge Variant="BadgeVariant.Secondary">@ex.Route</Badge>
                     </CardContent>
                 </Card>
+                </div>
             }
         </div>
     </DemoSection>

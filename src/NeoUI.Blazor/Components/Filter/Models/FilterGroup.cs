@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Filter;
+namespace NeoUI.Blazor;
 
 /// <summary>Represents a group of filter conditions with a logical operator.</summary>
 public class FilterGroup

@@ -1,4 +1,4 @@
-@namespace NeoUI.Blazor.Filter
+@namespace NeoUI.Blazor
 @typeparam TData where TData : class
 @using NeoUI.Icons.Lucide
 
@@ -17,7 +17,7 @@
                         Size="ButtonSize.Small"
                         Class="h-8 gap-1.5 px-2.5 text-muted-foreground hover:text-foreground"
                         Disabled="@(!_fields.Any())">
-                    <ListFilter Size="14" />
+                    <LucideIcon Name="list-filter" Size="14" />
                     @if (!_conditions.Any())
                     {
                         <span class="text-sm">@ButtonText</span>
@@ -84,7 +84,7 @@
                     Size="ButtonSize.Small"
                     OnClick="@ClearAll"
                     Class="h-8 gap-1.5 px-2.5 text-muted-foreground hover:text-foreground">
-                <FilterX Size="14" />
+                <LucideIcon Name="filter-x" Size="14" />
                 <span class="text-sm">Clear</span>
             </Button>
         }

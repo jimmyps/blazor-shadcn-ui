@@ -1,4 +1,4 @@
-namespace NeoUI.Blazor.Filter;
+namespace NeoUI.Blazor;
 
 /// <summary>
 /// Specifies the input widget used for the filter value editor.
