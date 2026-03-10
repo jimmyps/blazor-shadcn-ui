@@ -2,7 +2,7 @@
 
 @* ResizablePanelGroup - container for resizable panels *@
 <div @ref="_groupRef" @attributes="GetAttributes()">
-    <CascadingValue Value="this" IsFixed="false">
+    <CascadingValue Value="this" IsFixed="true">
         @ChildContent
     </CascadingValue>
 </div>

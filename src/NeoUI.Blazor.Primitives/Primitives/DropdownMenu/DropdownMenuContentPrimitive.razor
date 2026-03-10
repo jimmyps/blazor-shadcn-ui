@@ -90,10 +90,10 @@
     /// Whether to keep the portal mounted in the DOM when the dropdown is closed.
     /// When <c>true</c>, JS toggles visibility instead of unmounting — JS handlers stay warm
     /// across open/close cycles and CSS exit animations work correctly.
-    /// Default is <c>false</c>; the Components-layer <see cref="DropdownMenuContentPrimitive"/> sets this to <c>true</c>.
+    /// Default is <c>True</c>; the Components-layer <see cref="DropdownMenuContentPrimitive"/> sets this to <c>true</c>.
     /// </summary>
     [Parameter]
-    public bool ForceMount { get; set; } = false;
+    public bool ForceMount { get; set; } = true;
 
     /// <summary>
     /// Whether to enable keyboard loop navigation (wrapping from last to first item).
@@ -158,11 +158,11 @@
              id="@Context.ContentId"
              role="menu"
              tabindex="-1"
+             data-state="@(Context.IsOpen ? "open" : "closed")"
              data-autofocus
-             @attributes="GetAttributesWithoutStyle()"
-             data-state="open">
+             @attributes="GetAttributesWithoutStyle()">
             <CascadingValue Value="Context" IsFixed="false">
-                <CascadingValue Value="this" Name="DropdownMenuContentContext" IsFixed="false">
+                <CascadingValue Value="this" Name="DropdownMenuContentContext" IsFixed="true">
                     @ChildContent
                 </CascadingValue>
             </CascadingValue>

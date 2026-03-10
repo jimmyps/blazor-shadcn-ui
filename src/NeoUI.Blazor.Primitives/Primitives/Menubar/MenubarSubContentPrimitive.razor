@@ -124,7 +124,7 @@ private readonly List<IMenubarItem> _menuItems = new();
             <CascadingValue Value="MenuContext" IsFixed="false">
                 @* CRITICAL: Also cascade as MenubarMenuContext for nested submenus to receive *@
                 <CascadingValue Value="MenubarMenuContext" IsFixed="false">
-                    <CascadingValue Value="@this" IsFixed="false">
+                    <CascadingValue Value="@this" IsFixed="true">
                         <CascadingValue Value="@SubContext" Name="ParentSubContext" IsFixed="false">
                             @ChildContent
                         </CascadingValue>

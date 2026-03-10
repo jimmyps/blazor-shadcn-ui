@@ -159,7 +159,7 @@ private readonly List<IContextMenuItem> _menuItems = new();
              aria-labelledby="@Context.TriggerId"
              data-state="open">
             <CascadingValue Value="Context" IsFixed="false">
-                <CascadingValue Value="this" IsFixed="false">
+                <CascadingValue Value="this" IsFixed="true">
                     @ChildContent
                 </CascadingValue>
             </CascadingValue>

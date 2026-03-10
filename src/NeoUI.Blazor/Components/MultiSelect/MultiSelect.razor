@@ -29,7 +29,21 @@
                     }
                     @if (OverflowCount > 0)
                     {
-                        <span class="text-xs text-muted-foreground">+@OverflowCount more</span>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <span class="text-xs text-muted-foreground cursor-default">+@OverflowCount more</span>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <div class="flex flex-col gap-0.5 text-xs">
+                                        @foreach (var v in SelectedValues.Skip(MaxDisplayTags))
+                                        {
+                                            <span>@GetDisplayText(v)</span>
+                                        }
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     }
                 }
                 else
