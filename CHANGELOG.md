@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-11 – Select, MultiSelect & DataTable: Component-Level Refinements
+## 2026-3-10 – Select, MultiSelect & DataTable: Component-Level Refinements
 
 > **Library changes.** Affects `SelectTrigger`, `SelectItem`, `MultiSelect`, and `DataTable` in `NeoUI.Blazor`. No breaking changes to public APIs.
 
@@ -31,8 +31,6 @@ The `+N more` badge shown when selected items exceed `MaxDisplayTags` now render
 The `TableRow` that renders column headers now carries `bg-muted/50` directly in `DataTable.razor`. Previously this tint had to be applied manually by each consumer via `Class` overrides or wrapper styles. The `hover:bg-muted/50` and `data-[state=selected]:bg-muted` classes have been removed from the header row — hover-state colour changes and selection highlighting are body-row concerns only.
 
 ---
-
-
 
 ## 2026-3-6 — Performance: CascadingValue IsFixed alignment with upstream
 
