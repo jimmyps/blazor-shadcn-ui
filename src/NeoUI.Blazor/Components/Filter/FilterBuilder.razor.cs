@@ -65,20 +65,18 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         if (Filters != null)
         {
             _conditions = Filters.Conditions.Select(CloneCondition).ToList();
-            _lastEmittedIds = _conditions.Select(GetConditionSignature).ToHashSet();
+            _lastEmittedIds = _conditions.Select(c => c.Id).ToHashSet();
         }
     }
 
     protected override void OnParametersSet()
     {
         if (Filters == null) return;
-        // Compare full condition signatures (Id + Operator + Value) so that external updates
-        // to operator or value (e.g. restoring saved filters) also trigger a re-sync.
-        var externalSigs = Filters.Conditions.Select(GetConditionSignature).ToHashSet();
-        if (!externalSigs.SetEquals(_lastEmittedIds))
+        var externalIds = Filters.Conditions.Select(c => c.Id).ToHashSet();
+        if (!externalIds.SetEquals(_lastEmittedIds))
         {
             _conditions = Filters.Conditions.Select(CloneCondition).ToList();
-            _lastEmittedIds = _conditions.Select(GetConditionSignature).ToHashSet();
+            _lastEmittedIds = _conditions.Select(c => c.Id).ToHashSet();
         }
     }
 
@@ -180,7 +178,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
             Conditions = _conditions.Select(CloneCondition).ToList(),
             NestedGroups = Filters?.NestedGroups ?? new()
         };
-        _lastEmittedIds = updated.Conditions.Select(GetConditionSignature).ToHashSet();
+        _lastEmittedIds = updated.Conditions.Select(c => c.Id).ToHashSet();
 
         if (FiltersChanged.HasDelegate)
             await FiltersChanged.InvokeAsync(updated);
@@ -222,15 +220,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         );
     }
 
-    // ── Cloning & comparison ─────────────────────────────────────────────────
-
-    /// <summary>
-    /// Returns a string signature for a condition that covers Id, Operator, and Value.
-    /// Used in <see cref="OnParametersSet"/> to detect external changes beyond just ID set changes
-    /// (e.g. the parent restoring saved filters with the same IDs but different operators/values).
-    /// </summary>
-    private static string GetConditionSignature(FilterCondition c)
-        => $"{c.Id}|{c.Operator}|{c.Value}";
+    // ── Cloning ───────────────────────────────────────────────────────────────
 
     private static FilterCondition CloneCondition(FilterCondition c) => new()
     {
