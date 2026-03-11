@@ -169,7 +169,7 @@
     private bool _isPositioned = false;
     private bool _previousIsOpen = false;
     private bool _isUpdatingVisibility = false;
-    private bool _suppressRender = false;
+    private string _lastStyle = string.Empty;
     private ElementReference _portalContentRef;
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
@@ -188,15 +188,6 @@
 
         // Subscribe to portal ready events for synchronization
         PortalService.OnPortalRendered += HandlePortalRendered;
-    }
-
-    protected override bool ShouldRender()
-    {
-        if (_suppressRender)
-        {
-            return false;
-        }
-        return base.ShouldRender();
     }
 
     private void HandlePortalRendered(string portalId)
@@ -405,15 +396,7 @@
     {
         try
         {
-            // Suppress Blazor re-renders while JS is orchestrating the show animation.
-            // Without this, Blazor re-renders (from RefreshPortal, OnReady→StateHasChanged, etc.)
-            // rewrite the style attribute via GetInitialStyle(), making the element visible
-            // BEFORE showFloating's RFA has a chance to set data-state="open" + visibility.
-            _suppressRender = true;
-
             await SetupAnchorPositioningAsync(AnchorElement.Value);
-
-            _suppressRender = false;
 
             // Trigger OnReady for focus management and keyboard navigation setup
             if (OnReady.HasDelegate && IsOpen)
@@ -423,7 +406,6 @@
         }
         catch (Exception ex)
         {
-            _suppressRender = false;  // Always restore on error
             LogSetupFailed(Logger, PortalId, ex.Message, ex);
         }
     }
@@ -435,28 +417,16 @@
     /// </summary>
     private async Task HideAsync()
     {
-        // Suppress re-renders while JS is orchestrating the hide animation.
-        // Without this, Blazor can re-render the element with GetInitialStyle()
-        // (which returns positioned style without visibility:hidden when _isPositioned=true),
-        // briefly making the element visible before hideFloating's RFA hides it.
-        _suppressRender = true;
-        try
-        {
-            // JS handles AutoUpdate disposal + data-state update via requestAnimationFrame
-            // This ensures smooth exit animations in both WASM and Interactive Server
-            await PositioningService.HideFloatingAsync(_portalContentRef);
+        // JS handles AutoUpdate disposal + data-state update via requestAnimationFrame
+        // This ensures smooth exit animations in both WASM and Interactive Server
+        await PositioningService.HideFloatingAsync(_portalContentRef);
 
-            // Dispose C# AutoUpdate handle so it's not re-used on next open
-            // JS will recreate AutoUpdate on next ShowFloatingAsync call
-            if (_positioningCleanup != null)
-            {
-                await _positioningCleanup.DisposeAsync();
-                _positioningCleanup = null;
-            }
-        }
-        finally
+        // Dispose C# AutoUpdate handle so it's not re-used on next open
+        // JS will recreate AutoUpdate on next ShowFloatingAsync call
+        if (_positioningCleanup != null)
         {
-            _suppressRender = false;
+            await _positioningCleanup.DisposeAsync();
+            _positioningCleanup = null;
         }
 
         // CRITICAL: Don't change _isPositioned here! Keeping it stable prevents Blazor from
@@ -542,7 +512,14 @@
             {
                 // JS handles: dispose old AutoUpdate → compute position → setup new AutoUpdate → show via RFA
                 // Single call matches upstream's dispose-on-hide + recreate-on-show lifecycle
-                await PositioningService.ShowFloatingAsync(_portalContentRef, anchor, options);
+                var position = await PositioningService.ShowFloatingAsync(_portalContentRef, anchor, options);
+
+                // Sync Blazor state with JS-computed position so re-renders use correct coordinates
+                if (position != null)
+                {
+                    _positionLeft = position.X;
+                    _positionTop = position.Y;
+                }
 
                 // Note: Don't track _positioningCleanup — JS owns AutoUpdate via element._autoUpdateCleanupId
             }
@@ -588,7 +565,8 @@
             // 1. Flash at wrong position (fixed doesn't depend on parent context)
             // 2. Scroll jump (visibility: hidden prevents browser from scrolling to element)
             // 3. Layout interference (pointer-events: none prevents interaction)
-            return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+            _lastStyle = $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+            return _lastStyle;
         }
 
         // When ForceMount is active and the portal is closed, keep the element at its
@@ -597,11 +575,20 @@
         // JS owns visibility via !important overrides during transitions.
         if (ForceMount && !IsOpen)
         {
-            return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; visibility: hidden; opacity: 0; pointer-events: none;";
+            _lastStyle = $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; visibility: hidden; opacity: 0; pointer-events: none;";
+            return _lastStyle;
+        }
+
+        // During open transition, keep the last style (so Blazor diff engine will not see any changes)
+        // until JS updates it for animation
+        if (ForceMount && _previousIsOpen != IsOpen && IsOpen)
+        {
+            return _lastStyle;
         }
 
         // This prevents the content from "closing" when parent components re-render
-        return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
+        _lastStyle = $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
+        return _lastStyle;
     }
 
     private string GetMergedStyle()
