@@ -55,6 +55,11 @@ public partial class FilterValue : ComponentBase
         ? "rounded-none bg-transparent shadow-none h-full py-0 text-sm px-2 w-auto min-w-[60px] max-w-[160px] border-transparent"
         : "border-transparent shadow-none";
 
+    /// <summary>CSS for the secondary (second-value) input in Between scenarios — narrower max-width.</summary>
+    private string InputCompactSecondary => Compact
+        ? "rounded-none bg-transparent shadow-none h-full py-0 text-sm px-2 w-auto min-w-[60px] max-w-[100px] border-transparent"
+        : "border-transparent shadow-none";
+
     /// <summary>CSS for Select trigger: sizing/layout overrides. Border and ring suppression is handled by Borderless="true" on the trigger.</summary>
     private string SelectCompact => Compact
         ? "h-full w-auto min-w-0 rounded-none px-2 text-sm hover:bg-muted/50 [&[aria-expanded=true]]:hover:bg-muted/50"

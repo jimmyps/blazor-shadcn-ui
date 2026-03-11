@@ -13,18 +13,18 @@ else if (!IsValueNotNeeded())
         if (IsBetween)
         {
             <div class="flex items-center gap-1">
-                <NeoUI.Blazor.Input @bind-Value="@TextValue"
+                <Input @bind-Value="@TextValue"
                        Placeholder="@(FieldDefinition?.Placeholder ?? "From")"
-                       Class="@InputCompact" />
+                       Class="@InputCompactSecondary" />
                 <span class="text-xs text-muted-foreground px-1">and</span>
-                <NeoUI.Blazor.Input @bind-Value="@SecondaryTextValue"
+                <Input @bind-Value="@SecondaryTextValue"
                        Placeholder="To"
-                       Class="@InputCompact" />
+                       Class="@InputCompactSecondary" />
             </div>
         }
         else
         {
-            <NeoUI.Blazor.Input @bind-Value="@TextValue"
+            <Input @bind-Value="@TextValue"
                    Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
                    Class="@InputCompact" />
         }
@@ -40,14 +40,14 @@ else if (!IsValueNotNeeded())
                               Placeholder="@(FieldDefinition?.Placeholder ?? "Min")"
                               Min="@FieldDefinition?.Min?.ToString()"
                               Max="@FieldDefinition?.Max?.ToString()"
-                              Class="@InputCompact" />
+                              Class="@InputCompactSecondary" />
                 <span class="text-xs text-muted-foreground px-1">and</span>
                 <NumericInput TValue="decimal?"
                               @bind-Value="@SecondaryNumericDecimalValue"
                               Placeholder="Max"
                               Min="@FieldDefinition?.Min?.ToString()"
                               Max="@FieldDefinition?.Max?.ToString()"
-                              Class="@InputCompact" />
+                              Class="@InputCompactSecondary" />
             </div>
         }
         else
@@ -69,12 +69,12 @@ else if (!IsValueNotNeeded())
                 <CurrencyInput TValue="decimal?"
                                @bind-Value="@CurrencyDecimalValue"
                                Placeholder="@(FieldDefinition?.Placeholder ?? "Min")"
-                               Class="@InputCompact" />
+                               Class="@InputCompactSecondary" />
                 <span class="text-xs text-muted-foreground px-1">and</span>
                 <CurrencyInput TValue="decimal?"
                                @bind-Value="@SecondaryCurrencyDecimalValue"
                                Placeholder="Max"
-                               Class="@InputCompact" />
+                               Class="@InputCompactSecondary" />
             </div>
         }
         else
@@ -197,7 +197,7 @@ else if (!IsValueNotNeeded())
     @* ── Fallback ── *@
     else
     {
-        <NeoUI.Blazor.Input @bind-Value="@TextValue"
+        <Input @bind-Value="@TextValue"
                Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
                Class="@InputCompact" />
     }

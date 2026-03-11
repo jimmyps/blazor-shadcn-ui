@@ -1,4 +1,4 @@
-@namespace NeoUI.Blazor
+﻿@namespace NeoUI.Blazor
 @typeparam TData where TData : class
 @using NeoUI.Icons.Lucide
 
@@ -17,7 +17,7 @@
                 <DropdownMenuTrigger>
                     <Button Variant="ButtonVariant.Outline"
                             Size="ButtonSize.Small"
-                            Class="h-8 gap-1.5 px-2.5 text-muted-foreground hover:text-foreground"
+                            Class="h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
                             Disabled="@(!_fields.Any())">
                         <LucideIcon Name="list-filter" Size="14" />
                         @if (ShowButtonText)
@@ -129,7 +129,7 @@
             <Button Variant="ButtonVariant.Outline"
                     Size="ButtonSize.Small"
                     OnClick="@ClearAll"
-                    Class="h-8 gap-1.5 px-2.5 text-muted-foreground hover:text-foreground">
+                    Class="h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground">
                 <LucideIcon Name="filter-x" Size="14" />
                 <span class="text-sm">Clear</span>
             </Button>
