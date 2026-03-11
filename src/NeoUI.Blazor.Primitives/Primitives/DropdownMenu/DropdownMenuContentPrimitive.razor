@@ -196,9 +196,10 @@
 
             _dotNetRef = DotNetObjectReference.Create(this);
 
-            // Pass trigger element to exclude it from click-outside detection
+            // Pass trigger element to exclude it, and the portal ID so submenu content
+            // (rendered as siblings in the same portal) is not treated as "outside"
             _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
-                "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside", Context.State.TriggerElement);
+                "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside", Context.State.TriggerElement, _portalId);
         }
         catch (JSDisconnectedException)
         {
