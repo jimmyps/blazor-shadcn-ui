@@ -1,0 +1,64 @@
+@page "/components/filter/custom"
+@namespace NeoUI.Demo.Shared.Pages.Components.Filter
+
+<PageTitle>Filter Builder - Custom Controls - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+
+    <DemoPageHeader
+        Title="Custom Controls"
+        Description="Use custom RenderFragment controls for specialized input scenarios like sliders, ratings, and more." />
+
+    <DemoSection Title="Custom Value Input" Description="Provide a RenderFragment&lt;FilterCondition&gt; as ChildContent on FilterField to replace the default value widget.">
+        <DemoBlock Code="@_customCode">
+            <FilterBuilder TData="CustomItem" @bind-Filters="_filters">
+                <FilterFields>
+                    <FilterField Field="Name" Label="Name" Type="FilterFieldType.Text" />
+                    <FilterField Field="Rating" Label="Rating" Icon="star" Type="FilterFieldType.Custom">
+                        <ChildContent Context="ctx">
+                            <span class="px-2 flex items-center self-stretch">
+                                <Rating Value="@GetRatingValue(ctx.Condition)"
+                                        ValueChanged="@(v => SetRating(ctx, (int)v))"
+                                        MaxRating="5"
+                                        AllowClear="true"
+                                        Size="RatingSize.Small" />
+                            </span>
+                        </ChildContent>
+                    </FilterField>
+                </FilterFields>
+            </FilterBuilder>
+            @if (_filters.Conditions.Any(c => c.Field == "Rating"))
+            {
+                var r = _filters.Conditions.First(c => c.Field == "Rating");
+                <p class="mt-3 text-xs text-muted-foreground">Rating filter: @r.Operator @r.Value ★</p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Usage Pattern" Description="Any Blazor markup can be used as the custom control.">
+        <div class="bg-muted p-6 rounded-lg">
+            <pre class="text-sm overflow-x-auto font-mono"><code>@_usageCode</code></pre>
+        </div>
+    </DemoSection>
+
+    <DemoPageSubNav ParentSlug="filter" />
+</div>
+
+@code {
+    private FilterGroup _filters = new();
+
+    private static double GetRatingValue(FilterCondition condition)
+        => condition.Value is double d ? d : (double.TryParse(condition.Value?.ToString(), out var p) ? p : 0);
+
+    private void SetRating(FilterCustomContext ctx, int star)
+    {
+        ctx.Condition.Value = (double)star;
+        _ = ctx.NotifyChanged();
+    }
+
+    public class CustomItem
+    {
+        public string Name { get; set; } = string.Empty;
+        public int Rating { get; set; }
+    }
+}

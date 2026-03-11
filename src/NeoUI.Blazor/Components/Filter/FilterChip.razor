@@ -1,0 +1,150 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+
+@*
+    FilterChip — interactive segmented chip for one active filter condition.
+
+    Layout: [icon Label] | [operator Select] | [value input] | [×]
+*@
+
+<div class="@ChipCssClass">
+    @* ── Field label segment ── *@
+    <span class="flex items-center gap-1.5 pl-2.5 pr-2 bg-muted/40 border-r border-input text-sm font-medium text-muted-foreground shrink-0 self-stretch">
+        @if (!string.IsNullOrEmpty(FieldDefinition?.Icon))
+        {
+            <LucideIcon Name="@FieldDefinition.Icon" Size="12" Class="opacity-70 shrink-0" />
+        }
+        @(FieldDefinition?.Label ?? Condition.Field)
+    </span>
+
+    @* ── Operator — Select component, auto-width, no border ── *@
+    <span class="border-r border-input shrink-0 self-stretch flex items-center">
+        <Select @bind-Value="@OperatorValue" TValue="string" Class="h-full">
+            <SelectTrigger Borderless="true" Class="@OperatorSelectClass">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent TValue="string" Class="w-auto min-w-max">
+                @foreach (var op in _availableOperators)
+                {
+                    var opItem = op;
+                    <SelectItem Value="@opItem.ToString()" TValue="string" Text="@GetOperatorLabel(opItem)" />
+                }
+            </SelectContent>
+        </Select>
+    </span>
+
+    @* ── Value input segment ── *@
+    @if (!IsValueless)
+    {
+        <span class="flex items-stretch flex-none min-w-0 border-r border-input">
+            <FilterValue Condition="@Condition"
+                         FieldDefinition="@FieldDefinition"
+                         ConditionChanged="@HandleConditionChanged"
+                         Compact="true" />
+        </span>
+    }
+
+    @* ── Remove button ── *@
+    <button type="button"
+            class="flex items-center justify-center px-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0 self-stretch"
+            @onclick="OnRemove"
+            aria-label="Remove filter">
+        <LucideIcon Name="x" Size="12" />
+    </button>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public FilterCondition Condition { get; set; } = new();
+    [Parameter] public FilterFieldDefinition? FieldDefinition { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+    [Parameter] public EventCallback<FilterCondition> ConditionChanged { get; set; }
+    [Parameter] public FilterChipSize Size { get; set; } = FilterChipSize.Small;
+    [Parameter] public string? Class { get; set; }
+
+    private List<FilterOperator> _availableOperators = new();
+
+    private string ChipCssClass => ClassNames.cn(
+        "inline-flex items-stretch text-sm border border-input rounded-md bg-background",
+        Size switch
+        {
+            FilterChipSize.Small  => "h-7",
+            FilterChipSize.Medium => "h-8",
+            FilterChipSize.Large  => "h-9",
+            _                     => "h-7",
+        },
+        Class
+    );
+
+    /// <summary>CSS for the operator Select trigger: sizing/layout and hover override. Ring suppression handled by Borderless.</summary>
+    private const string OperatorSelectClass =
+        "h-full w-auto min-w-0 rounded-none px-2 text-sm text-muted-foreground " +
+        "hover:bg-muted/50 hover:text-foreground [&[aria-expanded=true]]:hover:bg-muted/50";
+
+    private bool IsValueless => Condition.Operator is
+        FilterOperator.IsEmpty or FilterOperator.IsNotEmpty or
+        FilterOperator.IsTrue or FilterOperator.IsFalse;
+
+    // String-typed binding for the Select component
+    private string OperatorValue
+    {
+        get => Condition.Operator.ToString();
+        set
+        {
+            if (Enum.TryParse<FilterOperator>(value, out var op) && op != Condition.Operator)
+            {
+                Condition.Operator = op;
+                if (op is not FilterOperator.Between and not FilterOperator.NotBetween)
+                    Condition.SecondaryValue = null;
+                _ = NotifyChanged();
+                StateHasChanged();
+            }
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        _availableOperators = FieldDefinition?.Operators ?? new List<FilterOperator>();
+
+        // Ensure current operator is valid for this field; notify parent if corrected.
+        if (_availableOperators.Any() && !_availableOperators.Contains(Condition.Operator))
+        {
+            Condition.Operator = FieldDefinition?.DefaultOperator ?? _availableOperators.First();
+            _ = NotifyChanged();
+        }
+    }
+
+    private async Task HandleConditionChanged(FilterCondition condition)
+    {
+        await NotifyChanged();
+    }
+
+    private async Task NotifyChanged()
+    {
+        if (ConditionChanged.HasDelegate)
+            await ConditionChanged.InvokeAsync(Condition);
+    }
+
+    private static string GetOperatorLabel(FilterOperator op) => op switch
+    {
+        FilterOperator.Equals             => "is",
+        FilterOperator.NotEquals          => "is not",
+        FilterOperator.Contains           => "contains",
+        FilterOperator.NotContains        => "does not contain",
+        FilterOperator.StartsWith         => "starts with",
+        FilterOperator.EndsWith           => "ends with",
+        FilterOperator.IsEmpty            => "is empty",
+        FilterOperator.IsNotEmpty         => "is not empty",
+        FilterOperator.GreaterThan        => "is greater than",
+        FilterOperator.LessThan           => "is less than",
+        FilterOperator.GreaterThanOrEqual => "is ≥",
+        FilterOperator.LessThanOrEqual    => "is ≤",
+        FilterOperator.Between            => "is between",
+        FilterOperator.NotBetween         => "is not between",
+        FilterOperator.IsAnyOf            => "is any of",
+        FilterOperator.IsNoneOf           => "is none of",
+        FilterOperator.IsAllOf            => "is all of",
+        FilterOperator.IsTrue             => "is true",
+        FilterOperator.IsFalse            => "is false",
+        _                                 => op.ToString()
+    };
+}

@@ -2,6 +2,98 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-11 — FilterBuilder: New Component
+
+> **New component.** Adds `FilterBuilder<TData>` and all supporting sub-components, models, enumerations, extension methods, and 7 demo pages to `NeoUI.Blazor` and `NeoUI.Demo.Shared`. No breaking changes to existing APIs.
+
+---
+
+### 🔑 Key Features
+
+- **Generic, type-safe API** — `FilterBuilder<TData where TData : class>` binds directly to your model type; two-way `@bind-Filters` binding via `FilterGroup` with an `OnFilterChange` callback
+- **Inline canvas UI** — no modal, no popover, no Apply/Cancel step; conditions render as chip rows directly in the page and changes apply instantly
+- **Declarative child-content API** — fields and presets are declared as child components (`<FilterField>`, `<FilterPreset>`) inside named `RenderFragment` slots (`FilterFields`, `FilterPresets`); no code-behind configuration required
+- **Segmented filter chips** — each active condition renders as `[icon Label] | [operator ▾] | [value input] | [×]`; operator uses the NeoUI `Select` component (auto-width, borderless)
+- **`FilterEditorType`** — decouples the value widget from the field's data type; a `Number` field can render a `Currency`, `Masked`, or custom editor without changing the field definition
+- **`FilterPresetsVariant`** — `Dropdown` (default, DropdownMenu button) or `Tabs` (Stripe-style horizontal tab bar with an implicit "All" tab; selecting a tab replaces active conditions with the preset's conditions)
+- **11 editor types** — `Auto`, `Input`, `Numeric`, `Currency`, `Masked`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom` (`RenderFragment<FilterCondition>`)
+- **8 field types** — `Text`, `Number`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom`
+- **19 filter operators** — full coverage across text, numeric/date, collection, and boolean domains
+- **`FilterGroup` nesting** — conditions and nested groups combined with `And` / `Or` logical operators; composable at any depth
+- **LINQ extensions** — `ApplyFilters<T>()` on `IEnumerable<T>` and `IQueryable<T>`; all string comparisons use `OrdinalIgnoreCase`
+- **7 demo pages** — basic, all-types, presets (Tabs), custom editor (Rating), nested groups, persistence (localStorage), and a feature overview with Quick Start
+
+---
+
+### ✨ Feat: `FilterBuilder<TData>` — inline canvas filter UI with declarative child-content API
+
+Adds a fully standalone, generic filter builder component (`@typeparam TData where TData : class`) implemented as a `.razor` + `.razor.cs` partial pair. The UI is an **inline block canvas** — no Popover, no Apply/Cancel step; all changes apply instantly.
+
+The canvas renders a `[≡ Filter]` field-picker button, one chip row per active condition, and a `[✕ Clear]` button pinned to the top-right (visible only when at least one condition is active). The root component accepts `Filters` / `FiltersChanged` / `OnFilterChange` for two-way binding, named `RenderFragment` parameters `FilterFields` and `FilterPresets` for declarative child configuration, a `ButtonText` parameter, and a `PresetsVariant` parameter.
+
+Each active condition renders as a segmented pill:
+
+```
+[icon Label] | [operator Select ▾] | [value input] | [×]
+```
+
+The operator selector uses the NeoUI `Select` component (auto-width, no border, background-only hover/active states). The value input widget switches on `EditorType` and supports all editor variants (see `FilterEditorType` below). Input controls retain their border; top/bottom clipping is avoided by removing `overflow-hidden` from the chip container. All controls are `w-auto` — no forced full-width.
+
+**Sub-components added:**
+
+| File | Role |
+|------|------|
+| `IFilterBuilderContext.cs` | Cascading context interface; exposes `RegisterField` / `RegisterPreset` to child components |
+| `FilterChip.razor` | Interactive segmented chip for a single active condition |
+| `FilterConditionRow.razor` | Standalone row: field label + operator selector + value input + remove button |
+| `FilterValue.razor` / `.cs` | Typed value input; switches on all 8 `FilterFieldType` values; `Compact` mode for in-chip use |
+| `FilterField.razor` | Registers a field definition via `IFilterBuilderContext`; supports `Icon` and `EditorType` |
+| `FilterPreset.razor` | Registers a preset definition via `IFilterBuilderContext` |
+
+---
+
+### ✨ Feat: Core models and enumerations (`NeoUI.Blazor`)
+
+**New enumerations:**
+
+- **`FilterOperator`** — `Equals`, `NotEquals`, `Contains`, `NotContains`, `StartsWith`, `EndsWith`, `IsEmpty`, `IsNotEmpty`, `GreaterThan`, `LessThan`, `GreaterThanOrEqual`, `LessThanOrEqual`, `Between`, `NotBetween`, `IsAnyOf`, `IsNoneOf`, `IsAllOf`, `IsTrue`, `IsFalse`
+- **`FilterFieldType`** — `Text`, `Number`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom`
+- **`LogicalOperator`** — `And`, `Or`
+- **`FilterEditorType`** — `Auto`, `Input`, `Numeric`, `Currency`, `Masked`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom`. Decouples the value widget from the field's data type (e.g. a `Number` field can render a `Currency` editor).
+- **`FilterPresetsVariant`** — `Dropdown` (default; renders a Presets button backed by `DropdownMenu`) or `Tabs` (renders a Stripe-style horizontal tab bar with an implicit "All" tab; selecting a tab replaces the active conditions with that preset's conditions).
+
+**New model classes:**
+
+- `FilterCondition` — `Id`, `Field`, `Operator`, `Value`, `SecondaryValue`
+- `FilterGroup` — `Id`, `Logic`, `Conditions`, `NestedGroups`
+- `SelectOption` — `record(Value, Label)`
+- `FilterFieldDefinition` — internal field descriptor extracted from `FilterField` children
+- `FilterPresetDefinition` — internal preset descriptor extracted from `FilterPreset` children
+
+---
+
+### ✨ Feat: `FilterExtensions` — LINQ helpers for applying a `FilterGroup`
+
+Adds `ApplyFilters<T>()` extension methods on both `IEnumerable<T>` and `IQueryable<T>`. All string comparisons (`Contains`, `NotContains`, `StartsWith`, `EndsWith`) use `StringComparison.OrdinalIgnoreCase`.
+
+---
+
+### ✨ Feat: Demo pages — 7 pages under `/components/filter`
+
+| Route | Content |
+|-------|---------|
+| `/components/filter` | Feature overview, keyboard-accessible example navigation cards, Quick Start snippet |
+| `/components/filter/basic` | Product catalog with cards; `FilterEditorType.Currency` for Price |
+| `/components/filter/all-types` | Employee directory + `DataTable` (toolbar off); all 8 field types + `EditorType` reference table |
+| `/components/filter/presets` | Order management + `DataTable` (toolbar off) + 3 presets rendered as `PresetsVariant="Tabs"` |
+| `/components/filter/custom` | Star-rating custom control using the NeoUI `Rating` component |
+| `/components/filter/nested` | Code-only reference for nested `FilterGroup` + LINQ |
+| `/components/filter/persistence` | `localStorage` persistence pattern snippet |
+
+The component registry entry uses slug `filter` with 6 sub-page entries marked `IsSubPage: true`.
+
+---
+
 ## 2026-3-10 – Select, MultiSelect & DataTable: Component-Level Refinements
 
 > **Library changes.** Affects `SelectTrigger`, `SelectItem`, `MultiSelect`, and `DataTable` in `NeoUI.Blazor`. No breaking changes to public APIs.
