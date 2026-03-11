@@ -101,7 +101,11 @@ else
 
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && TriggerContext?.SetTriggerElement != null)
+        // Re-register on every render, not just firstRender.
+        // ShouldShowTooltip() can add/remove the <TooltipPrimitive> wrapper between renders,
+        // which causes Blazor to recreate the <button> element with a new ElementReference ID.
+        // Registering only on firstRender leaves _asChildTriggerRef pointing to a dead element.
+        if (TriggerContext?.SetTriggerElement != null)
         {
             TriggerContext.SetTriggerElement.Invoke(_buttonRef);
         }

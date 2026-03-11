@@ -304,7 +304,9 @@ public partial class Button : ComponentBase
     /// </summary>
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender && TriggerContext?.SetTriggerElement != null)
+        // Re-register on every render so the ref stays current if the element is recreated
+        // (e.g., when a conditional wrapper is added/removed around this button).
+        if (TriggerContext?.SetTriggerElement != null)
         {
             TriggerContext.SetTriggerElement.Invoke(_buttonRef);
         }
