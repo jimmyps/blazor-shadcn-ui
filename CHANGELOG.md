@@ -2,7 +2,81 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-11 — FilterBuilder: New Component
+## 2026-3-11 — DataTable: Appearance API, Density, Bug Fixes & Docs
+
+> **Enhancement.** Introduces a full appearance-customisation API to `DataTable<TData>` (`Dense`, `HeaderBackground`, `HeaderBorder`, `CellBorder`, `ColumnsVisibility`, per-part CSS class overrides), fixes toolbar UX issues, de-bolds pagination labels, expands the API reference, and adds a `README.md` for the component. No breaking changes.
+
+---
+
+### ✨ Feat: `DataTable<TData>` — appearance and layout parameters
+
+Seven new `[Parameter]` properties for fine-grained visual control:
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Dense` | `bool` | `true` | Compact cell padding (`h-9 / py-2 px-4`). `false` uses spacious defaults (`h-12 / p-4`). |
+| `HeaderBackground` | `bool` | `true` | Applies `bg-muted/50` to the header row. |
+| `HeaderBorder` | `bool` | `false` | Vertical `divide-x divide-border` dividers between header cells. |
+| `CellBorder` | `bool` | `false` | Vertical `divide-x divide-border` dividers between body cells. |
+| `ColumnsVisibility` | `bool` | `true` | Show/hide the "Columns" toggle button in the toolbar. |
+| `HeaderClass` | `string?` | `null` | Extra CSS classes on `<thead>`. |
+| `HeaderRowClass` | `string?` | `null` | Extra CSS classes on the header `<tr>`. |
+| `BodyRowClass` | `string?` | `null` | Extra CSS classes on each body `<tr>`. |
+
+**Internal computed helpers added to `DataTable.razor.cs`:**
+
+- `HeaderCellPaddingClass` — `h-9 px-4` (Dense) or `h-12 px-4`
+- `BodyCellPaddingClass` — `py-2 px-4` (Dense) or `p-4`
+- `ComputedHeaderRowClass` — merges `border-b`, optional `bg-muted/50`, optional `divide-x divide-border`, and `HeaderRowClass`
+- `GetBodyRowClass(bool isSelected)` — merges selection state, optional `divide-x divide-border`, and `BodyRowClass`
+
+All new parameters are tracked in `ShouldRender` to prevent stale renders when style props change at runtime.
+
+---
+
+### 🐛 Fix: `DataTableToolbar` — column visibility label click unresponsive
+
+Clicking the column label text in the column visibility popover had no effect; only clicking directly on the checkbox worked.
+
+**Root cause:** The `FieldLabel For=` → `Checkbox Id=` association relied on native `<label for>` / `<input id>` linkage, which the `Checkbox` component does not surface on its underlying input.
+
+**Fix:** Row `<div>` now owns the `@onclick` handler (`OnColumnVisibilityChanged?.Invoke(column.Id, !column.Visible)`). `Checkbox` receives `Class="pointer-events-none"` so it displays state only. `FieldLabel` replaced with a plain `<span>`. The `checkboxId` local variable removed.
+
+---
+
+### 🐛 Fix: `DataTableToolbar` — excessive gap between toolbar and table
+
+`py-4` on the toolbar div stacked with `space-y-4` on the container, producing a ~32 px visual gap. Changed `py-4` → `pt-4` (removes bottom padding); `space-y-4` now provides the sole 16 px separation.
+
+---
+
+### 🐛 Fix: `DataTableToolbar` — Columns button icon/text spacing too wide
+
+Reduced `me-2` → `me-1.5` on the clipboard SVG inside the Columns button for tighter icon-to-label spacing at `ButtonSize.Small`.
+
+---
+
+### 🐛 Fix: `PaginationPageDisplay` / `PaginationPageSizeSelector` — bold pagination labels
+
+"Page X of Y" (`PaginationPageDisplay`) and "Rows per page" (`PaginationPageSizeSelector`) were rendered in `font-medium`. Changed both to `text-muted-foreground` (no bold) to match the already-muted "Showing X–Y of Z" style from `PaginationInfo`.
+
+---
+
+### 📄 Docs: `DataTable` — new `README.md` and expanded API reference
+
+- Created `src/NeoUI.Blazor/Components/DataTable/README.md` — covers Quick Start, Appearance Customisation, Row Selection, Custom Cell Templates, Toolbar Actions, Loading/Empty states, Server-Side mode, and full API tables for `DataTable<TData>` and `DataTableColumn<TData, TValue>`.
+- `DataTableDemo.cs` `_dataTableProps`: expanded from 10 → 25 rows (all new style params + previously undocumented `Columns`, `ToolbarActions`, `EmptyTemplate`, `LoadingTemplate`, `AriaLabel`, `OnSort`, `OnFilter`, `PreprocessData`).
+- `DataTableDemo.cs` `_dataTableColumnProps`: expanded from 6 → 13 rows (added `Id`, `Filterable`, `Width`, `MinWidth`, `MaxWidth`, `CellClass`, `HeaderClass`).
+
+---
+
+### 🎨 Demo: `DataTableDemo` — interactive style controls in Basic Table section
+
+Replaced the static Basic Table `DemoBlock` with an interactive variant featuring five `Switch` toggles (Dense layout, Header background, Header borders, Cell borders, Columns button) so users can explore all appearance options live without code changes.
+
+---
+
+## FilterBuilder: New Component
 
 > **New component.** Adds `FilterBuilder<TData>` and all supporting sub-components, models, enumerations, extension methods, and 7 demo pages to `NeoUI.Blazor` and `NeoUI.Demo.Shared`. No breaking changes to existing APIs.
 
@@ -4356,3 +4430,4 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ---
 
 **Note:** This changelog is based on git commit history. For a complete view of all commits, [visit the repository's commit history](https://github.com/jimmyps/blazor-shadcn-ui/commits/main).
+

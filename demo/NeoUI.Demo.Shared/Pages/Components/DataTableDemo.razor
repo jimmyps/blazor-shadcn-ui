@@ -11,16 +11,46 @@
 
     <DemoSection
         Title="Basic Table"
-        Description="A simple table with automatic sorting and pagination.">
+        Description="A simple table with automatic sorting and pagination. Toggle the style options below to explore layout variants.">
         <DemoBlock Code="@_basicTableCode">
-            <DataTable TData="Person" Data="@people" InitialPageSize="5">
-                <Columns>
-                    <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Sortable Alignment="ColumnAlignment.Right" />
-                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
-                    <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" Sortable />
-                    <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable Alignment="ColumnAlignment.Right" />
-                </Columns>
-            </DataTable>
+            <ChildContent>
+                <div class="flex flex-wrap gap-x-6 gap-y-3 mb-4 p-3 rounded-md border bg-muted/30">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <Switch @bind-Checked="_dense" Size="SwitchSize.Small" />
+                        <span class="text-sm">Dense layout</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <Switch @bind-Checked="_headerBackground" Size="SwitchSize.Small" />
+                        <span class="text-sm">Header background</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <Switch @bind-Checked="_headerBorder" Size="SwitchSize.Small" />
+                        <span class="text-sm">Header borders</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <Switch @bind-Checked="_cellBorder" Size="SwitchSize.Small" />
+                        <span class="text-sm">Cell borders</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <Switch @bind-Checked="_columnsVisibility" Size="SwitchSize.Small" />
+                        <span class="text-sm">Columns button</span>
+                    </label>
+                </div>
+                <DataTable TData="Person" Data="@people"
+                           Dense="@_dense"
+                           HeaderBackground="@_headerBackground"
+                           HeaderBorder="@_headerBorder"
+                           CellBorder="@_cellBorder"
+                           ColumnsVisibility="@_columnsVisibility"
+                           InitialPageSize="5">
+                    <Columns>
+                        <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Id)" Header="ID" Sortable Alignment="ColumnAlignment.Right" />
+                        <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Name)" Header="Name" Sortable />
+                        <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Email)" Header="Email" Sortable />
+                        <DataTableColumn TData="Person" TValue="int" Property="@(p => p.Age)" Header="Age" Sortable Alignment="ColumnAlignment.Right" />
+                    </Columns>
+                </DataTable>
+            </ChildContent>
         </DemoBlock>
     </DemoSection>
 
@@ -261,6 +291,11 @@
     private IReadOnlyCollection<Person> selectedPeople = Array.Empty<Person>();
     private bool isLoading = false;
     private bool enableKeyboardNavigation = true;
+    private bool _dense = true;
+    private bool _headerBackground = true;
+    private bool _headerBorder = false;
+    private bool _cellBorder = false;
+    private bool _columnsVisibility = true;
 
     protected override void OnInitialized()
     {

@@ -8,7 +8,8 @@
                               GlobalSearchValue="@_globalSearchValue"
                               OnGlobalSearchChanged="HandleGlobalSearchChanged"
                               Columns="@_columns"
-                              OnColumnVisibilityChanged="HandleColumnVisibilityChanged">
+                              OnColumnVisibilityChanged="HandleColumnVisibilityChanged"
+                              ShowColumnsVisibility="@ColumnsVisibility">
                 @ToolbarActions
             </DataTableToolbar>
         }
@@ -52,11 +53,11 @@
                                                  OnSelectionChange="HandleSelectionChange"
                                                  Class="@TableCssClass"
                                                  AriaLabel="@AriaLabel">
-                    <TableHeader>
-                        <TableRow TData="TData" Class="border-b bg-muted/50 transition-colors">
+                    <TableHeader Class="@HeaderClass">
+                        <TableRow TData="TData" Class="@ComputedHeaderRowClass">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
-                                <TableHeaderCell TData="TData" Class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12" role="columnheader">
+                                <TableHeaderCell TData="TData" Class="@ClassNames.cn(HeaderCellPaddingClass, "text-left align-middle font-medium text-muted-foreground w-12")" role="columnheader">
                                     <div @onclick:stopPropagation="true">
                                         @if (ShouldShowSelectAllPrompt())
                                         {
@@ -115,7 +116,7 @@
                                 };
 
                                 <TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
-                                                 Class="@ClassNames.cn("h-12 px-4 align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass)"
+                                                 Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass)"
                                                  style="@GetColumnWidthStyle(column)"
                                                  aria-sort="@ariaSortValue">
                                     <div class="@ClassNames.cn("flex items-center gap-2", flexJustify)">
@@ -150,10 +151,10 @@
                         @foreach (var item in _processedData)
                         {
                             var isSelected = _tableState.Selection.IsSelected(item);
-                            <TableRow TData="TData" Item="@item" Class="@ClassNames.cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", isSelected ? "bg-muted" : "")">
+                            <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelected)">
                                 @if (SelectionMode == DataTableSelectionMode.Multiple)
                                 {
-                                    <TableCell Class="p-4 align-middle w-12" role="gridcell">
+                                    <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")" role="gridcell">
                                         <div @onclick:stopPropagation="true">
                                             <Checkbox Checked="@isSelected"
                                                       CheckedChanged="@(async (bool isChecked) => await HandleRowSelectionChanged(item, isChecked))"
@@ -170,7 +171,7 @@
                                         _ => "text-left"
                                     };
                                     
-                                    <TableCell Class="@ClassNames.cn("p-4 align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
+                                    <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
                                         @if (column.CellTemplate != null)
                                         {
                                             @column.CellTemplate(item)

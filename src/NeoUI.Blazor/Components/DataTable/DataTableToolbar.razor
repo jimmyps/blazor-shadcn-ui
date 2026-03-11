@@ -1,11 +1,11 @@
 @namespace NeoUI.Blazor
 @typeparam TData where TData : class
-<div class="flex items-center justify-between gap-2 py-4">
+<div class="flex items-center justify-between gap-2 pt-4">
     <div class="flex flex-1 items-center gap-2">
-        <NeoUI.Blazor.Input @bind-Value="@_searchValue"
+        <Input @bind-Value="@_searchValue"
                @bind-Value:after="@HandleSearchChanged"
                Placeholder="Search..."
-               Class="h-8 w-[150px] lg:w-[250px]" />
+               Class="h-8 w-[180px]" />
 
         @if (Columns.Any(c => c.Filterable))
         {
@@ -29,34 +29,33 @@
             </Popover>
         }
 
+        @if (ShowColumnsVisibility)
+        {
         <Popover>
             <PopoverTrigger>
                 <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="h-8 ms-auto">
-                    <svg class="w-4 h-4 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
                     Columns
                 </Button>
             </PopoverTrigger>
             <PopoverContent Class="w-[200px] p-0" Side="@PopoverSide.Bottom" Align="@PopoverAlign.End">
-                <div class="p-3 space-y-2">
-                    <div class="text-sm font-medium mb-3">Toggle columns</div>
+                <div class="p-3">
+                    <div class="text-sm font-medium mb-1">Toggle columns</div>
                     @foreach (var column in Columns)
                     {
-                        var checkboxId = $"column-toggle-{column.Id}";
-                        <div class="flex items-center gap-2 p-2 hover:bg-accent rounded-sm transition-colors"
+                        <div class="flex items-center gap-2 p-1 hover:bg-accent rounded-sm transition-colors cursor-pointer"
+                             @onclick="@(() => OnColumnVisibilityChanged?.Invoke(column.Id, !column.Visible))"
                              @onclick:stopPropagation="true">
-                            <Checkbox Id="@checkboxId"
-                                      Checked="@column.Visible"
-                                      CheckedChanged="@((bool isChecked) => OnColumnVisibilityChanged?.Invoke(column.Id, isChecked))" />
-                            <FieldLabel For="@checkboxId" Class="text-sm flex-1 cursor-pointer">
-                                @column.Header
-                            </FieldLabel>
+                            <Checkbox Checked="@column.Visible" Class="pointer-events-none" />
+                            <span class="text-sm flex-1 select-none">@column.Header</span>
                         </div>
                     }
                 </div>
             </PopoverContent>
         </Popover>
+        }
     </div>
 
     @if (ChildContent != null)
@@ -81,6 +80,9 @@
 
     [Parameter]
     public Action<string, bool> OnColumnVisibilityChanged { get; set; } = null!;
+
+    [Parameter]
+    public bool ShowColumnsVisibility { get; set; } = true;
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
