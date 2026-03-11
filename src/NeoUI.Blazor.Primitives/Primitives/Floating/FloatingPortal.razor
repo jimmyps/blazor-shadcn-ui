@@ -169,6 +169,7 @@
     private bool _isPositioned = false;
     private bool _previousIsOpen = false;
     private bool _isUpdatingVisibility = false;
+    private bool _suppressRender = false;
     private ElementReference _portalContentRef;
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
@@ -187,6 +188,15 @@
 
         // Subscribe to portal ready events for synchronization
         PortalService.OnPortalRendered += HandlePortalRendered;
+    }
+
+    protected override bool ShouldRender()
+    {
+        if (_suppressRender)
+        {
+            return false;
+        }
+        return base.ShouldRender();
     }
 
     private void HandlePortalRendered(string portalId)
@@ -395,7 +405,15 @@
     {
         try
         {
+            // Suppress Blazor re-renders while JS is orchestrating the show animation.
+            // Without this, Blazor re-renders (from RefreshPortal, OnReady→StateHasChanged, etc.)
+            // rewrite the style attribute via GetInitialStyle(), making the element visible
+            // BEFORE showFloating's RFA has a chance to set data-state="open" + visibility.
+            _suppressRender = true;
+
             await SetupAnchorPositioningAsync(AnchorElement.Value);
+
+            _suppressRender = false;
 
             // Trigger OnReady for focus management and keyboard navigation setup
             if (OnReady.HasDelegate && IsOpen)
@@ -405,6 +423,7 @@
         }
         catch (Exception ex)
         {
+            _suppressRender = false;  // Always restore on error
             LogSetupFailed(Logger, PortalId, ex.Message, ex);
         }
     }
@@ -416,16 +435,28 @@
     /// </summary>
     private async Task HideAsync()
     {
-        // JS handles AutoUpdate disposal + data-state update via requestAnimationFrame
-        // This ensures smooth exit animations in both WASM and Interactive Server
-        await PositioningService.HideFloatingAsync(_portalContentRef);
-
-        // Dispose C# AutoUpdate handle so it's not re-used on next open
-        // JS will recreate AutoUpdate on next ShowFloatingAsync call
-        if (_positioningCleanup != null)
+        // Suppress re-renders while JS is orchestrating the hide animation.
+        // Without this, Blazor can re-render the element with GetInitialStyle()
+        // (which returns positioned style without visibility:hidden when _isPositioned=true),
+        // briefly making the element visible before hideFloating's RFA hides it.
+        _suppressRender = true;
+        try
         {
-            await _positioningCleanup.DisposeAsync();
-            _positioningCleanup = null;
+            // JS handles AutoUpdate disposal + data-state update via requestAnimationFrame
+            // This ensures smooth exit animations in both WASM and Interactive Server
+            await PositioningService.HideFloatingAsync(_portalContentRef);
+
+            // Dispose C# AutoUpdate handle so it's not re-used on next open
+            // JS will recreate AutoUpdate on next ShowFloatingAsync call
+            if (_positioningCleanup != null)
+            {
+                await _positioningCleanup.DisposeAsync();
+                _positioningCleanup = null;
+            }
+        }
+        finally
+        {
+            _suppressRender = false;
         }
 
         // CRITICAL: Don't change _isPositioned here! Keeping it stable prevents Blazor from
@@ -558,6 +589,15 @@
             // 2. Scroll jump (visibility: hidden prevents browser from scrolling to element)
             // 3. Layout interference (pointer-events: none prevents interaction)
             return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+        }
+
+        // When ForceMount is active and the portal is closed, keep the element at its
+        // positioned location but hidden. This prevents ambient Blazor re-renders from
+        // making the element visible when it should be hidden.
+        // JS owns visibility via !important overrides during transitions.
+        if (ForceMount && !IsOpen)
+        {
+            return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; visibility: hidden; opacity: 0; pointer-events: none;";
         }
 
         // This prevents the content from "closing" when parent components re-render
