@@ -19,7 +19,7 @@
 
     @* ── Operator — Select component, auto-width, no border ── *@
     <span class="border-r border-input shrink-0 self-stretch flex items-center">
-        <Select @bind-Value="@OperatorValue" TValue="string" Class="h-full">
+        <Select @bind-Value="@OperatorValue" TValue="string" Class="h-full" DisplayTextSelector="@GetOperatorDisplayText">
             <SelectTrigger Borderless="true" Class="@OperatorSelectClass">
                 <SelectValue />
             </SelectTrigger>
@@ -123,6 +123,9 @@
         if (ConditionChanged.HasDelegate)
             await ConditionChanged.InvokeAsync(Condition);
     }
+
+    private static string GetOperatorDisplayText(string value) =>
+        Enum.TryParse<FilterOperator>(value, out var op) ? GetOperatorLabel(op) : value;
 
     private static string GetOperatorLabel(FilterOperator op) => op switch
     {
