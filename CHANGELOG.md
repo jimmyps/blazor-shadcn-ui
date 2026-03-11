@@ -90,7 +90,7 @@ Replaced the static Basic Table `DemoBlock` with an interactive variant featurin
 - **Segmented filter chips** — each active condition renders as `[icon Label] | [operator ▾] | [value input] | [×]`; operator uses the NeoUI `Select` component (auto-width, borderless)
 - **`FilterEditorType`** — decouples the value widget from the field's data type; a `Number` field can render a `Currency`, `Masked`, or custom editor without changing the field definition
 - **`FilterPresetsVariant`** — `Dropdown` (default, DropdownMenu button) or `Tabs` (Stripe-style horizontal tab bar with an implicit "All" tab; selecting a tab replaces active conditions with the preset's conditions)
-- **11 editor types** — `Auto`, `Input`, `Numeric`, `Currency`, `Masked`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom` (`RenderFragment<FilterCondition>`)
+- **12 editor types** — `Auto`, `Input`, `Numeric`, `Currency`, `Masked`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Combobox`, `Custom` (`RenderFragment<FilterCustomContext>`)
 - **8 field types** — `Text`, `Number`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom`
 - **19 filter operators** — full coverage across text, numeric/date, collection, and boolean domains
 - **`FilterGroup` nesting** — conditions and nested groups combined with `And` / `Or` logical operators; composable at any depth
