@@ -405,7 +405,12 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             console.error('[AG Grid] BlazorServerSide fetch failed:', err.message);
             api.showNoRowsOverlay();
         } finally {
-            isFetchingServerData = false;
+            // Defer clearing the guard via setTimeout(0) so it remains active for any
+            // onPaginationChanged events that AG Grid fires asynchronously (via its own
+            // internal setTimeout) as a result of the setGridOption('rowData') call above.
+            // Without this deferral, the guard is cleared before AG Grid's deferred event
+            // fires, allowing onPaginationChanged to trigger another fetch — infinite loop.
+            setTimeout(() => { isFetchingServerData = false; }, 0);
         }
     }
     
