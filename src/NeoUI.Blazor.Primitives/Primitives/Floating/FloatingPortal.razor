@@ -169,6 +169,7 @@
     private bool _isPositioned = false;
     private bool _previousIsOpen = false;
     private bool _isUpdatingVisibility = false;
+    private string _lastStyle = string.Empty;
     private ElementReference _portalContentRef;
     private TaskCompletionSource<bool>? _portalReadyTcs;
 
@@ -511,7 +512,14 @@
             {
                 // JS handles: dispose old AutoUpdate → compute position → setup new AutoUpdate → show via RFA
                 // Single call matches upstream's dispose-on-hide + recreate-on-show lifecycle
-                await PositioningService.ShowFloatingAsync(_portalContentRef, anchor, options);
+                var position = await PositioningService.ShowFloatingAsync(_portalContentRef, anchor, options);
+
+                // Sync Blazor state with JS-computed position so re-renders use correct coordinates
+                if (position != null)
+                {
+                    _positionLeft = position.X;
+                    _positionTop = position.Y;
+                }
 
                 // Note: Don't track _positioningCleanup — JS owns AutoUpdate via element._autoUpdateCleanupId
             }
@@ -557,11 +565,30 @@
             // 1. Flash at wrong position (fixed doesn't depend on parent context)
             // 2. Scroll jump (visibility: hidden prevents browser from scrolling to element)
             // 3. Layout interference (pointer-events: none prevents interaction)
-            return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+            _lastStyle = $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+            return _lastStyle;
+        }
+
+        // When ForceMount is active and the portal is closed, keep the element at its
+        // positioned location but hidden. This prevents ambient Blazor re-renders from
+        // making the element visible when it should be hidden.
+        // JS owns visibility via !important overrides during transitions.
+        if (ForceMount && !IsOpen)
+        {
+            _lastStyle = $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; visibility: hidden; opacity: 0; pointer-events: none;";
+            return _lastStyle;
+        }
+
+        // During open transition, keep the last style (so Blazor diff engine will not see any changes)
+        // until JS updates it for animation
+        if (ForceMount && _previousIsOpen != IsOpen && IsOpen)
+        {
+            return _lastStyle;
         }
 
         // This prevents the content from "closing" when parent components re-render
-        return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
+        _lastStyle = $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
+        return _lastStyle;
     }
 
     private string GetMergedStyle()

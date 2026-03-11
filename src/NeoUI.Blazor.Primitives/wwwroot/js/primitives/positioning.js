@@ -404,10 +404,10 @@ export async function autoUpdate(reference, floating, options = {}) {
  * @param {HTMLElement} floating - The floating element to show
  * @param {HTMLElement} reference - The anchor/reference element (optional, for repositioning)
  * @param {Object} options - Positioning options (optional, for repositioning)
- * @returns {Promise<void>}
+ * @returns {Promise<{x: number, y: number, placement: string, strategy: string} | null>} The computed position when anchor is provided, otherwise null
  */
 export async function showFloating(floating, reference = null, options = null) {
-  if (!floating) return;
+  if (!floating) return null;
 
   // Always dispose existing AutoUpdate first (if any)
   const existingCleanupId = floating._autoUpdateCleanupId;
@@ -420,6 +420,8 @@ export async function showFloating(floating, reference = null, options = null) {
     delete floating._autoUpdateCleanupId;
   }
 
+  let positionResult = null;
+
   // If anchor provided, recompute position and setup AutoUpdate
   if (reference && options) {
     try {
@@ -428,6 +430,8 @@ export async function showFloating(floating, reference = null, options = null) {
       // Recompute position (upstream does this on every show)
       const position = await computePosition(reference, floating, options);
       applyPosition(floating, position, false);  // Don't makeVisible yet, RFA handles it
+
+      positionResult = { x: position.x, y: position.y, placement: position.placement, strategy: position.strategy };
 
       // Setup AutoUpdate and store cleanup ID on element
       const update = async () => {
@@ -462,6 +466,8 @@ export async function showFloating(floating, reference = null, options = null) {
     // Dispatch event to signal element is now visible
     floating.dispatchEvent(new CustomEvent('neoui:visible', { bubbles: true }));
   });
+
+  return positionResult;
 }
 
 /**
