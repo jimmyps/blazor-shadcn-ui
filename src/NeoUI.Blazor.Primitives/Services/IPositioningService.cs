@@ -64,7 +64,8 @@ public interface IPositioningService
     /// <param name="floating">The floating element to show.</param>
     /// <param name="reference">The anchor/reference element (optional, for repositioning).</param>
     /// <param name="options">Positioning options (optional, for repositioning).</param>
-    Task ShowFloatingAsync(ElementReference floating, ElementReference? reference = null, PositioningOptions? options = null);
+    /// <returns>The computed position when reference and options are provided; otherwise null.</returns>
+    Task<PositionResult?> ShowFloatingAsync(ElementReference floating, ElementReference? reference = null, PositioningOptions? options = null);
 
     /// <summary>
     /// Hides a floating element while keeping it in the DOM.
