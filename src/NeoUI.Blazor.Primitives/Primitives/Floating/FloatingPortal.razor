@@ -553,14 +553,18 @@
     {
         if (!_isPositioned)
         {
-            // Use position: fixed with off-screen coordinates to prevent:
-            // 1. Flash at wrong position (fixed doesn't depend on parent context)
-            // 2. Scroll jump (visibility: hidden prevents browser from scrolling to element)
-            // 3. Layout interference (pointer-events: none prevents interaction)
             return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
         }
 
-        // This prevents the content from "closing" when parent components re-render
+        // When ForceMount is active and the portal is closed, keep the element at its
+        // positioned location but hidden. This prevents Blazor re-renders from
+        // overwriting JS's visibility styles and causing a "flash" in Interactive Server
+        // mode where the re-render can arrive before hideFloating's RFA callback.
+        if (ForceMount && !IsOpen)
+        {
+            return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px; visibility: hidden; opacity: 0; pointer-events: none;";
+        }
+
         return $"position: {Strategy.ToValue()}; z-index: {ZIndex}; left: {_positionLeft}px; top: {_positionTop}px;";
     }
 

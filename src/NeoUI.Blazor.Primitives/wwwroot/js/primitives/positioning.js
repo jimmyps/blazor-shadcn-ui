@@ -340,18 +340,8 @@ export function applyPosition(floating, position, makeVisible = false) {
       contentElement.setAttribute('data-state', 'open');
     }
 
-    // Use a generation counter to invalidate stale RFA callbacks.
-    // In Interactive Server mode, show/hide JS calls can arrive over SignalR in rapid
-    // succession and both schedule RFA callbacks before either runs. The counter ensures
-    // only the most-recent operation's RFA applies its changes.
-    floating._floatingGeneration = (floating._floatingGeneration || 0) + 1;
-    const generation = floating._floatingGeneration;
-
     // Use requestAnimationFrame to ensure position is applied before visibility
     requestAnimationFrame(() => {
-      // Bail if a newer show/hide operation has been requested
-      if (floating._floatingGeneration !== generation) return;
-
       // Use setProperty with 'important' to override any CSS animations/transitions
       floating.style.setProperty('visibility', 'visible', 'important');
       floating.style.setProperty('opacity', '1', 'important');
@@ -421,6 +411,14 @@ export async function autoUpdate(reference, floating, options = {}) {
 export async function showFloating(floating, reference = null, options = null) {
   if (!floating) return;
 
+  console.log("showFloating called: " + floating.id);
+
+  // Guard: suppress show calls that arrive during the hide animation window.
+  if (floating._hideGuard) {
+    console.log("showFloating guard check:" + floating.id);
+    return;
+  }
+
   // Always dispose existing AutoUpdate first (if any)
   const existingCleanupId = floating._autoUpdateCleanupId;
   if (existingCleanupId) {
@@ -457,18 +455,8 @@ export async function showFloating(floating, reference = null, options = null) {
     }
   }
 
-  // Increment generation counter to invalidate any pending hide RFA callback.
-  // In Interactive Server mode, show/hide JS calls can arrive over SignalR in rapid
-  // succession and both schedule RFA callbacks before either runs. The counter ensures
-  // only the most-recent operation's RFA applies its changes (fixes flash on quick open/close).
-  floating._floatingGeneration = (floating._floatingGeneration || 0) + 1;
-  const generation = floating._floatingGeneration;
-
   // Show with requestAnimationFrame for smooth animations (WASM compatibility)
   requestAnimationFrame(() => {
-    // Bail if a newer show/hide operation has been requested
-    if (floating._floatingGeneration !== generation) return;
-
     // Find element with data-state attribute (generic for all floating portals)
     const contentElement = floating.querySelector('[data-state]') || floating;
     if (contentElement.hasAttribute('data-state')) {
@@ -495,6 +483,10 @@ export async function showFloating(floating, reference = null, options = null) {
 export function hideFloating(floating) {
   if (!floating) return;
 
+  // Block show calls during the hide animation window to prevent flash.
+  floating._hideGuard = true;
+  setTimeout(() => { floating._hideGuard = false; }, 175);
+
   // Always dispose AutoUpdate immediately (before requestAnimationFrame)
   // This matches upstream's lifecycle: dispose on hide, recreate on show
   const existingCleanupId = floating._autoUpdateCleanupId;
@@ -507,18 +499,8 @@ export function hideFloating(floating) {
     delete floating._autoUpdateCleanupId;
   }
 
-  // Increment generation counter to invalidate any pending show RFA callback.
-  // In Interactive Server mode, show/hide JS calls can arrive over SignalR in rapid
-  // succession and both schedule RFA callbacks before either runs. The counter ensures
-  // only the most-recent operation's RFA applies its changes (fixes flash on quick open/close).
-  floating._floatingGeneration = (floating._floatingGeneration || 0) + 1;
-  const generation = floating._floatingGeneration;
-
   // Hide with requestAnimationFrame for smooth exit animations (WASM compatibility)
   requestAnimationFrame(() => {
-    // Bail if a newer show/hide operation has been requested
-    if (floating._floatingGeneration !== generation) return;
-
     // Find element with data-state attribute (generic for all floating portals)
     const contentElement = floating.querySelector('[data-state]') || floating;
     if (contentElement.hasAttribute('data-state')) {
