@@ -1,0 +1,204 @@
+@namespace NeoUI.Blazor
+
+@* Custom control *@
+@if (EffectiveEditorType == FilterEditorType.Custom && FieldDefinition?.CustomControl != null)
+{
+    @FieldDefinition.CustomControl(new FilterCustomContext(Condition, NotifyConditionChanged))
+}
+else if (!IsValueNotNeeded())
+{
+    @* ── Text ── *@
+    if (EffectiveEditorType == FilterEditorType.Input)
+    {
+        if (IsBetween)
+        {
+            <div class="flex items-center gap-1">
+                <Input @bind-Value="@TextValue"
+                       Placeholder="@(FieldDefinition?.Placeholder ?? "From")"
+                       Class="@InputCompactSecondary" />
+                <span class="text-xs text-muted-foreground px-1">and</span>
+                <Input @bind-Value="@SecondaryTextValue"
+                       Placeholder="To"
+                       Class="@InputCompactSecondary" />
+            </div>
+        }
+        else
+        {
+            <Input @bind-Value="@TextValue"
+                   Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
+                   Class="@InputCompact" />
+        }
+    }
+    @* ── Numeric ── *@
+    else if (EffectiveEditorType == FilterEditorType.Numeric)
+    {
+        if (IsBetween)
+        {
+            <div class="flex items-center gap-1">
+                <NumericInput TValue="decimal?"
+                              @bind-Value="@NumericDecimalValue"
+                              Placeholder="@(FieldDefinition?.Placeholder ?? "Min")"
+                              Min="@FieldDefinition?.Min?.ToString()"
+                              Max="@FieldDefinition?.Max?.ToString()"
+                              Class="@InputCompactSecondary" />
+                <span class="text-xs text-muted-foreground px-1">and</span>
+                <NumericInput TValue="decimal?"
+                              @bind-Value="@SecondaryNumericDecimalValue"
+                              Placeholder="Max"
+                              Min="@FieldDefinition?.Min?.ToString()"
+                              Max="@FieldDefinition?.Max?.ToString()"
+                              Class="@InputCompactSecondary" />
+            </div>
+        }
+        else
+        {
+            <NumericInput TValue="decimal?"
+                          @bind-Value="@NumericDecimalValue"
+                          Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
+                          Min="@FieldDefinition?.Min?.ToString()"
+                          Max="@FieldDefinition?.Max?.ToString()"
+                          Class="@InputCompact" />
+        }
+    }
+    @* ── Currency ── *@
+    else if (EffectiveEditorType == FilterEditorType.Currency)
+    {
+        if (IsBetween)
+        {
+            <div class="flex items-center gap-1">
+                <CurrencyInput TValue="decimal?"
+                               @bind-Value="@CurrencyDecimalValue"
+                               Placeholder="@(FieldDefinition?.Placeholder ?? "Min")"
+                               Class="@InputCompactSecondary" />
+                <span class="text-xs text-muted-foreground px-1">and</span>
+                <CurrencyInput TValue="decimal?"
+                               @bind-Value="@SecondaryCurrencyDecimalValue"
+                               Placeholder="Max"
+                               Class="@InputCompactSecondary" />
+            </div>
+        }
+        else
+        {
+            <CurrencyInput TValue="decimal?"
+                           @bind-Value="@CurrencyDecimalValue"
+                           Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
+                           Class="@InputCompact" />
+        }
+    }
+    @* ── Masked ── *@
+    else if (EffectiveEditorType == FilterEditorType.Masked)
+    {
+        <MaskedInput @bind-Value="@TextValue"
+                     Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
+                     Class="@InputCompact" />
+    }
+    @* Date — single DatePicker; Between operator uses DateRangePicker for a better UX ── *@
+    else if (EffectiveEditorType == FilterEditorType.Date)
+    {
+        if (IsBetween)
+        {
+            @* Use DateRangePicker for between operator — single control vs two separate pickers *@
+            <DateRangePicker @bind-StartDate="@DateValue"
+                             @bind-EndDate="@SecondaryDateValue"
+                             ButtonVariant="ButtonVariant.Ghost"
+                             ButtonSize="ButtonSize.Small"
+                             ShowDropdownIcon="false"
+                             Class="@(Compact ? "h-full" : "")" />
+        }
+        else
+        {
+            <DatePicker @bind-SelectedDate="@DateValue"
+                        Placeholder="@(FieldDefinition?.Placeholder ?? "Pick date")"
+                        ButtonVariant="ButtonVariant.Ghost"
+                        ButtonSize="ButtonSize.Small"
+                        Class="@(Compact ? "h-full" : "")" />
+        }
+    }
+    @* ── DateRange — always DateRangePicker ── *@
+    else if (EffectiveEditorType == FilterEditorType.DateRange)
+    {
+        <DateRangePicker @bind-StartDate="@DateValue"
+                         @bind-EndDate="@SecondaryDateValue"
+                         ButtonVariant="ButtonVariant.Ghost"
+                         ButtonSize="ButtonSize.Small"
+                         ShowDropdownIcon="false"
+                         Class="@(Compact ? "h-full" : "")" />
+    }
+    @* ── Boolean ── *@
+    else if (EffectiveEditorType == FilterEditorType.Boolean)
+    {
+        <span class="px-2 flex items-center self-stretch">
+            <Switch @bind-Checked="@BoolValue" />
+        </span>
+    }
+    @* ── Select (single) — Select component, borderless in compact ── *@
+    else if (EffectiveEditorType == FilterEditorType.Select)
+    {
+        @if (FieldDefinition?.Options != null && FieldDefinition.Options.Any())
+        {
+            <Select @bind-Value="@SelectValue" TValue="string">
+                <SelectTrigger Borderless="true" Class="@SelectCompact">
+                    <SelectValue Placeholder="@(FieldDefinition.Placeholder ?? "Select...")" />
+                </SelectTrigger>
+                <SelectContent TValue="string" Class="w-auto min-w-max">
+                    @foreach (var option in FieldDefinition.Options)
+                    {
+                        var opt = option;
+                        <SelectItem Value="@opt.Value" TValue="string" Text="@opt.Label" />
+                    }
+                </SelectContent>
+            </Select>
+        }
+        else
+        {
+            <span class="text-xs text-muted-foreground px-2">No options</span>
+        }
+    }
+    @* ── Combobox — searchable single-select ── *@
+    else if (EffectiveEditorType == FilterEditorType.Combobox)
+    {
+        @if (FieldDefinition?.Options != null && FieldDefinition.Options.Any())
+        {
+            <Combobox TItem="SelectOption"
+                      Items="@(FieldDefinition.Options)"
+                      @bind-Value="@ComboboxValue"
+                      ValueSelector="@(o => o.Value)"
+                      DisplaySelector="@(o => o.Label)"
+                      Placeholder="@(FieldDefinition.Placeholder ?? "Select...")"
+                      MatchTriggerWidth="false"
+                      PopoverWidth="w-[200px]"
+                      Class="@ComboboxCompact" />
+        }
+        else
+        {
+            <span class="text-xs text-muted-foreground px-2">No options</span>
+        }
+    }
+    @* ── MultiSelect — borderless trigger in compact ── *@
+    else if (EffectiveEditorType == FilterEditorType.MultiSelect)
+    {
+        @if (FieldDefinition?.Options != null && FieldDefinition.Options.Any())
+        {
+            <MultiSelect TItem="SelectOption"
+                         Items="@(FieldDefinition.Options)"
+                         @bind-Values="@MultiSelectValues"
+                         ValueSelector="@(o => o.Value)"
+                         DisplaySelector="@(o => o.Label)"
+                         Placeholder="@(FieldDefinition.Placeholder ?? "Select...")"
+                         ShowSelectAll="false"
+                         MaxDisplayTags="@(Compact ? 1 : 3)"
+                         Class="@MultiSelectCompact" />
+        }
+        else
+        {
+            <span class="text-xs text-muted-foreground px-2">No options</span>
+        }
+    }
+    @* ── Fallback ── *@
+    else
+    {
+        <Input @bind-Value="@TextValue"
+               Placeholder="@(FieldDefinition?.Placeholder ?? "Value")"
+               Class="@InputCompact" />
+    }
+}

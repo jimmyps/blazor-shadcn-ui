@@ -195,6 +195,46 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     private int _lastPaginationVersion = 0;
 
     /// <summary>
+    /// Cached Dense value for ShouldRender optimization.
+    /// </summary>
+    private bool _lastDense;
+
+    /// <summary>
+    /// Cached HeaderBackground value for ShouldRender optimization.
+    /// </summary>
+    private bool _lastHeaderBackground;
+
+    /// <summary>
+    /// Cached HeaderBorder value for ShouldRender optimization.
+    /// </summary>
+    private bool _lastHeaderBorder;
+
+    /// <summary>
+    /// Cached HeaderClass value for ShouldRender optimization.
+    /// </summary>
+    private string? _lastHeaderClass;
+
+    /// <summary>
+    /// Cached HeaderRowClass value for ShouldRender optimization.
+    /// </summary>
+    private string? _lastHeaderRowClass;
+
+    /// <summary>
+    /// Cached BodyRowClass value for ShouldRender optimization.
+    /// </summary>
+    private string? _lastBodyRowClass;
+
+    /// <summary>
+    /// Cached CellBorder value for ShouldRender optimization.
+    /// </summary>
+    private bool _lastCellBorder;
+
+    /// <summary>
+    /// Cached ColumnsVisibility value for ShouldRender optimization.
+    /// </summary>
+    private bool _lastColumnsVisibility;
+
+    /// <summary>
     /// Gets or sets the data source for the table.
     /// </summary>
     [Parameter, EditorRequired]
@@ -325,6 +365,60 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     public Func<IEnumerable<TData>, Task<IEnumerable<TData>>>? PreprocessData { get; set; }
 
     /// <summary>
+    /// Gets or sets whether to use dense (compact) row padding.
+    /// Dense mode reduces cell padding for a more information-dense layout.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool Dense { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether to show a muted background on the header row.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool HeaderBackground { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets whether to show vertical borders between header cells.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool HeaderBorder { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets additional CSS classes applied to the &lt;thead&gt; element.
+    /// </summary>
+    [Parameter]
+    public string? HeaderClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes applied to the header &lt;tr&gt; element.
+    /// </summary>
+    [Parameter]
+    public string? HeaderRowClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes applied to each body &lt;tr&gt; element.
+    /// </summary>
+    [Parameter]
+    public string? BodyRowClass { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to show vertical borders between body cells.
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool CellBorder { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets whether to show the column visibility toggle button in the toolbar.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ColumnsVisibility { get; set; } = true;
+
+    /// <summary>
     /// Gets the computed CSS classes for the outer container element.
     /// </summary>
     private string ContainerCssClass => ClassNames.cn(
@@ -344,6 +438,38 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     private string TableCssClass => ClassNames.cn(
         "w-full caption-bottom text-sm"
+    );
+
+    /// <summary>
+    /// Gets the padding classes for header cells based on the Dense setting.
+    /// </summary>
+    private string HeaderCellPaddingClass => Dense ? "h-9 px-4" : "h-12 px-4";
+
+    /// <summary>
+    /// Gets the padding classes for body cells based on the Dense setting.
+    /// </summary>
+    private string BodyCellPaddingClass => Dense ? "py-2 px-4" : "p-4";
+
+    /// <summary>
+    /// Gets the computed CSS classes for the header row, driven by HeaderBackground,
+    /// HeaderBorder, and the optional HeaderRowClass override.
+    /// </summary>
+    private string ComputedHeaderRowClass => ClassNames.cn(
+        "border-b transition-colors",
+        HeaderBackground ? "bg-muted/50" : null,
+        HeaderBorder ? "divide-x divide-border" : null,
+        HeaderRowClass
+    );
+
+    /// <summary>
+    /// Builds the CSS class string for a body row, merging selection state and
+    /// the optional BodyRowClass override.
+    /// </summary>
+    private string GetBodyRowClass(bool isSelected) => ClassNames.cn(
+        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        isSelected ? "bg-muted" : null,
+        CellBorder ? "divide-x divide-border" : null,
+        BodyRowClass
     );
 
     /// <summary>
@@ -818,8 +944,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         var searchChanged = _lastGlobalSearchValue != _globalSearchValue;
         var selectionChanged = _lastSelectionVersion != _selectionVersion;
         var paginationChanged = _lastPaginationVersion != _paginationVersion;
+        var styleChanged = _lastDense != Dense
+            || _lastHeaderBackground != HeaderBackground
+            || _lastHeaderBorder != HeaderBorder
+            || _lastHeaderClass != HeaderClass
+            || _lastHeaderRowClass != HeaderRowClass
+            || _lastBodyRowClass != BodyRowClass
+            || _lastCellBorder != CellBorder
+            || _lastColumnsVisibility != ColumnsVisibility;
 
-        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged)
+        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || styleChanged)
         {
             _lastData = Data;
             _lastSelectionMode = SelectionMode;
@@ -828,6 +962,14 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             _lastGlobalSearchValue = _globalSearchValue;
             _lastSelectionVersion = _selectionVersion;
             _lastPaginationVersion = _paginationVersion;
+            _lastDense = Dense;
+            _lastHeaderBackground = HeaderBackground;
+            _lastHeaderBorder = HeaderBorder;
+            _lastHeaderClass = HeaderClass;
+            _lastHeaderRowClass = HeaderRowClass;
+            _lastBodyRowClass = BodyRowClass;
+            _lastCellBorder = CellBorder;
+            _lastColumnsVisibility = ColumnsVisibility;
             return true;
         }
 

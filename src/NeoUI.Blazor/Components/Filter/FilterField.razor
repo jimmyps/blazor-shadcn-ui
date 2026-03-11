@@ -1,0 +1,139 @@
+@namespace NeoUI.Blazor
+@*
+    FilterField — declarative child component that registers a field definition
+    with the parent FilterBuilder. Renders nothing itself.
+*@
+
+@code {
+    [CascadingParameter]
+    private IFilterBuilderContext? Parent { get; set; }
+
+    /// <summary>Property name on the data model.</summary>
+    [Parameter, EditorRequired]
+    public string Field { get; set; } = string.Empty;
+
+    /// <summary>Human-readable label shown in the filter chip and field picker.</summary>
+    [Parameter, EditorRequired]
+    public string Label { get; set; } = string.Empty;
+
+    /// <summary>Optional Lucide icon name shown in the filter chip and field picker.</summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>Type of field, controls default operators.</summary>
+    [Parameter]
+    public FilterFieldType Type { get; set; } = FilterFieldType.Text;
+
+    /// <summary>
+    /// Editor widget for the value input. Defaults to <see cref="FilterEditorType.Auto"/> which
+    /// infers the appropriate component from <see cref="Type"/>.
+    /// Override to use a different input (e.g. <see cref="FilterEditorType.Currency"/> for a decimal price field).
+    /// </summary>
+    [Parameter]
+    public FilterEditorType EditorType { get; set; } = FilterEditorType.Auto;
+
+    /// <summary>Allowed operators. Auto-populated from Type when null.</summary>
+    [Parameter]
+    public IEnumerable<FilterOperator>? Operators { get; set; }
+
+    /// <summary>Default operator pre-selected when adding a new condition for this field.</summary>
+    [Parameter]
+    public FilterOperator? DefaultOperator { get; set; }
+
+    /// <summary>Options for Select/MultiSelect fields.</summary>
+    [Parameter]
+    public IEnumerable<SelectOption>? Options { get; set; }
+
+    /// <summary>Placeholder text for the value input.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>Minimum allowed value (Number/Date fields).</summary>
+    [Parameter]
+    public object? Min { get; set; }
+
+    /// <summary>Maximum allowed value (Number/Date fields).</summary>
+    [Parameter]
+    public object? Max { get; set; }
+
+    /// <summary>Step increment (Number fields).</summary>
+    [Parameter]
+    public object? Step { get; set; }
+
+    /// <summary>
+    /// Custom value input control. When provided (and EditorType is Custom), renders instead of the default widget.
+    /// Use <c>Context="ctx"</c> — set <c>ctx.Condition.Value</c> then call <c>await ctx.NotifyChanged()</c>
+    /// to propagate the change back to FilterBuilder.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<FilterCustomContext>? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Parent?.RegisterField(BuildDefinition());
+    }
+
+    private FilterFieldDefinition BuildDefinition() => new()
+    {
+        Field = Field,
+        Label = Label,
+        Icon = Icon,
+        Type = Type,
+        EditorType = EditorType,
+        Operators = Operators?.ToList() ?? GetDefaultOperators(Type),
+        DefaultOperator = DefaultOperator,
+        Options = Options?.ToList(),
+        Placeholder = Placeholder,
+        Min = Min,
+        Max = Max,
+        Step = Step,
+        CustomControl = ChildContent
+    };
+
+    private static List<FilterOperator> GetDefaultOperators(FilterFieldType type) => type switch
+    {
+        FilterFieldType.Text => new()
+        {
+            FilterOperator.Contains, FilterOperator.NotContains,
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.StartsWith, FilterOperator.EndsWith,
+            FilterOperator.IsEmpty, FilterOperator.IsNotEmpty
+        },
+        FilterFieldType.Number => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.GreaterThan, FilterOperator.LessThan,
+            FilterOperator.GreaterThanOrEqual, FilterOperator.LessThanOrEqual,
+            FilterOperator.Between, FilterOperator.NotBetween
+        },
+        FilterFieldType.Date => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.GreaterThan, FilterOperator.LessThan,
+            FilterOperator.GreaterThanOrEqual, FilterOperator.LessThanOrEqual,
+            FilterOperator.Between, FilterOperator.NotBetween
+        },
+        FilterFieldType.DateRange => new()
+        {
+            FilterOperator.Between, FilterOperator.NotBetween
+        },
+        FilterFieldType.Boolean => new()
+        {
+            FilterOperator.IsTrue, FilterOperator.IsFalse
+        },
+        FilterFieldType.Select => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals,
+            FilterOperator.IsAnyOf, FilterOperator.IsNoneOf
+        },
+        FilterFieldType.MultiSelect => new()
+        {
+            FilterOperator.IsAnyOf, FilterOperator.IsNoneOf, FilterOperator.IsAllOf
+        },
+        FilterFieldType.Custom => new()
+        {
+            FilterOperator.Equals, FilterOperator.NotEquals
+        },
+        _ => new() { FilterOperator.Equals }
+    };
+}

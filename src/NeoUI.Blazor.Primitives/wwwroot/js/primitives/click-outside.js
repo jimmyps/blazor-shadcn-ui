@@ -33,7 +33,7 @@ async function waitForElementById(elementId, maxWaitMs = 200, intervalMs = 10) {
  * @param {HTMLElement} excludeElement - Optional element to exclude from outside detection (e.g., trigger button)
  * @returns {Object} Disposable object with dispose() method to remove listeners
  */
-export function onClickOutside(element, dotNetRef, methodName = 'HandleClickOutside', excludeElement = null) {
+export function onClickOutside(element, dotNetRef, methodName = 'HandleClickOutside', excludeElement = null, portalId = null) {
     if (!element || !dotNetRef) {
         console.warn('click-outside: element or dotNetRef is null');
         return {
@@ -44,13 +44,23 @@ export function onClickOutside(element, dotNetRef, methodName = 'HandleClickOuts
 
     let isMouseDownInside = false;
 
+    const getPortalContainer = () => portalId
+        ? document.querySelector(`[data-portal-id="${portalId}"]`)
+        : null;
+
     const handleMouseDown = (e) => {
-        isMouseDownInside = element.contains(e.target) || (excludeElement && excludeElement.contains(e.target));
+        const portalContainer = getPortalContainer();
+        isMouseDownInside = element.contains(e.target)
+            || (excludeElement && excludeElement.contains(e.target))
+            || (portalContainer && portalContainer.contains(e.target));
     };
 
     const handleMouseUp = (e) => {
         // Only trigger if both mousedown and mouseup were outside (and not on excluded element)
-        const isOutside = !element.contains(e.target) && !(excludeElement && excludeElement.contains(e.target));
+        const portalContainer = getPortalContainer();
+        const isOutside = !element.contains(e.target)
+            && !(excludeElement && excludeElement.contains(e.target))
+            && !(portalContainer && portalContainer.contains(e.target));
 
         if (!isMouseDownInside && isOutside) {
             try {
