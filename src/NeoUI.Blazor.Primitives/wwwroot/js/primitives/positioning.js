@@ -331,14 +331,26 @@ export function applyPosition(floating, position, makeVisible = false) {
   // If makeVisible is true, show the element after positioning
   // Set all visibility-related properties to ensure the element is fully visible
   if (makeVisible) {
+    // Set data-state synchronously BEFORE the RFA so CSS animation classes bind immediately.
+    // This is critical for Interactive Server where a Blazor re-render can make the element
+    // visible (via GetInitialStyle) before the RFA fires, causing the first-open animation to
+    // be skipped because data-state was not yet "open" when the element became visible.
+    const contentElement = floating.querySelector('[data-state]') || floating;
+    if (contentElement.hasAttribute('data-state')) {
+      contentElement.setAttribute('data-state', 'open');
+    }
+
+    // Use a generation counter to invalidate stale RFA callbacks.
+    // In Interactive Server mode, show/hide JS calls can arrive over SignalR in rapid
+    // succession and both schedule RFA callbacks before either runs. The counter ensures
+    // only the most-recent operation's RFA applies its changes.
+    floating._floatingGeneration = (floating._floatingGeneration || 0) + 1;
+    const generation = floating._floatingGeneration;
+
     // Use requestAnimationFrame to ensure position is applied before visibility
     requestAnimationFrame(() => {
-
-      // Find element with data-state attribute (generic for all floating portals)
-      const contentElement = floating.querySelector('[data-state]') || floating;
-      if (contentElement.hasAttribute('data-state')) {
-        contentElement.setAttribute('data-state', 'open');
-      }
+      // Bail if a newer show/hide operation has been requested
+      if (floating._floatingGeneration !== generation) return;
 
       // Use setProperty with 'important' to override any CSS animations/transitions
       floating.style.setProperty('visibility', 'visible', 'important');
@@ -445,8 +457,18 @@ export async function showFloating(floating, reference = null, options = null) {
     }
   }
 
+  // Increment generation counter to invalidate any pending hide RFA callback.
+  // In Interactive Server mode, show/hide JS calls can arrive over SignalR in rapid
+  // succession and both schedule RFA callbacks before either runs. The counter ensures
+  // only the most-recent operation's RFA applies its changes (fixes flash on quick open/close).
+  floating._floatingGeneration = (floating._floatingGeneration || 0) + 1;
+  const generation = floating._floatingGeneration;
+
   // Show with requestAnimationFrame for smooth animations (WASM compatibility)
   requestAnimationFrame(() => {
+    // Bail if a newer show/hide operation has been requested
+    if (floating._floatingGeneration !== generation) return;
+
     // Find element with data-state attribute (generic for all floating portals)
     const contentElement = floating.querySelector('[data-state]') || floating;
     if (contentElement.hasAttribute('data-state')) {
@@ -485,8 +507,18 @@ export function hideFloating(floating) {
     delete floating._autoUpdateCleanupId;
   }
 
+  // Increment generation counter to invalidate any pending show RFA callback.
+  // In Interactive Server mode, show/hide JS calls can arrive over SignalR in rapid
+  // succession and both schedule RFA callbacks before either runs. The counter ensures
+  // only the most-recent operation's RFA applies its changes (fixes flash on quick open/close).
+  floating._floatingGeneration = (floating._floatingGeneration || 0) + 1;
+  const generation = floating._floatingGeneration;
+
   // Hide with requestAnimationFrame for smooth exit animations (WASM compatibility)
   requestAnimationFrame(() => {
+    // Bail if a newer show/hide operation has been requested
+    if (floating._floatingGeneration !== generation) return;
+
     // Find element with data-state attribute (generic for all floating portals)
     const contentElement = floating.querySelector('[data-state]') || floating;
     if (contentElement.hasAttribute('data-state')) {
