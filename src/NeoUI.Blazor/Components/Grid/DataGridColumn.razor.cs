@@ -59,6 +59,14 @@ public partial class DataGridColumn<TItem> : ComponentBase
     public string? MaxWidth { get; set; }
 
     /// <summary>
+    /// Gets or sets the flex value for this column.
+    /// When set, the column expands to fill available space proportionally.
+    /// Overrides Width. Use 1 for equal distribution among flex columns.
+    /// </summary>
+    [Parameter]
+    public int? Flex { get; set; }
+
+    /// <summary>
     /// Gets or sets the column pinning position.
     /// </summary>
     [Parameter]
@@ -211,7 +219,8 @@ public partial class DataGridColumn<TItem> : ComponentBase
             HeaderClass = HeaderClass,
             DataFormatString = DataFormatString,
             FieldType = fieldType,
-            AgGridFilterType = agGridFilterType
+            AgGridFilterType = agGridFilterType,
+            Flex = Flex
         };
     }
 

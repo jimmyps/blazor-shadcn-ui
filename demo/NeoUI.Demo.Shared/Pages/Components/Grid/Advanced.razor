@@ -4,23 +4,62 @@
 <PageTitle>Grid Components - Advanced Examples</PageTitle>
 
 <div class="space-y-8">
-    <DemoSection Title="Flexible Column Sizing"
-                 Description="Responsive columns using flex sizing with MinWidth constraints that adapt to container width.">
-        <DemoBlock Code="@_flexColumnCode">
-            <DataGrid Items="@orders.Take(15).ToList()">
+    <DemoSection Title="FillWidth — Equal Distribution"
+                 Description="Set FillWidth=true to distribute remaining horizontal space equally among columns that have no explicit Width. Fixed-width columns keep their set size.">
+        <DemoBlock Code="@_fillWidthCode">
+            <DataGrid Items="@orders.Take(10).ToList()" FillWidth="true">
                 <Columns>
-                    <DataGridColumn Field="Id" Header="Order ID" Width="100px" />
-                    <DataGridColumn Field="Customer" Header="Customer" MinWidth="150px" />
-                    <DataGridColumn Field="Status" Header="Status" Width="120px" />
-                    <DataGridColumn Field="Amount" Header="Amount" Width="120px" />
-                    <DataGridColumn Field="OrderDate" Header="Order Date" MinWidth="150px" />
-                    <DataGridColumn Field="ShipTo" Header="Ship To" MinWidth="150px" />
+                    <DataGridColumn Field="Id"        Header="Order ID"   Width="90px" />
+                    <DataGridColumn Field="Customer"  Header="Customer"   Sortable="true" />
+                    <DataGridColumn Field="Status"    Header="Status"     Width="110px" />
+                    <DataGridColumn Field="Amount"    Header="Amount"     Width="110px" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" Sortable="true" />
+                    <DataGridColumn Field="ShipTo"    Header="Ship To"    Sortable="true" />
                 </Columns>
             </DataGrid>
         </DemoBlock>
-        <div class="text-sm text-muted-foreground">
-            Resize your browser window to see columns with MinWidth adapt proportionally while fixed-width columns stay constant.
-        </div>
+    </DemoSection>
+
+    <DemoSection Title="FillWidth — Proportional Flex"
+                 Description="Use the Flex parameter on individual columns to control how much of the remaining space each column takes. Flex=2 means twice as wide as Flex=1.">
+        <DemoBlock Code="@_flexProportionalCode">
+            <DataGrid Items="@orders.Take(10).ToList()" FillWidth="true">
+                <Columns>
+                    <DataGridColumn Field="Id"        Header="Order ID"   Width="90px" />
+                    <DataGridColumn Field="Customer"  Header="Customer"   Flex="3" Sortable="true" />
+                    <DataGridColumn Field="Status"    Header="Status"     Flex="1" />
+                    <DataGridColumn Field="Amount"    Header="Amount"     Width="110px" />
+                    <DataGridColumn Field="OrderDate" Header="Order Date" Flex="2" Sortable="true" />
+                </Columns>
+            </DataGrid>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="AutoSizeColumns — Content-Aware Sizing"
+                 Description="AutoSizeColumns sizes every column to its rendered header and cell content after each data load. If the combined width is less than the grid container, the columns scale up to fill it.">
+        <DemoBlock Code="@_autoSizeCode">
+            <ChildContent>
+                <div class="flex items-center gap-3 mb-3">
+                    <Button Size="ButtonSize.Small" OnClick="RefreshAutoSizeGrid">
+                        <LucideIcon Name="refresh-cw" Size="14" Class="mr-1" />
+                        Refresh & Auto-size
+                    </Button>
+                    <Button Size="ButtonSize.Small" Variant="ButtonVariant.Outline" OnClick="ManualAutoSize">
+                        <LucideIcon Name="columns-3" Size="14" Class="mr-1" />
+                        AutoSizeColumnsAsync()
+                    </Button>
+                </div>
+                <DataGrid @ref="_autoSizeGrid" Items="@orders.Take(15).ToList()" AutoSizeColumns="true">
+                    <Columns>
+                        <DataGridColumn Field="Id"        Header="#"          Sortable="true" />
+                        <DataGridColumn Field="Customer"  Header="Customer"   Sortable="true" />
+                        <DataGridColumn Field="Status"    Header="Status"     Sortable="true" />
+                        <DataGridColumn Field="Amount"    Header="Amount ($)" Sortable="true" />
+                        <DataGridColumn Field="OrderDate" Header="Date"       Sortable="true" />
+                    </Columns>
+                </DataGrid>
+            </ChildContent>
+        </DemoBlock>
     </DemoSection>
 </div>
 
@@ -28,11 +67,23 @@
 
 @code {
     private List<Order> orders = new();
+    private DataGrid<Order>? _autoSizeGrid;
 
     protected override void OnInitialized()
     {
         orders = GridDemoData.GenerateOrders(50);
     }
 
+    private async Task RefreshAutoSizeGrid()
+    {
+        if (_autoSizeGrid != null)
+            await _autoSizeGrid.RefreshAsync();
     }
+
+    private async Task ManualAutoSize()
+    {
+        if (_autoSizeGrid != null)
+            await _autoSizeGrid.AutoSizeColumnsAsync();
+    }
+}
 

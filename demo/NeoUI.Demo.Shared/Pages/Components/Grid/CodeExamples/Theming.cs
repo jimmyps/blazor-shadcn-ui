@@ -31,7 +31,7 @@ partial class Theming
     private const string _fineGrainedCode = """
 <!-- Custom Accent Color -->
 <DataGrid TItem="Product" Items="@products"
-          Density="DataGridDensity.Comfortable"
+          Density="DataGridDensity.Medium"
           Height="250px">
     <Columns>
         <DataGridThemeParameters
@@ -46,7 +46,7 @@ partial class Theming
 
 <!-- Custom Typography -->
 <DataGrid TItem="Product" Items="@products"
-          Density="DataGridDensity.Comfortable"
+          Density="DataGridDensity.Medium"
           Height="250px">
     <Columns>
         <DataGridThemeParameters
@@ -63,7 +63,7 @@ partial class Theming
     private const string _themeComparisonCode = """
 <DataGrid TItem="Product" Items="@products"
           Theme="@selectedTheme"
-          Density="DataGridDensity.Comfortable"
+          Density="DataGridDensity.Medium"
           Height="300px">
     <Columns>
         <DataGridColumn TItem="Product" Field="Name" Header="Product" />
@@ -79,7 +79,7 @@ partial class Theming
 """;
 
     private const string _precedenceCode = """
-<!-- Standard Compact — default 28px row height -->
+<!-- Standard Compact — default 36px row height -->
 <DataGrid TItem="Product" Items="@products"
           Density="DataGridDensity.Compact"
           Height="250px">

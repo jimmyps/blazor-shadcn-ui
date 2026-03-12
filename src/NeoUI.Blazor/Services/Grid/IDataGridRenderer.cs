@@ -84,4 +84,11 @@ public interface IDataGridRenderer<TItem> : IDataGridRenderer
     /// <param name="pageSize">The number of items per page.</param>
     /// <returns>A task that represents the asynchronous page navigation operation.</returns>
     Task SetBlazorPageAsync(int page, int pageSize);
+
+    /// <summary>
+    /// Sizes all columns to fit their rendered content using AG Grid's native autoSizeAllColumns() API.
+    /// Each column width is measured against its actual header text and visible cell values.
+    /// </summary>
+    /// <param name="skipHeader">When true, header text is excluded from the width measurement.</param>
+    Task AutoSizeColumnsAsync(bool skipHeader = false);
 }

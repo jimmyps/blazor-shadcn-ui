@@ -125,6 +125,13 @@ public class DataGridColumnDefinition<TItem>
     public string? AgGridFilterType { get; set; }
 
     /// <summary>
+    /// Gets or sets the AG Grid flex value for this column.
+    /// When set, the column grows/shrinks to fill available space proportionally.
+    /// Overrides Width when specified.
+    /// </summary>
+    public int? Flex { get; set; }
+
+    /// <summary>
     /// Gets or sets additional metadata for the renderer.
     /// </summary>
     public Dictionary<string, object?> Metadata { get; set; } = new();

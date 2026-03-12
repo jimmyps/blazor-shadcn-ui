@@ -18,6 +18,7 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     private IJSObjectReference? _gridInstance;
     private DotNetObjectReference<AgDataGridRenderer<TItem>>? _dotNetRef;
     private DataGridDefinition<TItem>? _currentDefinition;
+    private Action? _onGridReady;
     private readonly Dictionary<string, RenderFragment<TItem>> _templates = new();
     private readonly Dictionary<string, RenderFragment> _headerTemplates = new();
 
@@ -43,6 +44,7 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
 
         _dotNetRef = DotNetObjectReference.Create(this);
         _currentDefinition = definition;
+        _onGridReady = definition.OnGridReady;
 
         // Store cell templates for later rendering
         _templates.Clear();
@@ -326,6 +328,25 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         Console.WriteLine($"[AgDataGridRenderer] Setting Blazor page: {page}, pageSize: {pageSize}");
         await _gridInstance.InvokeVoidAsync("setBlazorPage", page, pageSize);
         Console.WriteLine("[AgDataGridRenderer] Blazor page set successfully");
+    }
+
+    /// <inheritdoc/>
+    public async Task AutoSizeColumnsAsync(bool skipHeader = false)
+    {
+        if (_gridInstance == null)
+            return;
+
+        await _gridInstance.InvokeVoidAsync("autoSizeColumns", skipHeader);
+    }
+
+    /// <summary>
+    /// Called by JavaScript when the grid has been fully initialized and rendered.
+    /// Triggers the OnGridReady callback on the DataGrid component.
+    /// </summary>
+    [JSInvokable]
+    public void OnGridReadyInternal()
+    {
+        _onGridReady?.Invoke();
     }
 
     /// <summary>
@@ -703,40 +724,55 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     private object BuildAgGridConfig(DataGridDefinition<TItem> definition)
     {
         // Convert DataGridDefinition to AG DataGrid column defs and options
-        var columnDefs = definition.Columns.Select(col => new
+        var columnDefs = definition.Columns.Select(col =>
         {
-            // For template-only columns (no Field), use colId instead of field
-            // This allows AG DataGrid to render the column without binding to data
-            colId = col.Id,
-            // Only set field if it exists - template-only columns don't need a field
-            field = !string.IsNullOrEmpty(col.Field) ? ToCamelCase(col.Field) : (string?)null,
-            headerName = col.Header,
-            sortable = col.Sortable && !string.IsNullOrEmpty(col.Field), // Can't sort without a field
-            filter = col.Filterable && !string.IsNullOrEmpty(col.Field) ? col.AgGridFilterType ?? "agTextColumnFilter" : (string?)null,
-            width = ParseWidth(col.Width),
-            minWidth = ParseWidth(col.MinWidth),
-            maxWidth = ParseWidth(col.MaxWidth),
-            pinned = col.Pinned == DataGridColumnPinPosition.Left ? "left" :
-                     col.Pinned == DataGridColumnPinPosition.Right ? "right" : null,
-            resizable = col.AllowResize,
-            editable = col.CellEditTemplate != null,
-            // Template handling - will use HtmlRenderer when available
-            cellRenderer = col.CellTemplate != null && _templateRenderer != null ? "templateRenderer" : null,
-            cellRendererParams = col.CellTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
-            // Header template handling
-            headerComponent = col.HeaderTemplate != null && _templateRenderer != null ? "headerDataGridTemplateRenderer" : null,
-            headerComponentParams = col.HeaderTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
-            // Value formatting - use simple formatter that reads {field}_formatted property
-            valueFormatter = !string.IsNullOrEmpty(col.DataFormatString) && col.CellTemplate == null ? "formattedValueFormatter" : null,
-            // ValueSelector mapped to valueGetter
-            valueGetter = col.ValueSelector != null ? "valueGetter" : null,
-            // ✅ Suppress header menus for controlled filtering scenarios
-            suppressMenu = definition.SuppressHeaderMenus,
-            suppressHeaderMenuButton = definition.SuppressHeaderMenus,
-            suppressHeaderFilterButton = definition.SuppressHeaderMenus,
+            // Flex priority:
+            //   1. Explicit Flex on column  → use that value, clear width
+            //   2. FillWidth=true + no Width → auto flex: 1 to fill available space
+            //   3. Otherwise                 → no flex, use width as-is
+            var flexValue = col.Flex.HasValue       ? col.Flex.Value
+                          : definition.FillWidth && string.IsNullOrEmpty(col.Width) ? 1
+                          : (int?)null;
 
-            // ? Store field type info for debugging
-            __fieldType = col.FieldType?.Name
+            // Width is ignored when flex is active (AG Grid behaviour)
+            var widthValue = flexValue.HasValue ? (int?)null : ParseWidth(col.Width);
+
+            return new
+            {
+                // For template-only columns (no Field), use colId instead of field
+                // This allows AG DataGrid to render the column without binding to data
+                colId = col.Id,
+                // Only set field if it exists - template-only columns don't need a field
+                field = !string.IsNullOrEmpty(col.Field) ? ToCamelCase(col.Field) : (string?)null,
+                headerName = col.Header,
+                sortable = col.Sortable && !string.IsNullOrEmpty(col.Field), // Can't sort without a field
+                filter = col.Filterable && !string.IsNullOrEmpty(col.Field) ? col.AgGridFilterType ?? "agTextColumnFilter" : (string?)null,
+                flex = flexValue,
+                width = widthValue,
+                minWidth = ParseWidth(col.MinWidth),
+                maxWidth = ParseWidth(col.MaxWidth),
+                pinned = col.Pinned == DataGridColumnPinPosition.Left ? "left" :
+                         col.Pinned == DataGridColumnPinPosition.Right ? "right" : null,
+                resizable = col.AllowResize,
+                editable = col.CellEditTemplate != null,
+                // Template handling - will use HtmlRenderer when available
+                cellRenderer = col.CellTemplate != null && _templateRenderer != null ? "templateRenderer" : null,
+                cellRendererParams = col.CellTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
+                // Header template handling
+                headerComponent = col.HeaderTemplate != null && _templateRenderer != null ? "headerDataGridTemplateRenderer" : null,
+                headerComponentParams = col.HeaderTemplate != null && _templateRenderer != null ? new { templateId = col.Id } : null,
+                // Value formatting - use simple formatter that reads {field}_formatted property
+                valueFormatter = !string.IsNullOrEmpty(col.DataFormatString) && col.CellTemplate == null ? "formattedValueFormatter" : null,
+                // ValueSelector mapped to valueGetter
+                valueGetter = col.ValueSelector != null ? "valueGetter" : null,
+                // ✅ Suppress header menus for controlled filtering scenarios
+                suppressMenu = definition.SuppressHeaderMenus,
+                suppressHeaderMenuButton = definition.SuppressHeaderMenus,
+                suppressHeaderFilterButton = definition.SuppressHeaderMenus,
+
+                // ? Store field type info for debugging
+                __fieldType = col.FieldType?.Name
+            };
         }).ToArray();
 
         Console.WriteLine($"[AgDataGridRenderer] Column defs built:");
@@ -765,7 +801,9 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             theme = definition.Theme.ToString(),
             themeParams = definition.ThemeParams,
             // BlazorServerSide flag: uses clientSide row model with C# orchestration
-            blazorServerSide = definition.RowModelType == "clientSide" && definition.BlazorServerSideFetchHandler != null
+            blazorServerSide = definition.RowModelType == "clientSide" && definition.BlazorServerSideFetchHandler != null,
+            // Auto-size columns to content after each data load
+            autoSizeColumns = definition.AutoSizeColumns
         };
     }
 

@@ -42,7 +42,7 @@ public class DataGridDefinition<TItem>
     /// <summary>
     /// Gets or sets the spacing density for the grid.
     /// </summary>
-    public DataGridDensity Density { get; set; } = DataGridDensity.Comfortable;
+    public DataGridDensity Density { get; set; } = DataGridDensity.Compact;
 
     /// <summary>
     /// Gets or sets whether to suppress the header menus (filter/column menu).
@@ -153,4 +153,24 @@ public class DataGridDefinition<TItem>
     /// navigation (the previous page's row nodes are replaced but their IDs are preserved).
     /// </summary>
     public Func<IReadOnlyCollection<string>>? GetSelectedIdsForRestore { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether columns without an explicit Width should automatically fill
+    /// the available grid width using AG Grid's flex layout.
+    /// When true, columns with no Width get flex: 1; columns with explicit Width keep their fixed size.
+    /// </summary>
+    public bool FillWidth { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to automatically size all columns to fit their rendered content
+    /// after each data load, using AG Grid's native autoSizeAllColumns() API.
+    /// Each column is individually measured against its actual header and cell content.
+    /// </summary>
+    public bool AutoSizeColumns { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the grid is ready (initialized and rendered).
+    /// Called by the renderer after grid initialization completes.
+    /// </summary>
+    public Action? OnGridReady { get; set; }
 }

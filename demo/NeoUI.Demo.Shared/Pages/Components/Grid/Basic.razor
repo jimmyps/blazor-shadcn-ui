@@ -110,11 +110,11 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection Title="Density Variations" Description="Control the spacing and size: Compact, Comfortable (default), and Spacious.">
+    <DemoSection Title="Density Variations" Description="Control the spacing and size: Compact (default), Medium, and Spacious.">
         <DemoBlock Code="@_densityCode">
             <div class="grid gap-6">
                 <div class="space-y-2">
-                    <h3 class="font-medium">Compact Density</h3>
+                    <h3 class="font-medium">Compact Density (Default)</h3>
                     <DataGrid Items="@simpleOrders.Take(5).ToList()" Density="DataGridDensity.Compact">
                         <Columns>
                             <DataGridColumn Field="Id" Header="ID" Width="80px" />
@@ -126,8 +126,8 @@
                 </div>
 
                 <div class="space-y-2">
-                    <h3 class="font-medium">Comfortable Density (Default)</h3>
-                    <DataGrid Items="@simpleOrders.Take(5).ToList()" Density="DataGridDensity.Comfortable">
+                    <h3 class="font-medium">Medium Density</h3>
+                    <DataGrid Items="@simpleOrders.Take(5).ToList()" Density="DataGridDensity.Medium">
                         <Columns>
                             <DataGridColumn Field="Id" Header="ID" Width="80px" />
                             <DataGridColumn Field="Customer" Header="Customer" />

@@ -213,7 +213,22 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Gets or sets the spacing density for the grid.
     /// </summary>
     [Parameter]
-    public DataGridDensity Density { get; set; } = DataGridDensity.Comfortable;
+    public DataGridDensity Density { get; set; } = DataGridDensity.Compact;
+
+    /// <summary>
+    /// Gets or sets whether columns without an explicit Width should automatically fill
+    /// available horizontal space using AG Grid's flex layout.
+    /// When true, columns with no Width get flex: 1; columns with explicit Width keep their fixed size.
+    /// </summary>
+    [Parameter]
+    public bool FillWidth { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to automatically size all columns to fit their rendered content
+    /// after each data load, using AG Grid's native autoSizeAllColumns() API.
+    /// </summary>
+    [Parameter]
+    public bool AutoSizeColumns { get; set; }
 
     /// <summary>
     /// Gets or sets whether to suppress the header menus (filter/column menu).
@@ -251,10 +266,26 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     public RenderFragment? Columns { get; set; }
 
     /// <summary>
-    /// Gets or sets the template to display while the grid is loading.
+    /// Gets or sets the template to display while the grid is loading data.
+    /// This is shown when IsLoading is true (e.g., during data fetch operations).
     /// </summary>
     [Parameter]
     public RenderFragment? LoadingTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the template to display while the grid is initializing.
+    /// This is shown during first-time setup (downloading scripts, building grid options).
+    /// If not provided, a default "Initializing grid..." message is displayed.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? InitializingTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the grid is ready (initialized and rendered).
+    /// This is called after grid initialization completes, useful for performing actions that depend on the grid being fully loaded.
+    /// </summary>
+    [Parameter]
+    public Action? OnGridReady { get; set; }
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the grid container.
@@ -537,7 +568,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             if (!_columnsRegistered)
             {
                 _columnsRegistered = true;
-                StateHasChanged();
+                StateHasChanged(); // This is needed to render the second time after columns register
                 return;
             }
         }
@@ -577,7 +608,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             try
             {
                 await InitializeGridAsync();
-                _initialized = true;
+                // Do NOT set _initialized = true here - let JavaScript control it via OnGridReadyInternal
             }
             catch (Exception ex)
             {
@@ -715,12 +746,12 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         {
             DataGridDensity.Compact => new Dictionary<string, object>
             {
-                { "spacing", 4 },
-                { "rowHeight", 28 },
-                { "headerHeight", 32 },
-                { "fontSize", 12 },
+                { "spacing", 6 },
+                { "rowHeight", 36 },
+                { "headerHeight", 36 },
+                { "fontSize", 13 },
                 { "iconSize", 14 },
-                { "inputHeight", 28 },
+                { "inputHeight", 30 },
             },
             DataGridDensity.Spacious => new Dictionary<string, object>
             {
@@ -731,7 +762,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                 { "iconSize", 20 },
                 { "inputHeight", 40 },
             },
-            DataGridDensity.Comfortable or _ => new Dictionary<string, object>
+            DataGridDensity.Medium or _ => new Dictionary<string, object>
             {
                 { "spacing", 8 },
                 { "rowHeight", 42 },
@@ -819,6 +850,8 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.IdField = IdField;                  // Row ID field for selection persistence
         _gridDefinition.State = State;
         _gridDefinition.SuppressHeaderMenus = SuppressHeaderMenus; // Hide filter/menu UI
+        _gridDefinition.FillWidth = FillWidth;
+        _gridDefinition.AutoSizeColumns = AutoSizeColumns;
         _gridDefinition.OnStateChanged = OnStateChanged;
         _gridDefinition.OnDataRequest = OnDataRequest;
         // Wrap OnSelectionChanged so cross-page selected items are merged in before the
@@ -928,6 +961,14 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         
         // ✅ Provide a callback for the renderer to resolve IDs back to original instances
         _gridDefinition.ResolveItemsByIds = (ids) => ResolveItemsByIds(ids);
+
+        // Wire up OnGridReady callback so JS can signal when initialization is complete
+        _gridDefinition.OnGridReady = () =>
+        {
+            _initialized = true;
+            StateHasChanged();
+            OnGridReady?.Invoke();
+        };
     }
     
     /// <summary>
@@ -1399,6 +1440,19 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _previousItemsHash = Items?.Count() ?? 0;
     }
     
+    /// <summary>
+    /// Sizes all columns to fit their rendered content using AG Grid's native autoSizeAllColumns().
+    /// Useful for on-demand column resizing after data changes.
+    /// </summary>
+    /// <param name="skipHeader">When true, header text is excluded from width measurement.</param>
+    public async Task AutoSizeColumnsAsync(bool skipHeader = false)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("DataGrid not initialized");
+
+        await _gridRenderer.AutoSizeColumnsAsync(skipHeader);
+    }
+
     /// <summary>
     /// Manually refreshes the grid display to reflect changes in the underlying data.
     /// This forces a full grid refresh and is useful when:

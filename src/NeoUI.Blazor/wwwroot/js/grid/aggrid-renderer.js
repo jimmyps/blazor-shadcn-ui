@@ -296,11 +296,42 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
         if (config.blazorServerSide) {
             setTimeout(() => gridOptions.__triggerBlazorFetch(gridApi), 0);
         }
-        
+
+        // Notify Blazor that grid is ready (triggers state change to hide initializing template)
+        if (dotNetRef && typeof dotNetRef.invokeMethodAsync === 'function') {
+            try {
+                await dotNetRef.invokeMethodAsync('OnGridReadyInternal');
+            } catch (err) {
+                // Silently handle if method doesn't exist (backward compatibility)
+                console.debug('[AG Grid] OnGridReadyInternal not found, skipping callback');
+            }
+        }
+
+        // Helper: size columns to content, then scale up if leftover space remains.
+        // Mirrors AG Grid's autoSizeStrategy { type:'fitCellContents', scaleUpToFitGridWidth:true }.
+        const autoSizeAndFill = (skipHeader = false) => {
+            gridApi.autoSizeAllColumns(skipHeader);
+            // Measure total column width after sizing and scale up if the grid has room
+            const allCols = gridApi.getColumns();
+            if (allCols) {
+                const totalColWidth = allCols.reduce((sum, col) => sum + col.getActualWidth(), 0);
+                const gridWidth = gridApi.getGridOption('domLayout') === 'autoHeight'
+                    ? 0
+                    : (gridApi.getGridBodyElement?.()?.clientWidth ?? 0);
+                if (gridWidth > 0 && totalColWidth < gridWidth) {
+                    gridApi.sizeColumnsToFit();
+                }
+            }
+        };
+
         // Return wrapper object with API methods
         return {
             setRowData: (data) => {
                 gridApi.setGridOption('rowData', data);
+                if (config.autoSizeColumns) {
+                    // Defer one tick so cells are rendered before measuring
+                    setTimeout(() => autoSizeAndFill(false), 0);
+                }
             },
             
             applyTransaction: (transaction) => {
@@ -364,6 +395,10 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
 
             destroy: () => {
                 gridApi.destroy();
+            },
+
+            autoSizeColumns: (skipHeader = false) => {
+                autoSizeAndFill(skipHeader);
             }
         };
     } catch (error) {
@@ -479,6 +514,11 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
                         // Calling it with a partial/empty list would wipe Blazor's SelectedItems for
                         // items that are simply not visible on the current page (cross-page selection).
                     }
+                }
+
+                // Auto-size columns to content after rows are fully rendered
+                if (config.autoSizeColumns) {
+                    autoSizeAndFill(false);
                 }
             }, 0);
         }
