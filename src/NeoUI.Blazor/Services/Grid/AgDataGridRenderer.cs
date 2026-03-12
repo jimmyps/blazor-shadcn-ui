@@ -344,9 +344,10 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     /// Triggers the OnGridReady callback on the DataGrid component.
     /// </summary>
     [JSInvokable]
-    public void OnGridReadyInternal()
+    public Task OnGridReadyInternal()
     {
         _onGridReady?.Invoke();
+        return Task.CompletedTask;
     }
 
     /// <summary>

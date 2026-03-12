@@ -586,7 +586,7 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
     // ✅ AG DataGrid v32.2+: Provide getRowId for stable row identification
     // This is CRITICAL for row selection persistence across data updates
     // Developer specifies the ID field via config.idField (e.g., "Id", "ProductId", "OrderId")
-    const idField = config.idField || 'Id'; // Default to 'Id' if not specified
+    const idField = config.idField || 'id'; // Default to 'id' if not specified
     
     const getRowIdFunc = (params) => {
         if (!params.data) {
@@ -651,8 +651,7 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             // Data arrives pre-sorted/filtered from the server, so client-side sorting should be a no-op.
             // comparator: () => 0 tells AG Grid "all rows are equal" — effectively disabling in-memory sort.
             ...(config.blazorServerSide ? {
-                comparator: () => 0,
-                filterValueGetter: undefined
+                comparator: () => 0
             } : {})
         },
         
