@@ -1,0 +1,25 @@
+@page "/components/filter/nested"
+@namespace NeoUI.Demo.Shared.Pages.Components.Filter
+
+<PageTitle>Filter Builder - Nested Groups - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+
+    <DemoPageHeader
+        Title="Nested Groups"
+        Description="Build complex filter logic with nested condition groups using AND/OR operators." />
+
+    <DemoSection Title="Coming Soon" Description="Nested group editing UI is planned for a future release. FilterGroup already supports nested groups in the model.">
+        <div class="bg-muted p-6 rounded-lg">
+            <pre class="text-sm overflow-x-auto font-mono"><code>@_nestedCode</code></pre>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="LINQ Support" Description="The ApplyFilters extension fully resolves nested groups at runtime.">
+        <div class="bg-muted p-6 rounded-lg">
+            <pre class="text-sm overflow-x-auto font-mono"><code>@_linqCode</code></pre>
+        </div>
+    </DemoSection>
+
+    <DemoPageSubNav ParentSlug="filter" />
+</div>

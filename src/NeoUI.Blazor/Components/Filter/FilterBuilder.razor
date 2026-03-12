@@ -1,0 +1,152 @@
+﻿@namespace NeoUI.Blazor
+@typeparam TData where TData : class
+@using NeoUI.Icons.Lucide
+
+<div class="@WrapperCssClass">
+    @* Hidden definition slots — renders FilterField/FilterPreset declarations, no visual output *@
+    <CascadingValue Value="@((IFilterBuilderContext)this)" IsFixed="true">
+        @FilterFields
+        @FilterPresets
+    </CascadingValue>
+
+    @* ── Top row: [≡ Filter] [Presets dropdown?] ··· [✕ Clear] ── *@
+    <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-1">
+            @* Add Filter picker *@
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <Button Variant="ButtonVariant.Outline"
+                            Size="ButtonSize.Small"
+                            Class="h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground"
+                            Disabled="@(!_fields.Any())">
+                        <LucideIcon Name="list-filter" Size="14" />
+                        @if (ShowButtonText)
+                        {
+                            <span class="text-sm">@ButtonText</span>
+                        }
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent Align="PopoverAlign.Start" Class="w-48">
+                    @foreach (var field in _fields)
+                    {
+                        var f = field;
+                        @if (f.Options != null && f.Options.Any())
+                        {
+                            @* Fields with options → submenu showing each option as a one-click shortcut *@
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger>
+                                    @if (!string.IsNullOrEmpty(f.Icon))
+                                    {
+                                        <LucideIcon Name="@f.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
+                                    }
+                                    <span>@f.Label</span>
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuSubContent>
+                                    @foreach (var option in f.Options)
+                                    {
+                                        var opt = option;
+                                        <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddConditionWithValue(f, opt.Value))">
+                                            @opt.Label
+                                        </DropdownMenuItem>
+                                    }
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddCondition(f))">
+                                        <span class="text-xs text-muted-foreground">Custom...</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuSubContent>
+                            </DropdownMenuSub>
+                        }
+                        else
+                        {
+                            <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddCondition(f))">
+                                @if (!string.IsNullOrEmpty(f.Icon))
+                                {
+                                    <LucideIcon Name="@f.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
+                                }
+                                <span>@f.Label</span>
+                            </DropdownMenuItem>
+                        }
+                    }
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            @* Presets — dropdown variant *@
+            @if (PresetsVariant == FilterPresetsVariant.Dropdown && _presets.Any())
+            {
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <Button Variant="ButtonVariant.Ghost"
+                                Size="ButtonSize.Small"
+                                Class="h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground">
+                            Presets
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent Align="PopoverAlign.Start" Class="w-52">
+                        @foreach (var preset in _presets)
+                        {
+                            var p = preset;
+                            <DropdownMenuItem OnClick="@((MouseEventArgs _) => ApplyPreset(p))">
+                                @if (!string.IsNullOrEmpty(p.Icon))
+                                {
+                                    <LucideIcon Name="@p.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
+                                }
+                                <span>@p.Name</span>
+                            </DropdownMenuItem>
+                        }
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            }
+
+            @* Presets — tab variant (inline, same row as filter button) *@
+            @if (PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any())
+            {
+                <div class="@TabsContainerClass">
+                    <button type="button"
+                            class="@GetTabClass(null)"
+                            @onclick="@ClearAll">
+                        All
+                    </button>
+                    @foreach (var preset in _presets)
+                    {
+                        var p = preset;
+                        <button type="button"
+                                class="@GetTabClass(p.Name)"
+                                @onclick="@(() => ApplyPreset(p))">
+                            @if (!string.IsNullOrEmpty(p.Icon))
+                            {
+                                <LucideIcon Name="@p.Icon" Size="12" Class="opacity-70 shrink-0" />
+                            }
+                            @p.Name
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        @* Clear button — always at far right, only visible when conditions are active *@
+        @if (_conditions.Any())
+        {
+            <Button Variant="ButtonVariant.Outline"
+                    Size="ButtonSize.Small"
+                    OnClick="@ClearAll"
+                    Class="h-8 gap-1.5 px-2 text-muted-foreground hover:text-foreground">
+                <LucideIcon Name="filter-x" Size="14" />
+                <span class="text-sm">Clear</span>
+            </Button>
+        }
+    </div>
+
+    @* ── Active filter chips — one per row ── *@
+    @foreach (var condition in _conditions.ToList())
+    {
+        var cond = condition;
+        var fieldDef = _fields.FirstOrDefault(f => f.Field == cond.Field);
+        <div @key="cond.Id" class="mt-2">
+            <FilterChip Condition="@cond"
+                        FieldDefinition="@fieldDef"
+                        Size="@ChipSize"
+                        ConditionChanged="@HandleConditionChanged"
+                        OnRemove="@(() => RemoveCondition(cond))" />
+        </div>
+    }
+</div>

@@ -148,7 +148,7 @@ public class PositioningService : IPositioningService, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public async Task ShowFloatingAsync(ElementReference floating, ElementReference? reference = null, PositioningOptions? options = null)
+    public async Task<PositionResult?> ShowFloatingAsync(ElementReference floating, ElementReference? reference = null, PositioningOptions? options = null)
     {
         var module = await GetModuleAsync();
 
@@ -165,12 +165,28 @@ public class PositioningService : IPositioningService, IAsyncDisposable
                 strategy = options.Strategy,
                 matchReferenceWidth = options.MatchReferenceWidth
             };
-            await module.InvokeVoidAsync("showFloating", floating, reference.Value, jsOptions);
+            var result = await module.InvokeAsync<JsonElement?>("showFloating", floating, reference.Value, jsOptions);
+            if (result.HasValue)
+            {
+                return new PositionResult
+                {
+                    X = result.Value.GetProperty("x").GetDouble(),
+                    Y = result.Value.GetProperty("y").GetDouble(),
+                    Placement = result.Value.TryGetProperty("placement", out var placement)
+                        ? placement.GetString() ?? options.Placement
+                        : options.Placement,
+                    Strategy = result.Value.TryGetProperty("strategy", out var strategy)
+                        ? strategy.GetString() ?? options.Strategy
+                        : options.Strategy
+                };
+            }
+            return null;
         }
         else
         {
             // Simple show without repositioning
             await module.InvokeVoidAsync("showFloating", floating);
+            return null;
         }
     }
 

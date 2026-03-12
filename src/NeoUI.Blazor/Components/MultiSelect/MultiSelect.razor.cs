@@ -659,46 +659,19 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
                 return _cachedTriggerCssClass;
             }
 
-            var builder = new StringBuilder();
+            _cachedTriggerCssClass = ClassNames.cn(
+                "inline-flex items-center justify-between rounded-md text-sm",
+                "ring-offset-background",
+                "transition-[color,box-shadow]",
+                "focus:outline-none focus:ring-2 focus:ring-ring/50",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                "disabled:opacity-50 disabled:pointer-events-none disabled:hover:bg-background",
+                "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+                _isOpen ? "ring-2 ring-ring/50" : "",
+                "min-h-9 px-3 py-1.5",
+                PopoverWidth,
+                Class);
 
-            // Base button styles
-            builder.Append("inline-flex items-center justify-between rounded-md text-sm ");
-            builder.Append("ring-offset-background ");
-            
-            // Transition styles - smooth 200ms transitions
-            builder.Append("transition-[color,box-shadow] ");
-            
-            // Focus styles - both focus and focus-visible for better compatibility
-            builder.Append("focus:outline-none focus:ring-2 focus:ring-ring/50 ");
-            builder.Append("focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 ");
-            
-            // Disabled styles - prevent hover when disabled
-            builder.Append("disabled:opacity-50 disabled:pointer-events-none disabled:hover:bg-background ");
-
-            // Outline variant styles with hover
-            builder.Append("border border-input bg-background hover:bg-accent hover:text-accent-foreground ");
-
-            // Open state ring indicator
-            if (_isOpen)
-            {
-                builder.Append("ring-2 ring-ring/50 ");
-            }
-
-            // Size styles
-            builder.Append("min-h-9 px-3 py-1.5 ");
-
-            // Width
-            builder.Append(PopoverWidth);
-            builder.Append(' ');
-
-            // Custom classes
-            if (!string.IsNullOrWhiteSpace(Class))
-            {
-                builder.Append(Class);
-            }
-
-            // Cache the result
-            _cachedTriggerCssClass = builder.ToString().Trim();
             _lastPopoverWidth = PopoverWidth;
             _lastClass = Class;
             _lastCachedIsOpen = _isOpen;

@@ -110,29 +110,9 @@ Several quality-of-life improvements, all additive with no breaking changes:
 
 ---
 
-### 🐛 Bug Fix — Infinite Re-fetch Loop on Load
-
-Resolved an issue where `BlazorServerSide` grids would continuously re-fetch data on load, incrementing the request counter indefinitely.
-
-**Root cause:** When `api.setGridOption('rowData', items)` is called, AG Grid fires `onPaginationChanged` **asynchronously** via its own internal `setTimeout`. The `isFetchingServerData` re-entrancy guard was being cleared **synchronously** in the `finally` block — so the guard was already `false` by the time AG Grid's deferred event arrived, triggering another fetch → infinite loop.
-
-**Fix:** Deferred clearing `isFetchingServerData` with `setTimeout(0)`:
-
-```js
-} finally {
-    // AG Grid schedules onPaginationChanged via setTimeout during setGridOption('rowData').
-    // Deferring the clear ensures that event fires while the guard is still active.
-    setTimeout(() => { isFetchingServerData = false; }, 0);
-}
-```
-
-Because AG Grid's internal `setTimeout(0)` is enqueued during `setGridOption` (before our `finally`), it sits earlier in the macrotask queue. The browser's FIFO ordering guarantees AG Grid's event fires while the guard is still `true`, suppressing the spurious re-fetch.
-
----
-
 ### 📖 Demo Page — `/components/datagrid/server-side`
 
-A new dedicated demo page accessible at both `/components/datagrid/blazor-server-side` and `/components/datagrid/server-side`, with **four live interactive sections**:
+A new dedicated demo page accessible at `/components/datagrid/server-side`, with **four live interactive sections**:
 
 | Section | What it demonstrates |
 |---|---|
@@ -145,9 +125,253 @@ The DataGrid sub-page is registered as `datagrid/server-side` with the descripti
 
 ---
 
+## 2026-3-11 — DataTable: Appearance API, Density, Bug Fixes & Docs
+
+> **Enhancement.** Introduces a full appearance-customisation API to `DataTable<TData>` (`Dense`, `HeaderBackground`, `HeaderBorder`, `CellBorder`, `ColumnsVisibility`, per-part CSS class overrides), fixes toolbar UX issues, de-bolds pagination labels, expands the API reference, and adds a `README.md` for the component. No breaking changes.
+
+---
+
+### ✨ Feat: `DataTable<TData>` — appearance and layout parameters
+
+Seven new `[Parameter]` properties for fine-grained visual control:
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Dense` | `bool` | `true` | Compact cell padding (`h-9 / py-2 px-4`). `false` uses spacious defaults (`h-12 / p-4`). |
+| `HeaderBackground` | `bool` | `true` | Applies `bg-muted/50` to the header row. |
+| `HeaderBorder` | `bool` | `false` | Vertical `divide-x divide-border` dividers between header cells. |
+| `CellBorder` | `bool` | `false` | Vertical `divide-x divide-border` dividers between body cells. |
+| `ColumnsVisibility` | `bool` | `true` | Show/hide the "Columns" toggle button in the toolbar. |
+| `HeaderClass` | `string?` | `null` | Extra CSS classes on `<thead>`. |
+| `HeaderRowClass` | `string?` | `null` | Extra CSS classes on the header `<tr>`. |
+| `BodyRowClass` | `string?` | `null` | Extra CSS classes on each body `<tr>`. |
+
+**Internal computed helpers added to `DataTable.razor.cs`:**
+
+- `HeaderCellPaddingClass` — `h-9 px-4` (Dense) or `h-12 px-4`
+- `BodyCellPaddingClass` — `py-2 px-4` (Dense) or `p-4`
+- `ComputedHeaderRowClass` — merges `border-b`, optional `bg-muted/50`, optional `divide-x divide-border`, and `HeaderRowClass`
+- `GetBodyRowClass(bool isSelected)` — merges selection state, optional `divide-x divide-border`, and `BodyRowClass`
+
+All new parameters are tracked in `ShouldRender` to prevent stale renders when style props change at runtime.
+
+---
+
+### 🐛 Fix: `DataTableToolbar` — column visibility label click unresponsive
+
+Clicking the column label text in the column visibility popover had no effect; only clicking directly on the checkbox worked.
+
+**Root cause:** The `FieldLabel For=` → `Checkbox Id=` association relied on native `<label for>` / `<input id>` linkage, which the `Checkbox` component does not surface on its underlying input.
+
+**Fix:** Row `<div>` now owns the `@onclick` handler (`OnColumnVisibilityChanged?.Invoke(column.Id, !column.Visible)`). `Checkbox` receives `Class="pointer-events-none"` so it displays state only. `FieldLabel` replaced with a plain `<span>`. The `checkboxId` local variable removed.
+
+---
+
+### 🐛 Fix: `DataTableToolbar` — excessive gap between toolbar and table
+
+`py-4` on the toolbar div stacked with `space-y-4` on the container, producing a ~32 px visual gap. Changed `py-4` → `pt-4` (removes bottom padding); `space-y-4` now provides the sole 16 px separation.
+
+---
+
+### 🐛 Fix: `DataTableToolbar` — Columns button icon/text spacing too wide
+
+Reduced `me-2` → `me-1.5` on the clipboard SVG inside the Columns button for tighter icon-to-label spacing at `ButtonSize.Small`.
+
+---
+
+### 🐛 Fix: `PaginationPageDisplay` / `PaginationPageSizeSelector` — bold pagination labels
+
+"Page X of Y" (`PaginationPageDisplay`) and "Rows per page" (`PaginationPageSizeSelector`) were rendered in `font-medium`. Changed both to `text-muted-foreground` (no bold) to match the already-muted "Showing X–Y of Z" style from `PaginationInfo`.
+
+---
+
+### 📄 Docs: `DataTable` — new `README.md` and expanded API reference
+
+- Created `src/NeoUI.Blazor/Components/DataTable/README.md` — covers Quick Start, Appearance Customisation, Row Selection, Custom Cell Templates, Toolbar Actions, Loading/Empty states, Server-Side mode, and full API tables for `DataTable<TData>` and `DataTableColumn<TData, TValue>`.
+- `DataTableDemo.cs` `_dataTableProps`: expanded from 10 → 25 rows (all new style params + previously undocumented `Columns`, `ToolbarActions`, `EmptyTemplate`, `LoadingTemplate`, `AriaLabel`, `OnSort`, `OnFilter`, `PreprocessData`).
+- `DataTableDemo.cs` `_dataTableColumnProps`: expanded from 6 → 13 rows (added `Id`, `Filterable`, `Width`, `MinWidth`, `MaxWidth`, `CellClass`, `HeaderClass`).
+
+---
+
+### 🎨 Demo: `DataTableDemo` — interactive style controls in Basic Table section
+
+Replaced the static Basic Table `DemoBlock` with an interactive variant featuring five `Switch` toggles (Dense layout, Header background, Header borders, Cell borders, Columns button) so users can explore all appearance options live without code changes.
+
+---
+
+## FilterBuilder: New Component
+
+> **New component.** Adds `FilterBuilder<TData>` and all supporting sub-components, models, enumerations, extension methods, and 7 demo pages to `NeoUI.Blazor` and `NeoUI.Demo.Shared`. No breaking changes to existing APIs.
+
+---
+
+### 🔑 Key Features
+
+- **Generic, type-safe API** — `FilterBuilder<TData where TData : class>` binds directly to your model type; two-way `@bind-Filters` binding via `FilterGroup` with an `OnFilterChange` callback
+- **Inline canvas UI** — no modal, no popover, no Apply/Cancel step; conditions render as chip rows directly in the page and changes apply instantly
+- **Declarative child-content API** — fields and presets are declared as child components (`<FilterField>`, `<FilterPreset>`) inside named `RenderFragment` slots (`FilterFields`, `FilterPresets`); no code-behind configuration required
+- **Segmented filter chips** — each active condition renders as `[icon Label] | [operator ▾] | [value input] | [×]`; operator uses the NeoUI `Select` component (auto-width, borderless)
+- **`FilterEditorType`** — decouples the value widget from the field's data type; a `Number` field can render a `Currency`, `Masked`, or custom editor without changing the field definition
+- **`FilterPresetsVariant`** — `Dropdown` (default, DropdownMenu button) or `Tabs` (Stripe-style horizontal tab bar with an implicit "All" tab; selecting a tab replaces active conditions with the preset's conditions)
+- **12 editor types** — `Auto`, `Input`, `Numeric`, `Currency`, `Masked`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Combobox`, `Custom` (`RenderFragment<FilterCustomContext>`)
+- **8 field types** — `Text`, `Number`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom`
+- **19 filter operators** — full coverage across text, numeric/date, collection, and boolean domains
+- **`FilterGroup` nesting** — conditions and nested groups combined with `And` / `Or` logical operators; composable at any depth
+- **LINQ extensions** — `ApplyFilters<T>()` on `IEnumerable<T>` and `IQueryable<T>`; all string comparisons use `OrdinalIgnoreCase`
+- **7 demo pages** — basic, all-types, presets (Tabs), custom editor (Rating), nested groups, persistence (localStorage), and a feature overview with Quick Start
+
+---
+
+### ✨ Feat: `FilterBuilder<TData>` — inline canvas filter UI with declarative child-content API
+
+Adds a fully standalone, generic filter builder component (`@typeparam TData where TData : class`) implemented as a `.razor` + `.razor.cs` partial pair. The UI is an **inline block canvas** — no Popover, no Apply/Cancel step; all changes apply instantly.
+
+The canvas renders a `[≡ Filter]` field-picker button, one chip row per active condition, and a `[✕ Clear]` button pinned to the top-right (visible only when at least one condition is active). The root component accepts `Filters` / `FiltersChanged` / `OnFilterChange` for two-way binding, named `RenderFragment` parameters `FilterFields` and `FilterPresets` for declarative child configuration, a `ButtonText` parameter, and a `PresetsVariant` parameter.
+
+Each active condition renders as a segmented pill:
+
+```
+[icon Label] | [operator Select ▾] | [value input] | [×]
+```
+
+The operator selector uses the NeoUI `Select` component (auto-width, no border, background-only hover/active states). The value input widget switches on `EditorType` and supports all editor variants (see `FilterEditorType` below). Input controls retain their border; top/bottom clipping is avoided by removing `overflow-hidden` from the chip container. All controls are `w-auto` — no forced full-width.
+
+**Sub-components added:**
+
+| File | Role |
+|------|------|
+| `IFilterBuilderContext.cs` | Cascading context interface; exposes `RegisterField` / `RegisterPreset` to child components |
+| `FilterChip.razor` | Interactive segmented chip for a single active condition |
+| `FilterConditionRow.razor` | Standalone row: field label + operator selector + value input + remove button |
+| `FilterValue.razor` / `.cs` | Typed value input; switches on all 8 `FilterFieldType` values; `Compact` mode for in-chip use |
+| `FilterField.razor` | Registers a field definition via `IFilterBuilderContext`; supports `Icon` and `EditorType` |
+| `FilterPreset.razor` | Registers a preset definition via `IFilterBuilderContext` |
+
+---
+
+### ✨ Feat: Core models and enumerations (`NeoUI.Blazor`)
+
+**New enumerations:**
+
+- **`FilterOperator`** — `Equals`, `NotEquals`, `Contains`, `NotContains`, `StartsWith`, `EndsWith`, `IsEmpty`, `IsNotEmpty`, `GreaterThan`, `LessThan`, `GreaterThanOrEqual`, `LessThanOrEqual`, `Between`, `NotBetween`, `IsAnyOf`, `IsNoneOf`, `IsAllOf`, `IsTrue`, `IsFalse`
+- **`FilterFieldType`** — `Text`, `Number`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom`
+- **`LogicalOperator`** — `And`, `Or`
+- **`FilterEditorType`** — `Auto`, `Input`, `Numeric`, `Currency`, `Masked`, `Date`, `DateRange`, `Boolean`, `Select`, `MultiSelect`, `Custom`. Decouples the value widget from the field's data type (e.g. a `Number` field can render a `Currency` editor).
+- **`FilterPresetsVariant`** — `Dropdown` (default; renders a Presets button backed by `DropdownMenu`) or `Tabs` (renders a Stripe-style horizontal tab bar with an implicit "All" tab; selecting a tab replaces the active conditions with that preset's conditions).
+
+**New model classes:**
+
+- `FilterCondition` — `Id`, `Field`, `Operator`, `Value`, `SecondaryValue`
+- `FilterGroup` — `Id`, `Logic`, `Conditions`, `NestedGroups`
+- `SelectOption` — `record(Value, Label)`
+- `FilterFieldDefinition` — internal field descriptor extracted from `FilterField` children
+- `FilterPresetDefinition` — internal preset descriptor extracted from `FilterPreset` children
+
+---
+
+### ✨ Feat: `FilterExtensions` — LINQ helpers for applying a `FilterGroup`
+
+Adds `ApplyFilters<T>()` extension methods on both `IEnumerable<T>` and `IQueryable<T>`. All string comparisons (`Contains`, `NotContains`, `StartsWith`, `EndsWith`) use `StringComparison.OrdinalIgnoreCase`.
+
+---
+
+### ✨ Feat: Demo pages — 7 pages under `/components/filter`
+
+| Route | Content |
+|-------|---------|
+| `/components/filter` | Feature overview, keyboard-accessible example navigation cards, Quick Start snippet |
+| `/components/filter/basic` | Product catalog with cards; `FilterEditorType.Currency` for Price |
+| `/components/filter/all-types` | Employee directory + `DataTable` (toolbar off); all 8 field types + `EditorType` reference table |
+| `/components/filter/presets` | Order management + `DataTable` (toolbar off) + 3 presets rendered as `PresetsVariant="Tabs"` |
+| `/components/filter/custom` | Star-rating custom control using the NeoUI `Rating` component |
+| `/components/filter/nested` | Code-only reference for nested `FilterGroup` + LINQ |
+| `/components/filter/persistence` | `localStorage` persistence pattern snippet |
+
+The component registry entry uses slug `filter` with 6 sub-page entries marked `IsSubPage: true`.
+
+---
+
+## 2026-3-10 – Select, MultiSelect & DataTable: Component-Level Refinements
+
+> **Library changes.** Affects `SelectTrigger`, `SelectItem`, `MultiSelect`, and `DataTable` in `NeoUI.Blazor`. No breaking changes to public APIs.
+
+---
+
+### ✨ Feature: `SelectTrigger` — new `Borderless` parameter
+
+Added a `Borderless` boolean parameter to `SelectTrigger`. When `true`, the component's border, box-shadow, and all focus/open-state ring styles are suppressed — leaving only background-hover feedback as the only visual cue. Intended for in-context placements where the host element (e.g. a `FilterChip`) already owns the visible border, and a redundant inner ring would look disconnected.
+
+---
+
+### 🐛 Fix: `SelectItem` — check-mark icon overlapping item label text
+
+The selected-state check icon is absolutely positioned at the right edge (`inset-y-0 right-0 pr-3`). The item label `<span>` previously carried no matching right-padding reservation, so the icon could overlay the trailing characters of long labels. The label span now uses `pr-10` to always clear the icon's footprint regardless of label length.
+
+---
+
+### ✨ Feature: `MultiSelect` — tooltip on the `+N more` overflow indicator
+
+The `+N more` badge shown when selected items exceed `MaxDisplayTags` now renders a `Tooltip` on hover that lists the full display names of the hidden items. The implementation uses the existing `TooltipProvider / Tooltip / TooltipTrigger / TooltipContent` component stack for visual and behavioural consistency. `TooltipTrigger`'s wrapper renders with `class="contents"` (`display: contents`), keeping it layout-transparent inside the flex tag row. A `GetDisplayText(string value)` lookup helper was added to `MultiSelect.razor.cs` to resolve stored value strings back to human-readable labels for the tooltip body.
+
+---
+
+## 2026-3-9 — Sidebar & Trigger: Three Bug Fixes
+
+> **Library change.** Affects `Sidebar`, `SidebarMenuButton`, `Button`, and `LinkButton` in `NeoUI.Blazor`, and `DropdownMenuContentPrimitive` in `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
+
+---
+
+### 🐛 Fix: `SidebarMenuButton` / `Button` / `LinkButton` — stale `ElementReference` when used as `AsChild` trigger
+
+`Button`, `LinkButton`, and `SidebarMenuButton` only called `TriggerContext.SetTriggerElement` on `firstRender`. When the render tree structure changed on a subsequent render — in particular, `SidebarMenuButton` adds or removes a `<TooltipPrimitive>` wrapper depending on `ShouldShowTooltip()` (which toggles with the sidebar collapsed/expanded state) — Blazor recreated the underlying `<button>` element with a new `ElementReference` ID. The stale ID was never re-registered, so `_asChildTriggerRef` in the trigger primitive (and therefore `Context.State.TriggerElement` / `FloatingPortal.AnchorElement`) pointed to a DOM element that no longer existed. C# saw `HasValue = true` (non-empty ID string) but JS `__internalId` lookup returned `null`, causing the floating content to mis-position or fail to appear entirely.
+
+Fixed by removing the `firstRender &&` guard in `OnAfterRender` for all three components. `SetTriggerElement` already has an ID-equality guard in the context layer, so calling it on every render is a no-op when the element is stable and only fires a state update when the ID genuinely changes. This matches the pattern already used by `TooltipTriggerPrimitive`.
+
+---
+
+### 🐛 Fix: `Sidebar` — `SidebarRail` causes horizontal scrollbar
+
+The `<aside>` element had `overflow-y-auto` and `h-screen` in its layout classes. `overflow-y-auto` creates a block formatting context; the `SidebarRail` button is `position: absolute` at `right: -1rem` (straddling the sidebar edge), so it overflowed the BFC horizontally, producing a horizontal scrollbar on the `<aside>`. The `h-screen` also forced 100vh height even inside constrained containers such as the 580px dashboard shell.
+
+`SidebarContent` already carries `overflow-auto flex-1 min-h-0` — the correct place for sidebar scroll containment. Removed `overflow-y-auto` and `h-screen` from the default variant layout classes (replaced with `min-h-full`), and removed `overflow-y-auto` from the Floating and Inset variants as well. Aligns with upstream's layout class pattern.
+
+---
+
+### ✨ Feat: `DropdownMenuContentPrimitive` — `ForceMount` default changed to `true`
+
+Changed the default value of `ForceMount` from `false` to `true` in `DropdownMenuContentPrimitive`, matching `SelectContentPrimitive`. With `ForceMount=false` (previous default), the portal was mounted fresh on every open: `MountPortalAsync` added ~32ms of overhead (PortalHost render cycle + `Task.Yield`), during which the CSS entrance animation had already started on the freshly-inserted element. By the time the element became visible, the animation was ~35–45% complete, producing a visible mid-animation pop-in. With `ForceMount=true`, the portal is pre-mounted at startup and `SetupAsync` runs immediately on open (same render cycle as the `data-state` transition), reducing the animation lead-time to ~20ms and eliminating the choppy first-show.
+
+---
+
+## 2026-3-6 — Performance: CascadingValue IsFixed alignment with upstream
+
+> **Library change.** Affects 9 component and primitive files across `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
+
+---
+
+### ♻️ Perf: Fix `IsFixed="false"` on stable `this` cascades in content and sub-content primitives
+
+Audited all `CascadingValue` usages across the library and identified 9 instances where `Value="this"` (or `Value="@this"`) was incorrectly marked `IsFixed="false"`. Component instance references (`this`) are structurally stable for the lifetime of the component and are not replaced on re-render. Marking them `false` caused Blazor to maintain unnecessary subscriber lists and perform cascade propagation checks on every render cycle for no benefit.
+
+All 9 occurrences have been corrected to `IsFixed="true"`, aligning with upstream's established convention. The remaining 35 context-object cascades (`@_context`, `Context`, `@SubContext`, etc.) are intentionally left as `IsFixed="false"` to match upstream's conservative approach for mutable state objects.
+
+**Affected files:**
+
+- `Combobox.razor`
+- `Motion.razor`
+- `ResizablePanelGroup.razor`
+- `ContextMenuContentPrimitive.razor`
+- `ContextMenuSubContentPrimitive.razor`
+- `DropdownMenuContentPrimitive.razor`
+- `DropdownMenuSubContentPrimitive.razor`
+- `MenubarContentPrimitive.razor`
+- `MenubarSubContentPrimitive.razor`
+
+---
+
 ## 2026-3-4 – Sidebar & Positioning: Bug Fixes
 
-> **Library change.** Affects `SidebarMenuButton` in `NeoUI.Blazor` and `positioning.js` in `NeoUI.Blazor.Primitives`. No breaking changes to public APIs.
+> **Library change.** Affects `SidebarMenuButton`
 
 ---
 
@@ -4351,3 +4575,4 @@ All merged components, refactors, and fixes are production-ready and thoroughly 
 ---
 
 **Note:** This changelog is based on git commit history. For a complete view of all commits, [visit the repository's commit history](https://github.com/jimmyps/blazor-shadcn-ui/commits/main).
+

@@ -1,0 +1,203 @@
+@page "/components/filter"
+@namespace NeoUI.Demo.Shared.Pages.Components.Filter
+@inject NavigationManager NavigationManager
+
+<PageTitle>Filter Builder - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-7xl">
+    <DemoPageHeader
+        Title="Filter Builder"
+        Description="A declarative inline filter canvas. Define fields with FilterField, add optional presets with FilterPreset, and let the component render an interactive chip-based toolbar — no Apply button needed." />
+
+    @* Quick demo *@
+    <DemoSection Title="Quick Start" Description="Click 'Filter' to open the field picker, then adjust operator and value inline in each chip. Use ChipSize to control chip height — Small is the default (28 px).">
+        <DemoBlock Code="@_quickStartCode">
+            <FilterBuilder TData="DemoItem"
+                           @bind-Filters="_demoFilters"
+                           OnFilterChange="HandleDemoFilterChange">
+                <FilterFields>
+                    <FilterField Field="Name"     Label="Name"     Icon="tag"          Type="FilterFieldType.Text" />
+                    <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"
+                                 Options="@_statusOptions" />
+                    <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"
+                                 EditorType="FilterEditorType.Currency" Min="0" />
+                    <FilterField Field="IsActive" Label="Active"   Icon="circle-check" Type="FilterFieldType.Boolean" />
+                </FilterFields>
+                <FilterPresets>
+                    <FilterPreset Name="Active High-Value" Icon="trending-up" Filters="@_highValuePreset" />
+                </FilterPresets>
+            </FilterBuilder>
+
+            @if (_demoFilters.Conditions.Any())
+            {
+                <div class="mt-3 p-3 rounded-md bg-muted/40 text-xs text-muted-foreground font-mono">
+                    @_demoFilters.Conditions.Count condition(s) active
+                    @foreach (var c in _demoFilters.Conditions)
+                    {
+                        <div class="mt-1">@c.Field @c.Operator @c.Value</div>
+                    }
+                </div>
+            }
+        </DemoBlock>
+
+        <div class="mt-6">
+            <p class="text-sm font-medium mb-3">Medium <span class="text-muted-foreground font-normal">(32 px)</span></p>
+            <DemoBlock Code="@_mediumChipCode">
+                <FilterBuilder TData="DemoItem"
+                               @bind-Filters="_mediumFilters"
+                               ChipSize="FilterChipSize.Medium"
+                               OnFilterChange="HandleMediumFilterChange">
+                    <FilterFields>
+                        <FilterField Field="Name"     Label="Name"     Icon="tag"          Type="FilterFieldType.Text" />
+                        <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"
+                                     Options="@_statusOptions" />
+                        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="IsActive" Label="Active"   Icon="circle-check" Type="FilterFieldType.Boolean" />
+                    </FilterFields>
+                </FilterBuilder>
+
+                @if (_mediumFilters.Conditions.Any())
+                {
+                    <div class="mt-3 p-3 rounded-md bg-muted/40 text-xs text-muted-foreground font-mono">
+                        @_mediumFilters.Conditions.Count condition(s) active
+                        @foreach (var c in _mediumFilters.Conditions)
+                        {
+                            <div class="mt-1">@c.Field @c.Operator @c.Value</div>
+                        }
+                    </div>
+                }
+            </DemoBlock>
+        </div>
+
+        <div class="mt-6">
+            <p class="text-sm font-medium mb-3">Large <span class="text-muted-foreground font-normal">(36 px)</span></p>
+            <DemoBlock Code="@_largeChipCode">
+                <FilterBuilder TData="DemoItem"
+                               @bind-Filters="_largeFilters"
+                               ChipSize="FilterChipSize.Large"
+                               OnFilterChange="HandleLargeFilterChange">
+                    <FilterFields>
+                        <FilterField Field="Name"     Label="Name"     Icon="tag"          Type="FilterFieldType.Text" />
+                        <FilterField Field="Status"   Label="Status"   Icon="activity"     Type="FilterFieldType.Select"
+                                     Options="@_statusOptions" />
+                        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign"  Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="IsActive" Label="Active"   Icon="circle-check" Type="FilterFieldType.Boolean" />
+                    </FilterFields>
+                </FilterBuilder>
+
+                @if (_largeFilters.Conditions.Any())
+                {
+                    <div class="mt-3 p-3 rounded-md bg-muted/40 text-xs text-muted-foreground font-mono">
+                        @_largeFilters.Conditions.Count condition(s) active
+                        @foreach (var c in _largeFilters.Conditions)
+                        {
+                            <div class="mt-1">@c.Field @c.Operator @c.Value</div>
+                        }
+                    </div>
+                }
+            </DemoBlock>
+        </div>
+    </DemoSection>
+
+    @* Features *@
+    <DemoSection Title="Features">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach (var feature in _features)
+            {
+                <Card>
+                    <CardHeader>
+                        <CardTitle Class="text-base">@feature.Title</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p class="text-sm text-muted-foreground">@feature.Description</p>
+                    </CardContent>
+                </Card>
+            }
+        </div>
+    </DemoSection>
+
+    @* Examples *@
+    <DemoSection Title="Examples">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach (var example in _examples)
+            {
+                var ex = example;
+                <div @onclick="@(() => NavigationManager.NavigateTo(ex.Route))"
+                     @onkeydown="@(e => { if (e.Key == "Enter" || e.Key == " ") NavigationManager.NavigateTo(ex.Route); })"
+                     class="cursor-pointer"
+                     role="button"
+                     tabindex="0"
+                     aria-label="@($"Open {ex.Title}")">
+                <Card Class="hover:border-primary transition-colors">
+                    <CardHeader>
+                        <CardTitle Class="text-base">@ex.Title</CardTitle>
+                        <CardDescription>@ex.Description</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Badge Variant="BadgeVariant.Secondary">@ex.Route</Badge>
+                    </CardContent>
+                </Card>
+                </div>
+            }
+        </div>
+    </DemoSection>
+
+    @* API Parameters *@
+    <DemoSection Title="FilterBuilder Parameters">
+        <DemoPropsTable Rows="@_filterBuilderProps" />
+    </DemoSection>
+</div>
+
+@code {
+    private FilterGroup _demoFilters   = new();
+    private FilterGroup _mediumFilters = new();
+    private FilterGroup _largeFilters  = new();
+
+    private readonly List<SelectOption> _statusOptions =
+    [
+        new("Active",   "Active"),
+        new("Inactive", "Inactive"),
+        new("Pending",  "Pending"),
+    ];
+
+    private readonly FilterGroup _highValuePreset = new()
+    {
+        Conditions =
+        [
+            new FilterCondition { Field = "IsActive", Operator = FilterOperator.IsTrue },
+            new FilterCondition { Field = "Amount",   Operator = FilterOperator.GreaterThan, Value = 500m }
+        ]
+    };
+
+    private void HandleDemoFilterChange(FilterGroup filters)   { }
+    private void HandleMediumFilterChange(FilterGroup filters) { }
+    private void HandleLargeFilterChange(FilterGroup filters)  { }
+
+    private record Feature(string Title, string Description);
+
+    public class DemoItem { }
+
+    private readonly List<Feature> _features =
+    [
+        new("Inline Canvas",      "Filters display as interactive chips directly in the page — no popover or modal."),
+        new("Instant Filtering",  "Changes apply immediately on every operator/value change — no Apply button."),
+        new("8 Field Types",      "Text, Number, Date, DateRange, Boolean, Select, MultiSelect, and Custom."),
+        new("EditorType Control", "Override the value input per field: CurrencyInput for decimals, MaskedInput for phone numbers, etc."),
+        new("Filter Presets",     "Register reusable filter sets via FilterPresets child content. Appears as a Presets dropdown."),
+        new("@bind-Filters",      "Two-way binding via Filters/FiltersChanged. Combine with ApplyFilters() LINQ extension."),
+    ];
+
+    private record ExampleCard(string Title, string Description, string Route);
+
+    private readonly List<ExampleCard> _examples =
+    [
+        new("Basic Example",    "Product catalog with Text, Select, Currency, and Boolean filters.", "/components/filter/basic"),
+        new("All Field Types",  "Employee directory using all 8 field types + EditorType overrides.",  "/components/filter/all-types"),
+        new("Presets",          "Order management with one-click preset filters + DataTable.",         "/components/filter/presets"),
+        new("Custom Controls",  "Star-rating custom control via RenderFragment<FilterCondition>.",     "/components/filter/custom"),
+    ];
+
+
+}
