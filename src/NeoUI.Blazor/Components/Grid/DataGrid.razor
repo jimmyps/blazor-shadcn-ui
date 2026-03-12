@@ -6,17 +6,17 @@
 @implements IAsyncDisposable
 
 <CascadingValue Value="this" IsFixed="true">
-    <div class="@ContainerCssClass" style="@InlineStyle">
-        @if (!_initialized)
+    <div class="@ContainerCssClass" style="@GetGridContainerStyle()">
+        @if (!_initialized && (!_columnsRegistered || _isInitializing))
         {
-            @* Initializing state - shown until OnGridReadyInternal signals the grid is ready *@
+            @* Initializing state - shown during first-time setup (script loading, grid building) *@
             @if (InitializingTemplate != null)
             {
                 @InitializingTemplate
             }
             else
             {
-                <div class="flex items-center justify-center p-8">
+                <div class="flex items-center justify-center h-full p-8">
                     <Spinner Size="SpinnerSize.Small" />
                 </div>
             }
@@ -30,7 +30,7 @@
             }
             else
             {
-                <div class="flex items-center justify-center p-8">
+                <div class="flex items-center justify-center h-full p-8">
                     <Spinner Size="SpinnerSize.Medium" />
                 </div>
             }
@@ -44,10 +44,10 @@
         else
         {
             @* AG DataGrid requires explicit height and theme class *@
-            <div @ref="_gridContainer" class="@GetGridCssClass()" style="@GetGridContainerStyle()"></div>
+            <div @ref="_gridContainer" class="@GetGridCssClass()" style="@GetGridStyle()"></div>
 
             @* BlazorServerSide custom pagination bar — replaces AG Grid's built-in panel which
-               can only count rowData.length (one page) and would always show "of pageSize". *@
+           can only count rowData.length (one page) and would always show "of pageSize". *@
             @if (RowModelType == DataGridRowModelType.BlazorServerSide && PagingMode != DataGridPagingMode.None)
             {
                 <Pagination State="_blazorPaginationState"

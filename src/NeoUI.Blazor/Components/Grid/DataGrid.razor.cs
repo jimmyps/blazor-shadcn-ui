@@ -1689,6 +1689,29 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         // AG DataGrid requires explicit height to render properly
         var styles = new List<string>();
 
+        if (!_initialized)
+        {
+            // Add height - default to 300px if not specified
+            var height = !string.IsNullOrEmpty(Height) ? Height : "300px";
+            styles.Add($"height: {height}");
+
+            // Add width - default to 100% if not specified
+            var width = !string.IsNullOrEmpty(Width) ? Width : "100%";
+            styles.Add($"width: {width}");
+        }
+
+        if (!string.IsNullOrEmpty(InlineStyle))
+            styles.Add(InlineStyle);
+
+        return string.Join("; ", styles);
+    }
+
+    private string GetGridStyle()
+    {
+        // Build inline styles for the grid container
+        // AG DataGrid requires explicit height to render properly
+        var styles = new List<string>();
+
         // Add height - default to 300px if not specified
         var height = !string.IsNullOrEmpty(Height) ? Height : "300px";
         styles.Add($"height: {height}");
