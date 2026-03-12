@@ -7,9 +7,9 @@
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass" style="@InlineStyle">
-        @if (!_initialized && !_columnsRegistered)
+        @if (!_initialized)
         {
-            @* Initializing state - shown during first-time setup (script loading, grid building) *@
+            @* Initializing state - shown until OnGridReadyInternal signals the grid is ready *@
             @if (InitializingTemplate != null)
             {
                 @InitializingTemplate

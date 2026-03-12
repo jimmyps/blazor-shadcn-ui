@@ -966,6 +966,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.OnGridReady = () =>
         {
             _initialized = true;
+            _isInitializing = false;
             StateHasChanged();
             OnGridReady?.Invoke();
         };
@@ -1012,6 +1013,9 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
 
         if (idProp == null) return currentPageSelection;
 
+        // Guard against null SelectedItems — other methods in this component treat it as nullable.
+        if (SelectedItems == null) return currentPageSelection;
+
         // Retain any previously selected items whose IDs are NOT on the current page.
         // Items that ARE on the current page are fully controlled by the grid's selection state,
         // so we replace them entirely with whatever the grid just reported.
@@ -1054,8 +1058,9 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     {
         var pageNumber = Math.Max(1, state.PageNumber);
         var pageSize   = Math.Max(1, state.PageSize);
-        // Guard against integer overflow when computing StartIndex
-        var startIndex = checked((pageNumber - 1) * pageSize);
+        // Guard against integer overflow: compute in long and clamp to int.MaxValue.
+        long startIndexLong = (long)(pageNumber - 1) * pageSize;
+        var startIndex = startIndexLong > int.MaxValue ? int.MaxValue : (int)startIndexLong;
         return new()
         {
             StartIndex        = startIndex,
