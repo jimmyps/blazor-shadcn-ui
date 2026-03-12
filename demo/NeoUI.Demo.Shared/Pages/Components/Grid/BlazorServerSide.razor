@@ -257,6 +257,72 @@
         </DemoBlock>
     </DemoSection>
 
+    @* FilterBuilder Integration *@
+    <DemoSection Title="FilterBuilder Integration"
+                 Description="Replace built-in column filters with a FilterBuilder toolbar. No columns have Filterable — all filtering is owned by the FilterBuilder and applied server-side via the ApplyFilter() LINQ extension.">
+        <DemoBlock Code="@BlazorServerSideExamples.FilterBuilderIntegration">
+            <ChildContent>
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-sm text-muted-foreground ml-auto">
+                        Total: @_totalFilterBuilderOrders rows
+                    </span>
+                </div>
+
+                <FilterBuilder TData="DemoOrder"
+                               @bind-Filters="_filterBuilderFilters"
+                               OnFilterChange="HandleFilterBuilderFilterChange"
+                               Class="mb-4">
+                    <FilterFields>
+                        <FilterField Field="CustomerName" Label="Customer" Icon="user"         Type="FilterFieldType.Text" />
+                        <FilterField Field="Status"       Label="Status"   Icon="activity"     Type="FilterFieldType.Select"
+                                     Options="@_orderStatusOptions" />
+                        <FilterField Field="Total"        Label="Total"    Icon="dollar-sign"  Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="OrderDate"    Label="Date"     Icon="calendar"     Type="FilterFieldType.Date" />
+                    </FilterFields>
+                    <FilterPresets>
+                        <FilterPreset Name="High-Value Pending" Icon="trending-up"  Filters="@_highValuePendingPreset" />
+                        <FilterPreset Name="Delivered"          Icon="circle-check" Filters="@_deliveredPreset" />
+                    </FilterPresets>
+                </FilterBuilder>
+                <DataGrid TItem="DemoOrder"
+                          @ref="_filterBuilderGrid"
+                          RowModelType="DataGridRowModelType.BlazorServerSide"
+                          OnServerDataRequest="HandleFilterBuilderOrderRequest"
+                          PagingMode="DataGridPagingMode.Server"
+                          PageSize="15"
+                          @bind-TotalServerRowCount="_totalFilterBuilderOrders"
+                          IdField="@nameof(DemoOrder.Id)"
+                          FillWidth="true"
+                          Height="380px">
+                    <Columns>
+                        <DataGridColumn Field="@nameof(DemoOrder.Id)"           Header="ID"       Sortable="true" Width="80px" />
+                        <DataGridColumn Field="@nameof(DemoOrder.CustomerName)" Header="Customer" Sortable="true" />
+                        <DataGridColumn Field="@nameof(DemoOrder.OrderDate)"    Header="Date"     Sortable="true" DataFormatString="{0:dd MMM yyyy}" />
+                        <DataGridColumn Field="@nameof(DemoOrder.Total)"        Header="Total"    Sortable="true" DataFormatString="{0:C}" />
+                        <DataGridColumn Field="@nameof(DemoOrder.Status)"       Header="Status"   Sortable="true" />
+                    </Columns>
+                </DataGrid>
+            </ChildContent>
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Size="16" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>How FilterBuilder + DataGrid Works</AlertTitle>
+                        <AlertDescription>
+                            <ul class="list-disc list-inside space-y-1 text-sm">
+                                <li>No <code class="font-mono text-xs">Filterable="true"</code> on any column — column header menus have no filter option.</li>
+                                <li><code class="font-mono text-xs">OnFilterChange</code> fires immediately on every condition change, stores the <code class="font-mono text-xs">FilterGroup</code>, and calls <code class="font-mono text-xs">RefreshAsync()</code> on the grid.</li>
+                                <li>The request handler applies the <code class="font-mono text-xs">FilterGroup</code> via <code class="font-mono text-xs">ApplyFilter()</code> — a built-in LINQ extension that handles all operator types using the same <code class="font-mono text-xs">FilterCondition</code> objects directly.</li>
+                                <li>Column sorting still works normally alongside FilterBuilder filters.</li>
+                            </ul>
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
     </div>
 
 @code {
@@ -265,6 +331,7 @@
     private DataGrid<DemoProduct>? _productGrid;
     private DataGrid<DemoOrder>?   _slowGrid;
     private DataGrid<DemoOrder>?   _selectionGrid;
+    private DataGrid<DemoOrder>?   _filterBuilderGrid;
 
     // ── Section A state ────────────────────────────────────────────────────
     private int    _totalOrders       = 0;
@@ -279,6 +346,36 @@
     // ── Section D state ────────────────────────────────────────────────────
     private IReadOnlyCollection<DemoOrder> _selectionItems       = Array.Empty<DemoOrder>();
     private int                            _totalSelectionOrders = 0;
+
+    // ── Section E state ────────────────────────────────────────────────────
+    private FilterGroup _filterBuilderFilters     = new();
+    private int         _totalFilterBuilderOrders = 0;
+
+    private readonly List<SelectOption> _orderStatusOptions =
+    [
+        new("Pending",    "Pending"),
+        new("Processing", "Processing"),
+        new("Shipped",    "Shipped"),
+        new("Delivered",  "Delivered"),
+        new("Cancelled",  "Cancelled"),
+    ];
+
+    private readonly FilterGroup _highValuePendingPreset = new()
+    {
+        Conditions =
+        [
+            new FilterCondition { Field = "Status", Operator = FilterOperator.Equals,      Value = "Pending" },
+            new FilterCondition { Field = "Total",  Operator = FilterOperator.GreaterThan, Value = 5000m }
+        ]
+    };
+
+    private readonly FilterGroup _deliveredPreset = new()
+    {
+        Conditions =
+        [
+            new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Delivered" }
+        ]
+    };
 
     // ── Data ───────────────────────────────────────────────────────────────
     private static readonly List<DemoOrder>   _allOrders   = GenerateOrders(500);
@@ -420,6 +517,44 @@
     private void ClearSelection()
     {
         _selectionItems = Array.Empty<DemoOrder>();
+    }
+
+    // ── Section E ──────────────────────────────────────────────────────────
+    private async Task HandleFilterBuilderFilterChange(FilterGroup filters)
+    {
+        _filterBuilderFilters = filters;
+        if (_filterBuilderGrid != null)
+            await _filterBuilderGrid.RefreshAsync();
+    }
+
+    private Task<DataGridDataResponse<DemoOrder>> HandleFilterBuilderOrderRequest(DataGridDataRequest<DemoOrder> request)
+    {
+        var query = _allOrders.AsQueryable().ApplyFilter(_filterBuilderFilters);
+
+        IOrderedQueryable<DemoOrder>? sorted = null;
+        foreach (var sort in request.SortDescriptors.OrderBy(s => s.Order))
+        {
+            var asc = sort.Direction == DataGridSortDirection.Ascending;
+            sorted = sort.Field?.ToLowerInvariant() switch
+            {
+                "id"           => sorted == null ? (asc ? query.OrderBy(o => o.Id)           : query.OrderByDescending(o => o.Id))           : (asc ? sorted.ThenBy(o => o.Id)           : sorted.ThenByDescending(o => o.Id)),
+                "customername" => sorted == null ? (asc ? query.OrderBy(o => o.CustomerName) : query.OrderByDescending(o => o.CustomerName)) : (asc ? sorted.ThenBy(o => o.CustomerName) : sorted.ThenByDescending(o => o.CustomerName)),
+                "orderdate"    => sorted == null ? (asc ? query.OrderBy(o => o.OrderDate)    : query.OrderByDescending(o => o.OrderDate))    : (asc ? sorted.ThenBy(o => o.OrderDate)    : sorted.ThenByDescending(o => o.OrderDate)),
+                "total"        => sorted == null ? (asc ? query.OrderBy(o => o.Total)        : query.OrderByDescending(o => o.Total))        : (asc ? sorted.ThenBy(o => o.Total)        : sorted.ThenByDescending(o => o.Total)),
+                _              => sorted
+            };
+        }
+        if (sorted != null) query = sorted;
+
+        var total = query.Count();
+        var items = query.Skip(request.StartIndex).Take(request.Count).ToList();
+        return Task.FromResult(new DataGridDataResponse<DemoOrder> { Items = items, TotalCount = total });
+    }
+
+    private async Task RefreshFilterBuilderGrid()
+    {
+        if (_filterBuilderGrid != null)
+            await _filterBuilderGrid.RefreshAsync();
     }
 
     // ── Data generation ────────────────────────────────────────────────────

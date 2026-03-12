@@ -966,7 +966,6 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.OnGridReady = () =>
         {
             _initialized = true;
-            _isInitializing = false;
             StateHasChanged();
             OnGridReady?.Invoke();
         };

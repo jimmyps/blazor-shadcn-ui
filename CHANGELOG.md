@@ -112,7 +112,7 @@ Several quality-of-life improvements, all additive with no breaking changes:
 
 ### 📖 Demo Page — `/components/datagrid/server-side`
 
-A new dedicated demo page accessible at `/components/datagrid/server-side`, with **four live interactive sections**:
+A new dedicated demo page accessible at `/components/datagrid/server-side`, with **five live interactive sections**:
 
 | Section | What it demonstrates |
 |---|---|
@@ -120,8 +120,17 @@ A new dedicated demo page accessible at `/components/datagrid/server-side`, with
 | **B — Custom `ServerDataProvider`** | `IDataGridServerDataProvider<TItem>` / `InMemoryProductProvider` implementation. Includes a callout explaining how to subclass `HttpDataGridProvider<TItem>`. |
 | **C — Simulated Latency** | 800 ms `Task.Delay` to demonstrate the loading overlay behaviour. |
 | **D — Row Selection Across Pages** | Multi-select with `@bind-SelectedItems`. Shows selected order badges (first 10 + overflow count), Clear button, and an explanation callout for how cross-page selection works. |
+| **E — FilterBuilder Integration** | `FilterBuilder` toolbar replaces all column-level filters — no column has `Filterable="true"`. `OnFilterChange` stores the `FilterGroup` and calls `RefreshAsync()`; the handler applies it via the built-in `ApplyFilter()` LINQ extension. Includes two presets (High-Value Pending, Delivered) and a callout explaining the pattern. |
 
 The DataGrid sub-page is registered as `datagrid/server-side` with the description _"Server-side paging, sorting, and filtering — no Enterprise license required, single JS↔C# round trip"_, appearing correctly in the sidebar nav and command palette.
+
+---
+
+### 🐛 Fix — `DataGrid` initializing-state race condition (empty rows on multi-grid pages)
+
+When multiple `DataGrid<TItem>` instances initialized simultaneously on the same page, a parent `StateHasChanged()` triggered by one grid's `TotalServerRowCountChanged` could re-render sibling grids while they had `_isInitializing = true`. The render condition `!_initialized && (_isInitializing || !_columnsRegistered)` would swap in the spinner, **removing the `<div @ref="_gridContainer">` from the DOM** mid-initialization. AG Grid then initialized into a detached element (invisible), and a fresh empty `div` was placed in the DOM after initialization completed — permanently empty rows despite correct pagination counts.
+
+**Fix:** Removed `_isInitializing` from the render condition. The spinner now only renders until columns register (one render cycle). Once `_columnsRegistered = true`, the grid container `div` is permanently present in the DOM regardless of initialization state. `_isInitializing` is retained as a C# re-entrancy guard in `OnAfterRenderAsync`. AG Grid's own loading overlay covers the fetch window.
 
 ---
 

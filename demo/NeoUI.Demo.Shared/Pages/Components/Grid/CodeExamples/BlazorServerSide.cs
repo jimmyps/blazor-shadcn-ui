@@ -203,4 +203,108 @@ public class ProductApiProvider : HttpDataGridProvider<Product>
     }
 }
 """;
+
+    public const string FilterBuilderIntegration = """
+// FilterBuilder sits above the grid; no column has Filterable="true"
+<FilterBuilder TData="Order"
+               @bind-Filters="_filterBuilderFilters"
+               OnFilterChange="HandleFilterBuilderFilterChange"
+               Class="mb-4">
+    <FilterFields>
+        <FilterField Field="CustomerName" Label="Customer" Icon="user"        Type="FilterFieldType.Text" />
+        <FilterField Field="Status"       Label="Status"   Icon="activity"    Type="FilterFieldType.Select"
+                     Options="@_orderStatusOptions" />
+        <FilterField Field="Total"        Label="Total"    Icon="dollar-sign" Type="FilterFieldType.Number"
+                     EditorType="FilterEditorType.Currency" Min="0" />
+        <FilterField Field="OrderDate"    Label="Date"     Icon="calendar"    Type="FilterFieldType.Date" />
+    </FilterFields>
+    <FilterPresets>
+        <FilterPreset Name="High-Value Pending" Icon="trending-up"  Filters="@_highValuePendingPreset" />
+        <FilterPreset Name="Delivered"          Icon="circle-check" Filters="@_deliveredPreset" />
+    </FilterPresets>
+</FilterBuilder>
+
+<DataGrid TItem="Order"
+          @ref="_filterBuilderGrid"
+          RowModelType="DataGridRowModelType.BlazorServerSide"
+          OnServerDataRequest="HandleFilterBuilderOrderRequest"
+          PagingMode="DataGridPagingMode.Server"
+          PageSize="15"
+          @bind-TotalServerRowCount="_totalFilterBuilderOrders"
+          IdField="@nameof(Order.Id)"
+          FillWidth="true"
+          Height="380px">
+    <Columns>
+        <DataGridColumn Field="@nameof(Order.Id)"           Header="ID"       Sortable="true" Width="80px" />
+        <DataGridColumn Field="@nameof(Order.CustomerName)" Header="Customer" Sortable="true" />
+        <DataGridColumn Field="@nameof(Order.OrderDate)"    Header="Date"     Sortable="true" DataFormatString="{0:dd MMM yyyy}" />
+        <DataGridColumn Field="@nameof(Order.Total)"        Header="Total"    Sortable="true" DataFormatString="{0:C}" />
+        <DataGridColumn Field="@nameof(Order.Status)"       Header="Status"   Sortable="true" />
+    </Columns>
+</DataGrid>
+
+@code {
+    private DataGrid<Order>? _filterBuilderGrid;
+    private FilterGroup      _filterBuilderFilters     = new();
+    private int              _totalFilterBuilderOrders = 0;
+
+    private readonly List<SelectOption> _orderStatusOptions =
+    [
+        new("Pending",    "Pending"),
+        new("Processing", "Processing"),
+        new("Shipped",    "Shipped"),
+        new("Delivered",  "Delivered"),
+        new("Cancelled",  "Cancelled"),
+    ];
+
+    private readonly FilterGroup _highValuePendingPreset = new()
+    {
+        Conditions =
+        [
+            new FilterCondition { Field = "Status", Operator = FilterOperator.Equals,      Value = "Pending" },
+            new FilterCondition { Field = "Total",  Operator = FilterOperator.GreaterThan, Value = 5000m }
+        ]
+    };
+
+    private readonly FilterGroup _deliveredPreset = new()
+    {
+        Conditions =
+        [
+            new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Delivered" }
+        ]
+    };
+
+    private async Task HandleFilterBuilderFilterChange(FilterGroup filters)
+    {
+        _filterBuilderFilters = filters;
+        if (_filterBuilderGrid != null)
+            await _filterBuilderGrid.RefreshAsync();
+    }
+
+    private Task<DataGridDataResponse<Order>> HandleFilterBuilderOrderRequest(DataGridDataRequest<Order> request)
+    {
+        // ApplyFilter() is a built-in LINQ extension — it handles all operator types
+        // using the FilterCondition objects emitted by FilterBuilder directly.
+        var query = _allOrders.AsQueryable().ApplyFilter(_filterBuilderFilters);
+
+        IOrderedQueryable<Order>? sorted = null;
+        foreach (var sort in request.SortDescriptors.OrderBy(s => s.Order))
+        {
+            var asc = sort.Direction == DataGridSortDirection.Ascending;
+            sorted = sort.Field?.ToLowerInvariant() switch {
+                "id"           => sorted == null ? (asc ? query.OrderBy(o => o.Id)           : query.OrderByDescending(o => o.Id))           : (asc ? sorted.ThenBy(o => o.Id)           : sorted.ThenByDescending(o => o.Id)),
+                "customername" => sorted == null ? (asc ? query.OrderBy(o => o.CustomerName) : query.OrderByDescending(o => o.CustomerName)) : (asc ? sorted.ThenBy(o => o.CustomerName) : sorted.ThenByDescending(o => o.CustomerName)),
+                "orderdate"    => sorted == null ? (asc ? query.OrderBy(o => o.OrderDate)    : query.OrderByDescending(o => o.OrderDate))    : (asc ? sorted.ThenBy(o => o.OrderDate)    : sorted.ThenByDescending(o => o.OrderDate)),
+                "total"        => sorted == null ? (asc ? query.OrderBy(o => o.Total)        : query.OrderByDescending(o => o.Total))        : (asc ? sorted.ThenBy(o => o.Total)        : sorted.ThenByDescending(o => o.Total)),
+                _              => sorted
+            };
+        }
+        if (sorted != null) query = sorted;
+
+        var total = query.Count();
+        var items = query.Skip(request.StartIndex).Take(request.Count).ToList();
+        return Task.FromResult(new DataGridDataResponse<Order> { Items = items, TotalCount = total });
+    }
+}
+""";
 }

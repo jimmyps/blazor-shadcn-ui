@@ -7,9 +7,14 @@
 
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass" style="@GetGridContainerStyle()">
-        @if (!_initialized && (!_columnsRegistered || _isInitializing))
+        @if (!_initialized && !_columnsRegistered)
         {
-            @* Initializing state - shown during first-time setup (script loading, grid building) *@
+            @* Initializing state - shown only until columns register on the first render.
+               _isInitializing is intentionally excluded: keeping the grid container div in the
+               DOM during async AG Grid setup prevents a race condition where a sibling grid's
+               TotalServerRowCountChanged triggers a parent StateHasChanged, Blazor re-renders
+               this grid with the spinner, removes the container div, and AG Grid initializes
+               into a now-detached element — leaving a permanently empty grid. *@
             @if (InitializingTemplate != null)
             {
                 @InitializingTemplate
