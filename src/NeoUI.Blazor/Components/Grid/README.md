@@ -320,8 +320,8 @@ Control spacing and row height:
     <Columns><!-- columns --></Columns>
 </DataGrid>
 
-<!-- Comfortable (42px rows, default) -->
-<DataGrid Density="DataGridDensity.Comfortable" Items="@orders">
+<!-- Medium (42px rows, default) -->
+<DataGrid Density="DataGridDensity.Medium" Items="@orders">
     <Columns><!-- columns --></Columns>
 </DataGrid>
 
@@ -492,7 +492,7 @@ Apply custom CSS classes to cells and headers:
           SelectionMode="DataGridSelectionMode.Multiple"
           Theme="DataGridTheme.Shadcn"
           VisualStyle="DataGridStyle.Striped"
-          Density="DataGridDensity.Comfortable"
+          Density="DataGridDensity.Medium"
           PagingMode="DataGridPagingMode.Client"
           PageSize="25"
           Height="600px"
@@ -630,7 +630,7 @@ Apply custom CSS classes to cells and headers:
 | `PageSize` | `int` | `25` | Number of items per page |
 | `Theme` | `DataGridTheme` | `Shadcn` | AG DataGrid theme (Shadcn, Alpine, Balham, Material, Quartz) |
 | `VisualStyle` | `DataGridStyle` | `Default` | Visual style modifier (Default, Striped, Bordered, Minimal) |
-| `Density` | `DataGridDensity` | `Comfortable` | Spacing density (Compact, Comfortable, Spacious) |
+| `Density` | `DataGridDensity` | `Medium` | Spacing density (Compact, Medium, Spacious) |
 | `Height` | `string?` | `"300px"` | DataGrid height (e.g., "500px", "100%") |
 | `Width` | `string?` | `"100%"` | DataGrid width (e.g., "800px", "100%") |
 | `IsLoading` | `bool` | `false` | Show loading state for data operations |

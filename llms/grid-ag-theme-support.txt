@@ -10,7 +10,7 @@ The DataGrid component supports all **AG DataGrid built-in themes** through the 
 |-----------|------|---------|-------------|
 | `Theme` | `DataGridTheme` | `Alpine` | AG DataGrid base theme (Alpine, Balham, Material, Quartz) |
 | `Style` | `DataGridStyle` | `Default` | Visual style modifier (Default, Striped, Bordered, Minimal) |
-| `Density` | `DataGridDensity` | `Comfortable` | Row spacing density (Compact, Comfortable, Spacious) |
+| `Density` | `DataGridDensity` | `Medium` | Row spacing density (Compact, Medium, Spacious) |
 
 ## Available AG Grid Themes
 
@@ -106,7 +106,7 @@ The `Density` parameter controls spacing and works with **all AG DataGrid themes
 | Density | Row Height | Grid Size | Use Case |
 |---------|-----------|-----------|----------|
 | `Compact` | 28px | 3px | Dense data, many rows |
-| `Comfortable` (default) | 42px | 4px | Balanced, general use |
+| `Medium` (default) | 42px | 4px | Balanced, general use |
 | `Spacious` | 56px | 6px | Easy reading, accessibility |
 
 ## Examples
@@ -228,7 +228,7 @@ See AG Grid's documentation for all available CSS variables:
 
 - **`Theme`** = Which AG DataGrid base theme to use (Alpine, Balham, Material, Quartz)
 - **`Style`** = Visual style modifiers (Default, Striped, Bordered, Minimal)
-- **`Density`** = Row spacing density (Compact, Comfortable, Spacious)
+- **`Density`** = Row spacing density (Compact, Medium, Spacious)
 
 ## See Also
 

@@ -18,7 +18,7 @@ The quickest way to customize your grid's appearance using component parameters:
 - `Quartz` - Modern, polished appearance
 
 **Density Parameter:**
-- `Comfortable` (default) - Standard spacing (42px rows, 48px header, 14px font)
+- `Medium` (default) - Standard spacing (42px rows, 48px header, 14px font)
 - `Compact` - Dense layout (28px rows, 32px header, 12px font)
 - `Spacious` - Relaxed layout (56px rows, 64px header, 16px font)
 
@@ -85,7 +85,7 @@ Use the `<DataDataGridThemeParameters>` component to override specific theme set
 
 **Example:**
 ```razor
-<DataGrid TItem="Order" Items="@orders" Density="DataGridDensity.Comfortable">
+<DataGrid TItem="Order" Items="@orders" Density="DataGridDensity.Medium">
     <Columns>
         <DataDataGridThemeParameters
             AccentColor="#dc2626"
@@ -125,7 +125,7 @@ The customization system follows a clear precedence hierarchy (highest to lowest
 
 1. **DataDataGridThemeParameters** - Explicit parameter overrides (Level 2)
 2. **VisualStyle presets** - Style modifiers like Striped, Bordered
-3. **Density presets** - Spacing/sizing from Compact/Comfortable/Spacious
+3. **Density presets** - Spacing/sizing from Compact/Medium/Spacious
 4. **Theme defaults** - Base theme values (Shadcn tokens or AG DataGrid defaults)
 5. **CSS variables** - Manual CSS overrides (Level 3)
 
@@ -218,7 +218,7 @@ If you were previously customizing grids with manual CSS variables, migrate to t
 <DataGrid TItem="Order" 
       Items="@orders"
       Theme="DataGridTheme.Shadcn"
-      Density="DataGridDensity.Comfortable"
+      Density="DataGridDensity.Medium"
       VisualStyle="DataGridStyle.Striped"
       Height="600px"
       SelectionMode="DataGridSelectionMode.Multiple">
