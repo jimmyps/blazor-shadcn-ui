@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## 2026-3-12 – DataGrid — New Blazor-native ServerSide Row Model
 
-> **Library change.** Affects `DataGrid<TItem>` in `NeoUI.Blazor`. Introduces `IDataGridServerDataProvider<TItem>` and `HttpDataGridProvider<TItem>` in `NeoUI.Blazor`, and updates the DataGrid JavaScript in `NeoUI.Blazor`. No breaking changes to public APIs.
+> **Library change.** Affects `DataGrid<TItem>` in `NeoUI.Blazor`. Introduces `IDataGridServerDataProvider<TItem>` and `HttpDataGridProvider<TItem>` in `NeoUI.Blazor`, and updates the DataGrid JavaScript in `NeoUI.Blazor`. `DataGridDensity.Comfortable` has been renamed to `DataGridDensity.Medium`; `Comfortable` is retained as an `[Obsolete]` alias for backward compatibility.
 
 ---
 

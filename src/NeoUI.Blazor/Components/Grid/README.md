@@ -315,12 +315,12 @@ Apply visual style modifiers to any theme:
 Control spacing and row height:
 
 ```razor
-<!-- Compact (28px rows) -->
+<!-- Compact (36px rows, default) -->
 <DataGrid Density="DataGridDensity.Compact" Items="@orders">
     <Columns><!-- columns --></Columns>
 </DataGrid>
 
-<!-- Medium (42px rows, default) -->
+<!-- Medium (42px rows) -->
 <DataGrid Density="DataGridDensity.Medium" Items="@orders">
     <Columns><!-- columns --></Columns>
 </DataGrid>

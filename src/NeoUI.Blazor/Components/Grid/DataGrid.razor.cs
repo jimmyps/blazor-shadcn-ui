@@ -924,11 +924,14 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                 else
                     response = await OnFetchServerDataAsync(request);
 
-                // Update total count for two-way binding
-                if (TotalServerRowCountChanged.HasDelegate && response.TotalCount != TotalServerRowCount)
+                // Update total count for two-way binding and internal state
+                if (response.TotalCount != TotalServerRowCount)
                 {
                     TotalServerRowCount = response.TotalCount;
-                    await TotalServerRowCountChanged.InvokeAsync(response.TotalCount);
+                    if (TotalServerRowCountChanged.HasDelegate)
+                    {
+                        await TotalServerRowCountChanged.InvokeAsync(response.TotalCount);
+                    }
                 }
 
                 // Track which item IDs are on this page so cross-page selections can be

@@ -15,5 +15,9 @@ public enum DataGridDensity
     Medium,
 
     /// <summary>Increased padding for readability.</summary>
-    Spacious
+    Spacious,
+
+    /// <summary>Standard padding. Renamed to <see cref="Medium"/> for clarity.</summary>
+    [Obsolete("Use DataGridDensity.Medium instead. Comfortable has been renamed to Medium.")]
+    Comfortable = Medium
 }
