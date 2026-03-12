@@ -69,7 +69,7 @@ partial class Basic
     <Columns>...</Columns>
 </DataGrid>
 
-<DataGrid Items="@orders" Density="DataGridDensity.Comfortable">
+<DataGrid Items="@orders" Density="DataGridDensity.Medium">
     <Columns>...</Columns>
 </DataGrid>
 

@@ -67,4 +67,28 @@ public interface IDataGridRenderer<TItem> : IDataGridRenderer
     /// </summary>
     /// <returns>A task that represents the asynchronous refresh operation.</returns>
     Task RefreshServerSideCacheAsync();
+
+    /// <summary>
+    /// Triggers a BlazorServerSide data fetch by notifying JavaScript to call OnStateChangedAndFetchData.
+    /// Only applicable for BlazorServerSide row model.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous fetch trigger operation.</returns>
+    Task TriggerBlazorServerSideFetchAsync();
+
+    /// <summary>
+    /// Navigates to the specified page in BlazorServerSide mode.
+    /// Updates the internal page state in JavaScript and triggers a new data fetch.
+    /// Only applicable for BlazorServerSide row model.
+    /// </summary>
+    /// <param name="page">The 1-based page number to navigate to.</param>
+    /// <param name="pageSize">The number of items per page.</param>
+    /// <returns>A task that represents the asynchronous page navigation operation.</returns>
+    Task SetBlazorPageAsync(int page, int pageSize);
+
+    /// <summary>
+    /// Sizes all columns to fit their rendered content using AG Grid's native autoSizeAllColumns() API.
+    /// Each column width is measured against its actual header text and visible cell values.
+    /// </summary>
+    /// <param name="skipHeader">When true, header text is excluded from the width measurement.</param>
+    Task AutoSizeColumnsAsync(bool skipHeader = false);
 }

@@ -419,7 +419,7 @@ public class DataGridDataResponse<TItem>
 ```razor
 <DataGrid TItem="Order" Items="@orders" 
       Theme="DataGridTheme.Shadcn"           @* Shadcn/Alpine/Balham/Material/Quartz *@
-      Density="DataGridDensity.Compact"      @* Compact/Comfortable/Spacious *@
+      Density="DataGridDensity.Compact"      @* Compact/Medium/Spacious *@
       VisualStyle="DataGridStyle.Striped">   @* Default/Striped/Bordered/Minimal *@
     <Columns>...</Columns>
 </DataGrid>
@@ -456,7 +456,7 @@ public class DataGridDataResponse<TItem>
 ### Theme Precedence (Highest → Lowest)
 1. DataDataGridThemeParameters (explicit overrides)
 2. VisualStyle presets (Striped, Bordered, etc.)
-3. Density presets (Compact, Comfortable, Spacious)
+3. Density presets (Compact, Medium, Spacious)
 4. Theme defaults (Shadcn tokens or AG DataGrid defaults)
 5. CSS variables (manual overrides)
 

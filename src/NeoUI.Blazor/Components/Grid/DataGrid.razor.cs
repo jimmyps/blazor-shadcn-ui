@@ -47,6 +47,12 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Indicates whether the grid has been initialized.
     /// </summary>
     private bool _initialized = false;
+
+    /// <summary>
+    /// Guards against concurrent re-entrant initialization calls that can occur when
+    /// Blazor triggers additional renders while the async initialization is awaiting.
+    /// </summary>
+    private bool _isInitializing = false;
     
     /// <summary>
     /// Indicates whether columns have been registered.
@@ -97,6 +103,13 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Current items collection reference for change detection.
     /// </summary>
     private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
+
+    /// <summary>
+    /// IDs of items on the currently loaded page (BlazorServerSide mode only).
+    /// Used to identify which items in SelectedItems are on other pages so they
+    /// are preserved when the user selects or deselects on the current page.
+    /// </summary>
+    private HashSet<string> _currentPageItemIds = new();
     
     /// <summary>
     /// Subscription to collection change notifications.
@@ -122,6 +135,12 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Dictionary tracking items by ID for delta detection.
     /// </summary>
     private Dictionary<object, TItem>? _previousItemsById;
+
+    /// <summary>
+    /// Pagination state for BlazorServerSide mode.
+    /// Drives the custom Blazor pagination bar rendered below the grid.
+    /// </summary>
+    private readonly NeoUI.Blazor.Primitives.PaginationState _blazorPaginationState = new();
 
     /// <summary>
     /// Gets or sets the service provider for dependency injection.
@@ -194,7 +213,22 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Gets or sets the spacing density for the grid.
     /// </summary>
     [Parameter]
-    public DataGridDensity Density { get; set; } = DataGridDensity.Comfortable;
+    public DataGridDensity Density { get; set; } = DataGridDensity.Compact;
+
+    /// <summary>
+    /// Gets or sets whether columns without an explicit Width should automatically fill
+    /// available horizontal space using AG Grid's flex layout.
+    /// When true, columns with no Width get flex: 1; columns with explicit Width keep their fixed size.
+    /// </summary>
+    [Parameter]
+    public bool FillWidth { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether to automatically size all columns to fit their rendered content
+    /// after each data load, using AG Grid's native autoSizeAllColumns() API.
+    /// </summary>
+    [Parameter]
+    public bool AutoSizeColumns { get; set; }
 
     /// <summary>
     /// Gets or sets whether to suppress the header menus (filter/column menu).
@@ -232,10 +266,26 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     public RenderFragment? Columns { get; set; }
 
     /// <summary>
-    /// Gets or sets the template to display while the grid is loading.
+    /// Gets or sets the template to display while the grid is loading data.
+    /// This is shown when IsLoading is true (e.g., during data fetch operations).
     /// </summary>
     [Parameter]
     public RenderFragment? LoadingTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the template to display while the grid is initializing.
+    /// This is shown during first-time setup (downloading scripts, building grid options).
+    /// If not provided, a default "Initializing grid..." message is displayed.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? InitializingTemplate { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the grid is ready (initialized and rendered).
+    /// This is called after grid initialization completes, useful for performing actions that depend on the grid being fully loaded.
+    /// </summary>
+    [Parameter]
+    public Action? OnGridReady { get; set; }
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the grid container.
@@ -291,6 +341,16 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public Func<DataGridDataRequest<TItem>, Task<DataGridDataResponse<TItem>>>? OnServerDataRequest { get; set; }
+
+    /// <summary>
+    /// Gets or sets an external server data provider for BlazorServerSide mode.
+    /// When set, overrides OnServerDataRequest. Implement IDataGridServerDataProvider{TItem}
+    /// (or subclass HttpDataGridProvider{TItem}) to target any data source.
+    /// If neither ServerDataProvider nor OnServerDataRequest is set, the virtual
+    /// OnFetchServerDataAsync method is called (override in a subclass for code-behind style).
+    /// </summary>
+    [Parameter]
+    public NeoUI.Blazor.Services.Grid.IDataGridServerDataProvider<TItem>? ServerDataProvider { get; set; }
     
     /// <summary>
     /// Gets or sets the callback invoked when server-side data is requested (legacy EventCallback version).
@@ -316,6 +376,19 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public EventCallback<IReadOnlyCollection<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of server-side rows (for external paginator display).
+    /// Automatically updated after each BlazorServerSide data fetch.
+    /// </summary>
+    [Parameter]
+    public int TotalServerRowCount { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when TotalServerRowCount changes (for two-way binding).
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> TotalServerRowCountChanged { get; set; }
 
     /// <summary>
     /// Gets the computed CSS classes for the grid container.
@@ -346,7 +419,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         {
             throw new ArgumentException("PageSize must be greater than 0.", nameof(PageSize));
         }
-        
+
+        // Initialise BlazorServerSide pagination state with the configured page size
+        _blazorPaginationState.PageSize = PageSize;
+
         // Resolve generic grid renderer
         _gridRenderer = ServiceProvider.GetRequiredService<IDataGridRenderer<TItem>>();
     }
@@ -492,27 +568,32 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             if (!_columnsRegistered)
             {
                 _columnsRegistered = true;
-                StateHasChanged();
+                StateHasChanged(); // This is needed to render the second time after columns register
                 return;
             }
         }
         
         // Second render (or later): columns are now registered
-        if (!_initialized && _columnsRegistered && _gridRenderer != null)
+        // _isInitializing is set synchronously before the first await, preventing a second
+        // concurrent render from entering this block while initialization is in-flight.
+        if (!_initialized && !_isInitializing && _columnsRegistered && _gridRenderer != null)
         {
             if (_columns.Count == 0)
             {
                 Console.WriteLine("[Grid] ERROR: No columns registered");
                 return;
             }
-            
+
             if (IsLoading)
             {
                 return;
             }
-            
+
+            // Set the guard synchronously before any await so re-entrant calls are blocked.
+            _isInitializing = true;
+
             BuildDataGridDefinition();
-            
+
             // Auto-discover and register grid actions AFTER BuildDataGridDefinition
             // This ensures _gridDefinition.Metadata is initialized
             if (!_actionsRegistered && ActionHost != null)
@@ -520,18 +601,19 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                 AutoRegisterActions();
                 _actionsRegistered = true;
             }
-            
+
             // Small delay to ensure DOM element is fully ready
             await Task.Delay(100);
-            
+
             try
             {
                 await InitializeGridAsync();
-                _initialized = true;
+                // Do NOT set _initialized = true here - let JavaScript control it via OnGridReadyInternal
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[Grid] ERROR: Initialization failed - {ex.Message}");
+                _isInitializing = false;
                 throw;
             }
         }
@@ -664,12 +746,12 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         {
             DataGridDensity.Compact => new Dictionary<string, object>
             {
-                { "spacing", 4 },
-                { "rowHeight", 28 },
-                { "headerHeight", 32 },
-                { "fontSize", 12 },
+                { "spacing", 6 },
+                { "rowHeight", 36 },
+                { "headerHeight", 36 },
+                { "fontSize", 13 },
                 { "iconSize", 14 },
-                { "inputHeight", 28 },
+                { "inputHeight", 30 },
             },
             DataGridDensity.Spacious => new Dictionary<string, object>
             {
@@ -680,7 +762,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                 { "iconSize", 20 },
                 { "inputHeight", 40 },
             },
-            DataGridDensity.Comfortable or _ => new Dictionary<string, object>
+            DataGridDensity.Medium or _ => new Dictionary<string, object>
             {
                 { "spacing", 8 },
                 { "rowHeight", 42 },
@@ -768,23 +850,34 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.IdField = IdField;                  // Row ID field for selection persistence
         _gridDefinition.State = State;
         _gridDefinition.SuppressHeaderMenus = SuppressHeaderMenus; // Hide filter/menu UI
+        _gridDefinition.FillWidth = FillWidth;
+        _gridDefinition.AutoSizeColumns = AutoSizeColumns;
         _gridDefinition.OnStateChanged = OnStateChanged;
         _gridDefinition.OnDataRequest = OnDataRequest;
-        _gridDefinition.OnSelectionChanged = OnSelectionChanged;
+        // Wrap OnSelectionChanged so cross-page selected items are merged in before the
+        // consumer's callback fires, keeping the full accumulated selection visible.
+        _gridDefinition.OnSelectionChanged = EventCallback.Factory.Create<IReadOnlyCollection<TItem>>(
+            this,
+            async (items) =>
+            {
+                var merged = MergeWithCrossPageSelection(items);
+                if (OnSelectionChanged.HasDelegate)
+                    await OnSelectionChanged.InvokeAsync(merged);
+            }
+        );
         
-        // Wrap SelectedItemsChanged to track when selection is coming from grid
+        // Wrap SelectedItemsChanged to track when selection is coming from grid and to
+        // merge cross-page selected items so navigating pages doesn't wipe prior selections.
         _gridDefinition.SelectedItemsChanged = EventCallback.Factory.Create<IReadOnlyCollection<TItem>>(
             this, 
             async (items) =>
             {
-                // Set flag to indicate this selection change originated from the grid
                 _isUpdatingSelectionFromGrid = true;
                 try
                 {
+                    var merged = MergeWithCrossPageSelection(items);
                     if (SelectedItemsChanged.HasDelegate)
-                    {
-                        await SelectedItemsChanged.InvokeAsync(items);
-                    }
+                        await SelectedItemsChanged.InvokeAsync(merged);
                 }
                 finally
                 {
@@ -813,6 +906,54 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             _gridDefinition.RowModelType = "infinite";
             _gridDefinition.ServerDataRequestHandler = OnServerDataRequest;
         }
+        else if (RowModelType == DataGridRowModelType.BlazorServerSide)
+        {
+            // Use clientSide row model — no Enterprise module needed
+            _gridDefinition.RowModelType = "clientSide";
+
+            // Wire the single-trip fetch handler (priority: ServerDataProvider > OnServerDataRequest > virtual method)
+            _gridDefinition.BlazorServerSideFetchHandler = async (state) =>
+            {
+                var request = MapStateToDataRequest(state);
+
+                DataGridDataResponse<TItem> response;
+                if (ServerDataProvider != null)
+                    response = await ServerDataProvider.GetDataAsync(request);
+                else if (OnServerDataRequest != null)
+                    response = await OnServerDataRequest(request);
+                else
+                    response = await OnFetchServerDataAsync(request);
+
+                // Update total count for two-way binding
+                if (TotalServerRowCountChanged.HasDelegate && response.TotalCount != TotalServerRowCount)
+                {
+                    TotalServerRowCount = response.TotalCount;
+                    await TotalServerRowCountChanged.InvokeAsync(response.TotalCount);
+                }
+
+                // Track which item IDs are on this page so cross-page selections can be
+                // preserved when the user selects or deselects on a different page.
+                var idProp = typeof(TItem).GetProperty(
+                    IdField,
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                _currentPageItemIds = idProp != null && response.Items != null
+                    ? response.Items
+                          .Select(item => idProp.GetValue(item)?.ToString())
+                          .Where(id => id != null)
+                          .ToHashSet()!
+                    : new HashSet<string>();
+
+                // Keep the Blazor pagination bar in sync with real server data
+                _blazorPaginationState.TotalItems = response.TotalCount;
+                _blazorPaginationState.CurrentPage = state.PageNumber;
+                await InvokeAsync(StateHasChanged);
+
+                return response;
+            };
+
+            // Provide selected IDs so JS can restore selection after each page fetch
+            _gridDefinition.GetSelectedIdsForRestore = GetSelectedItemIds;
+        }
         else
         {
             _gridDefinition.RowModelType = "clientSide";
@@ -820,8 +961,125 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         
         // ✅ Provide a callback for the renderer to resolve IDs back to original instances
         _gridDefinition.ResolveItemsByIds = (ids) => ResolveItemsByIds(ids);
+
+        // Wire up OnGridReady callback so JS can signal when initialization is complete
+        _gridDefinition.OnGridReady = () =>
+        {
+            _initialized = true;
+            _isInitializing = false;
+            StateHasChanged();
+            OnGridReady?.Invoke();
+        };
     }
     
+    /// <summary>
+    /// Called by the Blazor pagination bar when the user navigates to a different page.
+    /// Updates JS-side page state and triggers a server fetch for BlazorServerSide mode.
+    /// </summary>
+    private async Task OnBlazorPageChangedAsync(int page)
+    {
+        _blazorPaginationState.CurrentPage = page;
+        await _gridRenderer!.SetBlazorPageAsync(page, _blazorPaginationState.PageSize);
+    }
+
+    /// <summary>
+    /// Called by the Blazor pagination bar when the user changes the page size.
+    /// Resets to page 1 and triggers a server fetch for BlazorServerSide mode.
+    /// </summary>
+    private async Task OnBlazorPageSizeChangedAsync(int pageSize)
+    {
+        _blazorPaginationState.PageSize = pageSize; // also resets CurrentPage to 1
+        await _gridRenderer!.SetBlazorPageAsync(1, pageSize);
+    }
+
+    /// <summary>
+    /// Merges a selection received from the grid (current page only) with any items in
+    /// SelectedItems that are on other pages (cross-page selection).
+    /// Only active in BlazorServerSide mode — other modes load all data at once.
+    /// </summary>
+    private IReadOnlyCollection<TItem> MergeWithCrossPageSelection(IReadOnlyCollection<TItem> currentPageSelection)
+    {
+        // Only accumulate cross-page selection for Multiple mode.
+        // Single selection must not retain items from other pages — selecting on a new page
+        // should replace the previous selection entirely, just as it does on a single page.
+        if (RowModelType != DataGridRowModelType.BlazorServerSide
+            || SelectionMode != DataGridSelectionMode.Multiple
+            || _currentPageItemIds.Count == 0)
+            return currentPageSelection;
+
+        var idProp = typeof(TItem).GetProperty(
+            IdField,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+        if (idProp == null) return currentPageSelection;
+
+        // Guard against null SelectedItems — other methods in this component treat it as nullable.
+        if (SelectedItems == null) return currentPageSelection;
+
+        // Retain any previously selected items whose IDs are NOT on the current page.
+        // Items that ARE on the current page are fully controlled by the grid's selection state,
+        // so we replace them entirely with whatever the grid just reported.
+        var crossPageItems = SelectedItems.Where(item =>
+        {
+            var id = idProp.GetValue(item)?.ToString();
+            return id != null && !_currentPageItemIds.Contains(id);
+        });
+
+        return crossPageItems.Concat(currentPageSelection).ToList().AsReadOnly();
+    }
+
+    /// <summary>
+    /// Returns the string IDs of the currently selected items.
+    /// Used by the renderer to restore selection across page navigation in BlazorServerSide mode.
+    /// </summary>
+    private IReadOnlyCollection<string> GetSelectedItemIds()
+    {
+        if (SelectedItems == null || !SelectedItems.Any()) return Array.Empty<string>();
+
+        var idProp = typeof(TItem).GetProperty(
+            IdField,
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.IgnoreCase);
+
+        if (idProp == null) return Array.Empty<string>();
+
+        return SelectedItems
+            .Select(item => idProp.GetValue(item)?.ToString())
+            .Where(id => !string.IsNullOrEmpty(id))
+            .Cast<string>()
+            .ToArray();
+    }
+
+    /// <summary>
+    /// Maps a DataGridState to a DataGridDataRequest for BlazorServerSide mode.
+    /// </summary>
+    private DataGridDataRequest<TItem> MapStateToDataRequest(DataGridState state)
+    {
+        var pageNumber = Math.Max(1, state.PageNumber);
+        var pageSize   = Math.Max(1, state.PageSize);
+        // Guard against integer overflow: compute in long and clamp to int.MaxValue.
+        long startIndexLong = (long)(pageNumber - 1) * pageSize;
+        var startIndex = startIndexLong > int.MaxValue ? int.MaxValue : (int)startIndexLong;
+        return new()
+        {
+            StartIndex        = startIndex,
+            Count             = pageSize,
+            PageNumber        = pageNumber,
+            PageSize          = pageSize,
+            SortDescriptors   = state.SortDescriptors   ?? [],
+            FilterDescriptors = state.FilterDescriptors ?? []
+        };
+    }
+
+    /// <summary>
+    /// Override in a subclass to provide server-side data without using OnServerDataRequest or ServerDataProvider.
+    /// Called when RowModelType is BlazorServerSide and no other handler is configured.
+    /// </summary>
+    /// <param name="request">The data request from the grid.</param>
+    protected virtual Task<DataGridDataResponse<TItem>> OnFetchServerDataAsync(DataGridDataRequest<TItem> request)
+        => Task.FromResult(new DataGridDataResponse<TItem>());
+
     /// <summary>
     /// Resolves a collection of IDs to their corresponding original item instances.
     /// Used by the renderer to convert deserialized items back to original references.
@@ -892,19 +1150,23 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             
             // ✅ Only set initial data for CLIENT-SIDE row models
             // Server-side and infinite row models fetch data via datasource callbacks
-            if (_gridDefinition.RowModelType == "clientSide")
+            if (_gridDefinition.RowModelType == "clientSide" && _gridDefinition.BlazorServerSideFetchHandler == null)
             {
-                // Set initial data, track count, and subscribe if observable
+                // Pure client-side: load all Items immediately
                 _currentItems = Items;
                 _previousItemsHash = Items?.Count() ?? 0;
                 SubscribeToCollection();
                 
                 await _gridRenderer.UpdateDataAsync(Items);
             }
+            else if (_gridDefinition.BlazorServerSideFetchHandler != null)
+            {
+                // BlazorServerSide: JS will trigger initial fetch via setTimeout after grid is ready
+                Console.WriteLine("[Grid] BlazorServerSide mode initialized - awaiting JS-triggered initial fetch");
+            }
             else
             {
-                // For server-side row models, don't provide Items or call UpdateDataAsync
-                // The grid will automatically call the datasource.getRows() callback
+                // Enterprise ServerSide / Infinite: datasource callback
                 Console.WriteLine($"[Grid] Server-side row model initialized - awaiting datasource callback");
             }
         }
@@ -1184,6 +1446,19 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     }
     
     /// <summary>
+    /// Sizes all columns to fit their rendered content using AG Grid's native autoSizeAllColumns().
+    /// Useful for on-demand column resizing after data changes.
+    /// </summary>
+    /// <param name="skipHeader">When true, header text is excluded from width measurement.</param>
+    public async Task AutoSizeColumnsAsync(bool skipHeader = false)
+    {
+        if (_gridRenderer == null || !_initialized)
+            throw new InvalidOperationException("DataGrid not initialized");
+
+        await _gridRenderer.AutoSizeColumnsAsync(skipHeader);
+    }
+
+    /// <summary>
     /// Manually refreshes the grid display to reflect changes in the underlying data.
     /// This forces a full grid refresh and is useful when:
     /// - Data properties have been modified in-place (without ObservableCollection events)
@@ -1214,6 +1489,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         if (RowModelType == DataGridRowModelType.ServerSide)
         {
             await _gridRenderer.RefreshServerSideCacheAsync();
+        }
+        else if (RowModelType == DataGridRowModelType.BlazorServerSide)
+        {
+            await _gridRenderer.TriggerBlazorServerSideFetchAsync();
         }
         else
         {
@@ -1405,6 +1684,29 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Gets the inline styles for the grid container element.
     /// </summary>
     private string GetGridContainerStyle()
+    {
+        // Build inline styles for the grid container
+        // AG DataGrid requires explicit height to render properly
+        var styles = new List<string>();
+
+        if (!_initialized)
+        {
+            // Add height - default to 300px if not specified
+            var height = !string.IsNullOrEmpty(Height) ? Height : "300px";
+            styles.Add($"height: {height}");
+
+            // Add width - default to 100% if not specified
+            var width = !string.IsNullOrEmpty(Width) ? Width : "100%";
+            styles.Add($"width: {width}");
+        }
+
+        if (!string.IsNullOrEmpty(InlineStyle))
+            styles.Add(InlineStyle);
+
+        return string.Join("; ", styles);
+    }
+
+    private string GetGridStyle()
     {
         // Build inline styles for the grid container
         // AG DataGrid requires explicit height to render properly

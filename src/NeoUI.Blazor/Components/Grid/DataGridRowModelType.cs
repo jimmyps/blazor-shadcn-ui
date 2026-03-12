@@ -22,5 +22,13 @@ public enum DataGridRowModelType
     /// Infinite scroll row model. Data is fetched in blocks as the user scrolls.
     /// Best for medium-sized datasets (10,000-100,000 rows) with simple requirements.
     /// </summary>
-    Infinite
+    Infinite,
+    
+    /// <summary>
+    /// Blazor-native server-side row model. Data is fetched on demand via C# with a single
+    /// JS interop round trip. No AG Grid Enterprise license required.
+    /// Supports server-side sorting, filtering, and pagination through any data source:
+    /// default Blazor method call, external HTTP endpoint, or custom IDataGridServerDataProvider.
+    /// </summary>
+    BlazorServerSide
 }

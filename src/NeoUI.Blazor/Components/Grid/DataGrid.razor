@@ -2,24 +2,40 @@
 @typeparam TItem
 @attribute [CascadingTypeParameter(nameof(TItem))]
 @using NeoUI.Blazor.Services.Grid
+@using NeoUI.Blazor.Primitives
 @implements IAsyncDisposable
 
 <CascadingValue Value="this" IsFixed="true">
-    <div class="@ContainerCssClass" style="@InlineStyle">
-        @if (IsLoading || !_columnsRegistered)
+    <div class="@ContainerCssClass" style="@GetGridContainerStyle()">
+        @if (!_initialized && (!_columnsRegistered || _isInitializing))
         {
+            @* Initializing state - shown during first-time setup (script loading, grid building) *@
+            @if (InitializingTemplate != null)
+            {
+                @InitializingTemplate
+            }
+            else
+            {
+                <div class="flex items-center justify-center h-full p-8">
+                    <Spinner Size="SpinnerSize.Small" />
+                </div>
+            }
+        }
+        else if (IsLoading)
+        {
+            @* Loading state - shown when fetching/refreshing data *@
             @if (LoadingTemplate != null)
             {
                 @LoadingTemplate
             }
             else
             {
-                <div class="flex items-center justify-center p-8 text-muted-foreground">
-                    <div class="text-sm">Loading...</div>
+                <div class="flex items-center justify-center h-full p-8">
+                    <Spinner Size="SpinnerSize.Medium" />
                 </div>
             }
         }
-        else if (_columns.Count == 0)
+        else if (_columns.Count == 0 && _columnsRegistered)
         {
             <div class="text-sm text-muted-foreground p-4">
                 No columns defined. Add DataGridColumn components inside the Columns parameter.
@@ -28,10 +44,35 @@
         else
         {
             @* AG DataGrid requires explicit height and theme class *@
-            <div @ref="_gridContainer" class="@GetGridCssClass()" style="@GetGridContainerStyle()"></div>
+            <div @ref="_gridContainer" class="@GetGridCssClass()" style="@GetGridStyle()"></div>
+
+            @* BlazorServerSide custom pagination bar — replaces AG Grid's built-in panel which
+           can only count rowData.length (one page) and would always show "of pageSize". *@
+            @if (RowModelType == DataGridRowModelType.BlazorServerSide && PagingMode != DataGridPagingMode.None)
+            {
+                <Pagination State="_blazorPaginationState"
+                            PageSizes="@(new int[]{ 10, 20, 25, 50, 100 })"
+                            OnPageChanged="OnBlazorPageChangedAsync"
+                            OnPageSizeChanged="OnBlazorPageSizeChangedAsync"
+                            Class="flex items-center justify-between border-t px-2 py-4">
+                    <PaginationInfo />
+                    <PaginationContent Class="flex items-center gap-6 lg:gap-8">
+                        <PaginationPageSizeSelector />
+                        <div class="flex items-center gap-2">
+                            <PaginationPageDisplay />
+                            <div class="flex items-center gap-1">
+                                <PaginationItem><PaginationFirst /></PaginationItem>
+                                <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
+                                <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
+                                <PaginationItem><PaginationLast /></PaginationItem>
+                            </div>
+                        </div>
+                    </PaginationContent>
+                </Pagination>
+            }
         }
     </div>
-    
+
     @* Capture column definitions *@
     @Columns
 </CascadingValue>

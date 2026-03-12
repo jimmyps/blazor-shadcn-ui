@@ -2562,7 +2562,7 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 | `VirtualizationMode` | `DataGridVirtualizationMode` | `DataGridVirtualizationMode.Auto` | Gets or sets the virtualization mode for the grid. |
 | `Theme` | `DataGridTheme` | `DataGridTheme.Shadcn` | Gets or sets the AG DataGrid theme to use (Shadcn, Alpine, Balham, Material, Quartz). Default is Shadcn. |
 | `VisualStyle` | `DataGridStyle` | `DataGridStyle.Default` | Gets or sets the visual style modifiers for the grid (Default, Striped, Bordered, Minimal). These modifiers work with any AG DataGrid theme. |
-| `Density` | `DataGridDensity` | `DataGridDensity.Comfortable` | Gets or sets the spacing density for the grid. |
+| `Density` | `DataGridDensity` | `DataGridDensity.Medium` | Gets or sets the spacing density for the grid. |
 | `SuppressHeaderMenus` | `bool` | `false` | Gets or sets whether to suppress the header menus (filter/column menu). When true, columns will not show the menu icon even if filterable/sortable. This is useful for controlled filtering scenarios where you provide external filter UI. Default is false. |
 | `State` | `DataGridState?` |  | Gets or sets the current state of the grid. Supports two-way binding via @bind-State for automatic state synchronization. |
 | `StateChanged` | `EventCallback<DataGridState>` |  | Gets or sets the callback invoked when the grid state changes. Used for two-way binding support (@bind-State). |
@@ -2616,11 +2616,11 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `Spacing` | `int?` |  | Gets or sets the base spacing unit in pixels. Controls padding and margins throughout the grid. Default varies by density: Compact=3, Comfortable=4, Spacious=6 4 |
-| `RowHeight` | `int?` |  | Gets or sets the row height in pixels. Default varies by density: Compact=28, Comfortable=42, Spacious=56 42 |
-| `HeaderHeight` | `int?` |  | Gets or sets the header height in pixels. Default varies by density: Compact=32, Comfortable=48, Spacious=64 48 |
-| `IconSize` | `int?` |  | Gets or sets the size of icons in pixels. Default varies by density: Compact=14, Comfortable=16, Spacious=20 16 |
-| `InputHeight` | `int?` |  | Gets or sets the height of input elements (filters, editors) in pixels. Default varies by density: Compact=28, Comfortable=32, Spacious=40 32 |
+| `Spacing` | `int?` |  | Gets or sets the base spacing unit in pixels. Controls padding and margins throughout the grid. Default varies by density: Compact=3, Medium=4, Spacious=6 4 |
+| `RowHeight` | `int?` |  | Gets or sets the row height in pixels. Default varies by density: Compact=28, Medium=42, Spacious=56 42 |
+| `HeaderHeight` | `int?` |  | Gets or sets the header height in pixels. Default varies by density: Compact=32, Medium=48, Spacious=64 48 |
+| `IconSize` | `int?` |  | Gets or sets the size of icons in pixels. Default varies by density: Compact=14, Medium=16, Spacious=20 16 |
+| `InputHeight` | `int?` |  | Gets or sets the height of input elements (filters, editors) in pixels. Default varies by density: Compact=28, Medium=32, Spacious=40 32 |
 | `ToggleButtonWidth` | `int?` |  | Gets or sets the width of toggle buttons in pixels. 28 |
 | `ToggleButtonHeight` | `int?` |  | Gets or sets the height of toggle buttons in pixels. 28 |
 | `AccentColor` | `string?` |  | Gets or sets the primary accent color used for active states, selections, and focus indicators. Accepts CSS color values (hex, rgb, hsl, oklch, etc.) or CSS variables. Default for Shadcn theme: var(--primary) "#2563eb" or "var(--primary)" |
@@ -2640,7 +2640,7 @@ Responsive grid layout system with customizable columns and gaps. CSS Grid-based
 | `TooltipBackgroundColor` | `string?` |  | Gets or sets the background color for tooltips. Default for Shadcn theme: var(--popover) "#ffffff" or "var(--popover)" |
 | `TooltipTextColor` | `string?` |  | Gets or sets the text color for tooltips. Default for Shadcn theme: var(--popover-foreground) "#000000" or "var(--popover-foreground)" |
 | `FontFamily` | `string?` |  | Gets or sets the font family for the grid. Default for Shadcn theme: var(--font-sans) "Inter, system-ui, sans-serif" or "var(--font-sans)" |
-| `FontSize` | `int?` |  | Gets or sets the base font size in pixels. Default varies by density: Compact=12, Comfortable=14, Spacious=16 14 |
+| `FontSize` | `int?` |  | Gets or sets the base font size in pixels. Default varies by density: Compact=12, Medium=14, Spacious=16 14 |
 | `HeaderFontSize` | `int?` |  | Gets or sets the font size for column headers in pixels. 14 |
 | `HeaderFontWeight` | `object?` |  | Gets or sets the font weight for column headers. 600 or "bold" |
 | `Borders` | `bool?` |  | Gets or sets whether to show borders between cells and rows. Default varies by style: Default=true, Striped=true, Bordered=true, Minimal=false true |
