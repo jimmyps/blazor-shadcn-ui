@@ -8,12 +8,16 @@ namespace NeoUI.Blazor;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum DataGridDensity
 {
-    /// <summary>Standard padding (default).</summary>
-    Comfortable,
-    
     /// <summary>Reduced padding for more rows.</summary>
     Compact,
-    
+
+    /// <summary>Standard padding.</summary>
+    Medium,
+
     /// <summary>Increased padding for readability.</summary>
-    Spacious
+    Spacious,
+
+    /// <summary>Standard padding. Renamed to <see cref="Medium"/> for clarity.</summary>
+    [Obsolete("Use DataGridDensity.Medium instead. Comfortable has been renamed to Medium.")]
+    Comfortable = Medium
 }

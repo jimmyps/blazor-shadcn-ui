@@ -83,29 +83,81 @@
                     <p class="text-sm text-muted-foreground">Built with C# for compile-time type checking and IntelliSense support.</p>
                 </div>
             </div>
+
+            @* Featured: Enterprise-grade Components — spans full grid width *@
+            <div class="md:col-span-2 lg:col-span-3">
+                <Alert Variant="AlertVariant.Info">
+                    <Icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </Icon>
+                    <ChildContent>
+                        <AlertTitle>Enterprise-grade Components</AlertTitle>
+                        <AlertDescription>
+                            <p class="mb-3">Production-ready data components purpose-built for modern business applications.</p>
+                            <div class="grid gap-3 sm:grid-cols-3">
+                                <a href="/components/datagrid" class="flex items-start gap-3 p-3 rounded-md hover:border-primary hover:bg-accent transition-colors no-underline group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-primary flex-shrink-0">
+                                        <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+                                        <path d="M3 9h18"></path>
+                                        <path d="M3 15h18"></path>
+                                        <path d="M9 3v18"></path>
+                                    </svg>
+                                    <div class="space-y-0.5 min-w-0">
+                                        <p class="text-sm font-medium group-hover:text-primary">DataGrid</p>
+                                        <p class="text-xs text-muted-foreground">Server-side paging, sorting, filtering, selection, and live transactions — powered by free, open-source AG Grid Community.</p>
+                                    </div>
+                                </a>
+                                <a href="/components/chart" class="flex items-start gap-3 p-3 rounded-md hover:border-primary hover:bg-accent transition-colors no-underline group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-primary flex-shrink-0">
+                                        <path d="M3 3v18h18"></path>
+                                        <path d="M18 17V9"></path>
+                                        <path d="M13 17V5"></path>
+                                        <path d="M8 17v-3"></path>
+                                    </svg>
+                                    <div class="space-y-0.5 min-w-0">
+                                        <p class="text-sm font-medium group-hover:text-primary">Charts</p>
+                                        <p class="text-xs text-muted-foreground">Beautiful and fully animated 8 chart types plus a ComposedChart for mixed visuals — all theme-aware and declaratively configured.</p>
+                                    </div>
+                                </a>
+                                <a href="/components/filter" class="flex items-start gap-3 p-3 rounded-md hover:border-primary hover:bg-accent transition-colors no-underline group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 text-primary flex-shrink-0">
+                                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                                    </svg>
+                                    <div class="space-y-0.5 min-w-0">
+                                        <p class="text-sm font-medium group-hover:text-primary">FilterBuilder</p>
+                                        <p class="text-xs text-muted-foreground">Dynamic inline filter canvas with chip-based conditions. Integrates with any <code class="font-mono">IEnumerable&lt;T&gt;</code> or <code class="font-mono">IQueryable&lt;T&gt;</code> via built-in LINQ extensions.</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </div>
         </div>
     </div>
 
     <div class="space-y-4">
         <h2 class="text-2xl font-semibold">What's New</h2>
-        <a href="/components/theme-switcher" class="flex items-start gap-4 p-5 border rounded-lg hover:border-primary hover:bg-accent transition-colors no-underline group">
+        <a href="/components/filter" class="flex items-start gap-4 p-5 border rounded-lg hover:border-primary hover:bg-accent transition-colors no-underline group">
             <div class="mt-0.5 flex-shrink-0 size-9 rounded-full bg-primary/10 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
-                    <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
-                    <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>
-                    <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle>
-                    <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle>
-                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
                 </svg>
             </div>
             <div class="space-y-1 min-w-0">
                 <div class="flex items-center gap-2">
-                    <h3 class="font-semibold group-hover:text-primary">Theme Switcher</h3>
+                    <h3 class="font-semibold group-hover:text-primary">FilterBuilder</h3>
                     <span class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">New</span>
                 </div>
                 <p class="text-sm text-muted-foreground">
-                    Runtime base color and accent picker — lets users choose from 5 base color schemes and 18 primary accents,
-                    persisted automatically via <code class="bg-muted px-1 rounded">localStorage</code>.
+                    A dynamic, inline filter canvas — no modals, no Apply button. Conditions appear as interactive chip rows
+                    that apply instantly. Works with any data source through
+                    <code class="bg-muted px-1 rounded">IEnumerable&lt;T&gt;</code> and
+                    <code class="bg-muted px-1 rounded">IQueryable&lt;T&gt;</code> via built-in LINQ extensions,
+                    with 8 field types, 12 editor widgets, and preset support.
                 </p>
             </div>
         </a>

@@ -315,13 +315,13 @@ Apply visual style modifiers to any theme:
 Control spacing and row height:
 
 ```razor
-<!-- Compact (28px rows) -->
+<!-- Compact (36px rows, default) -->
 <DataGrid Density="DataGridDensity.Compact" Items="@orders">
     <Columns><!-- columns --></Columns>
 </DataGrid>
 
-<!-- Comfortable (42px rows, default) -->
-<DataGrid Density="DataGridDensity.Comfortable" Items="@orders">
+<!-- Medium (42px rows) -->
+<DataGrid Density="DataGridDensity.Medium" Items="@orders">
     <Columns><!-- columns --></Columns>
 </DataGrid>
 
@@ -370,9 +370,33 @@ Fine-tune the theme with custom parameters:
 </DataGrid>
 ```
 
-## Loading State
+## Loading and Initialization States
 
-Show a loading indicator while data is being fetched:
+The DataGrid component provides two separate state management concepts:
+
+### Initialization State
+
+Shown automatically during first-time setup (downloading scripts, building grid options):
+
+```razor
+<DataGrid Items="@orders">
+    <InitializingTemplate>
+        <div class="flex items-center justify-center h-64">
+            <Spinner Size="SpinnerSize.Large" />
+            <span class="ml-2">Setting up grid...</span>
+        </div>
+    </InitializingTemplate>
+    <Columns>
+        <!-- columns -->
+    </Columns>
+</DataGrid>
+```
+
+The initialization template is shown only once when the grid is first being set up. Once initialized, it never shows again.
+
+### Loading State (Data Operations)
+
+Show a loading indicator while data is being fetched or refreshed:
 
 ```razor
 <DataGrid Items="@orders" IsLoading="@isLoading">
@@ -386,7 +410,29 @@ Show a loading indicator while data is being fetched:
         <!-- columns -->
     </Columns>
 </DataGrid>
+
+@code {
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        isLoading = true;
+        orders = await OrderService.GetOrdersAsync();
+        isLoading = false;
+    }
+}
 ```
+
+Use `IsLoading` to control the loading state when fetching or refreshing data. This is independent of the initialization state.
+
+**Key Differences:**
+- **InitializingTemplate**: Shown during first-time grid setup (internal, automatic)
+- **LoadingTemplate**: Shown when `IsLoading=true` (external, controlled by you)
 
 ## Empty State
 
@@ -446,7 +492,7 @@ Apply custom CSS classes to cells and headers:
           SelectionMode="DataGridSelectionMode.Multiple"
           Theme="DataGridTheme.Shadcn"
           VisualStyle="DataGridStyle.Striped"
-          Density="DataGridDensity.Comfortable"
+          Density="DataGridDensity.Medium"
           PagingMode="DataGridPagingMode.Client"
           PageSize="25"
           Height="600px"
@@ -584,13 +630,14 @@ Apply custom CSS classes to cells and headers:
 | `PageSize` | `int` | `25` | Number of items per page |
 | `Theme` | `DataGridTheme` | `Shadcn` | AG DataGrid theme (Shadcn, Alpine, Balham, Material, Quartz) |
 | `VisualStyle` | `DataGridStyle` | `Default` | Visual style modifier (Default, Striped, Bordered, Minimal) |
-| `Density` | `DataGridDensity` | `Comfortable` | Spacing density (Compact, Comfortable, Spacious) |
+| `Density` | `DataGridDensity` | `Medium` | Spacing density (Compact, Medium, Spacious) |
 | `Height` | `string?` | `"300px"` | DataGrid height (e.g., "500px", "100%") |
 | `Width` | `string?` | `"100%"` | DataGrid width (e.g., "800px", "100%") |
-| `IsLoading` | `bool` | `false` | Show loading state |
+| `IsLoading` | `bool` | `false` | Show loading state for data operations |
 | `Class` | `string?` | `null` | Additional CSS classes |
 | `Columns` | `RenderFragment` | Required | Column definitions |
-| `LoadingTemplate` | `RenderFragment?` | `null` | Custom loading template |
+| `LoadingTemplate` | `RenderFragment?` | `null` | Custom template for data loading state |
+| `InitializingTemplate` | `RenderFragment?` | `null` | Custom template for first-time grid initialization |
 
 ### DataGridColumn Component
 

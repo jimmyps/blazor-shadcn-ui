@@ -2,6 +2,138 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-12 – DataGrid — New Blazor-native ServerSide Row Model
+
+> **Library change.** Affects `DataGrid<TItem>` in `NeoUI.Blazor`. Introduces `IDataGridServerDataProvider<TItem>` and `HttpDataGridProvider<TItem>` in `NeoUI.Blazor`, and updates the DataGrid JavaScript in `NeoUI.Blazor`. `DataGridDensity.Comfortable` has been renamed to `DataGridDensity.Medium`; `Comfortable` is retained as an `[Obsolete]` alias for backward compatibility.
+
+---
+
+### ✨ New Feature — `DataGridRowModelType.BlazorServerSide`
+
+Introduces a Blazor-native server-side row model for the `DataGrid<TItem>` component that delivers full server-side paging, sorting, and filtering **without requiring an AG Grid Enterprise license**.
+
+`BlazorServerSide` uses AG Grid's free `clientSide` row model under the hood, but all data loading is orchestrated from C# via a **single JS→C# interop call** that returns data directly. No Enterprise `ServerSideRowModel` module required (~100KB+ bundle savings).
+
+---
+
+### New APIs
+
+#### `DataGridRowModelType.BlazorServerSide` _(enum value)_
+
+A new row model type that enables license-free, single-round-trip server-side data handling.
+
+#### `DataGrid<TItem>` — new parameters
+
+| Parameter | Type | Description |
+|---|---|---|
+| `ServerDataProvider` | `IDataGridServerDataProvider<TItem>?` | Plug in any external data source. Takes priority over `OnServerDataRequest`. |
+| `TotalServerRowCount` | `int` | Two-way bindable total row count, automatically updated after each fetch. |
+| `TotalServerRowCountChanged` | `EventCallback<int>` | Callback for `@bind-TotalServerRowCount` support. |
+| `FillWidth` | `bool` | Makes the grid fill all available horizontal space responsively. |
+| `Flex` | `int?` | Sets AG Grid flex sizing on columns. |
+| `AutoSizeColumns` | `bool` | Automatically sizes columns to fit content on load. |
+| `IdField` | `string` | **Required for `BlazorServerSide`** — used to match rows for cross-page selection re-sync. |
+
+#### `DataGrid<TItem>` — new virtual method
+
+```csharp
+protected virtual Task<DataGridDataResponse<TItem>> OnFetchServerDataAsync(DataGridDataRequest<TItem> request)
+```
+
+Override in a subclass to provide data without using `OnServerDataRequest` or `ServerDataProvider` (code-behind style).
+
+#### `DataGrid<TItem>` — new API method
+
+```csharp
+public Task AutoSizeColumnsAsync()
+```
+
+Programmatically trigger column auto-sizing after load.
+
+#### `IDataGridServerDataProvider<TItem>` _(new interface)_
+
+An abstraction for wiring any async data source (REST API, GraphQL, in-memory, etc.) to the grid.
+
+```csharp
+Task<DataGridDataResponse<TItem>> GetDataAsync(DataGridDataRequest<TItem> request, CancellationToken ct = default);
+```
+
+#### `HttpDataGridProvider<TItem>` _(new abstract base class)_
+
+A ready-to-subclass HTTP provider that POSTs a `DataGridDataRequest` as JSON and deserialises the response. Override the following hooks for customisation:
+
+- `ConfigureRequestAsync` — inject auth headers, tenant IDs, query parameters, etc.
+- `MapResponseAsync` — handle non-standard response envelopes.
+
+---
+
+### Data fetch priority
+
+When `RowModelType` is `BlazorServerSide`, the grid resolves the data source in this order:
+
+1. `ServerDataProvider` (if set)
+2. `OnServerDataRequest` (if set)
+3. `OnFetchServerDataAsync` (virtual method override)
+
+---
+
+### ✨ New Feature — Cross-Page Row Selection Persistence
+
+Row selections now survive page navigation in `BlazorServerSide` mode. Select rows on any page, navigate away and back — selections are preserved.
+
+**How it works:**
+
+- `IdField` is the key. The grid uses it to match incoming rows against the set of previously selected IDs.
+- When navigating to a new page, the currently selected IDs are tracked in Blazor and rows matching those IDs on the new page are automatically re-checked.
+- Applying a sort or filter resets to page 1 but **preserves existing selections** for any rows that remain visible after filtering.
+- `@bind-SelectedItems` always reflects the full cross-page selection set in Blazor, not just the current page.
+- The JS renderer uses `idField` for consistent row ID mapping and prevents selection loss on page transitions.
+- Initialization guards prevent concurrent setup races.
+
+---
+
+### ✨ Enhancement — Column Sizing, Density & Loading Polish
+
+Several quality-of-life improvements, all additive with no breaking changes:
+
+| Change | Detail |
+|---|---|
+| `FillWidth` parameter | Responsive full-width column stretching |
+| `Flex` parameter | Per-column AG Grid flex sizing |
+| `AutoSizeColumns` parameter | Auto-fit columns to content on initialisation |
+| `AutoSizeColumnsAsync()` API | Programmatic auto-size trigger |
+| Compact density | Row height updated to 36px for visual consistency |
+| `Comfortable` → `Medium` | Density preset renamed for clarity |
+| Loading/init spinners | Improved visual states during grid setup and data fetching |
+| JS: `autoSizeAndFill` | New JS implementation backing the above sizing features |
+| Grid ready notification | JS now notifies Blazor when the grid is fully initialised |
+
+---
+
+### 📖 Demo Page — `/components/datagrid/server-side`
+
+A new dedicated demo page accessible at `/components/datagrid/server-side`, with **five live interactive sections**:
+
+| Section | What it demonstrates |
+|---|---|
+| **A — Blazor Method Call** (`OnServerDataRequest`) | Simplest pattern; async `Func` with in-memory sort, filter, page. Shows a live request counter and "last request" debug line. |
+| **B — Custom `ServerDataProvider`** | `IDataGridServerDataProvider<TItem>` / `InMemoryProductProvider` implementation. Includes a callout explaining how to subclass `HttpDataGridProvider<TItem>`. |
+| **C — Simulated Latency** | 800 ms `Task.Delay` to demonstrate the loading overlay behaviour. |
+| **D — Row Selection Across Pages** | Multi-select with `@bind-SelectedItems`. Shows selected order badges (first 10 + overflow count), Clear button, and an explanation callout for how cross-page selection works. |
+| **E — FilterBuilder Integration** | `FilterBuilder` toolbar replaces all column-level filters — no column has `Filterable="true"`. `OnFilterChange` stores the `FilterGroup` and calls `RefreshAsync()`; the handler applies it via the built-in `ApplyFilter()` LINQ extension. Includes two presets (High-Value Pending, Delivered) and a callout explaining the pattern. |
+
+The DataGrid sub-page is registered as `datagrid/server-side` with the description _"Server-side paging, sorting, and filtering — no Enterprise license required, single JS↔C# round trip"_, appearing correctly in the sidebar nav and command palette.
+
+---
+
+### 🐛 Fix — `DataGrid` initializing-state race condition (empty rows on multi-grid pages)
+
+When multiple `DataGrid<TItem>` instances initialized simultaneously on the same page, a parent `StateHasChanged()` triggered by one grid's `TotalServerRowCountChanged` could re-render sibling grids while they had `_isInitializing = true`. The render condition `!_initialized && (_isInitializing || !_columnsRegistered)` would swap in the spinner, **removing the `<div @ref="_gridContainer">` from the DOM** mid-initialization. AG Grid then initialized into a detached element (invisible), and a fresh empty `div` was placed in the DOM after initialization completed — permanently empty rows despite correct pagination counts.
+
+**Fix:** Removed `_isInitializing` from the render condition. The spinner now only renders until columns register (one render cycle). Once `_columnsRegistered = true`, the grid container `div` is permanently present in the DOM regardless of initialization state. `_isInitializing` is retained as a C# re-entrancy guard in `OnAfterRenderAsync`. AG Grid's own loading overlay covers the fetch window.
+
+---
+
 ## 2026-3-11 — DataTable: Appearance API, Density, Bug Fixes & Docs
 
 > **Enhancement.** Introduces a full appearance-customisation API to `DataTable<TData>` (`Dense`, `HeaderBackground`, `HeaderBorder`, `CellBorder`, `ColumnsVisibility`, per-part CSS class overrides), fixes toolbar UX issues, de-bolds pagination labels, expands the API reference, and adds a `README.md` for the component. No breaking changes.

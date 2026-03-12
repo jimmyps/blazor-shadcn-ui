@@ -7,7 +7,7 @@ Complete reference for all DataDataGridThemeParameters with types, defaults, and
 ### Spacing
 - **Type:** `int?`
 - **Unit:** Pixels
-- **Default:** Varies by density (Compact=3, Comfortable=4, Spacious=6)
+- **Default:** Varies by density (Compact=3, Medium=4, Spacious=6)
 - **AG Grid CSS Variable:** `--ag-grid-size`
 - **Description:** Base spacing unit that controls padding and margins throughout the grid
 - **Example:** `<DataDataGridThemeParameters Spacing="5" />`
@@ -16,7 +16,7 @@ Complete reference for all DataDataGridThemeParameters with types, defaults, and
 ### RowHeight
 - **Type:** `int?`
 - **Unit:** Pixels
-- **Default:** Varies by density (Compact=28, Comfortable=42, Spacious=56)
+- **Default:** Varies by density (Compact=28, Medium=42, Spacious=56)
 - **AG Grid CSS Variable:** `--ag-row-height`
 - **Description:** Height of each data row in pixels
 - **Example:** `<DataDataGridThemeParameters RowHeight="48" />`
@@ -25,7 +25,7 @@ Complete reference for all DataDataGridThemeParameters with types, defaults, and
 ### HeaderHeight
 - **Type:** `int?`
 - **Unit:** Pixels
-- **Default:** Varies by density (Compact=32, Comfortable=48, Spacious=64)
+- **Default:** Varies by density (Compact=32, Medium=48, Spacious=64)
 - **AG Grid CSS Variable:** `--ag-header-height`
 - **Description:** Height of the column header row in pixels
 - **Example:** `<DataDataGridThemeParameters HeaderHeight="56" />`
@@ -34,7 +34,7 @@ Complete reference for all DataDataGridThemeParameters with types, defaults, and
 ### IconSize
 - **Type:** `int?`
 - **Unit:** Pixels
-- **Default:** Varies by density (Compact=14, Comfortable=16, Spacious=20)
+- **Default:** Varies by density (Compact=14, Medium=16, Spacious=20)
 - **AG Grid CSS Variable:** `--ag-icon-size`
 - **Description:** Size of icons used in the grid (sort indicators, menu icons, etc.)
 - **Example:** `<DataDataGridThemeParameters IconSize="18" />`
@@ -43,7 +43,7 @@ Complete reference for all DataDataGridThemeParameters with types, defaults, and
 ### InputHeight
 - **Type:** `int?`
 - **Unit:** Pixels
-- **Default:** Varies by density (Compact=28, Comfortable=32, Spacious=40)
+- **Default:** Varies by density (Compact=28, Medium=32, Spacious=40)
 - **AG Grid CSS Variable:** `--ag-list-item-height`
 - **Description:** Height of input elements like filters and cell editors
 - **Example:** `<DataDataGridThemeParameters InputHeight="36" />`
@@ -227,7 +227,7 @@ Complete reference for all DataDataGridThemeParameters with types, defaults, and
 ### FontSize
 - **Type:** `int?`
 - **Unit:** Pixels
-- **Default:** Varies by density (Compact=12, Comfortable=14, Spacious=16)
+- **Default:** Varies by density (Compact=12, Medium=14, Spacious=16)
 - **AG Grid CSS Variable:** `--ag-font-size`
 - **Description:** Base font size for grid content
 - **Example:** `<DataDataGridThemeParameters FontSize="14" />`

@@ -30,7 +30,7 @@ public partial class DataGridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the base spacing unit in pixels. Controls padding and margins throughout the grid.
-    /// Default varies by density: Compact=3, Comfortable=4, Spacious=6
+    /// Default varies by density: Compact=6, Medium=8, Spacious=12
     /// </summary>
     /// <example>4</example>
     [Parameter]
@@ -38,7 +38,7 @@ public partial class DataGridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the row height in pixels.
-    /// Default varies by density: Compact=28, Comfortable=42, Spacious=56
+    /// Default varies by density: Compact=36, Medium=42, Spacious=56
     /// </summary>
     /// <example>42</example>
     [Parameter]
@@ -46,7 +46,7 @@ public partial class DataGridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the header height in pixels.
-    /// Default varies by density: Compact=32, Comfortable=48, Spacious=64
+    /// Default varies by density: Compact=36, Medium=48, Spacious=64
     /// </summary>
     /// <example>48</example>
     [Parameter]
@@ -54,7 +54,7 @@ public partial class DataGridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the size of icons in pixels.
-    /// Default varies by density: Compact=14, Comfortable=16, Spacious=20
+    /// Default varies by density: Compact=14, Medium=16, Spacious=20
     /// </summary>
     /// <example>16</example>
     [Parameter]
@@ -62,7 +62,7 @@ public partial class DataGridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the height of input elements (filters, editors) in pixels.
-    /// Default varies by density: Compact=28, Comfortable=32, Spacious=40
+    /// Default varies by density: Compact=30, Medium=32, Spacious=40
     /// </summary>
     /// <example>32</example>
     [Parameter]
@@ -225,7 +225,7 @@ public partial class DataGridThemeParameters : ComponentBase
 
     /// <summary>
     /// Gets or sets the base font size in pixels.
-    /// Default varies by density: Compact=12, Comfortable=14, Spacious=16
+    /// Default varies by density: Compact=12, Medium=14, Spacious=16
     /// </summary>
     /// <example>14</example>
     [Parameter]
