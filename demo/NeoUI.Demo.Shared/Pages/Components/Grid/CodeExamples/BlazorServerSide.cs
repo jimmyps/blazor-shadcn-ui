@@ -144,4 +144,63 @@ public class ProductApiProvider : HttpDataGridProvider<Product>
     }
 }
 """;
+
+    public const string SelectionExample = """
+// IdField is the key — it lets the grid track which rows are "the same" across page fetches.
+// Without IdField the grid can't match previously selected rows to newly loaded rows.
+<DataGrid TItem="Order"
+          RowModelType="DataGridRowModelType.BlazorServerSide"
+          SelectionMode="DataGridSelectionMode.Multiple"
+          @bind-SelectedItems="_selectedOrders"
+          OnServerDataRequest="HandleOrderRequest"
+          PagingMode="DataGridPagingMode.Server"
+          PageSize="20"
+          @bind-TotalServerRowCount="_totalOrders"
+          IdField="@nameof(Order.Id)">
+    <Columns>
+        <DataGridColumn Field="@nameof(Order.Id)"           Header="ID"       Sortable="true" Width="80px" />
+        <DataGridColumn Field="@nameof(Order.CustomerName)" Header="Customer" Sortable="true" Filterable="true" />
+        <DataGridColumn Field="@nameof(Order.OrderDate)"    Header="Date"     Sortable="true" DataFormatString="{0:dd MMM yyyy}" />
+        <DataGridColumn Field="@nameof(Order.Total)"        Header="Total"    Sortable="true" DataFormatString="{0:C}" />
+        <DataGridColumn Field="@nameof(Order.Status)"       Header="Status"   Filterable="true" />
+    </Columns>
+</DataGrid>
+
+@code {
+    private IReadOnlyCollection<Order> _selectedOrders = Array.Empty<Order>();
+
+    private Task<DataGridDataResponse<Order>> HandleOrderRequest(DataGridDataRequest<Order> request)
+    {
+        var query = _allOrders.AsQueryable();
+
+        foreach (var filter in request.FilterDescriptors)
+        {
+            var value = filter.Value?.ToString() ?? "";
+            query = filter.Field?.ToLowerInvariant() switch {
+                "customername" => query.Where(o => o.CustomerName.Contains(value, StringComparison.OrdinalIgnoreCase)),
+                "status"       => query.Where(o => o.Status.Contains(value, StringComparison.OrdinalIgnoreCase)),
+                _              => query
+            };
+        }
+
+        IOrderedQueryable<Order>? sorted = null;
+        foreach (var sort in request.SortDescriptors.OrderBy(s => s.Order))
+        {
+            var asc = sort.Direction == DataGridSortDirection.Ascending;
+            sorted = sort.Field?.ToLowerInvariant() switch {
+                "id"           => sorted == null ? (asc ? query.OrderBy(o => o.Id)           : query.OrderByDescending(o => o.Id))           : (asc ? sorted.ThenBy(o => o.Id)           : sorted.ThenByDescending(o => o.Id)),
+                "customername" => sorted == null ? (asc ? query.OrderBy(o => o.CustomerName) : query.OrderByDescending(o => o.CustomerName)) : (asc ? sorted.ThenBy(o => o.CustomerName) : sorted.ThenByDescending(o => o.CustomerName)),
+                "orderdate"    => sorted == null ? (asc ? query.OrderBy(o => o.OrderDate)    : query.OrderByDescending(o => o.OrderDate))    : (asc ? sorted.ThenBy(o => o.OrderDate)    : sorted.ThenByDescending(o => o.OrderDate)),
+                "total"        => sorted == null ? (asc ? query.OrderBy(o => o.Total)        : query.OrderByDescending(o => o.Total))        : (asc ? sorted.ThenBy(o => o.Total)        : sorted.ThenByDescending(o => o.Total)),
+                _              => sorted
+            };
+        }
+        if (sorted != null) query = sorted;
+
+        var total = query.Count();
+        var items = query.Skip(request.StartIndex).Take(request.Count).ToList();
+        return Task.FromResult(new DataGridDataResponse<Order> { Items = items, TotalCount = total });
+    }
+}
+""";
 }

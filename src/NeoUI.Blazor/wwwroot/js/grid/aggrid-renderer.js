@@ -354,7 +354,14 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
                     gridOptions.__triggerBlazorFetch(gridApi);
                 }
             },
-            
+
+            setBlazorPage: (page, pageSize) => {
+                if (config.blazorServerSide) {
+                    gridOptions.__setBlazorPage(page, pageSize);
+                    gridOptions.__triggerBlazorFetch(gridApi);
+                }
+            },
+
             destroy: () => {
                 gridApi.destroy();
             }
@@ -372,10 +379,15 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
 function buildGridOptionsWithEvents(config, dotNetRef) {
     // Flag to prevent selection event during programmatic sync
     let isSyncingSelection = false;
-    
+
     // Flag to prevent re-entrant BlazorServerSide fetches when pagination events fire rapidly
     let isFetchingServerData = false;
-    
+
+    // BlazorServerSide pagination state — tracked independently of AG Grid's pagination API
+    // because AG Grid clientSide row model counts rowData.length for its own pagination display.
+    let blazorPage = 1;
+    let blazorPageSize = config.paginationPageSize || 20;
+
     /**
      * BlazorServerSide mode: single awaited round trip.
      * Sends state to C#, receives { items, totalCount } as return value.
@@ -387,30 +399,66 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         if (!api) return;
         if (isFetchingServerData) return;
         isFetchingServerData = true;
-        
+
         api.showLoadingOverlay();
-        
+
         try {
-            const state = getDataGridState(api);
+            const baseState = getDataGridState(api);
+            // For BlazorServerSide, override page info with our own tracked values so that
+            // C# always receives the correct page number even though AG Grid only holds one
+            // page of rowData (and therefore reports paginationCurrentPage = 0 always).
+            const state = config.blazorServerSide
+                ? { ...baseState, pageNumber: blazorPage, pageSize: blazorPageSize }
+                : baseState;
+
             const result = await dotNetRef.invokeMethodAsync('OnStateChangedAndFetchData', state);
-            
+
+            // Suppress onSelectionChanged while replacing rowData and re-applying selection.
+            // Without this, AG Grid fires onSelectionChanged with an empty set when the old
+            // page's row nodes are removed — which would wipe the Blazor SelectedItems binding.
+            if (config.blazorServerSide) isSyncingSelection = true;
+
             if (result?.items) {
                 api.setGridOption('rowData', result.items);
             } else {
                 api.setGridOption('rowData', []);
             }
-            
+
+            // Re-apply cross-page selection: restore any previously selected rows visible on this page.
+            if (config.blazorServerSide && result?.selectedRowIds?.length > 0) {
+                const selectedIds = new Set(result.selectedRowIds.map(id => String(id)));
+                api.forEachNode(node => {
+                    if (node.data && node.id && selectedIds.has(String(node.id))) {
+                        node.setSelected(true);
+                    }
+                });
+            }
+
+            // Keep local page state in sync with what the server confirmed
+            if (config.blazorServerSide && result) {
+                blazorPage = result.pageNumber ?? blazorPage;
+                blazorPageSize = result.pageSize ?? blazorPageSize;
+            }
+
             api.hideOverlay();
         } catch (err) {
             console.error('[AG Grid] BlazorServerSide fetch failed:', err.message);
             api.showNoRowsOverlay();
         } finally {
-            // Defer clearing the guard via setTimeout(0) so it remains active for any
-            // onPaginationChanged events that AG Grid fires asynchronously (via its own
-            // internal setTimeout) as a result of the setGridOption('rowData') call above.
-            // Without this deferral, the guard is cleared before AG Grid's deferred event
-            // fires, allowing onPaginationChanged to trigger another fetch — infinite loop.
-            setTimeout(() => { isFetchingServerData = false; }, 0);
+            // Defer clearing the guards via setTimeout(0) so they remain active for any
+            // events AG Grid fires asynchronously after setGridOption('rowData').
+            setTimeout(() => {
+                isFetchingServerData = false;
+                if (config.blazorServerSide) {
+                    isSyncingSelection = false;
+                    // Push the authoritative post-navigation selection state to Blazor.
+                    // onSelectionChanged was suppressed above, so this is the only notification
+                    // Blazor receives — ensuring SelectedItems reflects the re-applied selection.
+                    const selectedRows = api.getSelectedRows();
+                    dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
+                        .catch(err => console.error('[AG Grid] Selection re-sync failed:', err.message));
+                }
+            }, 0);
         }
     }
     
@@ -520,10 +568,12 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         // ✅ AG DataGrid v32.2+: Stable row IDs for selection persistence
         getRowId: getRowIdFunc,
         
-        // Pagination
-        pagination: config.pagination,
-        paginationPageSize: config.paginationPageSize,
-        paginationPageSizeSelector: config.pagination ? [10, 25, 50, 100] : false,
+        // Pagination — for BlazorServerSide mode, AG Grid's built-in pagination is suppressed
+        // because it only counts rowData.length (one page) and would always show "of pageSize".
+        // Blazor renders its own pagination bar driven by the server totalCount instead.
+        pagination: config.blazorServerSide ? false : config.pagination,
+        paginationPageSize: config.blazorServerSide ? undefined : config.paginationPageSize,
+        paginationPageSizeSelector: (!config.blazorServerSide && config.pagination) ? [10, 25, 50, 100] : false,
         
         // Row model
         rowModelType: config.rowModelType,
@@ -545,11 +595,20 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         },
         
         // Event handlers - these receive events with the API attached
-        // For BlazorServerSide: sort/filter/pagination events trigger a C# fetch (single round trip)
-        // For all other modes: just notify .NET of the state change
-        onSortChanged:       (event) => config.blazorServerSide ? notifyStateChangedAndFetchData(event.api) : notifyStateChanged(event.api, dotNetRef),
-        onFilterChanged:     (event) => config.blazorServerSide ? notifyStateChangedAndFetchData(event.api) : notifyStateChanged(event.api, dotNetRef),
-        onPaginationChanged: (event) => config.blazorServerSide ? notifyStateChangedAndFetchData(event.api) : notifyStateChanged(event.api, dotNetRef),
+        // For BlazorServerSide: sort/filter events reset to page 1 and trigger a C# fetch.
+        // onPaginationChanged is irrelevant for blazorServerSide (AG Grid pagination is disabled).
+        // For all other modes: just notify .NET of the state change.
+        onSortChanged: (event) => {
+            if (config.blazorServerSide) { blazorPage = 1; notifyStateChangedAndFetchData(event.api); }
+            else { notifyStateChanged(event.api, dotNetRef); }
+        },
+        onFilterChanged: (event) => {
+            if (config.blazorServerSide) { blazorPage = 1; notifyStateChangedAndFetchData(event.api); }
+            else { notifyStateChanged(event.api, dotNetRef); }
+        },
+        onPaginationChanged: (event) => {
+            if (!config.blazorServerSide) { notifyStateChanged(event.api, dotNetRef); }
+        },
         // Column moves always notify state only — never trigger a data fetch
         onColumnMoved:       (event) => notifyStateChanged(event.api, dotNetRef),
         onColumnResized:     (event) => notifyStateChanged(event.api, dotNetRef),
@@ -571,7 +630,13 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         __setIsSyncingSelection: (value) => { isSyncingSelection = value; },
         
         // Expose the BlazorServerSide fetch function so the wrapper can call it for refresh
-        __triggerBlazorFetch: (api) => notifyStateChangedAndFetchData(api)
+        __triggerBlazorFetch: (api) => notifyStateChangedAndFetchData(api),
+
+        // Mutate blazorPage/blazorPageSize from outside this closure (called by setBlazorPage wrapper)
+        __setBlazorPage: (page, pageSize) => {
+            blazorPage = page;
+            if (pageSize != null) blazorPageSize = pageSize;
+        }
     };
     
     // Server-side datasource

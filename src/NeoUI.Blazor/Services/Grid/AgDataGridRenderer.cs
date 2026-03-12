@@ -308,10 +308,24 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             Console.WriteLine("[AgDataGridRenderer] Cannot trigger BlazorServerSide fetch - grid instance is null");
             return;
         }
-        
+
         Console.WriteLine("[AgDataGridRenderer] Triggering BlazorServerSide fetch");
         await _gridInstance.InvokeVoidAsync("triggerBlazorServerSideFetch");
         Console.WriteLine("[AgDataGridRenderer] BlazorServerSide fetch triggered");
+    }
+
+    /// <inheritdoc/>
+    public async Task SetBlazorPageAsync(int page, int pageSize)
+    {
+        if (_gridInstance == null)
+        {
+            Console.WriteLine("[AgDataGridRenderer] Cannot set Blazor page - grid instance is null");
+            return;
+        }
+
+        Console.WriteLine($"[AgDataGridRenderer] Setting Blazor page: {page}, pageSize: {pageSize}");
+        await _gridInstance.InvokeVoidAsync("setBlazorPage", page, pageSize);
+        Console.WriteLine("[AgDataGridRenderer] Blazor page set successfully");
     }
 
     /// <summary>
@@ -349,13 +363,15 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         {
             var response = await _currentDefinition.BlazorServerSideFetchHandler(state);
             var enhancedItems = EnhanceDataWithFormatting(response.Items?.ToList() ?? []);
+            var selectedIds = _currentDefinition.GetSelectedIdsForRestore?.Invoke() ?? Array.Empty<string>();
 
             return new
             {
                 items      = enhancedItems,
                 totalCount = response.TotalCount,
                 pageNumber = state.PageNumber,
-                pageSize   = state.PageSize
+                pageSize   = state.PageSize,
+                selectedRowIds = selectedIds
             };
         }
         catch (Exception ex)
@@ -507,7 +523,15 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             
             // ✅ Use the callback to resolve IDs back to original instances
             var originalItems = _currentDefinition.ResolveItemsByIds(ids!).ToList();
-            
+
+            // Fallback: in BlazorServerSide mode Items is empty, so resolution returns 0 items.
+            // Deserialized instances are structurally equivalent (records support value equality).
+            if (originalItems.Count == 0 && deserializedItems.Count > 0)
+            {
+                Console.WriteLine($"[AgDataGridRenderer] Resolution found 0 originals — using deserialized instances (BlazorServerSide mode)");
+                return deserializedItems;
+            }
+
             Console.WriteLine($"[AgDataGridRenderer] Resolved {originalItems.Count}/{deserializedItems.Count} items to original instances");
             return originalItems;
         }

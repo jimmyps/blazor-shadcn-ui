@@ -74,4 +74,14 @@ public interface IDataGridRenderer<TItem> : IDataGridRenderer
     /// </summary>
     /// <returns>A task that represents the asynchronous fetch trigger operation.</returns>
     Task TriggerBlazorServerSideFetchAsync();
+
+    /// <summary>
+    /// Navigates to the specified page in BlazorServerSide mode.
+    /// Updates the internal page state in JavaScript and triggers a new data fetch.
+    /// Only applicable for BlazorServerSide row model.
+    /// </summary>
+    /// <param name="page">The 1-based page number to navigate to.</param>
+    /// <param name="pageSize">The number of items per page.</param>
+    /// <returns>A task that represents the asynchronous page navigation operation.</returns>
+    Task SetBlazorPageAsync(int page, int pageSize);
 }

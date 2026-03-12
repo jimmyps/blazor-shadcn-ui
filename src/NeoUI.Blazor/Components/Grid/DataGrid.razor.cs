@@ -124,6 +124,12 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     private Dictionary<object, TItem>? _previousItemsById;
 
     /// <summary>
+    /// Pagination state for BlazorServerSide mode.
+    /// Drives the custom Blazor pagination bar rendered below the grid.
+    /// </summary>
+    private readonly NeoUI.Blazor.Primitives.PaginationState _blazorPaginationState = new();
+
+    /// <summary>
     /// Gets or sets the service provider for dependency injection.
     /// </summary>
     [Inject]
@@ -369,7 +375,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         {
             throw new ArgumentException("PageSize must be greater than 0.", nameof(PageSize));
         }
-        
+
+        // Initialise BlazorServerSide pagination state with the configured page size
+        _blazorPaginationState.PageSize = PageSize;
+
         // Resolve generic grid renderer
         _gridRenderer = ServiceProvider.GetRequiredService<IDataGridRenderer<TItem>>();
     }
@@ -840,12 +849,12 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         {
             // Use clientSide row model — no Enterprise module needed
             _gridDefinition.RowModelType = "clientSide";
-            
+
             // Wire the single-trip fetch handler (priority: ServerDataProvider > OnServerDataRequest > virtual method)
             _gridDefinition.BlazorServerSideFetchHandler = async (state) =>
             {
                 var request = MapStateToDataRequest(state);
-                
+
                 DataGridDataResponse<TItem> response;
                 if (ServerDataProvider != null)
                     response = await ServerDataProvider.GetDataAsync(request);
@@ -853,16 +862,24 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                     response = await OnServerDataRequest(request);
                 else
                     response = await OnFetchServerDataAsync(request);
-                
+
                 // Update total count for two-way binding
                 if (TotalServerRowCountChanged.HasDelegate && response.TotalCount != TotalServerRowCount)
                 {
                     TotalServerRowCount = response.TotalCount;
                     await TotalServerRowCountChanged.InvokeAsync(response.TotalCount);
                 }
-                
+
+                // Keep the Blazor pagination bar in sync with real server data
+                _blazorPaginationState.TotalItems = response.TotalCount;
+                _blazorPaginationState.CurrentPage = state.PageNumber;
+                await InvokeAsync(StateHasChanged);
+
                 return response;
             };
+
+            // Provide selected IDs so JS can restore selection after each page fetch
+            _gridDefinition.GetSelectedIdsForRestore = GetSelectedItemIds;
         }
         else
         {
@@ -873,6 +890,49 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.ResolveItemsByIds = (ids) => ResolveItemsByIds(ids);
     }
     
+    /// <summary>
+    /// Called by the Blazor pagination bar when the user navigates to a different page.
+    /// Updates JS-side page state and triggers a server fetch for BlazorServerSide mode.
+    /// </summary>
+    private async Task OnBlazorPageChangedAsync(int page)
+    {
+        _blazorPaginationState.CurrentPage = page;
+        await _gridRenderer!.SetBlazorPageAsync(page, _blazorPaginationState.PageSize);
+    }
+
+    /// <summary>
+    /// Called by the Blazor pagination bar when the user changes the page size.
+    /// Resets to page 1 and triggers a server fetch for BlazorServerSide mode.
+    /// </summary>
+    private async Task OnBlazorPageSizeChangedAsync(int pageSize)
+    {
+        _blazorPaginationState.PageSize = pageSize; // also resets CurrentPage to 1
+        await _gridRenderer!.SetBlazorPageAsync(1, pageSize);
+    }
+
+    /// <summary>
+    /// Returns the string IDs of the currently selected items.
+    /// Used by the renderer to restore selection across page navigation in BlazorServerSide mode.
+    /// </summary>
+    private IReadOnlyCollection<string> GetSelectedItemIds()
+    {
+        if (SelectedItems == null || !SelectedItems.Any()) return Array.Empty<string>();
+
+        var idProp = typeof(TItem).GetProperty(
+            IdField,
+            System.Reflection.BindingFlags.Public |
+            System.Reflection.BindingFlags.Instance |
+            System.Reflection.BindingFlags.IgnoreCase);
+
+        if (idProp == null) return Array.Empty<string>();
+
+        return SelectedItems
+            .Select(item => idProp.GetValue(item)?.ToString())
+            .Where(id => !string.IsNullOrEmpty(id))
+            .Cast<string>()
+            .ToArray();
+    }
+
     /// <summary>
     /// Maps a DataGridState to a DataGridDataRequest for BlazorServerSide mode.
     /// </summary>

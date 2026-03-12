@@ -162,6 +162,95 @@
         </DemoBlock>
     </DemoSection>
 
+    @* Section D — Row Selection *@
+    <DemoSection Title="Section D — Row Selection Across Pages"
+                 Description="Demonstrates that row selections survive page navigation and server refetches. Select rows on any page, navigate away and back — selections are preserved.">
+        <DemoBlock Code="@BlazorServerSideExamples.SelectionExample">
+            <ChildContent>
+                <div class="flex items-center gap-4 mb-4">
+                    <Button Size="ButtonSize.Small" OnClick="RefreshSelectionGrid">
+                        <LucideIcon Name="refresh-cw" Size="14" Class="mr-1" />
+                        Refresh
+                    </Button>
+                    @if (_selectionItems.Count > 0)
+                    {
+                        <Badge Variant="BadgeVariant.Secondary">
+                            @_selectionItems.Count selected
+                        </Badge>
+                        <Button Size="ButtonSize.Small" Variant="ButtonVariant.Ghost" OnClick="@(() => ClearSelection())">
+                            <LucideIcon Name="x" Size="14" Class="mr-1" />
+                            Clear
+                        </Button>
+                    }
+                    else
+                    {
+                        <span class="text-sm text-muted-foreground">No rows selected — try checking some rows, then change pages.</span>
+                    }
+                    <span class="text-sm text-muted-foreground ml-auto">
+                        Total: @_totalSelectionOrders rows
+                    </span>
+                </div>
+
+                <DataGrid TItem="DemoOrder"
+                          @ref="_selectionGrid"
+                          RowModelType="DataGridRowModelType.BlazorServerSide"
+                          SelectionMode="DataGridSelectionMode.Multiple"
+                          @bind-SelectedItems="_selectionItems"
+                          OnServerDataRequest="HandleSelectionOrderRequest"
+                          PagingMode="DataGridPagingMode.Server"
+                          PageSize="20"
+                          @bind-TotalServerRowCount="_totalSelectionOrders"
+                          IdField="@nameof(DemoOrder.Id)"
+                          Height="380px">
+                    <Columns>
+                        <DataGridColumn Field="@nameof(DemoOrder.Id)"           Header="ID"       Sortable="true" Width="80px" />
+                        <DataGridColumn Field="@nameof(DemoOrder.CustomerName)" Header="Customer" Sortable="true" Filterable="true" />
+                        <DataGridColumn Field="@nameof(DemoOrder.OrderDate)"    Header="Date"     Sortable="true" DataFormatString="{0:dd MMM yyyy}" />
+                        <DataGridColumn Field="@nameof(DemoOrder.Total)"        Header="Total"    Sortable="true" DataFormatString="{0:C}" />
+                        <DataGridColumn Field="@nameof(DemoOrder.Status)"       Header="Status"   Filterable="true" />
+                    </Columns>
+                </DataGrid>
+
+                @if (_selectionItems.Count > 0)
+                {
+                    <div class="mt-3 space-y-1">
+                        <p class="text-xs font-medium text-muted-foreground">Selected orders:</p>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (var order in _selectionItems.Take(10))
+                            {
+                                <Badge Variant="BadgeVariant.Outline" Class="font-mono text-xs">
+                                    #@order.Id — @order.CustomerName
+                                </Badge>
+                            }
+                            @if (_selectionItems.Count > 10)
+                            {
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-xs">
+                                    +@(_selectionItems.Count - 10) more
+                                </Badge>
+                            }
+                        </div>
+                    </div>
+                }
+            </ChildContent>
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="check-square" Size="16" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>How Cross-Page Selection Works</AlertTitle>
+                        <AlertDescription>
+                            <ul class="list-disc list-inside space-y-1 text-sm">
+                                <li><code class="font-mono text-xs">IdField</code> is the key — the grid uses it to match incoming rows to previously selected IDs.</li>
+                                <li>When you navigate to a new page, the currently selected IDs are sent back to the server fetch handler, which re-checks any rows on the new page that were already selected.</li>
+                                <li>Applying a sort or filter resets to page 1 but <strong>preserves existing selections</strong> for any rows that remain visible after filtering.</li>
+                                <li><code class="font-mono text-xs">@@bind-SelectedItems</code> always reflects the full cross-page selection set in Blazor.</li>
+                            </ul>
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
     @* When to choose *@
     <DemoSection Title="BlazorServerSide vs. Enterprise ServerSide"
                  Description="Guidance on choosing the right row model for your use case.">
@@ -206,6 +295,7 @@
     private DataGrid<DemoOrder>?   _orderGrid;
     private DataGrid<DemoProduct>? _productGrid;
     private DataGrid<DemoOrder>?   _slowGrid;
+    private DataGrid<DemoOrder>?   _selectionGrid;
 
     // ── Section A state ────────────────────────────────────────────────────
     private int    _totalOrders       = 0;
@@ -216,6 +306,10 @@
     // ── Section B state ────────────────────────────────────────────────────
     private int _totalProducts = 0;
     private InMemoryProductProvider _productProvider = default!;
+
+    // ── Section D state ────────────────────────────────────────────────────
+    private IReadOnlyCollection<DemoOrder> _selectionItems       = Array.Empty<DemoOrder>();
+    private int                            _totalSelectionOrders = 0;
 
     // ── Data ───────────────────────────────────────────────────────────────
     private static readonly List<DemoOrder>   _allOrders   = GenerateOrders(500);
@@ -306,6 +400,53 @@
     {
         if (_slowGrid != null)
             await _slowGrid.RefreshAsync();
+    }
+
+    // ── Section D ──────────────────────────────────────────────────────────
+    private Task<DataGridDataResponse<DemoOrder>> HandleSelectionOrderRequest(DataGridDataRequest<DemoOrder> request)
+    {
+        var query = _allOrders.AsQueryable();
+
+        foreach (var filter in request.FilterDescriptors)
+        {
+            var value = filter.Value?.ToString() ?? "";
+            query = filter.Field?.ToLowerInvariant() switch
+            {
+                "customername" => query.Where(o => o.CustomerName.Contains(value, StringComparison.OrdinalIgnoreCase)),
+                "status"       => query.Where(o => o.Status.Contains(value, StringComparison.OrdinalIgnoreCase)),
+                _              => query
+            };
+        }
+
+        IOrderedQueryable<DemoOrder>? sorted = null;
+        foreach (var sort in request.SortDescriptors.OrderBy(s => s.Order))
+        {
+            var asc = sort.Direction == DataGridSortDirection.Ascending;
+            sorted = sort.Field?.ToLowerInvariant() switch
+            {
+                "id"           => sorted == null ? (asc ? query.OrderBy(o => o.Id)           : query.OrderByDescending(o => o.Id))           : (asc ? sorted.ThenBy(o => o.Id)           : sorted.ThenByDescending(o => o.Id)),
+                "customername" => sorted == null ? (asc ? query.OrderBy(o => o.CustomerName) : query.OrderByDescending(o => o.CustomerName)) : (asc ? sorted.ThenBy(o => o.CustomerName) : sorted.ThenByDescending(o => o.CustomerName)),
+                "orderdate"    => sorted == null ? (asc ? query.OrderBy(o => o.OrderDate)    : query.OrderByDescending(o => o.OrderDate))    : (asc ? sorted.ThenBy(o => o.OrderDate)    : sorted.ThenByDescending(o => o.OrderDate)),
+                "total"        => sorted == null ? (asc ? query.OrderBy(o => o.Total)        : query.OrderByDescending(o => o.Total))        : (asc ? sorted.ThenBy(o => o.Total)        : sorted.ThenByDescending(o => o.Total)),
+                _              => sorted
+            };
+        }
+        if (sorted != null) query = sorted;
+
+        var total = query.Count();
+        var items = query.Skip(request.StartIndex).Take(request.Count).ToList();
+        return Task.FromResult(new DataGridDataResponse<DemoOrder> { Items = items, TotalCount = total });
+    }
+
+    private async Task RefreshSelectionGrid()
+    {
+        if (_selectionGrid != null)
+            await _selectionGrid.RefreshAsync();
+    }
+
+    private void ClearSelection()
+    {
+        _selectionItems = Array.Empty<DemoOrder>();
     }
 
     // ── Data generation ────────────────────────────────────────────────────

@@ -146,4 +146,11 @@ public class DataGridDefinition<TItem>
     /// instances from the Grid's Items collection by matching on ID values.
     /// </remarks>
     public Func<IEnumerable<object>, IEnumerable<TItem>>? ResolveItemsByIds { get; set; }
+
+    /// <summary>
+    /// Gets or sets a callback that returns the string IDs of the currently selected items.
+    /// Used in BlazorServerSide mode so the renderer can re-apply selection after each page
+    /// navigation (the previous page's row nodes are replaced but their IDs are preserved).
+    /// </summary>
+    public Func<IReadOnlyCollection<string>>? GetSelectedIdsForRestore { get; set; }
 }
