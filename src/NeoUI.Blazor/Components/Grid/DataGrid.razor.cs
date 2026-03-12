@@ -47,6 +47,12 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Indicates whether the grid has been initialized.
     /// </summary>
     private bool _initialized = false;
+
+    /// <summary>
+    /// Guards against concurrent re-entrant initialization calls that can occur when
+    /// Blazor triggers additional renders while the async initialization is awaiting.
+    /// </summary>
+    private bool _isInitializing = false;
     
     /// <summary>
     /// Indicates whether columns have been registered.
@@ -97,6 +103,13 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     /// Current items collection reference for change detection.
     /// </summary>
     private IEnumerable<TItem> _currentItems = Array.Empty<TItem>();
+
+    /// <summary>
+    /// IDs of items on the currently loaded page (BlazorServerSide mode only).
+    /// Used to identify which items in SelectedItems are on other pages so they
+    /// are preserved when the user selects or deselects on the current page.
+    /// </summary>
+    private HashSet<string> _currentPageItemIds = new();
     
     /// <summary>
     /// Subscription to collection change notifications.
@@ -530,21 +543,26 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         }
         
         // Second render (or later): columns are now registered
-        if (!_initialized && _columnsRegistered && _gridRenderer != null)
+        // _isInitializing is set synchronously before the first await, preventing a second
+        // concurrent render from entering this block while initialization is in-flight.
+        if (!_initialized && !_isInitializing && _columnsRegistered && _gridRenderer != null)
         {
             if (_columns.Count == 0)
             {
                 Console.WriteLine("[Grid] ERROR: No columns registered");
                 return;
             }
-            
+
             if (IsLoading)
             {
                 return;
             }
-            
+
+            // Set the guard synchronously before any await so re-entrant calls are blocked.
+            _isInitializing = true;
+
             BuildDataGridDefinition();
-            
+
             // Auto-discover and register grid actions AFTER BuildDataGridDefinition
             // This ensures _gridDefinition.Metadata is initialized
             if (!_actionsRegistered && ActionHost != null)
@@ -552,10 +570,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                 AutoRegisterActions();
                 _actionsRegistered = true;
             }
-            
+
             // Small delay to ensure DOM element is fully ready
             await Task.Delay(100);
-            
+
             try
             {
                 await InitializeGridAsync();
@@ -564,6 +582,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             catch (Exception ex)
             {
                 Console.WriteLine($"[Grid] ERROR: Initialization failed - {ex.Message}");
+                _isInitializing = false;
                 throw;
             }
         }
@@ -802,21 +821,30 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         _gridDefinition.SuppressHeaderMenus = SuppressHeaderMenus; // Hide filter/menu UI
         _gridDefinition.OnStateChanged = OnStateChanged;
         _gridDefinition.OnDataRequest = OnDataRequest;
-        _gridDefinition.OnSelectionChanged = OnSelectionChanged;
+        // Wrap OnSelectionChanged so cross-page selected items are merged in before the
+        // consumer's callback fires, keeping the full accumulated selection visible.
+        _gridDefinition.OnSelectionChanged = EventCallback.Factory.Create<IReadOnlyCollection<TItem>>(
+            this,
+            async (items) =>
+            {
+                var merged = MergeWithCrossPageSelection(items);
+                if (OnSelectionChanged.HasDelegate)
+                    await OnSelectionChanged.InvokeAsync(merged);
+            }
+        );
         
-        // Wrap SelectedItemsChanged to track when selection is coming from grid
+        // Wrap SelectedItemsChanged to track when selection is coming from grid and to
+        // merge cross-page selected items so navigating pages doesn't wipe prior selections.
         _gridDefinition.SelectedItemsChanged = EventCallback.Factory.Create<IReadOnlyCollection<TItem>>(
             this, 
             async (items) =>
             {
-                // Set flag to indicate this selection change originated from the grid
                 _isUpdatingSelectionFromGrid = true;
                 try
                 {
+                    var merged = MergeWithCrossPageSelection(items);
                     if (SelectedItemsChanged.HasDelegate)
-                    {
-                        await SelectedItemsChanged.InvokeAsync(items);
-                    }
+                        await SelectedItemsChanged.InvokeAsync(merged);
                 }
                 finally
                 {
@@ -870,6 +898,18 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                     await TotalServerRowCountChanged.InvokeAsync(response.TotalCount);
                 }
 
+                // Track which item IDs are on this page so cross-page selections can be
+                // preserved when the user selects or deselects on a different page.
+                var idProp = typeof(TItem).GetProperty(
+                    IdField,
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+                _currentPageItemIds = idProp != null && response.Items != null
+                    ? response.Items
+                          .Select(item => idProp.GetValue(item)?.ToString())
+                          .Where(id => id != null)
+                          .ToHashSet()!
+                    : new HashSet<string>();
+
                 // Keep the Blazor pagination bar in sync with real server data
                 _blazorPaginationState.TotalItems = response.TotalCount;
                 _blazorPaginationState.CurrentPage = state.PageNumber;
@@ -908,6 +948,39 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     {
         _blazorPaginationState.PageSize = pageSize; // also resets CurrentPage to 1
         await _gridRenderer!.SetBlazorPageAsync(1, pageSize);
+    }
+
+    /// <summary>
+    /// Merges a selection received from the grid (current page only) with any items in
+    /// SelectedItems that are on other pages (cross-page selection).
+    /// Only active in BlazorServerSide mode — other modes load all data at once.
+    /// </summary>
+    private IReadOnlyCollection<TItem> MergeWithCrossPageSelection(IReadOnlyCollection<TItem> currentPageSelection)
+    {
+        // Only accumulate cross-page selection for Multiple mode.
+        // Single selection must not retain items from other pages — selecting on a new page
+        // should replace the previous selection entirely, just as it does on a single page.
+        if (RowModelType != DataGridRowModelType.BlazorServerSide
+            || SelectionMode != DataGridSelectionMode.Multiple
+            || _currentPageItemIds.Count == 0)
+            return currentPageSelection;
+
+        var idProp = typeof(TItem).GetProperty(
+            IdField,
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+        if (idProp == null) return currentPageSelection;
+
+        // Retain any previously selected items whose IDs are NOT on the current page.
+        // Items that ARE on the current page are fully controlled by the grid's selection state,
+        // so we replace them entirely with whatever the grid just reported.
+        var crossPageItems = SelectedItems.Where(item =>
+        {
+            var id = idProp.GetValue(item)?.ToString();
+            return id != null && !_currentPageItemIds.Contains(id);
+        });
+
+        return crossPageItems.Concat(currentPageSelection).ToList().AsReadOnly();
     }
 
     /// <summary>

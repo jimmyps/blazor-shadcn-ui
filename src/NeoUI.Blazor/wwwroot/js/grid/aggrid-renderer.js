@@ -313,7 +313,7 @@ export async function createGrid(elementOrRef, config, dotNetRef) {
             },
             
             getState: () => {
-                return getDataGridState(gridApi);
+                return getDataGridState(gridApi, config.idField || 'id');
             },
             
             setGridOptions: (options) => {
@@ -402,8 +402,13 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
 
         api.showLoadingOverlay();
 
+        // Hoisted outside try so the finally/setTimeout block can inspect what the fetch returned.
+        // In particular, fetchResult.selectedRowIds tells us which IDs were expected to be restored,
+        // so we can decide whether to notify Blazor or preserve its existing SelectedItems.
+        let fetchResult = null;
+
         try {
-            const baseState = getDataGridState(api);
+            const baseState = getDataGridState(api, idField);
             // For BlazorServerSide, override page info with our own tracked values so that
             // C# always receives the correct page number even though AG Grid only holds one
             // page of rowData (and therefore reports paginationCurrentPage = 0 always).
@@ -411,22 +416,22 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
                 ? { ...baseState, pageNumber: blazorPage, pageSize: blazorPageSize }
                 : baseState;
 
-            const result = await dotNetRef.invokeMethodAsync('OnStateChangedAndFetchData', state);
+            fetchResult = await dotNetRef.invokeMethodAsync('OnStateChangedAndFetchData', state);
 
             // Suppress onSelectionChanged while replacing rowData and re-applying selection.
             // Without this, AG Grid fires onSelectionChanged with an empty set when the old
             // page's row nodes are removed — which would wipe the Blazor SelectedItems binding.
             if (config.blazorServerSide) isSyncingSelection = true;
 
-            if (result?.items) {
-                api.setGridOption('rowData', result.items);
+            if (fetchResult?.items) {
+                api.setGridOption('rowData', fetchResult.items);
             } else {
                 api.setGridOption('rowData', []);
             }
 
             // Re-apply cross-page selection: restore any previously selected rows visible on this page.
-            if (config.blazorServerSide && result?.selectedRowIds?.length > 0) {
-                const selectedIds = new Set(result.selectedRowIds.map(id => String(id)));
+            if (config.blazorServerSide && fetchResult?.selectedRowIds?.length > 0) {
+                const selectedIds = new Set(fetchResult.selectedRowIds.map(id => String(id)));
                 api.forEachNode(node => {
                     if (node.data && node.id && selectedIds.has(String(node.id))) {
                         node.setSelected(true);
@@ -435,9 +440,9 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
             }
 
             // Keep local page state in sync with what the server confirmed
-            if (config.blazorServerSide && result) {
-                blazorPage = result.pageNumber ?? blazorPage;
-                blazorPageSize = result.pageSize ?? blazorPageSize;
+            if (config.blazorServerSide && fetchResult) {
+                blazorPage = fetchResult.pageNumber ?? blazorPage;
+                blazorPageSize = fetchResult.pageSize ?? blazorPageSize;
             }
 
             api.hideOverlay();
@@ -451,12 +456,29 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
                 isFetchingServerData = false;
                 if (config.blazorServerSide) {
                     isSyncingSelection = false;
-                    // Push the authoritative post-navigation selection state to Blazor.
-                    // onSelectionChanged was suppressed above, so this is the only notification
-                    // Blazor receives — ensuring SelectedItems reflects the re-applied selection.
+
+                    const expectedIds = fetchResult?.selectedRowIds ?? [];
                     const selectedRows = api.getSelectedRows();
-                    dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
-                        .catch(err => console.error('[AG Grid] Selection re-sync failed:', err.message));
+
+                    if (expectedIds.length === 0) {
+                        // Nothing was expected to be selected — notify Blazor with current selection
+                        // (may be empty, which is correct: the user had no prior selection).
+                        dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
+                            .catch(err => console.error('[AG Grid] Selection re-sync failed:', err.message));
+                    } else {
+                        // Items were expected to be restored. Check if they all landed on this page.
+                        const restoredIds = new Set(selectedRows.map(r => String(r[idField] ?? r.Id ?? r.id ?? r._id ?? '')));
+                        const allRestored = expectedIds.every(id => restoredIds.has(String(id)));
+
+                        if (allRestored) {
+                            // All expected items are visible and re-selected on this page — notify normally.
+                            dotNetRef.invokeMethodAsync('OnSelectionChanged', selectedRows)
+                                .catch(err => console.error('[AG Grid] Selection re-sync failed:', err.message));
+                        }
+                        // else: some expected items are on other pages — do NOT call OnSelectionChanged.
+                        // Calling it with a partial/empty list would wipe Blazor's SelectedItems for
+                        // items that are simply not visible on the current page (cross-page selection).
+                    }
                 }
             }, 0);
         }
@@ -600,20 +622,20 @@ function buildGridOptionsWithEvents(config, dotNetRef) {
         // For all other modes: just notify .NET of the state change.
         onSortChanged: (event) => {
             if (config.blazorServerSide) { blazorPage = 1; notifyStateChangedAndFetchData(event.api); }
-            else { notifyStateChanged(event.api, dotNetRef); }
+            else { notifyStateChanged(event.api, dotNetRef, idField); }
         },
         onFilterChanged: (event) => {
             if (config.blazorServerSide) { blazorPage = 1; notifyStateChangedAndFetchData(event.api); }
-            else { notifyStateChanged(event.api, dotNetRef); }
+            else { notifyStateChanged(event.api, dotNetRef, idField); }
         },
         onPaginationChanged: (event) => {
-            if (!config.blazorServerSide) { notifyStateChanged(event.api, dotNetRef); }
+            if (!config.blazorServerSide) { notifyStateChanged(event.api, dotNetRef, idField); }
         },
         // Column moves always notify state only — never trigger a data fetch
-        onColumnMoved:       (event) => notifyStateChanged(event.api, dotNetRef),
-        onColumnResized:     (event) => notifyStateChanged(event.api, dotNetRef),
-        onColumnPinned:      (event) => notifyStateChanged(event.api, dotNetRef),
-        onColumnVisible:     (event) => notifyStateChanged(event.api, dotNetRef),
+        onColumnMoved:       (event) => notifyStateChanged(event.api, dotNetRef, idField),
+        onColumnResized:     (event) => notifyStateChanged(event.api, dotNetRef, idField),
+        onColumnPinned:      (event) => notifyStateChanged(event.api, dotNetRef, idField),
+        onColumnVisible:     (event) => notifyStateChanged(event.api, dotNetRef, idField),
         onSelectionChanged: (event) => {
             // Skip event if we're currently syncing selection from parent
             if (isSyncingSelection) {
@@ -773,11 +795,11 @@ function mapFilterOperator(agType) {
 /**
  * Notifies .NET of grid state changes
  */
-function notifyStateChanged(api, dotNetRef) {
+function notifyStateChanged(api, dotNetRef, idField = 'id') {
     if (!api) return;
-    
+
     try {
-        const state = getDataGridState(api);
+        const state = getDataGridState(api, idField);
         dotNetRef.invokeMethodAsync('OnDataGridStateChanged', state)
             .catch(err => console.error('[AG Grid] State change callback failed:', err.message));
     } catch (error) {
@@ -788,9 +810,9 @@ function notifyStateChanged(api, dotNetRef) {
 /**
  * Gets current grid state
  */
-function getDataGridState(api) {
+function getDataGridState(api, idField = 'id') {
     const columnState = api.getColumnState();
-    
+
     const sortModel = columnState
         .filter(col => col.sort)
         .map((col, index) => ({
@@ -798,19 +820,19 @@ function getDataGridState(api) {
             direction: col.sort === 'asc' ? 1 : 2, // Ascending=1, Descending=2
             order: col.sortIndex || index
         }));
-    
+
     const filterModel = api.getFilterModel();
     const filterDescriptors = mapFilterModel(filterModel);
-    
+
     const paginationPageSize = api.paginationGetPageSize();
     const paginationCurrentPage = api.paginationGetCurrentPage();
-    
+
     const selectedRows = api.getSelectedRows();
-    
+
     // ✅ AG DataGrid v32.2+: Get selected row IDs using getRowId
-    // AG Grid's getSelectedRows() returns the data objects with their IDs already resolved
+    // Use the configured idField (camelCased) to match what getRowId returns via node.id.
     const selectedRowIds = selectedRows.map(row => {
-        return String(row.Id || row.id || row._id || 'unknown');
+        return String(row[idField] ?? row.Id ?? row.id ?? row._id ?? 'unknown');
     });
     
     return {
