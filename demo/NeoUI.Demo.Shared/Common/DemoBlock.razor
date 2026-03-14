@@ -1,6 +1,10 @@
 @* DemoBlock — a bordered panel with Preview / Code tabs for a single demo example. *@
 
 <div class="space-y-3">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <p class="text-sm font-medium text-foreground">@Title</p>
+    }
     <div class="rounded-lg border overflow-hidden">
         <Tabs DefaultValue="preview">
             <TabsList Class="w-full rounded-none border-b bg-muted/50 h-10 px-2 justify-start">
@@ -38,6 +42,9 @@
 @code {
     /// <summary>The live preview rendered inside the Preview tab.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Optional block-level title displayed above the Preview/Code panel.</summary>
+    [Parameter] public string? Title { get; set; }
 
     /// <summary>
     /// Optional source code string displayed in the Code tab.

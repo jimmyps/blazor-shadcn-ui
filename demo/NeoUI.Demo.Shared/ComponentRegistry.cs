@@ -254,6 +254,7 @@ public static class ComponentRegistry
             new("currency-input",   "Currency Input",   "Formatted currency input with locale support",                                  "dollar-sign",           C, AI),
             new("date-picker",      "Date Picker",      "Date selection with calendar in popover",                                       "calendar-days",         C, AI),
             new("date-range-picker","Date Range Picker","Select date ranges with optional presets and two-calendar view",                "calendar-range",        C, AI),
+            new("dynamic-form",     "Dynamic Form",     "Schema-driven form renderer with validation and 24 field types",                "layout-panel-top",      C, AI),
             new("fileupload",       "File Upload",      "File upload with drag-and-drop, validation, and previews",                      "upload",                C, AI),
             new("filter",           "Filter Builder",   "A declarative, composable filter builder with LINQ expression support.",        "filter",                C, AI),
             new("filter/basic",     "Basic Example",    "Simple product filtering with common fields",                                        "filter",                C, AI, IsSubPage: true),
@@ -267,6 +268,7 @@ public static class ComponentRegistry
             new("multi-select",     "Multi Select",     "Searchable multi-selection with tags and checkboxes",                           "list-checks",           C, AI),
             new("range-slider",     "Range Slider",     "Dual-handle slider for selecting value ranges",                                 "sliders-horizontal",    C, AI),
             new("rich-text-editor", "Rich Text Editor", "WYSIWYG editor with toolbar formatting and live preview",                       "type",                  C, AI),
+            new("tag-input",        "Tag Input",        "Chip/tag input with configurable triggers, suggestions, and paste splitting",   "tags",                  C, AI),
             new("time-picker",      "Time Picker",      "Time selection with hour and minute controls",                                  "clock",                 C, AI),
 
             // ── Data Display ──────────────────────────────────────────────
@@ -286,11 +288,14 @@ public static class ComponentRegistry
             new("datagrid/advanced",      "Advanced",         "Advanced features: frozen columns, row grouping, and virtual scrolling", "settings-2",            C, DD, IsSubPage: true),
             new("datagrid/theming",       "Theming",          "Custom styles, CSS variables, and Tailwind overrides for the DataGrid",  "palette",               C, DD, IsSubPage: true),
             new("datatable",        "Data Table",       "Powerful tables with sorting, filtering, pagination, and selection",            "table",                 C, DD),
+            new("data-view",        "Data View",        "List and grid layouts for data collections with built-in pagination",           "layout-grid",           C, DD),
             new("empty",            "Empty",            "Empty state displays with icon, title, and actions",                            "inbox",                 C, DD),
             new("item",             "Item",             "Flexible list items with media, content, and actions",                          "circle",                C, DD),
             new("kbd",              "Kbd",              "Keyboard shortcut badges with semantic markup",                                  "keyboard",              C, DD),
             new("scroll-area",      "Scroll Area",      "Custom scrollbars for styled scroll regions",                                   "scroll-text",           C, DD),
             new("skeleton",         "Skeleton",         "Loading placeholders for content and images",                                   "box",                   C, DD),
+            new("timeline",         "Timeline",         "Chronological event display with icons, status, and connectors",                "git-commit-horizontal", C, DD),
+            new("tree-view",        "Tree View",        "Hierarchical data display with selection, checkboxes, and drag-and-drop",       "git-branch",            C, DD),
             new("typography",       "Typography",       "Semantic text styling with consistent typography",                               "heading",               C, DD),
 
             // ── Navigation ────────────────────────────────────────────────
@@ -328,20 +333,25 @@ public static class ComponentRegistry
             new("collapsible",      "Collapsible",      "Expandable content area with trigger control",                                  "circle-chevron-down",   C, LY),
             new("resizable",        "Resizable",        "Split layouts with draggable handles",                                           "panel-left",            C, LY),
             new("separator",        "Separator",        "Visual dividers for content sections",                                           "minus",                 C, LY),
+            new("split-button",     "Split Button",     "Combined action button with dropdown for secondary actions",                    "circle-chevron-down",   C, LY),
             new("tabs",             "Tabs",             "Tabbed interface for organizing related content",                                "folder",                C, LY),
             new("theme-switcher",   "Theme Switcher",   "Multi-theme colour palette switcher with live preview",                         "palette",               C, LY),
 
             // ── Charts ────────────────────────────────────────────────────
             new("chart",            "Chart",            "Beautiful data visualizations with 8 chart types",                             "area-chart",            C, CH),
-            // Chart sub-pages: searchable but excluded from main indexes and prev/next navigation
+            // Chart sub-pages
             new("chart/area",       "Area Chart",       "Smooth area charts with optional stacking and gradients",                       "chart-area",            C, CH, IsSubPage: true),
             new("chart/bar",        "Bar Chart",        "Vertical and horizontal bar charts with grouping and stacking",                 "chart-bar",             C, CH, IsSubPage: true),
+            new("chart/candlestick","Candlestick Chart","OHLC candlestick charts for financial and time-series data",                    "candlestick-chart",     C, CH, IsSubPage: true),
+            new("chart/composed",   "Composed Chart",   "Combine multiple chart types in a single visualization",                        "layers",                C, CH, IsSubPage: true),
+            new("chart/funnel",     "Funnel Chart",     "Funnel charts for pipeline and conversion visualization",                       "funnel",                C, CH, IsSubPage: true),
+            new("chart/gauge",      "Gauge Chart",      "Gauge and speedometer charts for KPI and progress display",                     "gauge",                 C, CH, IsSubPage: true),
+            new("chart/heatmap",    "Heatmap Chart",    "Heatmaps for intensity grids and activity calendars",                           "grid-2x2",              C, CH, IsSubPage: true),
             new("chart/line",       "Line Chart",       "Line charts with multiple series and configurable curves",                      "chart-line",            C, CH, IsSubPage: true),
             new("chart/pie",        "Pie Chart",        "Pie and donut charts with labels and legends",                                  "chart-pie",             C, CH, IsSubPage: true),
-            new("chart/scatter",    "Scatter Chart",    "Scatter plots for correlation and distribution data",                           "scatter-chart",         C, CH, IsSubPage: true),
             new("chart/radar",      "Radar Chart",      "Spider/radar charts for multi-dimensional data comparison",                     "radar",                 C, CH, IsSubPage: true),
-            // new("chart/radial",     "Radial Bar Chart", "Circular progress bars arranged radially — ideal for KPIs and gauges",          "gauge",                 C, CH, IsSubPage: true),
-            new("chart/composed",   "Composed Chart",   "Combine multiple chart types in a single visualization",                        "layers",                C, CH, IsSubPage: true),
+            new("chart/radial-bar", "Radial Bar Chart", "Circular bar charts in polar coordinates for categorical comparisons",          "circle-dot",            C, CH, IsSubPage: true),
+            new("chart/scatter",    "Scatter Chart",    "Scatter plots for correlation and distribution data",                           "scatter-chart",         C, CH, IsSubPage: true),
 
             // ── Animation ─────────────────────────────────────────────────
             new("carousel",         "Carousel",         "Slideshow component with touch gestures and animations",                        "images",                C, AN),

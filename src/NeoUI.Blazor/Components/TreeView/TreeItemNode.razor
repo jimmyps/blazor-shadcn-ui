@@ -1,0 +1,142 @@
+@namespace NeoUI.Blazor
+@typeparam TItem
+
+<div role="treeitem"
+     data-value="@NodeValue"
+     aria-expanded="@(HasChildren ? IsExpanded.ToString().ToLower() : null)"
+     aria-selected="@IsSelected.ToString().ToLower()"
+     class="w-full"
+     @onclick:stopPropagation="true">
+
+    @* Row *@
+    <div class="@NodeCssClass"
+         @onclick="HandleClick"
+         data-tree-item
+         data-draggable="@(IsDraggable ? "true" : null)">
+
+        @* Indent spacer *@
+        @for (var d = 0; d < Depth; d++)
+        {
+            <span class="w-4 shrink-0"></span>
+        }
+
+        @* Expand/collapse toggle *@
+        @if (HasChildren)
+        {
+            @if (IsLoading)
+            {
+                <span class="inline-flex h-5 w-5 items-center justify-center shrink-0">
+                    <svg class="h-3.5 w-3.5 animate-spin text-muted-foreground"
+                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </span>
+            }
+            else
+            {
+                <span class="inline-flex h-5 w-5 items-center justify-center shrink-0 @ChevronWrapCssClass"
+                      data-tree-toggle
+                      @onclick:stopPropagation="true"
+                      @onclick="HandleToggle">
+                    <LucideIcon Name="chevron-right" Size="14"
+                                Class="@ChevronCssClass" />
+                </span>
+            }
+        }
+        else
+        {
+            <span class="inline-flex h-5 w-5 shrink-0"></span>
+        }
+
+        @* Checkbox — custom button renders checked / indeterminate / unchecked without JS *@
+        @if (Checkable)
+        {
+            <span data-tree-checkbox class="inline-flex shrink-0 mr-1" @onclick:stopPropagation="true">
+                <button type="button"
+                        role="checkbox"
+                        aria-checked="@(IsIndeterminate ? "mixed" : IsChecked.ToString().ToLower())"
+                        @onclick="HandleCheckClick"
+                        class="@CheckboxCssClass">
+                    @if (IsChecked)
+                    {
+                        <LucideIcon Name="check" Size="10" />
+                    }
+                    else if (IsIndeterminate)
+                    {
+                        <LucideIcon Name="minus" Size="10" />
+                    }
+                </button>
+            </span>
+        }
+
+        @* Icon *@
+        @if (ShowIcons && !string.IsNullOrEmpty(IconValue))
+        {
+            <LucideIcon Name="@IconValue" Size="14" Class="mr-1.5 shrink-0 text-muted-foreground" />
+        }
+
+        @* Label with optional search highlight *@
+        @if (!string.IsNullOrEmpty(SearchText))
+        {
+            @HighlightedLabel
+        }
+        else
+        {
+            <span class="truncate flex-1">@LabelValue</span>
+        }
+    </div>
+
+    @* Children *@
+    @if (IsExpanded && HasChildren)
+    {
+        @* Wrap in a relative container so the guide line can be absolutely positioned *@
+        <div class="relative">
+            @if (ShowLines)
+            {
+                <span class="absolute top-0 bottom-0 w-px bg-border"
+                      style="left: @((Depth + 1) * 16 - 8)px"></span>
+            }
+            <div role="group">
+                @if (HasError)
+                {
+                    <div class="flex items-center gap-2 py-1 pl-8 text-sm text-destructive">
+                        <span>Failed to load</span>
+                        <button type="button"
+                                class="text-xs underline hover:no-underline"
+                                @onclick="HandleRetry">
+                            Retry
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var child in Children)
+                    {
+                        if (!IsFilteredOut(child))
+                        {
+                            <TreeItemNode TItem="TItem"
+                                          Item="child"
+                                          TextField="@TextField"
+                                          ValueField="@ValueField"
+                                          IconField="@IconField"
+                                          ChildrenAccessor="@ChildrenAccessor"
+                                          HasChildrenAccessor="@HasChildrenAccessor"
+                                          IsFilteredOut="@IsFilteredOut"
+                                          SearchText="@SearchText"
+                                          ShowIcons="@ShowIcons"
+                                          ShowLines="@ShowLines"
+                                          Checkable="@Checkable"
+                                          Draggable="@Draggable"
+                                          AllowDrag="@AllowDrag"
+                                          Depth="@(Depth + 1)"
+                                          LoadingNodes="@LoadingNodes"
+                                          ErrorNodes="@ErrorNodes"
+                                          OnRetryLoad="@OnRetryLoad" />
+                        }
+                    }
+                }
+            </div>
+        </div>
+    }
+</div>

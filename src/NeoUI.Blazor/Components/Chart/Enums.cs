@@ -483,3 +483,25 @@ public enum RadarShape
     /// </summary>
     Circle
 }
+
+/// <summary>Sort order for Funnel chart segments.</summary>
+public enum FunnelSort
+{
+    /// <summary>Largest segment at the top (default).</summary>
+    Descending,
+    /// <summary>Smallest segment at the top.</summary>
+    Ascending,
+    /// <summary>Preserve data order.</summary>
+    None
+}
+
+/// <summary>Horizontal alignment for Funnel chart segments.</summary>
+public enum FunnelAlign
+{
+    /// <summary>Center-aligned (default).</summary>
+    Center,
+    /// <summary>Left-aligned.</summary>
+    Left,
+    /// <summary>Right-aligned.</summary>
+    Right
+}

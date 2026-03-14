@@ -1,0 +1,148 @@
+@namespace NeoUI.Blazor.Charts
+@typeparam TData
+@inherits ChartBase<TData>
+@implements IGaugeSeriesParent
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-gauge-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private readonly List<Gauge> _gauges = new();
+
+    protected override EChartsOption BuildEChartsOption()
+    {
+        return new EChartsOption
+        {
+            Legend    = _legend  is not null ? BuildLegend()  : null,
+            Tooltip   = _tooltip is not null ? BuildTooltip() : null,
+            Series    = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration       = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing         = MapAnimationEasing(AnimationEasing),
+            AnimationDelay          = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate   = MapAnimationEasing(AnimationEasingUpdate)
+        };
+    }
+
+    private List<EChartsSeries> BuildSeries()
+    {
+        var list  = new List<EChartsSeries>();
+        var total = _gauges.Count;
+
+        // When multiple gauges exist, tile them horizontally.
+        // Radius is capped so adjacent arcs don't overlap for any container aspect ratio.
+        var multiGauge  = total > 1;
+        var autoRadius  = multiGauge ? $"{Math.Min((int)Math.Round(150.0 / total), 75)}%" : null;
+
+        for (var i = 0; i < total; i++)
+        {
+            var gauge         = _gauges[i];
+            var resolvedColor = GetSeriesColor(i, gauge.Fill);
+
+            var autoCenter = multiGauge
+                ? new[] { $"{(i + 0.5) / total * 100:F1}%", "55%" }
+                : null;
+
+            var series = new EChartsSeries
+            {
+                Type        = "gauge",
+                Name        = gauge.Name,
+                Min         = gauge.Min,
+                Max         = gauge.Max,
+                StartAngle  = gauge.StartAngle,
+                EndAngle    = gauge.EndAngle,
+                SplitNumber = gauge.SplitNumber,
+                Center      = autoCenter,
+                Radius      = autoRadius,
+                // Series-level itemStyle colours the progress arc (progress.color is not a valid ECharts prop)
+                ItemStyle = resolvedColor is not null ? new EChartsItemStyle { Color = resolvedColor } : null,
+                Pointer = new EChartsGaugePointer
+                {
+                    Show  = gauge.ShowPointer,
+                    Length = gauge.PointerLength,
+                    Width  = gauge.PointerWidth,
+                    ItemStyle = resolvedColor is not null
+                        ? new EChartsItemStyle { Color = resolvedColor }
+                        : null
+                },
+                GaugeAxisLine = new EChartsGaugeAxisLine
+                {
+                    Show = gauge.ShowAxisLine,
+                    LineStyle = new EChartsGaugeAxisLineStyle
+                    {
+                        Width = gauge.AxisLineWidth,
+                        Color = new[] { new object[] { 1, "var(--muted)" } }
+                    }
+                },
+                GaugeAxisTick  = new EChartsGaugeAxisTick { Show = false },
+                GaugeSplitLine = new EChartsGaugeSplitLine
+                {
+                    Show   = gauge.ShowSplitLine,
+                    Length = 10,
+                    LineStyle = new EChartsGaugeSplitLineStyle
+                    {
+                        Color = "var(--muted-foreground)",
+                        Width = 1
+                    }
+                },
+                GaugeAxisLabel = gauge.ShowAxisLabel ? null : new EChartsAxisLabel { Show = false },
+                Detail = new EChartsGaugeDetail
+                {
+                    Show           = gauge.ShowDetail,
+                    Formatter      = gauge.DetailFormatter,
+                    FontSize       = gauge.DetailFontSize,
+                    FontWeight     = "bold",
+                    Color          = gauge.DetailColor ?? "var(--foreground)",
+                    ValueAnimation = true,
+                    OffsetCenter   = new object[] { 0, gauge.DetailOffsetY }
+                },
+                GaugeTitle = new EChartsGaugeTitle
+                {
+                    Show         = gauge.ShowTitle,
+                    FontSize     = gauge.TitleFontSize,
+                    Color        = "var(--muted-foreground)",
+                    OffsetCenter = new object[] { 0, "90%" }
+                },
+                Emphasis = new EChartsEmphasis { Disabled = true }
+            };
+
+            if (gauge.ShowProgress)
+            {
+                series.Progress = new EChartsGaugeProgress
+                {
+                    Show     = true,
+                    Width    = gauge.ProgressWidth,
+                    RoundCap = gauge.ProgressRoundCap,
+                    Color    = gauge.ProgressColor ?? resolvedColor
+                };
+            }
+
+            // Extract gauge data: [{value: X, name: "Label"}]
+            var rawValues = DataExtractor.GetValues(Data, gauge.DataKey);
+            if (rawValues.Count > 0)
+            {
+                var gaugeData = rawValues.Select(v => (object?)new Dictionary<string, object?>
+                {
+                    ["value"] = v,
+                    ["name"]  = gauge.Name ?? gauge.DataKey
+                }).ToList();
+                series.Data = gaugeData;
+            }
+
+            list.Add(series);
+        }
+        return list;
+    }
+
+    protected override ChartType GetChartType() => ChartType.Gauge;
+    protected override TooltipMode GetDefaultTooltipMode() => TooltipMode.Item;
+
+    public void RegisterGauge(Gauge g)               { _gauges.Add(g); StateHasChanged(); }
+    public void RegisterChartTooltip(ChartTooltip t) { _tooltip = t;   StateHasChanged(); }
+    public void RegisterLegend(Legend l)             { _legend  = l;   StateHasChanged(); }
+}

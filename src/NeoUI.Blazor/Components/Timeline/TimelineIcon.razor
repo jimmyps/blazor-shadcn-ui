@@ -1,0 +1,12 @@
+@namespace NeoUI.Blazor
+
+<div class="@RingClass">
+    <div class="@CssClass">
+        @if (ChildContent is not null)
+        {
+            <div class="@IconSizeClass flex items-center justify-center">
+                @ChildContent
+            </div>
+        }
+    </div>
+</div>

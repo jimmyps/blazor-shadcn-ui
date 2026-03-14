@@ -1,0 +1,98 @@
+@page "/components/chart/heatmap"
+@using NeoUI.Blazor.Charts
+
+<PageTitle>Heatmap Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Heatmap Chart"
+        Description="Visualise intensity across a two-dimensional grid — perfect for activity calendars, correlation matrices, and schedule heat maps." />
+
+    <DemoSection Title="Activity Calendar" Description="Hour-by-day activity heatmap, similar to GitHub contribution graphs.">
+        <DemoBlock Code="@HeatmapChartExamples.ActivityCode">
+            <ChartContainer Height="220" Class="w-full">
+                <HeatmapChart Data="@_activityData">
+                    <Grid Stroke="var(--border)" />
+                    <XAxis DataKey="day" TickLine="false" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" />
+                    </XAxis>
+                    <YAxis DataKey="hour" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" />
+                    </YAxis>
+                    <ChartTooltip />
+                    <Heatmap XKey="day" YKey="hour" ValueKey="commits" />
+                    <VisualMap Min="0" Max="10"
+                               InRange="@(new[] { "var(--muted)", "var(--chart-1)" })" />
+                </HeatmapChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Correlation Matrix" Description="Pearson correlation between numeric features.">
+        <DemoBlock Code="@HeatmapChartExamples.CorrelationCode">
+            <ChartContainer Height="300" Class="w-full">
+                <HeatmapChart Data="@_correlationData">
+                    <Grid Stroke="var(--border)" />
+                    <XAxis DataKey="x" TickLine="false" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" />
+                    </XAxis>
+                    <YAxis DataKey="y" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" />
+                    </YAxis>
+                    <ChartTooltip />
+                    <Heatmap XKey="x" YKey="y" ValueKey="value" />
+                    <VisualMap Min="-1" Max="1"
+                               InRange="@(new[] { "var(--chart-5)", "#ffffff", "var(--chart-2)" })"
+                               ShowLegend="true" />
+                </HeatmapChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="HeatmapChart and Heatmap series parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageSubNav ParentSlug="chart" />
+</div>
+
+@code {
+    private record ActivityPoint(string day, string hour, int commits);
+
+    private static readonly ActivityPoint[] _activityData = GenerateActivity();
+
+    private static ActivityPoint[] GenerateActivity()
+    {
+        var days  = new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+        var hours = new[] { "9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm" };
+        var rng   = new Random(42);
+        return [.. days.SelectMany(d => hours.Select(h => new ActivityPoint(d, h, rng.Next(0, 11))))];
+    }
+
+    private record CorrelationPoint(string x, string y, double value);
+
+    private static readonly CorrelationPoint[] _correlationData = GenerateCorrelation();
+
+    private static CorrelationPoint[] GenerateCorrelation()
+    {
+        var features = new[] { "Price", "Volume", "Return", "Beta", "PE" };
+        var matrix   = new double[,]
+        {
+            { 1.00,  0.42, -0.18,  0.55,  0.31 },
+            { 0.42,  1.00, -0.05,  0.28,  0.12 },
+            {-0.18, -0.05,  1.00, -0.34, -0.22 },
+            { 0.55,  0.28, -0.34,  1.00,  0.47 },
+            { 0.31,  0.12, -0.22,  0.47,  1.00 },
+        };
+        return [.. features.SelectMany((fx, i) =>
+            features.Select((fy, j) => new CorrelationPoint(fx, fy, matrix[i, j])))];
+    }
+
+    private static readonly IReadOnlyList<DemoPropRow> _props =
+    [
+        new("XKey",    "string", "required", "Property for the X-axis category."),
+        new("YKey",    "string", "required", "Property for the Y-axis category."),
+        new("ValueKey","string", "required", "Numeric property that drives cell colour intensity."),
+    ];
+}

@@ -1,6 +1,6 @@
 # NeoUI.Blazor
 
-Over 85+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
+Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
 ## ✨ Features
 
@@ -119,7 +119,7 @@ Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tail
 
 > Or keep reading to add NeoUI to an existing project manually.
 
-## 📚 Available Components (85+)
+## 📚 Available Components (100+)
 
 ### Form & Input Components
 - **Button** - Interactive buttons with 6 variants and multiple sizes
@@ -145,7 +145,9 @@ Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tail
 - **Rating** - Star rating input with half-star precision and readonly mode
 - **Select** - Dropdown selection with groups
 - **Slider** - Range input for numeric values
+- **Split Button** - Primary action button paired with a dropdown for secondary actions
 - **Switch** - Toggle control for on/off states
+- **Tag Input** - Chip/tag input with configurable triggers, async suggestions, and paste splitting
 - **Textarea** - Multi-line text input
 - **Time Picker** - Time selection with hour/minute/period controls
 
@@ -153,7 +155,9 @@ Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tail
 - **Avatar** - User profile images with fallbacks
 - **Badge** - Labels for status and categories
 - **Card** - Content container with header/footer
-- **Data Table** - Advanced tables with sorting, filtering, pagination
+- **Data Table** - Advanced tables with sorting, filtering, pagination, and server-side data
+- **Data View** - Switchable list/grid layouts with search, sort, pagination, and selection
+- **Dynamic Form** - Schema-driven form that renders any of 24 input types from a `FormSchema` definition
 - **Empty** - Empty state displays
 - **Grid** - Advanced data grid with state management
 - **Item** - Flexible list items with media and actions
@@ -162,6 +166,8 @@ Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tail
 - **Separator** - Visual dividers
 - **Skeleton** - Loading placeholders
 - **Spinner** - Loading indicators
+- **Timeline** - Chronological event display with icons, connectors, status, and alternating alignment
+- **Tree View** - Hierarchical data with expand/collapse, checkboxes, and single/multi-select
 - **Typography** - Semantic text styling
 
 ### Navigation Components
@@ -198,7 +204,7 @@ Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tail
 - **Scroll Area** - Custom scrollbars
 
 ### Advanced Components
-- **Chart** - 8 chart types with beautiful defaults (Line, Bar, Area, Pie, Doughnut, Radar, Polar Area, Bubble)
+- **Chart** - 12 chart types with beautiful defaults (Line, Bar, Area, Pie, Radar, Scatter, Radial Bar, Composed, Candlestick, Funnel, Gauge, Heatmap)
 - **Markdown Editor** - Write/preview tabs with syntax support
 - **Motion** - Declarative animation system with 20+ presets
 - **Rich Text Editor** - WYSIWYG editor with formatting toolbar

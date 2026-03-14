@@ -1,0 +1,98 @@
+@namespace NeoUI.Blazor.Charts
+@typeparam TData
+@inherits ChartBase<TData>
+@implements IFunnelSeriesParent
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-funnel-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private readonly List<Funnel> _funnels = new();
+
+    protected override EChartsOption BuildEChartsOption()
+    {
+        return new EChartsOption
+        {
+            Legend    = _legend  is not null ? BuildLegend()  : null,
+            Tooltip   = _tooltip is not null ? BuildTooltip() : null,
+            Series    = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration       = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing         = MapAnimationEasing(AnimationEasing),
+            AnimationDelay          = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate   = MapAnimationEasing(AnimationEasingUpdate)
+        };
+    }
+
+    private string MapLabelPosition(LabelPosition p) => p switch
+    {
+        LabelPosition.Left   => "left",
+        LabelPosition.Right  => "right",
+        LabelPosition.Center => "center",
+        LabelPosition.Inside => "inside",
+        _                    => "inside"
+    };
+
+    private List<EChartsSeries> BuildSeries()
+    {
+        var list = new List<EChartsSeries>();
+        foreach (var funnel in _funnels)
+        {
+            var series = new EChartsSeries
+            {
+                Type       = "funnel",
+                Name       = funnel.Name,
+                Sort       = funnel.Sort switch { FunnelSort.Ascending => "ascending", FunnelSort.None => "none", _ => "descending" },
+                FunnelAlign = funnel.Align switch { FunnelAlign.Left => "left", FunnelAlign.Right => "right", _ => "center" },
+                Gap        = funnel.Gap > 0 ? funnel.Gap : null,
+                MinSize    = funnel.MinSize,
+                MaxSize    = funnel.MaxSize,
+                Left       = "10%",
+                Top        = funnel.Top    ?? "10",
+                Right      = "10%",
+                Bottom     = funnel.Bottom ?? "10",
+                Width      = "80%",
+                Label = new EChartsLabel
+                {
+                    Show     = funnel.ShowLabels,
+                    Position = MapLabelPosition(funnel.LabelPosition ?? LabelPosition.Inside),
+                    Formatter = funnel.LabelFormatter,
+                    Color    = funnel.LabelColor ?? "var(--foreground)",
+                    FontSize = funnel.LabelFontSize
+                },
+                ItemStyle = new EChartsItemStyle
+                {
+                    BorderColor = "var(--background)",
+                    BorderWidth = funnel.Gap > 0 ? funnel.Gap : null
+                },
+                Emphasis = new EChartsEmphasis { Disabled = true }
+            };
+
+            if (!string.IsNullOrEmpty(funnel.DataKey) && !string.IsNullOrEmpty(funnel.NameKey))
+            {
+                var names  = DataExtractor.GetStringValues(Data, funnel.NameKey);
+                var values = DataExtractor.GetValues(Data, funnel.DataKey);
+                var count  = Math.Min(names.Count, values.Count);
+                var data   = new List<object?>(count);
+                for (var i = 0; i < count; i++)
+                    data.Add(new Dictionary<string, object?> { ["name"] = names[i], ["value"] = values[i] });
+                series.Data = data;
+            }
+
+            list.Add(series);
+        }
+        return list;
+    }
+
+    protected override ChartType GetChartType() => ChartType.Funnel;
+    protected override TooltipMode GetDefaultTooltipMode() => TooltipMode.Item;
+
+    public void RegisterFunnel(Funnel f)             { _funnels.Add(f); StateHasChanged(); }
+    public void RegisterChartTooltip(ChartTooltip t) { _tooltip = t;    StateHasChanged(); }
+    public void RegisterLegend(Legend l)             { _legend  = l;    StateHasChanged(); }
+}

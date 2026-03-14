@@ -1,0 +1,318 @@
+@page "/components/dynamic-form"
+
+<PageTitle>Dynamic Form - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Dynamic Form"
+        Description="A schema-driven form that renders the appropriate NeoUI input component for each field type, handles validation, and reports changes via callbacks." />
+
+    <DemoSection Title="Basic Contact Form" Description="A flat schema rendered in a single column.">
+        <DemoBlock Code="@DynamicFormDemoCode.Basic">
+            <div class="max-w-md">
+                <DynamicForm Schema="@_contactSchema"
+                             @bind-Values="_contactValues"
+                             OnValidSubmit="HandleContactSubmit"
+                             SubmitText="Send Message" />
+            </div>
+            @if (_contactSubmitted)
+            {
+                <Alert Variant="AlertVariant.Default" Class="mt-4 max-w-md">
+                    <AlertTitle>Message sent!</AlertTitle>
+                    <AlertDescription>
+                        <strong>@_contactValues.GetValueOrDefault("name")</strong> —
+                        @_contactValues.GetValueOrDefault("email")
+                    </AlertDescription>
+                </Alert>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Two-Column Layout" Description="Wide forms benefit from a multi-column grid.">
+        <DemoBlock Code="@DynamicFormDemoCode.TwoColumn">
+            <DynamicForm Schema="@_userSchema"
+                         @bind-Values="_userValues"
+                         Columns="2"
+                         OnValidSubmit="@(_ => _userSubmitted = true)"
+                         SubmitText="Create Account" />
+            @if (_userSubmitted)
+            {
+                <Alert Variant="AlertVariant.Default" Class="mt-4">
+                    <AlertTitle>Account created for @_userValues.GetValueOrDefault("firstName") @_userValues.GetValueOrDefault("lastName")</AlertTitle>
+                </Alert>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Sections" Description="Group related fields into collapsible sections.">
+        <DemoBlock Code="@DynamicFormDemoCode.Sections">
+            <DynamicForm Schema="@_settingsSchema"
+                         @bind-Values="_settingsValues"
+                         OnValidSubmit="@(_ => _settingsSubmitted = true)"
+                         SubmitText="Save Settings" />
+            @if (_settingsSubmitted)
+            {
+                <Alert Variant="AlertVariant.Default" Class="mt-4">
+                    <AlertTitle>Settings saved</AlertTitle>
+                </Alert>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Field Types Showcase" Description="All supported FieldType values in a single form.">
+        <DemoBlock Code="@DynamicFormDemoCode.FieldTypes">
+            <DynamicForm Schema="@_fieldTypesSchema"
+                         @bind-Values="_fieldTypesValues"
+                         Columns="2"
+                         ShowSubmitButton="false" />
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Validation" Description="Required, min/max length, email, and custom validators with a summary.">
+        <DemoBlock Code="@DynamicFormDemoCode.Validation">
+            <div class="max-w-md">
+                <DynamicForm Schema="@_validationSchema"
+                             @bind-Values="_validationValues"
+                             ShowValidationSummary="true"
+                             OnValidSubmit="@(_ => _validationSubmitted = true)"
+                             SubmitText="Register" />
+            </div>
+            @if (_validationSubmitted)
+            {
+                <Alert Variant="AlertVariant.Default" Class="mt-4 max-w-md">
+                    <AlertTitle>Registered successfully!</AlertTitle>
+                </Alert>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Conditional Visibility" Description="Fields appear or hide based on other field values using VisibleWhen expressions.">
+        <DemoBlock Code="@DynamicFormDemoCode.Conditional">
+            <div class="max-w-md">
+                <DynamicForm Schema="@_conditionalSchema"
+                             @bind-Values="_conditionalValues"
+                             OnFieldChanged="HandleConditionalChange"
+                             ShowSubmitButton="false" />
+            </div>
+            <div class="mt-3 space-y-1 text-xs text-muted-foreground">
+                @foreach (var kv in _conditionalValues.Where(k => k.Value is not null))
+                {
+                    <p><strong>@kv.Key</strong>: @kv.Value</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="DynamicForm and FormSchema parameters.">
+        <DemoPropsTable Rows="@_formProps" />
+        <p class="text-sm font-semibold mt-4 mb-2">FormFieldDefinition</p>
+        <DemoPropsTable Rows="@_fieldProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    // ── Contact ───────────────────────────────────────────────────────────
+    private bool _contactSubmitted;
+    private Dictionary<string, object?> _contactValues = new();
+
+    private void HandleContactSubmit(Dictionary<string, object?> values)
+    {
+        _contactSubmitted = true;
+    }
+
+    private static readonly FormSchema _contactSchema = new()
+    {
+        Fields =
+        [
+            new() { Name = "name",    Label = "Full Name",    Type = FieldType.Text,     Required = true,  Placeholder = "Jane Doe"            },
+            new() { Name = "email",   Label = "Email",        Type = FieldType.Email,    Required = true,  Placeholder = "jane@example.com"    },
+            new() { Name = "subject", Label = "Subject",      Type = FieldType.Text,     Required = false, Placeholder = "How can we help?"    },
+            new() { Name = "message", Label = "Message",      Type = FieldType.Textarea, Required = true,  Placeholder = "Describe your issue…",
+                ColSpan = 1 },
+        ]
+    };
+
+    // ── User (2-column) ──────────────────────────────────────────────────
+    private bool _userSubmitted;
+    private Dictionary<string, object?> _userValues = new();
+
+    private static readonly FormSchema _userSchema = new()
+    {
+        Fields =
+        [
+            new() { Name = "firstName", Label = "First Name", Type = FieldType.Text,     Required = true },
+            new() { Name = "lastName",  Label = "Last Name",  Type = FieldType.Text,     Required = true },
+            new() { Name = "email",     Label = "Email",      Type = FieldType.Email,    Required = true, ColSpan = 2 },
+            new() { Name = "password",  Label = "Password",   Type = FieldType.Password, Required = true },
+            new() { Name = "confirm",   Label = "Confirm",    Type = FieldType.Password, Required = true },
+            new() { Name = "role",      Label = "Role",       Type = FieldType.Select,
+                Options =
+                [
+                    new() { Value = "admin",  Label = "Administrator" },
+                    new() { Value = "editor", Label = "Editor"        },
+                    new() { Value = "viewer", Label = "Viewer"        },
+                ], ColSpan = 2 },
+            new() { Name = "terms",     Label = "I agree to the terms of service", Type = FieldType.Checkbox, Required = true, ColSpan = 2 },
+        ]
+    };
+
+    // ── Settings (sections) ──────────────────────────────────────────────
+    private bool _settingsSubmitted;
+    private Dictionary<string, object?> _settingsValues = new();
+
+    private static readonly FormSchema _settingsSchema = new()
+    {
+        Sections =
+        [
+            new()
+            {
+                Title = "Profile",
+                Description = "Public-facing information.",
+                Fields =
+                [
+                    new() { Name = "displayName", Label = "Display Name", Type = FieldType.Text, Required = true },
+                    new() { Name = "bio",         Label = "Bio",          Type = FieldType.Textarea },
+                ]
+            },
+            new()
+            {
+                Title = "Notifications",
+                Description = "Control what emails you receive.",
+                Collapsible = true,
+                Fields =
+                [
+                    new() { Name = "emailMarketing",  Label = "Marketing emails",        Type = FieldType.Switch },
+                    new() { Name = "emailProduct",    Label = "Product updates",          Type = FieldType.Switch, DefaultValue = true },
+                    new() { Name = "emailSecurity",   Label = "Security alerts",          Type = FieldType.Switch, DefaultValue = true },
+                ]
+            },
+            new()
+            {
+                Title = "Appearance",
+                Collapsible = true,
+                DefaultExpanded = false,
+                Fields =
+                [
+                    new() { Name = "theme", Label = "Theme", Type = FieldType.RadioGroup,
+                        Options =
+                        [
+                            new() { Value = "light", Label = "Light" },
+                            new() { Value = "dark",  Label = "Dark"  },
+                            new() { Value = "auto",  Label = "System" },
+                        ], DefaultValue = "auto" },
+                ]
+            }
+        ]
+    };
+
+    // ── Field types ───────────────────────────────────────────────────────
+    private Dictionary<string, object?> _fieldTypesValues = new();
+
+    private static readonly FormSchema _fieldTypesSchema = new()
+    {
+        Fields =
+        [
+            new() { Name = "text",      Label = "Text",       Type = FieldType.Text,     Placeholder = "Plain text"     },
+            new() { Name = "email",     Label = "Email",      Type = FieldType.Email,    Placeholder = "user@example.com" },
+            new() { Name = "password",  Label = "Password",   Type = FieldType.Password, Placeholder = "••••••••"       },
+            new() { Name = "number",    Label = "Number",     Type = FieldType.Number,   Placeholder = "42"             },
+            new() { Name = "textarea",  Label = "Textarea",   Type = FieldType.Textarea, Placeholder = "Multiple lines…"},
+            new() { Name = "select",    Label = "Select",     Type = FieldType.Select,
+                Options = [ new() { Value="a", Label="Option A" }, new() { Value="b", Label="Option B" } ] },
+            new() { Name = "radio",     Label = "Radio Group", Type = FieldType.RadioGroup,
+                Options = [ new() { Value="x", Label="Choice X" }, new() { Value="y", Label="Choice Y" } ] },
+            new() { Name = "checkbox",  Label = "Checkbox",   Type = FieldType.Checkbox, Placeholder = "Accept" },
+            new() { Name = "toggle",    Label = "Switch",     Type = FieldType.Switch,   Placeholder = "Enable feature"  },
+            new() { Name = "tags",      Label = "Tags",       Type = FieldType.Tags,     Placeholder = "Add tag…"       },
+            new() { Name = "slider",    Label = "Slider",     Type = FieldType.Slider,   DefaultValue = 50.0            },
+            new() { Name = "color",     Label = "Color",      Type = FieldType.Color,    DefaultValue = "#6366f1"       },
+        ]
+    };
+
+    // ── Validation ────────────────────────────────────────────────────────
+    private bool _validationSubmitted;
+    private Dictionary<string, object?> _validationValues = new();
+
+    private static readonly FormSchema _validationSchema = new()
+    {
+        Fields =
+        [
+            new() { Name = "username", Label = "Username", Type = FieldType.Text, Required = true,
+                Validations =
+                [
+                    new() { Type = ValidationType.MinLength, Value = 3,  Message = "Username must be at least 3 characters." },
+                    new() { Type = ValidationType.MaxLength, Value = 20, Message = "Username must not exceed 20 characters." },
+                ]},
+            new() { Name = "email", Label = "Email", Type = FieldType.Email, Required = true,
+                Validations = [ new() { Type = ValidationType.Email, Message = "Enter a valid email address." } ] },
+            new() { Name = "password", Label = "Password", Type = FieldType.Password, Required = true,
+                Validations = [ new() { Type = ValidationType.MinLength, Value = 8, Message = "Password must be at least 8 characters." } ] },
+            new() { Name = "age", Label = "Age", Type = FieldType.Number,
+                Validations =
+                [
+                    new() { Type = ValidationType.Min, Value = 18.0, Message = "You must be at least 18 years old." },
+                    new() { Type = ValidationType.Max, Value = 120.0, Message = "Please enter a valid age." },
+                ]},
+        ]
+    };
+
+    // ── Conditional ───────────────────────────────────────────────────────
+    private Dictionary<string, object?> _conditionalValues = new() { ["contactMethod"] = "email" };
+
+    private Task HandleConditionalChange(FormFieldChangedEventArgs e)
+    {
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private static readonly FormSchema _conditionalSchema = new()
+    {
+        Fields =
+        [
+            new() { Name = "contactMethod", Label = "Preferred Contact", Type = FieldType.Select,
+                DefaultValue = "email",
+                Options =
+                [
+                    new() { Value = "email", Label = "Email"  },
+                    new() { Value = "phone", Label = "Phone"  },
+                    new() { Value = "slack", Label = "Slack"  },
+                ]},
+            new() { Name = "emailAddr",    Label = "Email Address", Type = FieldType.Email, Placeholder = "you@example.com", VisibleWhen = "contactMethod == 'email'" },
+            new() { Name = "phoneNumber",  Label = "Phone Number",  Type = FieldType.Phone, Placeholder = "+1 555 000 0000",  VisibleWhen = "contactMethod == 'phone'" },
+            new() { Name = "slackHandle",  Label = "Slack Handle",  Type = FieldType.Text,  Placeholder = "@username",       VisibleWhen = "contactMethod == 'slack'" },
+        ]
+    };
+
+    // ── Props ──────────────────────────────────────────────────────────────
+    private static readonly IReadOnlyList<DemoPropRow> _formProps =
+    [
+        new("Schema",                "FormSchema?",                      "null",     "Drives the form — sections, fields, and layout."),
+        new("Values",                "Dictionary<string,object?>",       "new()",    "Current field values. Supports @bind-Values."),
+        new("OnValidSubmit",         "EventCallback<Dictionary<…>>",     "",         "Fires on submit when all validations pass."),
+        new("OnFieldChanged",        "EventCallback<FormFieldChangedEventArgs>","",  "Fires whenever a single field changes."),
+        new("Columns",               "int",                              "1",        "Default column count (overridden per schema/section)."),
+        new("ShowSubmitButton",      "bool",                             "true",     "Renders the submit button at the bottom."),
+        new("SubmitText",            "string",                           "\"Submit\"","Label on the submit button."),
+        new("ShowValidationSummary", "bool",                             "true",     "Shows an error summary at the top after first submit."),
+        new("Disabled",              "bool",                             "false",    "Disables all fields."),
+    ];
+
+    private static readonly IReadOnlyList<DemoPropRow> _fieldProps =
+    [
+        new("Name",         "string",                    "required", "Key in the values dictionary."),
+        new("Label",        "string?",                   "null",     "Visible label above the field."),
+        new("Description",  "string?",                   "null",     "Helper text below the field."),
+        new("Placeholder",  "string?",                   "null",     "Input placeholder."),
+        new("Type",         "FieldType",                 "Text",     "Which input component to render."),
+        new("Required",     "bool",                      "false",    "Marks the field required."),
+        new("Disabled",     "bool",                      "false",    "Disables this specific field."),
+        new("DefaultValue", "object?",                   "null",     "Value used when key is absent from Values."),
+        new("ColSpan",      "int",                       "1",        "How many grid columns this field spans."),
+        new("VisibleWhen",  "string?",                   "null",     "Condition expression e.g. <code>\"Field == 'value'\"</code>."),
+        new("Options",      "List<FormSelectOption>?",   "null",     "Options for Select/Radio/Checkbox-group fields."),
+        new("Validations",  "List<FieldValidation>?",    "null",     "Validation rules applied on submit."),
+    ];
+}

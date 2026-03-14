@@ -1,0 +1,26 @@
+@namespace NeoUI.Blazor.Charts
+
+@code {
+    [CascadingParameter] private IHeatmapSeriesParent? Parent { get; set; }
+
+    /// <summary>Gets or sets the minimum data value for color scaling.</summary>
+    [Parameter] public double Min { get; set; } = 0;
+    /// <summary>Gets or sets the maximum data value for color scaling.</summary>
+    [Parameter] public double Max { get; set; } = 100;
+    /// <summary>Gets or sets the color range for the visual map. Defaults to a blue gradient.</summary>
+    [Parameter] public string[]? InRange { get; set; }
+    /// <summary>Gets or sets whether the visual map legend control is shown.</summary>
+    [Parameter] public bool ShowLegend { get; set; } = true;
+    /// <summary>Gets or sets the orientation: "horizontal" | "vertical".</summary>
+    [Parameter] public string Orient { get; set; } = "horizontal";
+    /// <summary>Gets or sets the left position of the legend.</summary>
+    [Parameter] public string Left { get; set; } = "center";
+    /// <summary>Gets or sets the bottom position of the legend.</summary>
+    [Parameter] public string Bottom { get; set; } = "0";
+    /// <summary>Gets or sets the high/low text labels.</summary>
+    [Parameter] public string[]? Text { get; set; }
+    /// <summary>Gets or sets whether the user can drag to filter values.</summary>
+    [Parameter] public bool Calculable { get; set; } = true;
+
+    protected override void OnInitialized() => Parent?.RegisterVisualMap(this);
+}

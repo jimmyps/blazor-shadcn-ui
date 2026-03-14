@@ -93,3 +93,30 @@ public interface IFillParent
     /// <summary>Registers a fill with this series.</summary>
     void RegisterFill(Fill fill);
 }
+
+// ── New chart type parent interfaces ──────────────────────────────────────────
+
+/// <summary>CandlestickChart.</summary>
+public interface ICandlestickSeriesParent : ICartesianChartParent
+{
+    void RegisterCandlestick(Candlestick candlestick);
+}
+
+/// <summary>HeatmapChart.</summary>
+public interface IHeatmapSeriesParent : ICartesianChartParent
+{
+    void RegisterHeatmap(Heatmap heatmap);
+    void RegisterVisualMap(VisualMap visualMap);
+}
+
+/// <summary>GaugeChart.</summary>
+public interface IGaugeSeriesParent : IChartParent
+{
+    void RegisterGauge(Gauge gauge);
+}
+
+/// <summary>FunnelChart.</summary>
+public interface IFunnelSeriesParent : IChartParent
+{
+    void RegisterFunnel(Funnel funnel);
+}

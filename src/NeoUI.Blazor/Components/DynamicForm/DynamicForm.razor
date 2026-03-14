@@ -1,0 +1,160 @@
+@namespace NeoUI.Blazor
+
+<form class="@FormCssClass"
+      novalidate
+      @onsubmit="HandleSubmit"
+      @onsubmit:preventDefault="true"
+      @attributes="AdditionalAttributes">
+
+    @if (Schema?.Title is not null || Schema?.Description is not null)
+    {
+        <div class="space-y-1 mb-6">
+            @if (Schema.Title is not null)
+            {
+                <h2 class="text-lg font-semibold text-foreground">@Schema.Title</h2>
+            }
+            @if (Schema.Description is not null)
+            {
+                <p class="text-sm text-muted-foreground">@Schema.Description</p>
+            }
+        </div>
+    }
+
+    @if (ShowValidationSummary && HasErrors)
+    {
+        <Alert Variant="AlertVariant.Destructive" Class="mb-4">
+            <AlertTitle>Validation Errors</AlertTitle>
+            <AlertDescription>
+                <ul class="list-disc pl-4 space-y-1 text-sm">
+                    @foreach (var error in AllErrors)
+                    {
+                        <li>@error</li>
+                    }
+                </ul>
+            </AlertDescription>
+        </Alert>
+    }
+
+    @if (Schema is not null)
+    {
+        @if (Schema.Sections.Count > 0)
+        {
+            @foreach (var sectionDef in Schema.Sections)
+            {
+                @if (IsSectionVisible(sectionDef))
+                {
+                    var cols = sectionDef.Columns ?? Schema.Columns ?? Columns;
+                    <FormSection Title="@sectionDef.Title"
+                                 Description="@sectionDef.Description"
+                                 Collapsible="@sectionDef.Collapsible"
+                                 DefaultExpanded="@sectionDef.DefaultExpanded">
+                        @RenderFields(sectionDef.Fields, cols)
+                    </FormSection>
+                }
+            }
+        }
+        else if (Schema.Fields.Count > 0)
+        {
+            var cols = Schema.Columns ?? Columns;
+            @RenderFields(Schema.Fields, cols)
+        }
+    }
+
+    @ChildContent
+
+    @if (ShowSubmitButton)
+    {
+        <div class="flex justify-end pt-4">
+            <Button Type="ButtonType.Submit"
+                    Disabled="@(Disabled || _submitting)"
+                    Class="@SubmitButtonClass">
+                @if (_submitting)
+                {
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                }
+                @SubmitText
+            </Button>
+        </div>
+    }
+
+</form>
+
+@code {
+    /// <summary>
+    /// Renders a list of fields inside a <see cref="FieldGroup"/> (single-column)
+    /// or a static CSS grid (multi-column). Static Tailwind class strings are used
+    /// so the JIT scanner can see them.
+    /// </summary>
+    private RenderFragment RenderFields(List<FormFieldDefinition> fields, int cols) => __builder =>
+    {
+        var sorted = fields.OrderBy(f => f.Order ?? 999).ToList();
+
+        if (cols > 1)
+        {
+            var gridCss = cols switch
+            {
+                2 => "grid grid-cols-1 md:grid-cols-2 gap-4",
+                3 => "grid grid-cols-1 md:grid-cols-3 gap-4",
+                4 => "grid grid-cols-1 md:grid-cols-4 gap-4",
+                _ => "grid grid-cols-1 gap-4"
+            };
+
+            <div class="@gridCss">
+                @foreach (var field in sorted)
+                {
+                    @if (IsFieldVisible(field))
+                    {
+                        var spanCss = field.ColSpan > 1 ? ColSpanClass(field.ColSpan, cols) : null;
+                        <div class="@spanCss">
+                            @RenderField(field)
+                        </div>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <FieldGroup>
+                @foreach (var field in sorted)
+                {
+                    @if (IsFieldVisible(field))
+                    {
+                        @RenderField(field)
+                    }
+                }
+            </FieldGroup>
+        }
+    };
+
+    private RenderFragment RenderField(FormFieldDefinition field) => __builder =>
+    {
+        if (CustomRenderers?.TryGetValue(field.Name, out var customFn) == true)
+        {
+            @customFn(field, Values)
+            return;
+        }
+
+        var onChange = EventCallback.Factory.Create<object?>(this, v => HandleFieldChange(field.Name, v));
+
+        <DynamicFieldRenderer Field="@field"
+                              Value="@GetFieldValue(field)"
+                              Errors="@GetFieldErrors(field.Name)"
+                              Disabled="@(Disabled || field.Disabled)"
+                              OnChange="@onChange" />
+    };
+
+    private static string? ColSpanClass(int span, int cols)
+    {
+        var clamped = Math.Min(span, cols);
+        return clamped switch
+        {
+            2 => "col-span-2",
+            3 => "col-span-3",
+            4 => "col-span-4",
+            _ => null
+        };
+    }
+}

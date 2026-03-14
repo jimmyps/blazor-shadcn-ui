@@ -1,0 +1,69 @@
+@namespace NeoUI.Blazor.Charts
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private IGaugeSeriesParent? Parent { get; set; }
+
+    /// <summary>Gets or sets the minimum value on the gauge scale.</summary>
+    [Parameter] public double Min { get; set; } = 0;
+    /// <summary>Gets or sets the maximum value on the gauge scale.</summary>
+    [Parameter] public double Max { get; set; } = 100;
+    /// <summary>Gets or sets the start angle in degrees (default 225°).</summary>
+    [Parameter] public int StartAngle { get; set; } = 225;
+    /// <summary>Gets or sets the end angle in degrees (default -45°).</summary>
+    [Parameter] public int EndAngle { get; set; } = -45;
+    /// <summary>Gets or sets the number of split segments on the gauge scale.</summary>
+    [Parameter] public int SplitNumber { get; set; } = 10;
+
+    /// <summary>Gets or sets whether to show the pointer/needle.</summary>
+    [Parameter] public bool ShowPointer { get; set; } = true;
+    /// <summary>Gets or sets the pointer length as a percentage string (e.g. "60%").</summary>
+    [Parameter] public string PointerLength { get; set; } = "60%";
+    /// <summary>Gets or sets the pointer width in pixels.</summary>
+    [Parameter] public int PointerWidth { get; set; } = 6;
+
+    /// <summary>Gets or sets whether to show the progress arc.</summary>
+    [Parameter] public bool ShowProgress { get; set; } = true;
+    /// <summary>Gets or sets the progress arc width in pixels.</summary>
+    [Parameter] public int ProgressWidth { get; set; } = 10;
+    /// <summary>Gets or sets whether the progress arc has rounded caps.</summary>
+    [Parameter] public bool ProgressRoundCap { get; set; } = true;
+    /// <summary>Gets or sets an explicit color for the progress arc. Null = use Fill/Color.</summary>
+    [Parameter] public string? ProgressColor { get; set; }
+
+    /// <summary>Gets or sets whether to show the axis track ring.</summary>
+    [Parameter] public bool ShowAxisLine { get; set; } = true;
+    /// <summary>Gets or sets the axis line width in pixels.</summary>
+    [Parameter] public int AxisLineWidth { get; set; } = 10;
+
+    /// <summary>Gets or sets whether to show the split lines (major tick lines) on the gauge scale.</summary>
+    [Parameter] public bool ShowSplitLine { get; set; } = true;
+    /// <summary>Gets or sets whether to show the axis scale labels (numbers) on the gauge.</summary>
+    [Parameter] public bool ShowAxisLabel { get; set; } = true;
+
+    /// <summary>Gets or sets whether to show the center value detail.</summary>
+    [Parameter] public bool ShowDetail { get; set; } = true;
+    /// <summary>Gets or sets the detail value formatter (ECharts format string).</summary>
+    [Parameter] public string DetailFormatter { get; set; } = "{value}";
+    /// <summary>Gets or sets the detail value font size in pixels.</summary>
+    [Parameter] public int DetailFontSize { get; set; } = 24;
+    /// <summary>Gets or sets the detail value text color.</summary>
+    [Parameter] public string? DetailColor { get; set; }
+    /// <summary>
+    /// Gets or sets the vertical offset of the detail label as a percentage string.
+    /// "70%" places it near the bottom (default, suits semi-circle gauges).
+    /// "0%" centres it inside the arc (suits progress rings).
+    /// </summary>
+    [Parameter] public string DetailOffsetY { get; set; } = "70%";
+
+    /// <summary>Gets or sets whether to show the series title label below the gauge.</summary>
+    [Parameter] public bool ShowTitle { get; set; } = true;
+    /// <summary>Gets or sets the title font size in pixels.</summary>
+    [Parameter] public int TitleFontSize { get; set; } = 14;
+
+    protected override void OnInitialized() => Parent?.RegisterGauge(this);
+}

@@ -1,0 +1,38 @@
+@namespace NeoUI.Blazor.Charts
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private IFunnelSeriesParent? Parent { get; set; }
+
+    /// <summary>Gets or sets the property name for category/stage names.</summary>
+    [Parameter] public string? NameKey { get; set; }
+
+    /// <summary>Gets or sets the sort order for funnel segments.</summary>
+    [Parameter] public FunnelSort Sort { get; set; } = FunnelSort.Descending;
+    /// <summary>Gets or sets the horizontal alignment of funnel segments.</summary>
+    [Parameter] public FunnelAlign Align { get; set; } = FunnelAlign.Center;
+    /// <summary>Gets or sets the gap between funnel segments in pixels.</summary>
+    [Parameter] public int Gap { get; set; } = 2;
+    /// <summary>Gets or sets the minimum segment size (percentage or pixel string).</summary>
+    [Parameter] public string MinSize { get; set; } = "0%";
+    /// <summary>Gets or sets the maximum segment size (percentage or pixel string).</summary>
+    [Parameter] public string MaxSize { get; set; } = "100%";
+
+    /// <summary>Gets or sets the top offset of the funnel within the chart area (pixel or % string, e.g. "60" or "15%"). Useful when a top legend is present.</summary>
+    [Parameter] public string? Top { get; set; }
+    /// <summary>Gets or sets the bottom offset of the funnel within the chart area (pixel or % string).</summary>
+    [Parameter] public string? Bottom { get; set; }
+
+    /// <summary>Gets or sets whether to display labels on each segment.</summary>
+    [Parameter] public bool ShowLabels { get; set; } = true;
+    /// <summary>Gets or sets the label text color.</summary>
+    [Parameter] public string? LabelColor { get; set; }
+    /// <summary>Gets or sets the label font size in pixels.</summary>
+    [Parameter] public int? LabelFontSize { get; set; }
+
+    protected override void OnInitialized() => Parent?.RegisterFunnel(this);
+}

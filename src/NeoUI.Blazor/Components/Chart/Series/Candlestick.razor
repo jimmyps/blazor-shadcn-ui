@@ -1,0 +1,32 @@
+@namespace NeoUI.Blazor.Charts
+@inherits SeriesBase
+
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [CascadingParameter] private ICandlestickSeriesParent? Parent { get; set; }
+
+    /// <summary>Gets or sets the property name for open price values.</summary>
+    [Parameter] public string? OpenKey  { get; set; }
+    /// <summary>Gets or sets the property name for close price values.</summary>
+    [Parameter] public string? CloseKey { get; set; }
+    /// <summary>Gets or sets the property name for high price values.</summary>
+    [Parameter] public string? HighKey  { get; set; }
+    /// <summary>Gets or sets the property name for low price values.</summary>
+    [Parameter] public string? LowKey   { get; set; }
+
+    /// <summary>Gets or sets the color for rising (close &gt; open) candles. Default green.</summary>
+    [Parameter] public string RisingColor { get; set; } = "#22c55e";
+    /// <summary>Gets or sets the color for falling (close &lt; open) candles. Default red.</summary>
+    [Parameter] public string FallingColor { get; set; } = "#ef4444";
+
+    /// <summary>
+    /// Gets or sets the width of each candlestick bar.
+    /// Accepts a percentage string (e.g. "60%") or pixel value.
+    /// </summary>
+    [Parameter] public string? BarWidth { get; set; }
+
+    protected override void OnInitialized() => Parent?.RegisterCandlestick(this);
+}

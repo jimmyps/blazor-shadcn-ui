@@ -1,0 +1,111 @@
+@page "/components/tag-input"
+
+<PageTitle>Tag Input - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Tag Input"
+        Description="An input that manages a list of string tags/chips. Supports configurable add-triggers, async suggestions, duplicate prevention, and keyboard removal." />
+
+    <DemoSection Title="Basic" Description="Press Enter or comma to add a tag. Backspace removes the last tag.">
+        <DemoBlock Code="@TagInputDemoCode.Basic">
+            <div class="max-w-md">
+                <TagInput @bind-Tags="_basicTags" Placeholder="Add a tag…" />
+                @if (_basicTags?.Count > 0)
+                {
+                    <p class="mt-2 text-sm text-muted-foreground">Tags: @string.Join(", ", _basicTags)</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="With Suggestions" Description="Type to filter a list from OnSearchSuggestions.">
+        <DemoBlock Code="@TagInputDemoCode.Suggestions">
+            <div class="max-w-md">
+                <TagInput @bind-Tags="_techTags"
+                          Placeholder="Add technology…"
+                          OnSearchSuggestions="@FilterTech" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Static Suggestions" Description="Provide a fixed list via the Suggestions parameter.">
+        <DemoBlock Code="@TagInputDemoCode.StaticSuggestions">
+            <div class="max-w-md">
+                <TagInput @bind-Tags="_countryTags"
+                          Placeholder="Add a country…"
+                          Suggestions="@_countries" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Max Tags &amp; Duplicates" Description="Limit count and optionally allow duplicates.">
+        <DemoBlock Code="@TagInputDemoCode.Constraints">
+            <div class="space-y-3 max-w-md">
+                <TagInput @bind-Tags="_limitedTags"
+                          Placeholder="Up to 4 tags…"
+                          MaxTags="4"
+                          AllowDuplicates="false" />
+                <p class="text-xs text-muted-foreground">@(_limitedTags?.Count ?? 0) / 4 tags used</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Trigger Keys" Description="Configure which keys submit a tag via AddTrigger flags.">
+        <DemoBlock Code="@TagInputDemoCode.Triggers">
+            <div class="max-w-md space-y-3">
+                <p class="text-xs text-muted-foreground">Enter + Tab only (no comma)</p>
+                <TagInput @bind-Tags="_tabTags"
+                          Placeholder="Enter or Tab to add…"
+                          AddTrigger="TagInputTrigger.Enter | TagInputTrigger.Tab" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Variants" Description="Three visual styles for the rendered tags.">
+        <DemoBlock Code="@TagInputDemoCode.Variants">
+            <div class="space-y-3 max-w-md">
+                <TagInput @bind-Tags="_v1" Placeholder="Default (secondary badge)…" Variant="TagInputVariant.Default" />
+                <TagInput @bind-Tags="_v2" Placeholder="Outline…"                   Variant="TagInputVariant.Outline" />
+                <TagInput @bind-Tags="_v3" Placeholder="Secondary…"                 Variant="TagInputVariant.Secondary" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Clearable" Description="A clear-all button appears when Clearable is true and tags are present.">
+        <DemoBlock Code="@TagInputDemoCode.Clearable">
+            <div class="max-w-md">
+                <TagInput @bind-Tags="_clearableTags"
+                          Placeholder="Add tags then clear all…"
+                          Clearable="true" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Disabled" Description="All interaction is blocked when Disabled is true.">
+        <DemoBlock Code="@TagInputDemoCode.Disabled">
+            <div class="max-w-md">
+                <TagInput Tags="@_frozenTags" Disabled="true" Placeholder="Disabled" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="TagInput component parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private IReadOnlyList<string>? _basicTags;
+    private IReadOnlyList<string>? _techTags   = new[] { "Blazor", "C#" };
+    private IReadOnlyList<string>? _countryTags;
+    private IReadOnlyList<string>? _limitedTags;
+    private IReadOnlyList<string>? _tabTags;
+    private IReadOnlyList<string>? _v1;
+    private IReadOnlyList<string>? _v2;
+    private IReadOnlyList<string>? _v3;
+    private IReadOnlyList<string>? _clearableTags;
+}

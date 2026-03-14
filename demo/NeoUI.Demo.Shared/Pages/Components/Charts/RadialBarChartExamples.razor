@@ -1,0 +1,112 @@
+@page "/components/chart/radial-bar"
+@using NeoUI.Blazor.Charts
+
+<PageTitle>Radial Bar Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Radial Bar Chart"
+        Description="Categorical bar charts rendered in a polar coordinate system. Each bar extends radially from the center, making it easy to compare values across categories in a circular layout." />
+
+    <DemoSection Title="Basic" Description="Comparing values across categories in a circular layout.">
+        <DemoBlock Code="@RadialBarChartExamples.BasicCode">
+            <ChartContainer Height="320" Class="w-full">
+                <RadialBarChart Data="@_skillData">
+                    <PolarGrid Stroke="var(--border)" />
+                    <XAxis DataKey="skill" />
+                    <ChartTooltip />
+                    <RadialBar DataKey="score" Name="Score"
+                               Color="var(--chart-1)"
+                               ShowBackground="true"
+                               CornerRadius="4" />
+                </RadialBarChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Multi-Series" Description="Plot several series side-by-side for direct comparison.">
+        <DemoBlock Code="@RadialBarChartExamples.MultiSeriesCode">
+            <ChartContainer Height="320" Class="w-full">
+                <RadialBarChart Data="@_quarterData">
+                    <PolarGrid Stroke="var(--border)" />
+                    <XAxis DataKey="region" />
+                    <ChartTooltip />
+                    <Legend TextColor="var(--foreground)" />
+                    <RadialBar DataKey="q1" Name="Q1" Color="var(--chart-1)" ShowBackground="true" CornerRadius="4" />
+                    <RadialBar DataKey="q2" Name="Q2" Color="var(--chart-2)" CornerRadius="4" />
+                </RadialBarChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Stacked" Description="Stack series to show composition and total at a glance.">
+        <DemoBlock Code="@RadialBarChartExamples.StackedCode">
+            <ChartContainer Height="320" Class="w-full">
+                <RadialBarChart Data="@_budgetData">
+                    <PolarGrid Stroke="var(--border)" />
+                    <XAxis DataKey="category" />
+                    <ChartTooltip />
+                    <Legend TextColor="var(--foreground)" />
+                    <RadialBar DataKey="spent"     Name="Spent"     Color="var(--chart-1)" StackId="budget" CornerRadius="0" />
+                    <RadialBar DataKey="remaining" Name="Remaining" Color="var(--chart-3)" StackId="budget" CornerRadius="4" />
+                </RadialBarChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="RadialBarChart and RadialBar series parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageSubNav ParentSlug="chart" />
+</div>
+
+@code {
+    private record SkillScore(string skill, double score);
+    private static readonly SkillScore[] _skillData =
+    [
+        new("Blazor",     92),
+        new("TypeScript", 78),
+        new("SQL",        85),
+        new("Docker",     63),
+        new("UI/UX",      71),
+    ];
+
+    private record QuarterRevenue(string region, double q1, double q2);
+    private static readonly QuarterRevenue[] _quarterData =
+    [
+        new("North", 82, 91),
+        new("South", 67, 74),
+        new("East",  55, 68),
+        new("West",  90, 88),
+    ];
+
+    private record BudgetAllocation(string category, double spent, double remaining);
+    private static readonly BudgetAllocation[] _budgetData =
+    [
+        new("Engineering", 74, 26),
+        new("Marketing",   58, 42),
+        new("Operations",  83, 17),
+        new("Research",    41, 59),
+    ];
+
+    private static readonly IReadOnlyList<DemoPropRow> _props =
+    [
+        new("Data",              "IEnumerable<TData>", "required", "The data collection to render."),
+        new("StartAngle",        "int",                "90",       "Start angle in degrees (90 = top)."),
+        new("EndAngle",          "int",                "450",      "End angle — 450 gives a full clockwise circle."),
+        new("Clockwise",         "bool",               "true",     "Whether bars progress clockwise."),
+        new("RadiusMin",         "double?",            "0",        "Minimum radius axis value."),
+        new("RadiusMax",         "double?",            "null",     "Maximum radius axis value; auto when null."),
+        new("DataKey",           "string",             "required", "Property name for bar values (on RadialBar series)."),
+        new("Name",              "string?",            "DataKey",  "Legend and tooltip series name."),
+        new("Color",             "string?",            "auto",     "Bar fill color. Accepts any CSS color value."),
+        new("CornerRadius",      "int?",               "null",     "Rounded cap radius in pixels."),
+        new("StackId",           "string?",            "null",     "Stack group — bars sharing the same StackId are stacked."),
+        new("ShowBackground",    "bool",               "false",    "Renders a faint background ring for remaining capacity."),
+        new("BackgroundColor",   "string?",            "null",     "Background ring color when ShowBackground is true."),
+        new("BackgroundOpacity", "double?",            "0.1",      "Opacity of the background ring."),
+        new("ShowLabel",         "bool",               "false",    "Show value labels on each bar."),
+    ];
+}

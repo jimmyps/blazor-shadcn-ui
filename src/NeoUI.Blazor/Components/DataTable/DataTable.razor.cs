@@ -145,6 +145,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     private bool _selectAllDropdownOpen = false;
 
     /// <summary>
+    /// Cached reference to the ServerData delegate for ShouldRender optimization.
+    /// </summary>
+    private Func<DataTableRequest, Task<DataTableResult<TData>>>? _lastServerData;
+
+    /// <summary>
     /// Cached reference to the last data collection for ShouldRender optimization.
     /// </summary>
     private IEnumerable<TData>? _lastData;
@@ -195,6 +200,17 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     private int _lastPaginationVersion = 0;
 
     /// <summary>
+    /// Incremented each time ProcessDataAsync completes a server-side fetch so ShouldRender
+    /// can detect that _processedData has changed even when no external parameters changed.
+    /// </summary>
+    private int _serverResultVersion = 0;
+
+    /// <summary>
+    /// Cached server result version for ShouldRender optimization.
+    /// </summary>
+    private int _lastServerResultVersion = -1;
+
+    /// <summary>
     /// Cached Dense value for ShouldRender optimization.
     /// </summary>
     private bool _lastDense;
@@ -235,10 +251,24 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     private bool _lastColumnsVisibility;
 
     /// <summary>
-    /// Gets or sets the data source for the table.
+    /// Gets or sets the client-side data source for the table.
+    /// When <see cref="ServerData"/> is provided this can be omitted (defaults to an empty collection).
     /// </summary>
-    [Parameter, EditorRequired]
+    [Parameter]
     public IEnumerable<TData> Data { get; set; } = Array.Empty<TData>();
+
+    /// <summary>
+    /// Gets or sets a server-side data callback.  When set the component bypasses the
+    /// local filter / sort / pagination pipeline and calls this function instead, passing
+    /// a <see cref="DataTableRequest"/> that contains the current page, page size, sort
+    /// column, sort direction, and search text.  The callback must return a
+    /// <see cref="DataTableResult{TData}"/> with the page of items and the total count.
+    /// </summary>
+    [Parameter]
+    public Func<DataTableRequest, Task<DataTableResult<TData>>>? ServerData { get; set; }
+
+    /// <summary>True when the component is operating in server-side data mode.</summary>
+    private bool IsServerMode => ServerData is not null;
 
     /// <summary>
     /// Gets or sets the column definitions as child content.
@@ -543,10 +573,29 @@ public partial class DataTable<TData> : ComponentBase where TData : class
 
     /// <summary>
     /// Processes the data through the complete pipeline: preprocessing, filtering, sorting, and pagination.
-    /// Updates the _filteredData collection (after filtering) and _processedData collection (after pagination).
+    /// In server mode, delegates entirely to the <see cref="ServerData"/> callback.
     /// </summary>
     private async Task ProcessDataAsync()
     {
+        if (IsServerMode)
+        {
+            var request = new DataTableRequest
+            {
+                Page       = _tableState.Pagination.CurrentPage,
+                PageSize   = _tableState.Pagination.PageSize,
+                SortColumn = _tableState.Sorting.SortedColumn,
+                SortDirection = _tableState.Sorting.Direction,
+                SearchText = string.IsNullOrWhiteSpace(_globalSearchValue) ? null : _globalSearchValue
+            };
+
+            var result = await ServerData!(request);
+            _processedData = result.Items.ToList();
+            _filteredData  = _processedData; // not used for filtering in server mode
+            _tableState.Pagination.TotalItems = result.TotalCount;
+            _serverResultVersion++; // signal ShouldRender that processed data changed
+            return;
+        }
+
         var data = Data ?? Array.Empty<TData>();
 
         // 1. Preprocess (if custom function provided)
@@ -795,9 +844,17 @@ public partial class DataTable<TData> : ComponentBase where TData : class
 
     /// <summary>
     /// Selects all items in the entire filtered dataset across all pages and closes the select-all dropdown.
+    /// In server mode this is not supported and falls back to selecting the current page only.
     /// </summary>
     private async Task HandleSelectAllItems()
     {
+        if (IsServerMode)
+        {
+            // Cannot enumerate all server-side items; select current page instead.
+            await HandleSelectAllOnCurrentPage();
+            return;
+        }
+
         foreach (var item in _filteredData)
         {
             _tableState.Selection.Select(item);
@@ -937,13 +994,14 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <returns>True if the component should re-render; otherwise, false.</returns>
     protected override bool ShouldRender()
     {
-        var dataChanged = !ReferenceEquals(_lastData, Data);
+        var dataChanged = !ReferenceEquals(_lastData, Data) || !ReferenceEquals(_lastServerData, ServerData);
         var selectionModeChanged = _lastSelectionMode != SelectionMode;
         var loadingChanged = _lastIsLoading != IsLoading;
         var columnsChanged = _lastColumnsVersion != _columnsVersion;
         var searchChanged = _lastGlobalSearchValue != _globalSearchValue;
         var selectionChanged = _lastSelectionVersion != _selectionVersion;
         var paginationChanged = _lastPaginationVersion != _paginationVersion;
+        var serverResultChanged = _lastServerResultVersion != _serverResultVersion;
         var styleChanged = _lastDense != Dense
             || _lastHeaderBackground != HeaderBackground
             || _lastHeaderBorder != HeaderBorder
@@ -953,15 +1011,17 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             || _lastCellBorder != CellBorder
             || _lastColumnsVisibility != ColumnsVisibility;
 
-        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || styleChanged)
+        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || serverResultChanged || styleChanged)
         {
             _lastData = Data;
+            _lastServerData = ServerData;
             _lastSelectionMode = SelectionMode;
             _lastIsLoading = IsLoading;
             _lastColumnsVersion = _columnsVersion;
             _lastGlobalSearchValue = _globalSearchValue;
             _lastSelectionVersion = _selectionVersion;
             _lastPaginationVersion = _paginationVersion;
+            _lastServerResultVersion = _serverResultVersion;
             _lastDense = Dense;
             _lastHeaderBackground = HeaderBackground;
             _lastHeaderBorder = HeaderBorder;

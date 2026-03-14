@@ -1,0 +1,131 @@
+@namespace NeoUI.Blazor.Charts
+@typeparam TData
+@inherits ChartBase<TData>
+@implements IHeatmapSeriesParent
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-heatmap-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private readonly List<Heatmap>   _heatmaps   = new();
+    private VisualMap? _visualMap;
+
+    protected override EChartsOption BuildEChartsOption()
+    {
+        return new EChartsOption
+        {
+            Grid      = BuildGrid(),
+            Legend    = _legend  is not null ? BuildLegend()  : null,
+            Tooltip   = _tooltip is not null ? BuildTooltip() : null,
+            XAxis     = BuildCategoryAxis(_xAxis, isX: true),
+            YAxis     = BuildCategoryAxis(null, isX: false),
+            VisualMap = BuildVisualMap(),
+            Series    = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration       = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing         = MapAnimationEasing(AnimationEasing),
+            AnimationDelay          = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate   = MapAnimationEasing(AnimationEasingUpdate)
+        };
+    }
+
+    private EChartsAxis BuildCategoryAxis(XAxis? xAxis, bool isX)
+    {
+        if (isX)
+        {
+            var axis = BuildAxis(xAxis ?? new XAxis(), null, true);
+            axis.Type        = "category";
+            axis.BoundaryGap = true; // heatmap cells must be centred on categories
+            if (xAxis is not null && !string.IsNullOrEmpty(xAxis.DataKey))
+                axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey).Distinct().ToList();
+            return axis;
+        }
+        else
+        {
+            var y    = _yAxis ?? new YAxis();
+            var axis = BuildAxis(null, y, false);
+            axis.Type        = "category";
+            axis.BoundaryGap = true; // heatmap cells must be centred on categories
+            if (_yAxis is not null && !string.IsNullOrEmpty(_yAxis.DataKey))
+                axis.Data = DataExtractor.GetStringValues(Data, _yAxis.DataKey).Distinct().ToList();
+            return axis;
+        }
+    }
+
+    private EChartsVisualMap? BuildVisualMap()
+    {
+        if (_visualMap is null) return null;
+        return new EChartsVisualMap
+        {
+            Min        = _visualMap.Min,
+            Max        = _visualMap.Max,
+            Show       = _visualMap.ShowLegend,
+            Orient     = _visualMap.Orient,
+            Left       = _visualMap.Left,
+            Bottom     = _visualMap.Bottom,
+            Calculable = _visualMap.Calculable,
+            Text       = _visualMap.Text,
+            InRange    = _visualMap.InRange is not null
+                ? new EChartsVisualMapRange { Color = _visualMap.InRange }
+                : new EChartsVisualMapRange { Color = new[] { "#e0f2fe", "#0ea5e9", "#0369a1" } }
+        };
+    }
+
+    private List<EChartsSeries> BuildSeries()
+    {
+        var list = new List<EChartsSeries>();
+        foreach (var hm in _heatmaps)
+        {
+            var series = new EChartsSeries
+            {
+                Type     = "heatmap",
+                Name     = hm.Name,
+                Emphasis = new EChartsEmphasis { Disabled = true }
+            };
+
+            if (hm.ShowLabel || !string.IsNullOrEmpty(hm.LabelFormatter))
+            {
+                series.Label = new EChartsLabel
+                {
+                    Show      = true,
+                    Formatter = hm.LabelFormatter,
+                    Color     = hm.LabelColor ?? "var(--foreground)",
+                    FontSize  = hm.LabelFontSize
+                };
+            }
+
+            if (!string.IsNullOrEmpty(hm.XKey) &&
+                !string.IsNullOrEmpty(hm.YKey) &&
+                !string.IsNullOrEmpty(hm.ValueKey))
+            {
+                var xs     = DataExtractor.GetValues(Data, hm.XKey);
+                var ys     = DataExtractor.GetValues(Data, hm.YKey);
+                var vals   = DataExtractor.GetValues(Data, hm.ValueKey);
+                var count  = Math.Min(Math.Min(xs.Count, ys.Count), vals.Count);
+                var data   = new List<object?>(count);
+                for (var i = 0; i < count; i++)
+                    data.Add(new object?[] { xs[i], ys[i], vals[i] });
+                series.Data = data;
+            }
+
+            list.Add(series);
+        }
+        return list;
+    }
+
+    protected override ChartType GetChartType() => ChartType.Heatmap;
+    protected override TooltipMode GetDefaultTooltipMode() => TooltipMode.Item;
+
+    public void RegisterHeatmap(Heatmap h)          { _heatmaps.Add(h); StateHasChanged(); }
+    public void RegisterVisualMap(VisualMap vm)      { _visualMap = vm;  StateHasChanged(); }
+    public void RegisterGrid(Grid g)                 { _grid    = g;     StateHasChanged(); }
+    public void RegisterXAxis(XAxis x)               { _xAxis   = x;     StateHasChanged(); }
+    public void RegisterYAxis(YAxis y)               { _yAxis   = y;     StateHasChanged(); }
+    public void RegisterChartTooltip(ChartTooltip t) { _tooltip = t;     StateHasChanged(); }
+    public void RegisterLegend(Legend l)             { _legend  = l;     StateHasChanged(); }
+}

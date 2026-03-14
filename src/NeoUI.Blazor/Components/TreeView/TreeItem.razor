@@ -1,0 +1,74 @@
+@namespace NeoUI.Blazor
+@typeparam TItem
+
+<div role="treeitem"
+     data-value="@ItemValue"
+     aria-expanded="@(HasChildren ? IsExpanded.ToString().ToLower() : null)"
+     aria-selected="@IsSelected.ToString().ToLower()"
+     class="@ItemCssClass"
+     @onclick:stopPropagation="true">
+
+    @* Row ─────────────────────────────────────────────────────────────── *@
+    <div class="@RowCssClass"
+         @onclick="HandleClick"
+         data-tree-item>
+
+        @* Indent spacer for depth *@
+        @for (var d = 0; d < Depth; d++)
+        {
+            <span class="@IndentClass"></span>
+        }
+
+        @* Toggle chevron *@
+        <span class="@ToggleCssClass" data-tree-toggle @onclick:stopPropagation="true" @onclick="HandleToggle">
+            @if (HasChildren)
+            {
+                <LucideIcon Name="chevron-right" Size="14"
+                            Class="@(IsExpanded ? "rotate-90 transition-transform duration-150" : "transition-transform duration-150")" />
+            }
+            else
+            {
+                <span class="w-3.5 h-3.5"></span>
+            }
+        </span>
+
+        @* Checkbox *@
+        @if (Checkable)
+        {
+            <span data-tree-checkbox class="mr-1" @onclick:stopPropagation="true">
+                <input type="checkbox" checked="@IsChecked" @onchange="HandleCheck"
+                       class="h-3.5 w-3.5 rounded border-border accent-primary cursor-pointer" />
+            </span>
+        }
+
+        @* Icon *@
+        @if (!string.IsNullOrEmpty(IconName))
+        {
+            <LucideIcon Name="@IconName" Size="14" Class="mr-1.5 shrink-0 text-muted-foreground" />
+        }
+
+        @* Label *@
+        <span class="truncate flex-1">@Label</span>
+    </div>
+
+    @* Children ──────────────────────────────────────────────────────── *@
+    @if (IsExpanded && HasChildren)
+    {
+        <div role="group" class="@ChildGroupClass">
+            @foreach (var child in Children)
+            {
+                <TreeItem TItem="TItem"
+                          Item="child"
+                          TextField="@TextField"
+                          ValueField="@ValueField"
+                          IconField="@IconField"
+                          ChildrenAccessor="@ChildrenAccessor"
+                          HasChildrenAccessor="@HasChildrenAccessor"
+                          Depth="@(Depth + 1)"
+                          ShowLines="@ShowLines"
+                          Checkable="@Checkable"
+                          Draggable="@Draggable" />
+            }
+        </div>
+    }
+</div>

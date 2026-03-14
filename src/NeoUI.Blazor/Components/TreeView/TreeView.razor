@@ -1,0 +1,40 @@
+@namespace NeoUI.Blazor
+@typeparam TItem
+
+<div class="@CssClass" role="tree" aria-label="@AriaLabel" @ref="_treeRef" @attributes="AdditionalAttributes">
+    <CascadingValue Value="this" IsFixed="true">
+        @if (Items is not null && ValueField is not null && TextField is not null)
+        {
+            @* Data-driven mode — uses TreeItemNode for search, filter, loading & error support *@
+            @foreach (var item in GetRootItems())
+            {
+                if (!IsFilteredOut(item))
+                {
+                    <TreeItemNode TItem="TItem"
+                                  Item="item"
+                                  TextField="@TextField"
+                                  ValueField="@ValueField"
+                                  IconField="@IconField"
+                                  ChildrenAccessor="@GetChildren"
+                                  HasChildrenAccessor="@GetHasChildren"
+                                  IsFilteredOut="@IsFilteredOut"
+                                  SearchText="@SearchText"
+                                  ShowIcons="@(IconField is not null)"
+                                  ShowLines="@ShowLines"
+                                  Checkable="@Checkable"
+                                  Draggable="@Draggable"
+                                  AllowDrag="@AllowDrag"
+                                  Depth="0"
+                                  LoadingNodes="@MergedLoadingNodes"
+                                  ErrorNodes="@MergedErrorNodes"
+                                  OnRetryLoad="@HandleRetryInternal" />
+                }
+            }
+        }
+        else
+        {
+            @* Declarative mode *@
+            @ChildContent
+        }
+    </CascadingValue>
+</div>

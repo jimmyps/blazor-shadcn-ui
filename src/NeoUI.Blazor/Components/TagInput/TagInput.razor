@@ -1,0 +1,94 @@
+@namespace NeoUI.Blazor
+@inject Microsoft.JSInterop.IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div @ref="_containerRef"
+     id="@_containerId"
+     data-tag-input-container
+     class="@ContainerCssClass"
+     aria-label="@AriaLabel"
+     aria-disabled="@(Disabled ? "true" : null)">
+
+    @foreach (var tag in _currentTags)
+    {
+        @if (TagTemplate is not null)
+        {
+            <div @key="tag" class="contents">@TagTemplate(tag)</div>
+        }
+        else
+        {
+            <Badge @key="tag" Variant="@TagBadgeVariant" Class="gap-1 shrink-0">
+                @tag
+                @if (!Disabled)
+                {
+                    <button type="button"
+                            class="ml-0.5 rounded-full outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-secondary-foreground/20"
+                            aria-label="@($"Remove {tag}")"
+                            @onclick="GetRemoveHandler(tag)"
+                            @onclick:stopPropagation="true">
+                        <LucideIcon Name="x" Size="12" Class="h-3 w-3" />
+                    </button>
+                }
+            </Badge>
+        }
+    }
+
+    <input @ref="_inputRef"
+           type="text"
+           class="@InputCssClass"
+           value="@_inputText"
+           placeholder="@EffectivePlaceholder"
+           disabled="@Disabled"
+           aria-label="@(AriaLabel ?? "Add tag")"
+           aria-autocomplete="@(HasSuggestions ? "list" : null)"
+           aria-expanded="@(_suggestionsOpen ? "true" : null)"
+           aria-controls="@(_suggestionsOpen ? _contentId : null)"
+           aria-activedescendant="@ActiveDescendantId"
+           @oninput="HandleInput"
+           @onfocus="HandleFocus"
+           @onblur="HandleBlur" />
+
+    @if (Clearable && _currentTags.Count > 0 && !Disabled)
+    {
+        <button type="button"
+                class="ml-auto shrink-0 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                aria-label="Clear all tags"
+                @onclick="ClearAll"
+                @onclick:stopPropagation="true">
+            <LucideIcon Name="x" Size="14" Class="h-3.5 w-3.5" />
+        </button>
+    }
+</div>
+
+@if (HasSuggestions)
+{
+    <FloatingPortal IsOpen="@(_suggestionsOpen && _filteredSuggestions.Count > 0)"
+                    AnchorElement="@_containerRef"
+                    PortalId="@_portalId"
+                    Side="PopoverSide.Bottom"
+                    Align="PopoverAlign.Start"
+                    Offset="4"
+                    MatchAnchorWidth="true"
+                    ZIndex="60">
+        <ul id="@_contentId"
+            role="listbox"
+            aria-label="Tag suggestions"
+            class="rounded-md border bg-popover text-popover-foreground shadow-md outline-none p-1 max-h-48 overflow-y-auto">
+            @for (int i = 0; i < _filteredSuggestions.Count; i++)
+            {
+                var suggestion = _filteredSuggestions[i];
+                var index = i;
+                var isActive = _suggestionIndex == index;
+                <li @key="suggestion"
+                    id="@($"{_instanceId}-suggestion-{index}")"
+                    role="option"
+                    aria-selected="@isActive.ToString().ToLower()"
+                    class="@SuggestionItemCssClass(isActive)"
+                    @onmousedown="() => SelectSuggestion(suggestion)"
+                    @onmousedown:preventDefault="true">
+                    @suggestion
+                </li>
+            }
+        </ul>
+    </FloatingPortal>
+}
