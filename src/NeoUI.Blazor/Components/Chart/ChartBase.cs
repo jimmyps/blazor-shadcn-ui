@@ -514,6 +514,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
         {
             Show = show,
             Type = type,
+            Scale = scale == AxisScale.Value ? true : null,
             Position = position,
             Min = min,
             Max = max,

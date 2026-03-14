@@ -106,6 +106,12 @@ public sealed class EChartsOption
     public string? AnimationEasingUpdate { get; set; }
 
     /// <summary>
+    /// Visual map component for heatmap color scaling.
+    /// </summary>
+    [JsonPropertyName("visualMap")]
+    public EChartsVisualMap? VisualMap { get; set; }
+
+    /// <summary>
     /// Extension data for additional properties not explicitly defined.
     /// </summary>
     [JsonExtensionData]
@@ -188,6 +194,14 @@ public sealed class EChartsAxis
     /// </summary>
     [JsonPropertyName("max")]
     public double? Max { get; set; }
+
+    /// <summary>
+    /// When true, prevents the axis from forcing a zero baseline for numeric data.
+    /// Set to true for financial/value charts so the axis zooms to the actual data range.
+    /// Maps to axis.scale in ECharts.
+    /// </summary>
+    [JsonPropertyName("scale")]
+    public bool? Scale { get; set; }
 
     /// <summary>
     /// Interval of axis tick. Maps to axis.interval in ECharts.
@@ -690,6 +704,106 @@ public sealed class EChartsSeries
     [JsonPropertyName("backgroundStyle")]
     public EChartsBackgroundStyle? BackgroundStyle { get; set; }
 
+    // ── Candlestick ────────────────────────────────────────────────────
+
+    /// <summary>Width of each candlestick bar. Accepts "60%" or pixel value.</summary>
+    [JsonPropertyName("barWidth")]
+    public string? BarWidth { get; set; }
+
+    // ── Gauge ──────────────────────────────────────────────────────────
+
+    /// <summary>Minimum value for gauge/axis.</summary>
+    [JsonPropertyName("min")]
+    public double? Min { get; set; }
+
+    /// <summary>Maximum value for gauge/axis.</summary>
+    [JsonPropertyName("max")]
+    public double? Max { get; set; }
+
+    /// <summary>Number of split segments on a gauge axis.</summary>
+    [JsonPropertyName("splitNumber")]
+    public int? SplitNumber { get; set; }
+
+    /// <summary>Gauge pointer configuration.</summary>
+    [JsonPropertyName("pointer")]
+    public EChartsGaugePointer? Pointer { get; set; }
+
+    /// <summary>Gauge progress arc configuration.</summary>
+    [JsonPropertyName("progress")]
+    public EChartsGaugeProgress? Progress { get; set; }
+
+    /// <summary>Gauge axis line (track) configuration.</summary>
+    [JsonPropertyName("axisLine")]
+    public EChartsGaugeAxisLine? GaugeAxisLine { get; set; }
+
+    /// <summary>Gauge split line tick configuration.</summary>
+    [JsonPropertyName("splitLine")]
+    public EChartsGaugeSplitLine? GaugeSplitLine { get; set; }
+
+    /// <summary>Gauge axis tick configuration.</summary>
+    [JsonPropertyName("axisTick")]
+    public EChartsGaugeAxisTick? GaugeAxisTick { get; set; }
+
+    /// <summary>Gauge axis label (scale numbers) configuration.</summary>
+    [JsonPropertyName("axisLabel")]
+    public EChartsAxisLabel? GaugeAxisLabel { get; set; }
+
+    /// <summary>Gauge detail value display configuration.</summary>
+    [JsonPropertyName("detail")]
+    public EChartsGaugeDetail? Detail { get; set; }
+
+    /// <summary>Gauge series title (shown below the gauge). Not to be confused with chart title.</summary>
+    [JsonPropertyName("title")]
+    public EChartsGaugeTitle? GaugeTitle { get; set; }
+
+    // ── Funnel ─────────────────────────────────────────────────────────
+
+    /// <summary>Funnel sort order: "descending" | "ascending" | "none".</summary>
+    [JsonPropertyName("sort")]
+    public string? Sort { get; set; }
+
+    /// <summary>Funnel horizontal alignment: "left" | "center" | "right".</summary>
+    [JsonPropertyName("funnelAlign")]
+    public string? FunnelAlign { get; set; }
+
+    /// <summary>Gap between funnel segments in pixels.</summary>
+    [JsonPropertyName("gap")]
+    public int? Gap { get; set; }
+
+    /// <summary>Minimum segment size (percentage or pixel string).</summary>
+    [JsonPropertyName("minSize")]
+    public string? MinSize { get; set; }
+
+    /// <summary>Maximum segment size (percentage or pixel string).</summary>
+    [JsonPropertyName("maxSize")]
+    public string? MaxSize { get; set; }
+
+    // ── Layout (funnel/gauge) ──────────────────────────────────────────
+
+    /// <summary>Left offset. Accepts pixel or percentage string.</summary>
+    [JsonPropertyName("left")]
+    public string? Left { get; set; }
+
+    /// <summary>Right offset. Accepts pixel or percentage string.</summary>
+    [JsonPropertyName("right")]
+    public string? Right { get; set; }
+
+    /// <summary>Top offset. Accepts pixel or percentage string.</summary>
+    [JsonPropertyName("top")]
+    public string? Top { get; set; }
+
+    /// <summary>Bottom offset. Accepts pixel or percentage string.</summary>
+    [JsonPropertyName("bottom")]
+    public string? Bottom { get; set; }
+
+    /// <summary>Width. Accepts pixel or percentage string.</summary>
+    [JsonPropertyName("width")]
+    public string? Width { get; set; }
+
+    /// <summary>Height. Accepts pixel or percentage string.</summary>
+    [JsonPropertyName("height")]
+    public string? Height { get; set; }
+
     /// <summary>
     /// Extension data for additional properties not explicitly defined.
     /// </summary>
@@ -762,17 +876,21 @@ public sealed class EChartsItemStyle
     [JsonPropertyName("opacity")]
     public double? Opacity { get; set; }
     
-    /// <summary>
-    /// Border color.
-    /// </summary>
+    /// <summary>Border color.</summary>
     [JsonPropertyName("borderColor")]
     public string? BorderColor { get; set; }
-    
-    /// <summary>
-    /// Border width.
-    /// </summary>
+
+    /// <summary>Border width.</summary>
     [JsonPropertyName("borderWidth")]
     public int? BorderWidth { get; set; }
+
+    /// <summary>Color for bearish (down) candlestick items.</summary>
+    [JsonPropertyName("color0")]
+    public string? Color0 { get; set; }
+
+    /// <summary>Border color for bearish (down) candlestick items.</summary>
+    [JsonPropertyName("borderColor0")]
+    public string? BorderColor0 { get; set; }
 }
 
 /// <summary>
@@ -1214,10 +1332,115 @@ public sealed class EChartsBackgroundStyle
     /// </summary>
     [JsonPropertyName("color")]
     public string? Color { get; set; }
-    
+
     /// <summary>
     /// Background opacity.
     /// </summary>
     [JsonPropertyName("opacity")]
     public double? Opacity { get; set; }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// VisualMap  (heatmap color scaling)
+// ──────────────────────────────────────────────────────────────────────────────
+
+/// <summary>Continuous visual map component — maps data values to colors.</summary>
+public sealed class EChartsVisualMap
+{
+    [JsonPropertyName("type")]       public string  Type       { get; set; } = "continuous";
+    [JsonPropertyName("min")]        public double? Min        { get; set; }
+    [JsonPropertyName("max")]        public double? Max        { get; set; }
+    [JsonPropertyName("orient")]     public string? Orient     { get; set; }
+    [JsonPropertyName("left")]       public string? Left       { get; set; }
+    [JsonPropertyName("bottom")]     public string? Bottom     { get; set; }
+    [JsonPropertyName("show")]       public bool?   Show       { get; set; }
+    [JsonPropertyName("calculable")] public bool?   Calculable { get; set; }
+    [JsonPropertyName("text")]       public string[]? Text     { get; set; }
+    [JsonPropertyName("inRange")]    public EChartsVisualMapRange?  InRange   { get; set; }
+    [JsonPropertyName("textStyle")]  public EChartsTextStyle?       TextStyle { get; set; }
+}
+
+/// <summary>Color range for a continuous visual map.</summary>
+public sealed class EChartsVisualMapRange
+{
+    [JsonPropertyName("color")] public string[]? Color { get; set; }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Gauge sub-objects
+// ──────────────────────────────────────────────────────────────────────────────
+
+/// <summary>Gauge pointer (needle) configuration.</summary>
+public sealed class EChartsGaugePointer
+{
+    [JsonPropertyName("show")]      public bool?   Show      { get; set; }
+    [JsonPropertyName("length")]    public string? Length    { get; set; }
+    [JsonPropertyName("width")]     public int?    Width     { get; set; }
+    [JsonPropertyName("itemStyle")] public EChartsItemStyle? ItemStyle { get; set; }
+}
+
+/// <summary>Gauge progress arc configuration.</summary>
+public sealed class EChartsGaugeProgress
+{
+    [JsonPropertyName("show")]     public bool?   Show     { get; set; }
+    [JsonPropertyName("width")]    public int?    Width    { get; set; }
+    [JsonPropertyName("roundCap")] public bool?   RoundCap { get; set; }
+    [JsonPropertyName("color")]    public string? Color    { get; set; }
+}
+
+/// <summary>Gauge axis line (track ring) configuration.</summary>
+public sealed class EChartsGaugeAxisLine
+{
+    [JsonPropertyName("show")]      public bool?                      Show      { get; set; }
+    [JsonPropertyName("lineStyle")] public EChartsGaugeAxisLineStyle? LineStyle { get; set; }
+}
+
+/// <summary>Gauge axis line style with color-stop array.</summary>
+public sealed class EChartsGaugeAxisLineStyle
+{
+    [JsonPropertyName("width")] public int?       Width { get; set; }
+    /// <summary>Array of [progress(0-1), color] pairs, e.g. [[1, "var(--muted)"]].</summary>
+    [JsonPropertyName("color")] public object[][]? Color { get; set; }
+}
+
+/// <summary>Gauge split line (major tick line) configuration.</summary>
+public sealed class EChartsGaugeSplitLine
+{
+    [JsonPropertyName("show")]      public bool?                        Show      { get; set; }
+    [JsonPropertyName("length")]    public int?                         Length    { get; set; }
+    [JsonPropertyName("lineStyle")] public EChartsGaugeSplitLineStyle? LineStyle { get; set; }
+}
+
+/// <summary>Gauge split line style.</summary>
+public sealed class EChartsGaugeSplitLineStyle
+{
+    [JsonPropertyName("color")] public string? Color { get; set; }
+    [JsonPropertyName("width")] public int?    Width { get; set; }
+}
+
+/// <summary>Gauge axis tick configuration.</summary>
+public sealed class EChartsGaugeAxisTick
+{
+    [JsonPropertyName("show")] public bool? Show { get; set; }
+}
+
+/// <summary>Gauge detail (value label) configuration.</summary>
+public sealed class EChartsGaugeDetail
+{
+    [JsonPropertyName("show")]           public bool?    Show           { get; set; }
+    [JsonPropertyName("formatter")]      public string?  Formatter      { get; set; }
+    [JsonPropertyName("fontSize")]       public int?     FontSize       { get; set; }
+    [JsonPropertyName("fontWeight")]     public string?  FontWeight     { get; set; }
+    [JsonPropertyName("color")]          public string?  Color          { get; set; }
+    [JsonPropertyName("valueAnimation")] public bool?    ValueAnimation { get; set; }
+    [JsonPropertyName("offsetCenter")]   public object[]? OffsetCenter  { get; set; }
+}
+
+/// <summary>Gauge series title label (shown below the arc center).</summary>
+public sealed class EChartsGaugeTitle
+{
+    [JsonPropertyName("show")]         public bool?    Show         { get; set; }
+    [JsonPropertyName("fontSize")]     public int?     FontSize     { get; set; }
+    [JsonPropertyName("color")]        public string?  Color        { get; set; }
+    [JsonPropertyName("offsetCenter")] public object[]? OffsetCenter { get; set; }
 }

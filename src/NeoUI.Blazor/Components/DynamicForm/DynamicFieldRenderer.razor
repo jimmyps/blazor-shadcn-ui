@@ -1,0 +1,367 @@
+@namespace NeoUI.Blazor
+
+<Field IsInvalid="@HasErrors">
+    @* For checkbox/switch the label renders inline next to the control, not above *@
+    @if (!string.IsNullOrEmpty(Field.Label) && !IsInlineLabel)
+    {
+        <FieldLabel For="@FieldId">
+            @Field.Label
+            @if (Field.Required)
+            {
+                <span class="text-destructive ml-0.5" aria-hidden="true">*</span>
+            }
+        </FieldLabel>
+    }
+
+    @RenderInput
+
+    @if (!string.IsNullOrEmpty(Field.Description))
+    {
+        <FieldDescription>@Field.Description</FieldDescription>
+    }
+
+    @* External error — only for components without built-in ShowValidationError *@
+    @if (HasErrors && !HasBuiltinValidation)
+    {
+        <FieldError Errors="@Errors" />
+    }
+</Field>
+
+@code {
+    private RenderFragment RenderInput => Field.Type switch
+    {
+        // ── Text variants ──────────────────────────────────────────────────
+        FieldType.Text or FieldType.Email or FieldType.Url or FieldType.Phone => __builder =>
+        {
+            <Input Id="@FieldId"
+                   Type="@HtmlInputType"
+                   Value="@StringValue"
+                   ValueChanged="@HandleStringChange"
+                   Placeholder="@Field.Placeholder"
+                   Disabled="@Disabled"
+                   ReadOnly="@Field.ReadOnly"
+                   ShowValidationError="@HasErrors" />
+        },
+
+        FieldType.Password => __builder =>
+        {
+            <Input Id="@FieldId"
+                   Type="InputType.Password"
+                   Value="@StringValue"
+                   ValueChanged="@HandleStringChange"
+                   Placeholder="@Field.Placeholder"
+                   Disabled="@Disabled"
+                   ReadOnly="@Field.ReadOnly"
+                   ShowValidationError="@HasErrors" />
+        },
+
+        // ── Numeric variants ───────────────────────────────────────────────
+        FieldType.Number => __builder =>
+        {
+            <NumericInput TValue="double?"
+                          Id="@FieldId"
+                          Value="@NumericDoubleValue"
+                          ValueChanged="@HandleNumericChange"
+                          Placeholder="@Field.Placeholder"
+                          Disabled="@Disabled"
+                          Readonly="@Field.ReadOnly"
+                          ShowValidationError="@HasErrors" />
+        },
+
+        FieldType.Currency => __builder =>
+        {
+            <CurrencyInput TValue="decimal?"
+                           Id="@FieldId"
+                           Value="@DecimalValue"
+                           ValueChanged="@HandleDecimalChange"
+                           Placeholder="@Field.Placeholder"
+                           Disabled="@Disabled"
+                           Readonly="@Field.ReadOnly"
+                           ShowValidationError="@HasErrors" />
+        },
+
+        FieldType.Masked => __builder =>
+        {
+            var mask = Field.Metadata?.TryGetValue("mask", out var m) == true ? m?.ToString() ?? string.Empty : string.Empty;
+            <MaskedInput Id="@FieldId"
+                         Value="@StringValue"
+                         ValueChanged="@HandleStringChange"
+                         Mask="@mask"
+                         Placeholder="@Field.Placeholder"
+                         Disabled="@Disabled"
+                         Readonly="@Field.ReadOnly"
+                         ShowValidationError="@HasErrors" />
+        },
+
+        // ── Textarea ───────────────────────────────────────────────────────
+        FieldType.Textarea => __builder =>
+        {
+            <Textarea Id="@FieldId"
+                      Value="@StringValue"
+                      ValueChanged="@HandleStringChange"
+                      Placeholder="@Field.Placeholder"
+                      Disabled="@Disabled"
+                      ShowValidationError="@HasErrors" />
+        },
+
+        // ── Boolean controls ───────────────────────────────────────────────
+        FieldType.Checkbox => __builder =>
+        {
+            var inlineLabel = Field.Label ?? Field.Placeholder;
+            <div class="flex items-center gap-2">
+                <Checkbox Id="@FieldId"
+                          Checked="@BoolValue"
+                          CheckedChanged="@HandleBoolChange"
+                          Disabled="@Disabled" />
+                @if (!string.IsNullOrEmpty(inlineLabel))
+                {
+                    <label for="@FieldId" class="text-sm text-foreground cursor-pointer select-none">
+                        @inlineLabel
+                        @if (Field.Required)
+                        {
+                            <span class="text-destructive ml-0.5" aria-hidden="true">*</span>
+                        }
+                    </label>
+                }
+            </div>
+        },
+
+        FieldType.Switch => __builder =>
+        {
+            var inlineLabel = Field.Label ?? Field.Placeholder;
+            <div class="flex items-center gap-2">
+                <Switch Id="@FieldId"
+                        Checked="@BoolValue"
+                        CheckedChanged="@HandleBoolChange"
+                        Disabled="@Disabled" />
+                @if (!string.IsNullOrEmpty(inlineLabel))
+                {
+                    <label for="@FieldId" class="text-sm text-foreground cursor-pointer select-none">
+                        @inlineLabel
+                        @if (Field.Required)
+                        {
+                            <span class="text-destructive ml-0.5" aria-hidden="true">*</span>
+                        }
+                    </label>
+                }
+            </div>
+        },
+
+        // ── Multi-select group ─────────────────────────────────────────────
+        FieldType.CheckboxGroup => __builder =>
+        {
+            <div class="flex flex-col gap-2">
+                @foreach (var opt in Field.Options ?? [])
+                {
+                    var optId  = $"{FieldId}-{opt.Value}";
+                    var ticked = CheckboxGroupValues.Contains(opt.Value);
+                    <div class="flex items-center gap-2">
+                        <Checkbox Id="@optId"
+                                  Checked="@ticked"
+                                  CheckedChanged="@((bool v) => HandleCheckboxGroupChange(opt.Value, v))"
+                                  Disabled="@(Disabled || opt.Disabled)" />
+                        <label for="@optId" class="text-sm text-foreground cursor-pointer select-none">@opt.Label</label>
+                    </div>
+                }
+            </div>
+        },
+
+        // ── Select / NativeSelect ──────────────────────────────────────────
+        FieldType.Select => __builder =>
+        {
+            <Select TValue="string"
+                    Value="@StringValue"
+                    ValueChanged="@((string? v) => HandleStringChange(v))"
+                    Disabled="@Disabled">
+                <SelectTrigger TValue="string">
+                    <SelectValue TValue="string" Placeholder="@(Field.Placeholder ?? "Select an option...")" />
+                </SelectTrigger>
+                <SelectContent TValue="string">
+                    @foreach (var opt in Field.Options ?? [])
+                    {
+                        <SelectItem Value="@opt.Value" Text="@opt.Label" Disabled="@opt.Disabled" />
+                    }
+                </SelectContent>
+            </Select>
+        },
+
+        FieldType.NativeSelect => __builder =>
+        {
+            <NativeSelect TValue="string"
+                          Id="@FieldId"
+                          Value="@StringValue"
+                          ValueChanged="@((string? v) => HandleStringChange(v))"
+                          Placeholder="@Field.Placeholder"
+                          Disabled="@Disabled">
+                @foreach (var opt in Field.Options ?? [])
+                {
+                    <option value="@opt.Value" disabled="@opt.Disabled">@opt.Label</option>
+                }
+            </NativeSelect>
+        },
+
+        // ── Combobox / MultiSelect ─────────────────────────────────────────
+        FieldType.Combobox => __builder =>
+        {
+            <Combobox TItem="FormSelectOption"
+                      Items="@(Field.Options ?? [])"
+                      Value="@StringValue"
+                      ValueChanged="@((string? v) => HandleStringChange(v))"
+                      ValueSelector="@(x => x.Value)"
+                      DisplaySelector="@(x => x.Label)"
+                      Placeholder="@(Field.Placeholder ?? "Select an option...")"
+                      Disabled="@Disabled" />
+        },
+
+        FieldType.MultiSelect => __builder =>
+        {
+            <MultiSelect TItem="FormSelectOption"
+                         Items="@(Field.Options ?? [])"
+                         Values="@MultiSelectValues"
+                         ValuesChanged="@HandleMultiSelectChange"
+                         ValueSelector="@(x => x.Value)"
+                         DisplaySelector="@(x => x.Label)"
+                         Placeholder="@(Field.Placeholder ?? "Select items...")"
+                         Disabled="@Disabled" />
+        },
+
+        // ── Radio group ────────────────────────────────────────────────────
+        FieldType.RadioGroup => __builder =>
+        {
+            <RadioGroup Value="@StringValue"
+                        ValueChanged="@((string? v) => HandleStringChange(v))"
+                        Disabled="@Disabled">
+                @foreach (var opt in Field.Options ?? [])
+                {
+                    var optId = $"{FieldId}-{opt.Value}";
+                    <div class="flex items-center gap-2">
+                        <RadioGroupItem Id="@optId"
+                                        Value="@opt.Value"
+                                        Disabled="@(Disabled || opt.Disabled)" />
+                        <label for="@optId" class="text-sm text-foreground cursor-pointer select-none">@opt.Label</label>
+                    </div>
+                }
+            </RadioGroup>
+        },
+
+        // ── Date / Time ────────────────────────────────────────────────────
+        FieldType.Date => __builder =>
+        {
+            <DatePicker SelectedDate="@DateValue"
+                        SelectedDateChanged="@HandleDateChange"
+                        Placeholder="@(Field.Placeholder ?? "Pick a date")"
+                        Disabled="@Disabled" />
+        },
+
+        FieldType.DateRange => __builder =>
+        {
+            <DateRangePicker StartDate="@StartDateValue"
+                             StartDateChanged="@HandleStartDateChange"
+                             EndDate="@EndDateValue"
+                             EndDateChanged="@HandleEndDateChange"
+                             Disabled="@Disabled" />
+        },
+
+        FieldType.Time => __builder =>
+        {
+            <TimePicker SelectedTime="@TimeValue"
+                        SelectedTimeChanged="@HandleTimeChange"
+                        Placeholder="@(Field.Placeholder ?? "Pick a time")"
+                        Disabled="@Disabled"
+                        ShowValidationError="@HasErrors" />
+        },
+
+        FieldType.DateTime => __builder =>
+        {
+            <FieldGroup Orientation="FieldGroupOrientation.Horizontal" Class="flex-wrap">
+                <DatePicker SelectedDate="@DateTimeDate"
+                            SelectedDateChanged="@HandleDateTimePartChange"
+                            Placeholder="@(Field.Placeholder ?? "Pick a date")"
+                            Disabled="@Disabled" />
+                <TimePicker SelectedTime="@DateTimeTime"
+                            SelectedTimeChanged="@HandleTimePartChange"
+                            Disabled="@Disabled"
+                            ShowValidationError="@HasErrors" />
+            </FieldGroup>
+        },
+
+        // ── Color ──────────────────────────────────────────────────────────
+        FieldType.Color => __builder =>
+        {
+            <ColorPicker Color="@StringValue"
+                         ColorChanged="@((string? v) => HandleStringChange(v))"
+                         Disabled="@Disabled"
+                         ShowValidationError="@HasErrors" />
+        },
+
+        // ── File ───────────────────────────────────────────────────────────
+        FieldType.File => __builder =>
+        {
+            var multiple = Field.Metadata?.TryGetValue("multiple", out var m) == true && m is bool mb && mb;
+            var accept   = Field.Metadata?.TryGetValue("accept",   out var a) == true ? a?.ToString() : null;
+            <FileUpload Files="@FilesValue"
+                        FilesChanged="@HandleFilesChange"
+                        Multiple="@multiple"
+                        Accept="@accept"
+                        Disabled="@Disabled"
+                        ShowValidationError="@HasErrors" />
+        },
+
+        // ── OTP ────────────────────────────────────────────────────────────
+        FieldType.OTP => __builder =>
+        {
+            var length = Field.Metadata?.TryGetValue("length", out var l) == true && l is int li ? li : 6;
+            <InputOtp Value="@StringValue"
+                      ValueChanged="@((string v) => HandleStringChange(v))"
+                      Length="@length"
+                      Disabled="@Disabled" />
+        },
+
+        // ── Sliders ────────────────────────────────────────────────────────
+        FieldType.Slider => __builder =>
+        {
+            <Slider Value="@SliderValue"
+                    ValueChanged="@((double v) => HandleSliderChange(v))"
+                    Disabled="@Disabled" />
+        },
+
+        FieldType.RangeSlider => __builder =>
+        {
+            <RangeSlider MinValue="@RangeMinValue"
+                         MinValueChanged="@((double v) => HandleRangeMinChange(v))"
+                         MaxValue="@RangeMaxValue"
+                         MaxValueChanged="@((double v) => HandleRangeMaxChange(v))"
+                         Disabled="@Disabled" />
+        },
+
+        // ── Tags ───────────────────────────────────────────────────────────
+        FieldType.Tags => __builder =>
+        {
+            <TagInput Tags="@TagsValue"
+                      TagsChanged="@HandleTagsChange"
+                      Placeholder="@Field.Placeholder"
+                      Disabled="@Disabled" />
+        },
+
+        // ── Rating ─────────────────────────────────────────────────────────
+        FieldType.Rating => __builder =>
+        {
+            <Rating Value="@RatingValue"
+                    ValueChanged="@((double v) => HandleSliderChange(v))"
+                    Disabled="@Disabled"
+                    ShowValidationError="@HasErrors" />
+        },
+
+        // ── Fallback ───────────────────────────────────────────────────────
+        _ => __builder =>
+        {
+            <Input Id="@FieldId"
+                   Type="InputType.Text"
+                   Value="@StringValue"
+                   ValueChanged="@HandleStringChange"
+                   Placeholder="@Field.Placeholder"
+                   Disabled="@Disabled"
+                   ShowValidationError="@HasErrors" />
+        }
+    };
+}

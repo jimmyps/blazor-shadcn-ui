@@ -159,5 +159,58 @@ namespace NeoUI.Demo.Shared.Pages.Components
                     </Columns>
                 </DataTable>
                 """;
+
+        private const string _serverDataCode = """
+                <DataTable TData="Order" ServerData="LoadOrders" InitialPageSize="10"
+                           PageSizes="@(new[]{ 10, 25, 50 })">
+                    <Columns>
+                        <DataTableColumn TData="Order" TValue="int"    Property="@(o => o.Id)"       Header="ID"       Sortable />
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Customer)" Header="Customer" Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Product)"  Header="Product"  Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Status)"   Header="Status" />
+                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"  Header="Amount"   Sortable />
+                    </Columns>
+                </DataTable>
+
+                @code {
+                    private record Order(int Id, string Customer, string Product, string Status, decimal Amount);
+
+                    private static readonly Order[] _allOrders = Enumerable.Range(1, 1000).Select(i => new Order(
+                        i,
+                        $"Customer {i}",
+                        i % 3 == 0 ? "Widget Pro" : i % 3 == 1 ? "Gadget Lite" : "Device Max",
+                        i % 4 == 0 ? "Pending" : i % 4 == 1 ? "Shipped" : i % 4 == 2 ? "Delivered" : "Cancelled",
+                        Math.Round((decimal)(new Random(i).NextDouble() * 500 + 10), 2)
+                    )).ToArray();
+
+                    private async Task<DataTableResult<Order>> LoadOrders(DataTableRequest req)
+                    {
+                        await Task.Delay(300); // simulate network latency
+
+                        var query = _allOrders.AsEnumerable();
+
+                        if (!string.IsNullOrWhiteSpace(req.SearchText))
+                            query = query.Where(o =>
+                                o.Customer.Contains(req.SearchText, StringComparison.OrdinalIgnoreCase) ||
+                                o.Product.Contains(req.SearchText, StringComparison.OrdinalIgnoreCase));
+
+                        if (!string.IsNullOrWhiteSpace(req.SortColumn))
+                            query = (req.SortColumn, req.SortDirection) switch
+                            {
+                                ("id", SortDirection.Ascending)          => query.OrderBy(o => o.Id),
+                                ("id", _)                                => query.OrderByDescending(o => o.Id),
+                                ("customer", SortDirection.Ascending)    => query.OrderBy(o => o.Customer),
+                                ("customer", _)                          => query.OrderByDescending(o => o.Customer),
+                                ("amount", SortDirection.Ascending)      => query.OrderBy(o => o.Amount),
+                                ("amount", _)                            => query.OrderByDescending(o => o.Amount),
+                                _                                        => query
+                            };
+
+                        var total = query.Count();
+                        var items = query.Skip((req.Page - 1) * req.PageSize).Take(req.PageSize);
+                        return new DataTableResult<Order> { Items = items, TotalCount = total };
+                    }
+                }
+                """;
     }
 }

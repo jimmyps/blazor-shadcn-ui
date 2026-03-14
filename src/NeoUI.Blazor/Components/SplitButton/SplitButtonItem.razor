@@ -1,0 +1,13 @@
+@namespace NeoUI.Blazor
+
+<DropdownMenuItem Class="@Class" Disabled="@Disabled" OnClick="@OnClick" CloseOnSelect="@CloseOnSelect">
+    @ChildContent
+</DropdownMenuItem>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback<Microsoft.AspNetCore.Components.Web.MouseEventArgs> OnClick { get; set; }
+    [Parameter] public bool CloseOnSelect { get; set; } = true;
+}

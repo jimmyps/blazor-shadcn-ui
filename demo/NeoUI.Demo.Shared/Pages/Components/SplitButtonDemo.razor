@@ -1,0 +1,141 @@
+@page "/components/split-button"
+
+<PageTitle>Split Button - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Split Button"
+        Description="Pairs a primary action button with a dropdown for secondary actions. Useful for save/save-as, send/schedule, and deploy patterns." />
+
+    <DemoSection Title="Basic" Description="Primary action on the left, dropdown arrow on the right.">
+        <DemoBlock Code="@SplitButtonDemoCode.Basic">
+            <SplitButton OnClick="@(() => _lastAction = "Save")">
+                <ChildContent>Save</ChildContent>
+                <DropdownContent>
+                    <SplitButtonItem OnClick="@(() => _lastAction = "Save as draft")">Save as Draft</SplitButtonItem>
+                    <SplitButtonItem OnClick="@(() => _lastAction = "Save and close")">Save &amp; Close</SplitButtonItem>
+                    <SplitButtonSeparator />
+                    <SplitButtonItem OnClick="@(() => _lastAction = "Discard")">Discard Changes</SplitButtonItem>
+                </DropdownContent>
+            </SplitButton>
+            @if (!string.IsNullOrEmpty(_lastAction))
+            {
+                <p class="mt-3 text-sm text-muted-foreground">Last action: <strong>@_lastAction</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Variants" Description="Mirrors the Button component's variant tokens.">
+        <DemoBlock Code="@SplitButtonDemoCode.Variants">
+            <div class="flex flex-wrap gap-3">
+                <SplitButton>
+                    <ChildContent>Default</ChildContent>
+                    <DropdownContent>
+                        <SplitButtonItem>Option A</SplitButtonItem>
+                        <SplitButtonItem>Option B</SplitButtonItem>
+                    </DropdownContent>
+                </SplitButton>
+                <SplitButton Variant="ButtonVariant.Secondary">
+                    <ChildContent>Secondary</ChildContent>
+                    <DropdownContent>
+                        <SplitButtonItem>Option A</SplitButtonItem>
+                    </DropdownContent>
+                </SplitButton>
+                <SplitButton Variant="ButtonVariant.Outline">
+                    <ChildContent>Outline</ChildContent>
+                    <DropdownContent>
+                        <SplitButtonItem>Option A</SplitButtonItem>
+                    </DropdownContent>
+                </SplitButton>
+                <SplitButton Variant="ButtonVariant.Destructive">
+                    <ChildContent>Destructive</ChildContent>
+                    <DropdownContent>
+                        <SplitButtonItem>Option A</SplitButtonItem>
+                    </DropdownContent>
+                </SplitButton>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Sizes" Description="Small, Default, and Large map directly to the Button size scale.">
+        <DemoBlock Code="@SplitButtonDemoCode.Sizes">
+            <div class="flex flex-wrap items-center gap-3">
+                <SplitButton Size="ButtonSize.Small">
+                    <ChildContent>Save</ChildContent>
+                    <DropdownContent>
+                        <SplitButtonItem>Save as Draft</SplitButtonItem>
+                        <SplitButtonItem>Save &amp; Close</SplitButtonItem>
+                    </DropdownContent>
+                </SplitButton>
+                <SplitButton Size="ButtonSize.Default">
+                    <ChildContent>Save</ChildContent>
+                    <DropdownContent>
+                        <SplitButtonItem>Save as Draft</SplitButtonItem>
+                        <SplitButtonItem>Save &amp; Close</SplitButtonItem>
+                    </DropdownContent>
+                </SplitButton>
+                <SplitButton Size="ButtonSize.Large">
+                    <ChildContent>Save</ChildContent>
+                    <DropdownContent>
+                        <SplitButtonItem>Save as Draft</SplitButtonItem>
+                        <SplitButtonItem>Save &amp; Close</SplitButtonItem>
+                    </DropdownContent>
+                </SplitButton>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="With Icon" Description="Pass any content into the Icon slot to prepend it to the primary label.">
+        <DemoBlock Code="@SplitButtonDemoCode.WithIcon">
+            <SplitButton OnClick="SimulateDeploy" Disabled="@_deploying">
+                <Icon><LucideIcon Name="rocket" Size="15" /></Icon>
+                <ChildContent>@(_deploying ? "Deploying…" : "Deploy to Production")</ChildContent>
+                <DropdownContent>
+                    <SplitButtonItem OnClick="@(() => _deployTarget = "Staging")">Deploy to Staging</SplitButtonItem>
+                    <SplitButtonItem OnClick="@(() => _deployTarget = "Preview")">Deploy to Preview</SplitButtonItem>
+                    <SplitButtonSeparator />
+                    <SplitButtonItem OnClick="@(() => _deployTarget = "Rollback")">Rollback Last</SplitButtonItem>
+                </DropdownContent>
+            </SplitButton>
+            @if (!string.IsNullOrEmpty(_deployTarget))
+            {
+                <Alert Variant="AlertVariant.Default" Class="mt-3 max-w-xs">
+                    <AlertDescription>Triggered: <strong>@_deployTarget</strong></AlertDescription>
+                </Alert>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Disabled" Description="Both segments are disabled when Disabled is true.">
+        <DemoBlock Code="@SplitButtonDemoCode.Disabled">
+            <SplitButton Disabled="true">
+                <ChildContent>Unavailable</ChildContent>
+                <DropdownContent>
+                    <SplitButtonItem>Option A</SplitButtonItem>
+                </DropdownContent>
+            </SplitButton>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string _lastAction   = string.Empty;
+    private string _deployTarget = string.Empty;
+    private bool   _deploying;
+
+    private async Task SimulateDeploy()
+    {
+        _deploying    = true;
+        _deployTarget = "Production";
+        StateHasChanged();
+        await Task.Delay(1500);
+        _deploying = false;
+    }
+}

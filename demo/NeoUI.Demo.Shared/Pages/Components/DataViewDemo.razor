@@ -1,0 +1,496 @@
+@page "/components/data-view"
+
+<PageTitle>Data View - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-5xl">
+
+    <DemoPageHeader
+        Title="Data View"
+        Description="Displays collections in switchable list or grid layouts with built-in search, sort, grouping, pagination, selection, and keyboard navigation." />
+
+    <DemoSection Title="Basic" Description="A searchable user list. Declare DataViewColumn inside Fields to wire up the search input and sort dropdown automatically.">
+        <DemoBlock Code="@DataViewDemoCode.Basic">
+            <DataView Items="@_users" PageSize="5" ItemKey="@(u => u.Id)">
+                <Fields>
+                    <DataViewColumn TItem="UserRow" Header="Name" Property="@(u => u.Name)" Filterable="true" Sortable="true" />
+                    <DataViewColumn TItem="UserRow" Header="Role" Property="@(u => u.Role)" Filterable="true" Sortable="true" />
+                </Fields>
+                <ListTemplate Context="u">
+                    <div class="flex items-center gap-3 py-3 px-1">
+                        <Avatar Size="AvatarSize.Small">
+                            <AvatarFallback>@u.Initials</AvatarFallback>
+                        </Avatar>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">@u.Name</p>
+                            <p class="text-xs text-muted-foreground">@u.Role</p>
+                        </div>
+                        <Badge Variant="@StatusVariant(u.Status)" Class="text-xs">@u.Status</Badge>
+                    </div>
+                </ListTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="List / Grid Switcher" Description="Provide both ListTemplate and GridTemplate — the layout toggle appears automatically in the toolbar.">
+        <DemoBlock Code="@DataViewDemoCode.Switcher">
+            <DataView Items="@_products" PageSize="6" ItemKey="@(p => p.Id)">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name"     Property="@(p => p.Name)"     Filterable="true" Sortable="true" />
+                    <DataViewColumn TItem="ProductRow" Header="Category" Property="@(p => p.Category)" Filterable="true" />
+                </Fields>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-4 py-3 px-1">
+                        <div class="h-10 w-10 rounded-md bg-muted flex items-center justify-center shrink-0">
+                            <LucideIcon Name="@p.Icon" Size="18" Class="text-muted-foreground" />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">@p.Name</p>
+                            <p class="text-xs text-muted-foreground">@p.Category</p>
+                        </div>
+                        <Badge Variant="@(p.InStock ? BadgeVariant.Default : BadgeVariant.Outline)">
+                            @(p.InStock ? "In stock" : "Out of stock")
+                        </Badge>
+                        <span class="text-sm font-semibold tabular-nums">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2 h-full">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <p class="font-medium text-sm">@p.Name</p>
+                                <p class="text-xs text-muted-foreground flex-1">@p.Category</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                                    <Badge Variant="@(p.InStock ? BadgeVariant.Default : BadgeVariant.Outline)" Class="text-xs">
+                                        @(p.InStock ? "In stock" : "OOS")
+                                    </Badge>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Single Selection" Description="Click an item to select it; click again to deselect. Keyboard: ↑ ↓ to navigate, Space or Enter to toggle.">
+        <DemoBlock Code="@DataViewDemoCode.SingleSelection">
+            <DataView Items="@_products" ItemKey="@(p => p.Id)"
+                      SelectionMode="DataViewSelectionMode.Single"
+                      @bind-SelectedItem="_singleSelected">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name"     Property="@(p => p.Name)"     Filterable="true" Sortable="true" />
+                    <DataViewColumn TItem="ProductRow" Header="Category" Property="@(p => p.Category)" Filterable="true" />
+                </Fields>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-4 py-3 px-1">
+                        <div class="h-9 w-9 rounded-md bg-muted flex items-center justify-center shrink-0">
+                            <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">@p.Name</p>
+                            <p class="text-xs text-muted-foreground">@p.Category</p>
+                        </div>
+                        <span class="text-sm font-semibold tabular-nums">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2 h-full">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <p class="font-medium text-sm">@p.Name</p>
+                                <p class="text-xs text-muted-foreground flex-1">@p.Category</p>
+                                <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+            @if (_singleSelected is not null)
+            {
+                <Alert Variant="AlertVariant.Default" Class="mt-3">
+                    <AlertDescription>Selected: <strong>@_singleSelected.Name</strong> — $@_singleSelected.Price.ToString("F2")</AlertDescription>
+                </Alert>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Multiple Selection" Description="Click items to toggle selection. The count badge and Clear button use the ToolbarActions slot, which renders on the right next to the layout toggle.">
+        <DemoBlock Code="@DataViewDemoCode.MultipleSelection">
+            <DataView Items="@_products" ItemKey="@(p => p.Id)"
+                      SelectionMode="DataViewSelectionMode.Multiple"
+                      @bind-SelectedItems="_multiSelected">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name"     Property="@(p => p.Name)"     Filterable="true" Sortable="true" />
+                    <DataViewColumn TItem="ProductRow" Header="Category" Property="@(p => p.Category)" Filterable="true" />
+                </Fields>
+                <ToolbarActions>
+                    @if (_multiSelected?.Count > 0)
+                    {
+                        <div class="flex items-center gap-2">
+                            <Badge Variant="BadgeVariant.Default">@_multiSelected.Count selected</Badge>
+                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small"
+                                    OnClick="@(() => _multiSelected = null)">
+                                Clear
+                            </Button>
+                        </div>
+                    }
+                </ToolbarActions>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-4 py-3 px-1">
+                        <div class="h-9 w-9 rounded-md bg-muted flex items-center justify-center shrink-0">
+                            <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">@p.Name</p>
+                            <p class="text-xs text-muted-foreground">@p.Category</p>
+                        </div>
+                        <span class="text-sm font-semibold tabular-nums">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2 h-full">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <p class="font-medium text-sm">@p.Name</p>
+                                <p class="text-xs text-muted-foreground flex-1">@p.Category</p>
+                                <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+            @if (_multiSelected?.Count > 0)
+            {
+                <Alert Variant="AlertVariant.Default" Class="mt-3">
+                    <AlertDescription>Selected: @string.Join(", ", _multiSelected.Select(p => p.Name))</AlertDescription>
+                </Alert>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Check Variant" Description="CircleCheck (default) always reserves indicator space. Check hides it when unselected (mobile-style). None removes it entirely — toggle list/grid to compare both layouts.">
+        <DemoBlock Code="@DataViewDemoCode.CheckVariant">
+            <div class="space-y-6">
+                <div>
+                    <p class="text-xs text-muted-foreground mb-2 font-medium">Check (mobile-style)</p>
+                    <DataView Items="@_products.Take(4)" ItemKey="@(p => p.Id)"
+                              SelectionMode="DataViewSelectionMode.Single"
+                              CheckVariant="DataViewCheckVariant.Check">
+                        <ListTemplate Context="p">
+                            <div class="flex items-center gap-3 py-2.5 px-1">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                                    <LucideIcon Name="@p.Icon" Size="15" Class="text-muted-foreground" />
+                                </div>
+                                <span class="text-sm flex-1">@p.Name</span>
+                                <span class="text-sm text-muted-foreground">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </ListTemplate>
+                        <GridTemplate Context="p">
+                            <Card Class="h-full">
+                                <CardContent Class="pt-5">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                            <LucideIcon Name="@p.Icon" Size="15" Class="text-muted-foreground" />
+                                        </div>
+                                        <p class="text-sm font-medium">@p.Name</p>
+                                        <span class="text-sm text-muted-foreground">$@p.Price.ToString("F2")</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </GridTemplate>
+                    </DataView>
+                </div>
+                <div>
+                    <p class="text-xs text-muted-foreground mb-2 font-medium">None — drive feedback through your template</p>
+                    <DataView Items="@_products.Take(4)" ItemKey="@(p => p.Id)"
+                              SelectionMode="DataViewSelectionMode.Single"
+                              CheckVariant="DataViewCheckVariant.None"
+                              @bind-SelectedItem="_checkVariantSelected">
+                        <ListTemplate Context="p">
+                            <div class="@($"flex items-center gap-3 py-2.5 px-1 {(p == _checkVariantSelected ? "text-primary font-semibold" : "")}")">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                                    <LucideIcon Name="@p.Icon" Size="15" Class="text-muted-foreground" />
+                                </div>
+                                <span class="text-sm flex-1">@p.Name</span>
+                                <span class="text-sm">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </ListTemplate>
+                        <GridTemplate Context="p">
+                            <Card Class="@($"h-full transition-all {(p == _checkVariantSelected ? "ring-2 ring-primary" : "")}")">
+                                <CardContent Class="pt-5">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                            <LucideIcon Name="@p.Icon" Size="15" Class="text-muted-foreground" />
+                                        </div>
+                                        <p class="@($"text-sm font-medium {(p == _checkVariantSelected ? "text-primary" : "")}")">@p.Name</p>
+                                        <span class="text-sm text-muted-foreground">$@p.Price.ToString("F2")</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </GridTemplate>
+                    </DataView>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Grouping" Description="Pass GroupBy to visually bucket items by a field. GroupHeaderTemplate customises the header; falls back to the key's ToString().">
+        <DemoBlock Code="@DataViewDemoCode.Grouping">
+            <DataView Items="@_products" ItemKey="@(p => p.Id)"
+                      GroupBy="@(p => p.Category)"
+                      Layout="DataViewLayout.List">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
+                </Fields>
+                <GroupHeaderTemplate Context="key">
+                    <span class="flex items-center gap-1.5">
+                        <LucideIcon Name="folder" Size="13" />
+                        @key
+                    </span>
+                </GroupHeaderTemplate>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-3 py-2.5 px-1">
+                        <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                            <LucideIcon Name="@p.Icon" Size="15" Class="text-muted-foreground" />
+                        </div>
+                        <span class="text-sm flex-1">@p.Name</span>
+                        <Badge Variant="@(p.InStock ? BadgeVariant.Default : BadgeVariant.Outline)" Class="text-xs">
+                            @(p.InStock ? "In stock" : "OOS")
+                        </Badge>
+                        <span class="text-sm font-semibold tabular-nums text-muted-foreground">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2 h-full">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <p class="font-medium text-sm">@p.Name</p>
+                                <p class="text-xs text-muted-foreground flex-1">@p.Category</p>
+                                <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Infinite Scroll (Server-Side)"
+                 Description="Use ItemsProvider for virtualized infinite scroll backed by a server or large in-memory dataset. The component renders only visible rows via Virtualize, hiding the pagination bar. Adjust ItemHeight to match your template's actual row height. VirtualizeOverscanCount controls how many extra rows are rendered beyond the visible viewport to reduce blank flicker during fast scrolling.">
+        <DemoBlock Code="@DataViewDemoCode.ServerSide">
+            <DataView TItem="ServerProduct"
+                      ItemsProvider="@LoadServerProducts"
+                      ItemHeight="44"
+                      VirtualizeOverscanCount="10"
+                      Height="350px">
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-3 py-2.5 px-2 h-[44px]">
+                        <LucideIcon Name="package" Size="16" Class="text-muted-foreground shrink-0" />
+                        <span class="text-sm flex-1 truncate">@p.Name</span>
+                        <Badge Variant="BadgeVariant.Secondary">@p.Category</Badge>
+                        <span class="text-sm font-medium tabular-nums">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Virtualize (Client-Side)"
+                 Description="Set Virtualize=true to keep all data in memory but only render visible DOM nodes. Search and sort still run client-side. Useful for large in-memory lists (500–20k items) where you don't want pagination.">
+        <DemoBlock Code="@DataViewDemoCode.VirtualizeClient">
+            <DataView Items="@_bigList" Virtualize="true" ItemHeight="44" Height="350px">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable Sortable />
+                    <DataViewColumn TItem="ProductRow" Header="Category" Property="@(p => p.Category)" Filterable />
+                </Fields>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-3 py-2.5 px-2 h-[44px]">
+                        <LucideIcon Name="package" Size="16" Class="text-muted-foreground shrink-0" />
+                        <span class="text-sm flex-1 truncate">@p.Name</span>
+                        <Badge Variant="BadgeVariant.Secondary">@p.Category</Badge>
+                        <span class="text-sm font-medium tabular-nums">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Search &amp; Sort" Description="Declare multiple DataViewColumn entries. Filterable columns feed the search input; Sortable ones populate the sort dropdown.">
+        <DemoBlock Code="@DataViewDemoCode.SearchSort">
+            <DataView Items="@_products" PageSize="10" PageSizes="@(new[]{ 5, 10, 25 })" ItemKey="@(p => p.Id)">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name"     Property="@(p => p.Name)"     Filterable="true" Sortable="true" />
+                    <DataViewColumn TItem="ProductRow" Header="Category" Property="@(p => p.Category)" Filterable="true" Sortable="true" />
+                    <DataViewColumn TItem="ProductRow" Header="Price"    Property="@(p => p.Price)"    Sortable="true" />
+                </Fields>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-4 py-3 px-1">
+                        <div class="h-9 w-9 rounded-md bg-muted flex items-center justify-center shrink-0">
+                            <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">@p.Name</p>
+                            <p class="text-xs text-muted-foreground">@p.Category</p>
+                        </div>
+                        <Badge Variant="@(p.InStock ? BadgeVariant.Default : BadgeVariant.Outline)" Class="text-xs">
+                            @(p.InStock ? "In stock" : "OOS")
+                        </Badge>
+                        <span class="text-sm font-semibold tabular-nums">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2 h-full">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <p class="font-medium text-sm">@p.Name</p>
+                                <p class="text-xs text-muted-foreground flex-1">@p.Category</p>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                                    <Badge Variant="@(p.InStock ? BadgeVariant.Default : BadgeVariant.Outline)" Class="text-xs">
+                                        @(p.InStock ? "In stock" : "OOS")
+                                    </Badge>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Toolbar with Custom Actions" Description="ToolbarActions renders on the right of the toolbar — after search/sort, before the layout toggle. Ideal for Export and Add buttons.">
+        <DemoBlock Code="@DataViewDemoCode.ToolbarActions">
+            <DataView Items="@_products" PageSize="6" ItemKey="@(p => p.Id)">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" />
+                </Fields>
+                <ToolbarActions>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="h-8 gap-1.5">
+                        <LucideIcon Name="download" Size="14" />
+                        Export
+                    </Button>
+                    <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" Class="h-8 gap-1.5">
+                        <LucideIcon Name="plus" Size="14" />
+                        Add
+                    </Button>
+                </ToolbarActions>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-4 py-3 px-1">
+                        <div class="h-9 w-9 rounded-md bg-muted flex items-center justify-center shrink-0">
+                            <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">@p.Name</p>
+                            <p class="text-xs text-muted-foreground">@p.Category</p>
+                        </div>
+                        <span class="text-sm font-semibold tabular-nums">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2">
+                                <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                <p class="font-medium text-sm">@p.Name</p>
+                                <p class="text-xs text-muted-foreground">@p.Category</p>
+                                <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Pagination" Description="Set PageSize to enable paging. PageSizes controls the available options in the size selector.">
+        <DemoBlock Code="@DataViewDemoCode.HeaderPagination">
+            <DataView Items="@_products" PageSize="4" PageSizes="@(new[]{ 4, 8, 12 })" ItemKey="@(p => p.Id)">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
+                </Fields>
+                <Header>
+                    <div class="pb-2">
+                        <p class="text-sm font-semibold">Products (@_products.Length total)</p>
+                    </div>
+                </Header>
+                <ListTemplate Context="p">
+                    <div class="flex items-center gap-3 py-2.5 px-1">
+                        <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                        <span class="text-sm flex-1">@p.Name</span>
+                        <span class="text-sm font-medium">$@p.Price.ToString("F2")</span>
+                    </div>
+                </ListTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Loading State" Description="Shown while data is being fetched.">
+        <DemoBlock Code="@DataViewDemoCode.Loading">
+            <DataView Items="@_emptyProducts" Loading="true" LoadingText="Fetching products…" />
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Empty State" Description="Custom content when there are no items.">
+        <DemoBlock Code="@DataViewDemoCode.Empty">
+            <DataView Items="@_emptyProducts">
+                <EmptyTemplate>
+                    <LucideIcon Name="inbox" Size="36" Class="text-muted-foreground mb-2" />
+                    <p class="text-sm font-medium">No products found</p>
+                    <p class="text-xs text-muted-foreground">Try adjusting your filters or adding new items.</p>
+                </EmptyTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+    <DemoSection Title="API Reference" Description="DataView component parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private record ServerProduct(int Id, string Name, string Category, decimal Price);
+
+    private static readonly ServerProduct[] _serverProducts = Enumerable.Range(1, 500)
+        .Select(i => new ServerProduct(i, $"Product {i}",
+            i % 3 == 0 ? "Electronics" : i % 3 == 1 ? "Clothing" : "Home",
+            Math.Round((decimal)(new Random(i).NextDouble() * 200 + 5), 2)))
+        .ToArray();
+
+    private static readonly ProductRow[] _bigList = Enumerable.Range(1, 500)
+        .Select(i => new ProductRow(i, $"Product {i}",
+            i % 3 == 0 ? "Electronics" : i % 3 == 1 ? "Clothing" : "Home",
+            Math.Round((decimal)(new Random(i).NextDouble() * 200 + 5), 2),
+            i % 4 != 0,
+            "package"))
+        .ToArray();
+
+    private async ValueTask<Microsoft.AspNetCore.Components.Web.Virtualization.ItemsProviderResult<ServerProduct>>
+        LoadServerProducts(Microsoft.AspNetCore.Components.Web.Virtualization.ItemsProviderRequest req)
+    {
+        await Task.Delay(150);
+        var items = _serverProducts.Skip(req.StartIndex).Take(req.Count).ToList();
+        return new Microsoft.AspNetCore.Components.Web.Virtualization.ItemsProviderResult<ServerProduct>(
+            items, _serverProducts.Length);
+    }
+
+    private ProductRow?                _singleSelected;
+    private IReadOnlyList<ProductRow>? _multiSelected;
+    private ProductRow?                _checkVariantSelected;
+}

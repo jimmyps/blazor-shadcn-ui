@@ -44,10 +44,20 @@ public enum ChartType
     /// </summary>
     Bubble,
     
-    /// <summary>
-    /// Area chart, a filled line chart.
-    /// </summary>
-    Area
+    /// <summary>Area chart, a filled line chart.</summary>
+    Area,
+    /// <summary>Candlestick (OHLC) chart for financial data.</summary>
+    Candlestick,
+    /// <summary>Heatmap chart for value-intensity grids.</summary>
+    Heatmap,
+    /// <summary>Gauge chart for KPI/progress display.</summary>
+    Gauge,
+    /// <summary>Funnel chart for conversion pipeline visualization.</summary>
+    Funnel,
+    /// <summary>Composite/mixed chart allowing multiple series types.</summary>
+    Composite,
+    /// <summary>Radial bar chart (polar bar chart).</summary>
+    RadialBar
 }
 
 /// <summary>
@@ -79,10 +89,16 @@ public class ChartTypeJsonConverter : JsonConverter<ChartType>
             "donut" => ChartType.Donut,
             "doughnut" => ChartType.Donut, // Chart.js uses "doughnut"
             "radar" => ChartType.Radar,
-            "scatter" => ChartType.Scatter,
-            "bubble" => ChartType.Bubble,
-            "area" => ChartType.Area,
-            _ => ChartType.Line
+            "scatter"      => ChartType.Scatter,
+            "bubble"       => ChartType.Bubble,
+            "area"         => ChartType.Area,
+            "candlestick"  => ChartType.Candlestick,
+            "heatmap"      => ChartType.Heatmap,
+            "gauge"        => ChartType.Gauge,
+            "funnel"       => ChartType.Funnel,
+            "composite"    => ChartType.Composite,
+            "radialbar"    => ChartType.RadialBar,
+            _              => ChartType.Line
         };
     }
 
@@ -102,10 +118,16 @@ public class ChartTypeJsonConverter : JsonConverter<ChartType>
             ChartType.Pie => "pie",
             ChartType.Donut => "doughnut", // Chart.js uses "doughnut"
             ChartType.Radar => "radar",
-            ChartType.Scatter => "scatter",
-            ChartType.Bubble => "bubble",
-            ChartType.Area => "line", // Area is a line chart with fill
-            _ => "line"
+            ChartType.Scatter      => "scatter",
+            ChartType.Bubble       => "bubble",
+            ChartType.Area         => "line",
+            ChartType.Candlestick  => "candlestick",
+            ChartType.Heatmap      => "heatmap",
+            ChartType.Gauge        => "gauge",
+            ChartType.Funnel       => "funnel",
+            ChartType.Composite    => "line",
+            ChartType.RadialBar    => "bar",
+            _                      => "line"
         };
         
         writer.WriteStringValue(stringValue);

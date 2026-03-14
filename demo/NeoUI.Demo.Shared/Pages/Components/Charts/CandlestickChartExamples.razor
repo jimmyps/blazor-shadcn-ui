@@ -1,0 +1,65 @@
+@page "/components/chart/candlestick"
+@using NeoUI.Blazor.Charts
+
+<PageTitle>Candlestick Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Candlestick Chart"
+        Description="OHLC (Open / High / Low / Close) candlestick charts for financial and time-series data. Rising candles are green, falling are red by convention." />
+
+    <DemoSection Title="Basic" Description="A simple OHLC chart with rising/falling colours.">
+        <DemoBlock Code="@CandlestickChartExamples.BasicCode">
+            <ChartContainer Height="280" Class="w-full">
+                <CandlestickChart Data="@_ohlcData">
+                    <Grid Vertical="false" Stroke="var(--border)" />
+                    <XAxis DataKey="date" TickLine="false" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" />
+                    </XAxis>
+                    <YAxis Scale="AxisScale.Value" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" />
+                    </YAxis>
+                    <ChartTooltip />
+                    <Candlestick OpenKey="open" HighKey="high" LowKey="low" CloseKey="close"
+                                 RisingColor="var(--chart-2)" FallingColor="var(--chart-5)" />
+                </CandlestickChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="CandlestickChart and Candlestick series parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageSubNav ParentSlug="chart" />
+</div>
+
+@code {
+    private record OhlcPoint(string date, double open, double high, double low, double close, long volume);
+
+    private static readonly OhlcPoint[] _ohlcData =
+    [
+        new("Jan 2",  148.50, 152.30, 147.20, 150.80, 8_200_000),
+        new("Jan 3",  150.80, 155.60, 150.10, 154.20, 9_100_000),
+        new("Jan 4",  154.20, 156.00, 151.40, 152.70, 7_500_000),
+        new("Jan 5",  152.70, 153.90, 149.80, 151.30, 6_800_000),
+        new("Jan 8",  151.30, 158.40, 150.90, 157.60, 11_200_000),
+        new("Jan 9",  157.60, 160.20, 155.80, 158.90, 10_400_000),
+        new("Jan 10", 158.90, 159.50, 153.20, 154.10, 8_900_000),
+        new("Jan 11", 154.10, 156.80, 152.60, 155.40, 7_200_000),
+        new("Jan 12", 155.40, 162.30, 155.10, 161.80, 13_500_000),
+        new("Jan 15", 161.80, 164.50, 160.20, 162.30, 12_100_000),
+    ];
+
+    private static readonly IReadOnlyList<DemoPropRow> _props =
+    [
+        new("OpenKey",       "string",  "required", "Property name for the open price."),
+        new("HighKey",       "string",  "required", "Property name for the high price."),
+        new("LowKey",        "string",  "required", "Property name for the low price."),
+        new("CloseKey",      "string",  "required", "Property name for the close price."),
+        new("RisingColor",   "string?", "null",     "Color when close > open (default green CSS variable)."),
+        new("FallingColor",  "string?", "null",     "Color when close ≤ open (default red CSS variable)."),
+        new("BarWidth",      "string?", "null",     "Candle body width as a percentage or pixel string."),
+    ];
+}

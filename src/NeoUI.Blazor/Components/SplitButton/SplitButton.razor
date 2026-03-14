@@ -1,0 +1,35 @@
+@namespace NeoUI.Blazor
+
+<div class="@CssClass" role="group" @attributes="AdditionalAttributes">
+    <Button Variant="@Variant"
+            Size="@Size"
+            Disabled="@Disabled"
+            OnClick="@OnClick"
+            Icon="@Icon"
+            IconPosition="@IconPosition"
+            Class="@ClassNames.cn(PrimaryButtonClass, OpenActiveClass)"
+            AriaLabel="@AriaLabel">
+        @ChildContent
+    </Button>
+    <DropdownMenu @bind-Open="_isOpen">
+        <DropdownMenuTrigger AsChild="true">
+            <Button Variant="@Variant"
+                    Size="@DropdownButtonSize"
+                    Disabled="@Disabled"
+                    Class="@ClassNames.cn(DropdownButtonClass, OpenActiveClass)"
+                    AriaLabel="@(DropdownAriaLabel ?? "More options")">
+                @ChevronIcon
+            </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent Align="PopoverAlign.End">
+            @DropdownContent
+        </DropdownMenuContent>
+    </DropdownMenu>
+</div>
+
+@code {
+    private static RenderFragment ChevronIcon => __builder =>
+    {
+        <LucideIcon Name="chevron-down" Size="16" />
+    };
+}

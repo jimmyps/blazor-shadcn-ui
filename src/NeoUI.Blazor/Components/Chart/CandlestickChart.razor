@@ -1,0 +1,114 @@
+@namespace NeoUI.Blazor.Charts
+@typeparam TData
+@inherits ChartBase<TData>
+@implements ICandlestickSeriesParent
+
+<CascadingValue Value="this" IsFixed="true">
+    <div class="chart-candlestick-container" style="width: 100%; height: 100%; position: relative;">
+        <div @ref="_canvasRef" style="width: 100%; height: 100%;"></div>
+    </div>
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private readonly List<Candlestick> _candles = new();
+
+    protected override EChartsOption BuildEChartsOption()
+    {
+        return new EChartsOption
+        {
+            Grid      = BuildGrid(),
+            Legend    = _legend  is not null ? BuildLegend()  : null,
+            Tooltip   = _tooltip is not null ? BuildTooltip() : null,
+            XAxis     = BuildXAxis(),
+            YAxis     = BuildYAxis(),
+            Series    = BuildSeries(),
+            Animation = EnableAnimation,
+            AnimationDuration       = EnableAnimation ? AnimationDuration : 0,
+            AnimationEasing         = MapAnimationEasing(AnimationEasing),
+            AnimationDelay          = AnimationDelay,
+            AnimationDurationUpdate = AnimationDurationUpdate,
+            AnimationEasingUpdate   = MapAnimationEasing(AnimationEasingUpdate)
+        };
+    }
+
+    private EChartsAxis BuildXAxis()
+    {
+        var xAxis = _xAxis ?? new XAxis();
+        var axis  = BuildAxis(xAxis, null, true);
+        if (_xAxis is null)
+        {
+            axis.AxisLine  = new EChartsAxisLine  { Show = false };
+            axis.AxisTick  = new EChartsAxisTick  { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+        if (!string.IsNullOrEmpty(xAxis.DataKey))
+            axis.Data = DataExtractor.GetStringValues(Data, xAxis.DataKey);
+        return axis;
+    }
+
+    private EChartsAxis BuildYAxis()
+    {
+        var yAxis = _yAxis ?? new YAxis();
+        var axis  = BuildAxis(null, yAxis, false);
+        if (_yAxis is null)
+        {
+            axis.AxisLine  = new EChartsAxisLine  { Show = false };
+            axis.AxisTick  = new EChartsAxisTick  { Show = false };
+            axis.AxisLabel = new EChartsAxisLabel { Show = false };
+        }
+        return axis;
+    }
+
+    private List<EChartsSeries> BuildSeries()
+    {
+        var list = new List<EChartsSeries>();
+        foreach (var candle in _candles)
+        {
+            var series = new EChartsSeries
+            {
+                Type     = "candlestick",
+                Name     = candle.Name,
+                BarWidth = candle.BarWidth,
+                ItemStyle = new EChartsItemStyle
+                {
+                    Color        = candle.RisingColor,
+                    Color0       = candle.FallingColor,
+                    BorderColor  = candle.RisingColor,
+                    BorderColor0 = candle.FallingColor
+                },
+                Emphasis = new EChartsEmphasis { Disabled = true }
+            };
+
+            if (!string.IsNullOrEmpty(candle.OpenKey)  &&
+                !string.IsNullOrEmpty(candle.CloseKey) &&
+                !string.IsNullOrEmpty(candle.HighKey)  &&
+                !string.IsNullOrEmpty(candle.LowKey))
+            {
+                var opens  = DataExtractor.GetValues(Data, candle.OpenKey);
+                var closes = DataExtractor.GetValues(Data, candle.CloseKey);
+                var highs  = DataExtractor.GetValues(Data, candle.HighKey);
+                var lows   = DataExtractor.GetValues(Data, candle.LowKey);
+                var count  = Math.Min(Math.Min(opens.Count, closes.Count), Math.Min(highs.Count, lows.Count));
+
+                var data = new List<object?>(count);
+                for (var i = 0; i < count; i++)
+                    data.Add(new object?[] { opens[i], closes[i], lows[i], highs[i] });
+                series.Data = data;
+            }
+
+            list.Add(series);
+        }
+        return list;
+    }
+
+    protected override ChartType GetChartType() => ChartType.Candlestick;
+    protected override TooltipMode GetDefaultTooltipMode() => TooltipMode.Axis;
+
+    public void RegisterCandlestick(Candlestick c) { _candles.Add(c); StateHasChanged(); }
+    public void RegisterGrid(Grid g)                { _grid    = g;   StateHasChanged(); }
+    public void RegisterXAxis(XAxis x)              { _xAxis   = x;   StateHasChanged(); }
+    public void RegisterYAxis(YAxis y)              { _yAxis   = y;   StateHasChanged(); }
+    public void RegisterChartTooltip(ChartTooltip t){ _tooltip = t;   StateHasChanged(); }
+    public void RegisterLegend(Legend l)            { _legend  = l;   StateHasChanged(); }
+}

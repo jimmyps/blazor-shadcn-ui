@@ -1,0 +1,110 @@
+@page "/components/chart/gauge"
+@using NeoUI.Blazor.Charts
+
+<PageTitle>Gauge Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Gauge Chart"
+        Description="Circular gauge and speedometer charts for KPIs, progress, and metric display. Each Gauge series renders as an independent arc." />
+
+    <DemoSection Title="Single KPI Gauge" Description="Classic semi-circle gauge for a single metric.">
+        <DemoBlock Code="@GaugeChartExamples.SingleCode">
+            <ChartContainer Height="260" Class="w-full">
+                <GaugeChart Data="@_kpiData">
+                    <ChartTooltip />
+                    <Gauge DataKey="value" Name="Performance" Min="0" Max="100"
+                           StartAngle="225" EndAngle="-45" />
+                </GaugeChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Multiple Gauges" Description="Compare several metrics side-by-side in one chart.">
+        <DemoBlock Code="@GaugeChartExamples.MultipleCode">
+            <ChartContainer Height="320" Class="w-full">
+                <GaugeChart Data="@_serverMetrics">
+                    <ChartTooltip />
+                    <Gauge DataKey="cpu"    Name="CPU"    Fill="var(--chart-1)" Min="0" Max="100" />
+                    <Gauge DataKey="memory" Name="Memory" Fill="var(--chart-2)" Min="0" Max="100" />
+                    <Gauge DataKey="disk"   Name="Disk"   Fill="var(--chart-3)" Min="0" Max="100" />
+                </GaugeChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Progress Ring" Description="Full-circle gauge styled as a clean progress ring.">
+        <DemoBlock Code="@GaugeChartExamples.ProgressCode">
+            <div class="flex gap-10 justify-center flex-wrap py-4">
+                @foreach (var task in _tasks)
+                {
+                    <div class="flex flex-col items-center gap-3">
+                        <ChartContainer Height="200" Class="w-[200px]">
+                            <GaugeChart Data="@(new[] { task })">
+                                <Gauge DataKey="progress" Name="@task.label"
+                                       Fill="@task.color"
+                                       StartAngle="90" EndAngle="-270"
+                                       Min="0" Max="100"
+                                       SplitNumber="0"
+                                       ShowPointer="false"
+                                       ShowSplitLine="false"
+                                       ShowAxisLabel="false"
+                                       ShowTitle="false"
+                                       ProgressWidth="14"
+                                       AxisLineWidth="14"
+                                       DetailFontSize="28"
+                                       DetailOffsetY="0%" />
+                            </GaugeChart>
+                        </ChartContainer>
+                        <p class="text-sm font-medium text-center">@task.label</p>
+                        <p class="text-xs text-muted-foreground text-center">@task.progress%</p>
+                    </div>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="GaugeChart and Gauge series parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageSubNav ParentSlug="chart" />
+</div>
+
+@code {
+    private record KpiPoint(double value);
+    private static readonly KpiPoint[] _kpiData = [new(72.5)];
+
+    private record ServerMetrics(double cpu, double memory, double disk);
+    private static readonly ServerMetrics[] _serverMetrics = [new(68, 45, 82)];
+
+    private record TaskProgress(string label, double progress, string color);
+    private static readonly TaskProgress[] _tasks =
+    [
+        new("Design",   88, "var(--chart-1)"),
+        new("Dev",      61, "var(--chart-2)"),
+        new("QA",       34, "var(--chart-4)"),
+    ];
+
+    private static readonly IReadOnlyList<DemoPropRow> _props =
+    [
+        new("DataKey",       "string",  "required", "Property containing the gauge value."),
+        new("Name",          "string?", "null",     "Label shown in tooltip and legend."),
+        new("Min",           "double",  "0",        "Minimum gauge value."),
+        new("Max",           "double",  "100",      "Maximum gauge value."),
+        new("StartAngle",    "int",     "225",      "Starting angle in degrees (clockwise from 3 o'clock)."),
+        new("EndAngle",      "int",     "-45",      "Ending angle in degrees."),
+        new("Fill",          "string?", "null",     "Arc fill color."),
+        new("ShowPointer",   "bool",    "true",     "Show the needle/pointer."),
+        new("ShowSplitLine", "bool",    "true",     "Show major tick marks on the scale ring."),
+        new("ShowAxisLabel", "bool",    "true",     "Show numeric labels on the scale ring."),
+        new("ShowTitle",     "bool",    "true",     "Show the series name label below the gauge."),
+        new("ShowProgress",  "bool",    "true",     "Show the colored progress arc."),
+        new("ProgressWidth", "int",     "10",       "Thickness of the progress arc in pixels."),
+        new("AxisLineWidth", "int",     "10",       "Thickness of the background track ring in pixels."),
+        new("DetailFontSize","int",     "24",       "Font size of the center value label."),
+        new("DetailOffsetY", "string",  "\"70%\"",  "Vertical offset of the center value label. Use \"0%\" for progress rings."),
+        new("SplitNumber",   "int",     "10",       "Number of segments on the scale. Set to 0 for progress rings."),
+    ];
+}

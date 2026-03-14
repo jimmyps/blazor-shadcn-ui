@@ -1,0 +1,551 @@
+@page "/components/timeline"
+
+<PageTitle>Timeline - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Timeline"
+        Description="Displays a sequence of events in chronological order. Supports three statuses, custom icon content, connector styles, collapsible items, and alternating alignment." />
+
+    <DemoSection Title="Basic" Description="Shorthand Title/Time/Description parameters — no child slots needed. Status drives the circle colour automatically.">
+        <DemoBlock Code="@TimelineDemoCode.Basic">
+            <Timeline Size="TimelineSize.Small">
+                <TimelineItem Title="Repository created"  Time="Jan 2, 2024"  Status="TimelineStatus.Completed"
+                              Description="Initialised with README, licence, and CI workflow." />
+                <TimelineItem Title="First pull request"  Time="Jan 9, 2024"  Status="TimelineStatus.Completed"
+                              Description="Core authentication module merged after review." />
+                <TimelineItem Title="Beta deployment"     Time="Feb 14, 2024" Status="TimelineStatus.InProgress"
+                              Description="Staging environment live — gathering early feedback." />
+                <TimelineItem Title="Public launch"       Time="Planned"      Status="TimelineStatus.Pending"
+                              Description="Target: end of Q1." ShowConnector="false" />
+            </Timeline>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="With Custom Icons" Description="Pass any content into TimelineIcon via the IconContent slot. TimelineContent goes in ChildContent.">
+        <DemoBlock Code="@TimelineDemoCode.CustomIcons">
+            <Timeline>
+                <TimelineItem Status="TimelineStatus.Completed">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Primary">
+                            <LucideIcon Name="rocket" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>v1.0 released</TimelineTitle>
+                                <TimelineTime>Mar 1</TimelineTime>
+                            </TimelineHeader>
+                            <TimelineDescription>Initial public release shipped to production.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Completed">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Secondary">
+                            <LucideIcon Name="users" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>Team doubled</TimelineTitle>
+                                <TimelineTime>Mar 15</TimelineTime>
+                            </TimelineHeader>
+                            <TimelineDescription>Four new engineers and a designer joined the squad.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.InProgress">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Accent">
+                            <LucideIcon Name="chart-line" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>50 k users</TimelineTitle>
+                                <TimelineTime>Apr 22</TimelineTime>
+                            </TimelineHeader>
+                            <TimelineDescription>Monthly active users crossing the 50 000 mark.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Muted">
+                            <LucideIcon Name="star" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>Series A</TimelineTitle>
+                                <TimelineTime>Q3</TimelineTime>
+                            </TimelineHeader>
+                            <TimelineDescription>Fundraising round targeting $8 M.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+            </Timeline>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Alignment" Description="Left and Right position the icon relative to the content. ShowConnector=false on the last item removes the trailing connector line.">
+        <DemoBlock Code="@TimelineDemoCode.Alignment">
+            <div class="grid gap-8 md:grid-cols-2">
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Left</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="pencil-ruler" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Design</TimelineTitle><TimelineDescription>Wireframes approved.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="code" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Development</TimelineTitle><TimelineDescription>Core features built.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.InProgress">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="flask-conical" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>QA</TimelineTitle><TimelineDescription>Testing in progress.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                            <IconContent><TimelineIcon Color="TimelineColor.Muted"><LucideIcon Name="rocket" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Launch</TimelineTitle><TimelineDescription>Scheduled for next sprint.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Right</p>
+                    <Timeline Align="TimelineAlign.Right">
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="pencil-ruler" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Design</TimelineTitle><TimelineDescription>Wireframes approved.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="code" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Development</TimelineTitle><TimelineDescription>Core features built.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.InProgress">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="flask-conical" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>QA</TimelineTitle><TimelineDescription>Testing in progress.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                            <IconContent><TimelineIcon Color="TimelineColor.Muted"><LucideIcon Name="rocket" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Launch</TimelineTitle><TimelineDescription>Scheduled for next sprint.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                    </Timeline>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Alternating Layout" Description="TimelineAlign.Alternate distributes even items to the left and odd items to the right, making long histories easier to scan.">
+        <DemoBlock Code="@TimelineDemoCode.Alternate">
+            <Timeline Align="TimelineAlign.Alternate">
+                <TimelineItem Status="TimelineStatus.Completed">
+                    <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="flag" Size="16" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Project kick-off</TimelineTitle><TimelineTime>Week 1</TimelineTime></TimelineHeader>
+                            <TimelineDescription>Team onboarded and milestones agreed.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Completed">
+                    <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="code" Size="16" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Development sprint</TimelineTitle><TimelineTime>Weeks 2–5</TimelineTime></TimelineHeader>
+                            <TimelineDescription>Core features implemented and tested.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.InProgress">
+                    <IconContent><TimelineIcon Color="TimelineColor.Accent"><LucideIcon Name="bug" Size="16" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Bug bash</TimelineTitle><TimelineTime>Week 6</TimelineTime></TimelineHeader>
+                            <TimelineDescription>24 issues in the queue.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                    <IconContent><TimelineIcon Color="TimelineColor.Muted"><LucideIcon Name="package-check" Size="16" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Release</TimelineTitle><TimelineTime>Week 7</TimelineTime></TimelineHeader>
+                            <TimelineDescription>Planned ship date.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+            </Timeline>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Icon Variants" Description="Solid (default) fills the circle. Outline shows a hollow ring with coloured border — useful for differentiating event types.">
+        <DemoBlock Code="@TimelineDemoCode.IconVariants">
+            <div class="grid gap-8 md:grid-cols-2">
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Solid</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"   Variant="TimelineIconVariant.Solid"><LucideIcon Name="check"     Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Deployed</TimelineTitle><TimelineDescription>Production deploy succeeded.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Secondary" Variant="TimelineIconVariant.Solid"><LucideIcon Name="git-merge" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Merged</TimelineTitle><TimelineDescription>Feature branch merged to main.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                            <IconContent><TimelineIcon Color="TimelineColor.Muted"     Variant="TimelineIconVariant.Solid"><LucideIcon Name="clock"     Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Scheduled</TimelineTitle><TimelineDescription>Next maintenance window.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Outline</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"   Variant="TimelineIconVariant.Outline"><LucideIcon Name="check"     Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Deployed</TimelineTitle><TimelineDescription>Production deploy succeeded.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Secondary" Variant="TimelineIconVariant.Outline"><LucideIcon Name="git-merge" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Merged</TimelineTitle><TimelineDescription>Feature branch merged to main.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                            <IconContent><TimelineIcon Color="TimelineColor.Muted"     Variant="TimelineIconVariant.Outline"><LucideIcon Name="clock"     Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Scheduled</TimelineTitle><TimelineDescription>Next maintenance window.</TimelineDescription></TimelineContent></ChildContent>
+                        </TimelineItem>
+                    </Timeline>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Sizes" Description="Size controls the icon diameter and the gap between items. Small is compact; Large gives more breathing room.">
+        <DemoBlock Code="@TimelineDemoCode.Sizes">
+            <div class="grid gap-8 md:grid-cols-3">
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Small</p>
+                    <Timeline Size="TimelineSize.Small" Align="TimelineAlign.Left">
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Primary"><LucideIcon Name="package" Size="12" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Shipped</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Primary"><LucideIcon Name="truck"   Size="12" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>In transit</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                            <IconContent><TimelineIcon Size="TimelineSize.Small" Color="TimelineColor.Muted"><LucideIcon Name="map-pin" Size="12" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Delivered</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Medium (default)</p>
+                    <Timeline Size="TimelineSize.Medium" Align="TimelineAlign.Left">
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="package" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Shipped</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="truck"   Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>In transit</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                            <IconContent><TimelineIcon Color="TimelineColor.Muted"><LucideIcon Name="map-pin" Size="14" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Delivered</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Large</p>
+                    <Timeline Size="TimelineSize.Large" Align="TimelineAlign.Left">
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Size="TimelineSize.Large" Color="TimelineColor.Primary"><LucideIcon Name="package" Size="18" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Shipped</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Completed">
+                            <IconContent><TimelineIcon Size="TimelineSize.Large" Color="TimelineColor.Primary"><LucideIcon Name="truck"   Size="18" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>In transit</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                        <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                            <IconContent><TimelineIcon Size="TimelineSize.Large" Color="TimelineColor.Muted"><LucideIcon Name="map-pin" Size="18" /></TimelineIcon></IconContent>
+                            <ChildContent><TimelineContent><TimelineTitle>Delivered</TimelineTitle></TimelineContent></ChildContent>
+                        </TimelineItem>
+                    </Timeline>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Connector Styles" Description="Override the connector below each item with ConnectorStyle. Dashed and Dotted are useful for optional or uncertain steps.">
+        <DemoBlock Code="@TimelineDemoCode.ConnectorStyles">
+            <div class="grid gap-8 md:grid-cols-3">
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Solid (default)</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Title="Booked"    Status="TimelineStatus.Completed"  ConnectorStyle="TimelineConnectorStyle.Solid" />
+                        <TimelineItem Title="Confirmed" Status="TimelineStatus.Completed"  ConnectorStyle="TimelineConnectorStyle.Solid" />
+                        <TimelineItem Title="Pending"   Status="TimelineStatus.Pending"    ConnectorStyle="TimelineConnectorStyle.Solid" ShowConnector="false" />
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Dashed</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Title="Booked"    Status="TimelineStatus.Completed"  ConnectorStyle="TimelineConnectorStyle.Dashed" />
+                        <TimelineItem Title="Confirmed" Status="TimelineStatus.Completed"  ConnectorStyle="TimelineConnectorStyle.Dashed" />
+                        <TimelineItem Title="Pending"   Status="TimelineStatus.Pending"    ConnectorStyle="TimelineConnectorStyle.Dashed" ShowConnector="false" />
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Dotted</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Title="Booked"    Status="TimelineStatus.Completed"  ConnectorStyle="TimelineConnectorStyle.Dotted" />
+                        <TimelineItem Title="Confirmed" Status="TimelineStatus.Completed"  ConnectorStyle="TimelineConnectorStyle.Dotted" />
+                        <TimelineItem Title="Pending"   Status="TimelineStatus.Pending"    ConnectorStyle="TimelineConnectorStyle.Dotted" ShowConnector="false" />
+                    </Timeline>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Connector Spacing" Description="Pass ConnectorClass to override the connector height per item. Useful for giving taller card content more breathing room.">
+        <DemoBlock Code="@TimelineDemoCode.ConnectorSpacing">
+            <div class="grid gap-8 md:grid-cols-3">
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">Default</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Title="Event A" Status="TimelineStatus.Completed" />
+                        <TimelineItem Title="Event B" Status="TimelineStatus.Completed" />
+                        <TimelineItem Title="Event C" Status="TimelineStatus.Pending"   ShowConnector="false" />
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">min-h-12</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Title="Event A" Status="TimelineStatus.Completed" ConnectorClass="min-h-12" />
+                        <TimelineItem Title="Event B" Status="TimelineStatus.Completed" ConnectorClass="min-h-12" />
+                        <TimelineItem Title="Event C" Status="TimelineStatus.Pending"   ShowConnector="false" />
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-3">min-h-20</p>
+                    <Timeline Align="TimelineAlign.Left">
+                        <TimelineItem Title="Event A" Status="TimelineStatus.Completed" ConnectorClass="min-h-20" />
+                        <TimelineItem Title="Event B" Status="TimelineStatus.Completed" ConnectorClass="min-h-20" />
+                        <TimelineItem Title="Event C" Status="TimelineStatus.Pending"   ShowConnector="false" />
+                    </Timeline>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Collapsible Items" Description="IsCollapsible wraps the item in a Collapsible component. ChildContent is the always-visible trigger; DetailContent is the expandable body.">
+        <DemoBlock Code="@TimelineDemoCode.Collapsible">
+            <Timeline>
+                <TimelineItem Status="TimelineStatus.Completed" IsCollapsible="true" DefaultOpen="false">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Primary">
+                            <LucideIcon Name="git-commit-horizontal" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>feat(auth): add OAuth2 provider — abc1234</TimelineTitle>
+                                <TimelineTime>2 days ago</TimelineTime>
+                            </TimelineHeader>
+                        </TimelineContent>
+                    </ChildContent>
+                    <DetailContent>
+                        <TimelineContent Class="mt-1">
+                            <TimelineDescription>Added Google and GitHub OAuth2 sign-in with PKCE flow and refresh-token rotation.</TimelineDescription>
+                        </TimelineContent>
+                    </DetailContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Completed" IsCollapsible="true" DefaultOpen="false">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Primary">
+                            <LucideIcon Name="git-commit-horizontal" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>fix(cache): resolve stale-data race — def5678</TimelineTitle>
+                                <TimelineTime>3 days ago</TimelineTime>
+                            </TimelineHeader>
+                        </TimelineContent>
+                    </ChildContent>
+                    <DetailContent>
+                        <TimelineContent Class="mt-1">
+                            <TimelineDescription>Added distributed lock around cache revalidation; regression tests included.</TimelineDescription>
+                        </TimelineContent>
+                    </DetailContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.InProgress" IsCollapsible="true" ShowConnector="false">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Accent">
+                            <LucideIcon Name="git-branch" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>Branch feature/settings-v2 open</TimelineTitle>
+                                <TimelineTime>Today</TimelineTime>
+                            </TimelineHeader>
+                        </TimelineContent>
+                    </ChildContent>
+                    <DetailContent>
+                        <TimelineContent Class="mt-1">
+                            <TimelineDescription>Tracks Epic #57 — redesigned settings panel with per-workspace overrides.</TimelineDescription>
+                        </TimelineContent>
+                    </DetailContent>
+                </TimelineItem>
+            </Timeline>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Connected Fit" Description="ConnectorFit.Connected removes the ring gap so the line runs flush against the icon — ideal for compact process flows.">
+        <DemoBlock Code="@TimelineDemoCode.ConnectedFit">
+            <Timeline ConnectorFit="TimelineConnectorFit.Connected" Align="TimelineAlign.Left">
+                <TimelineItem Status="TimelineStatus.Completed">
+                    <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="shopping-cart" Size="14" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Order placed</TimelineTitle><TimelineTime>09:00</TimelineTime></TimelineHeader>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Completed">
+                    <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="credit-card" Size="14" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Payment confirmed</TimelineTitle><TimelineTime>09:01</TimelineTime></TimelineHeader>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.InProgress">
+                    <IconContent><TimelineIcon Color="TimelineColor.Primary"><LucideIcon Name="package" Size="14" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Preparing order</TimelineTitle><TimelineTime>10:30</TimelineTime></TimelineHeader>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Pending" ShowConnector="false">
+                    <IconContent><TimelineIcon Color="TimelineColor.Muted"><LucideIcon Name="truck" Size="14" /></TimelineIcon></IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader><TimelineTitle>Dispatched</TimelineTitle><TimelineTime>—</TimelineTime></TimelineHeader>
+                        </TimelineContent>
+                    </ChildContent>
+                </TimelineItem>
+            </Timeline>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Large Collapsible Content" Description="Use DetailContent for rich expandable sections — perfect for changelogs or release notes.">
+        <DemoBlock Code="@TimelineDemoCode.CollapsibleDetail">
+            <Timeline Align="TimelineAlign.Left">
+                <TimelineItem Status="TimelineStatus.Completed" IsCollapsible="true">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Primary">
+                            <LucideIcon Name="tag" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>v2.4.0 — Component library refresh</TimelineTitle>
+                                <TimelineTime>May 10, 2024</TimelineTime>
+                            </TimelineHeader>
+                            <TimelineDescription Class="text-left">Major visual overhaul across 18 components.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                    <DetailContent>
+                        <TimelineContent Class="mt-2 border rounded-md p-4 text-sm space-y-2 bg-muted/30">
+                            <p class="font-semibold">What's new</p>
+                            <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                                <li>DataView component with virtualisation and selection</li>
+                                <li>SplitButton with accessible keyboard handling</li>
+                                <li>Timeline collapsible detail slot</li>
+                                <li>Dark-mode contrast improvements across all badges</li>
+                            </ul>
+                            <p class="font-semibold pt-1">Breaking changes</p>
+                            <ul class="list-disc list-inside space-y-1 text-muted-foreground">
+                                <li>ButtonGroup: removed deprecated <code>Orientation</code> alias — use <code>Direction</code></li>
+                            </ul>
+                        </TimelineContent>
+                    </DetailContent>
+                </TimelineItem>
+                <TimelineItem Status="TimelineStatus.Completed" IsCollapsible="true" DefaultOpen="false" ShowConnector="false">
+                    <IconContent>
+                        <TimelineIcon Color="TimelineColor.Secondary">
+                            <LucideIcon Name="tag" Size="16" />
+                        </TimelineIcon>
+                    </IconContent>
+                    <ChildContent>
+                        <TimelineContent>
+                            <TimelineHeader>
+                                <TimelineTitle>v2.3.1 — Patch</TimelineTitle>
+                                <TimelineTime>Apr 28, 2024</TimelineTime>
+                            </TimelineHeader>
+                            <TimelineDescription Class="text-left">Three bug fixes and a dependency bump.</TimelineDescription>
+                        </TimelineContent>
+                    </ChildContent>
+                    <DetailContent>
+                        <TimelineContent Class="mt-2 border rounded-md p-4 text-sm space-y-1 bg-muted/30">
+                            <ul class="list-disc list-inside text-muted-foreground space-y-1">
+                                <li>Fixed Select dropdown clipping inside overflow-hidden containers</li>
+                                <li>Corrected Tab keyboard trap in Dialog on mobile Safari</li>
+                                <li>Upgraded Tailwind to 4.1</li>
+                            </ul>
+                        </TimelineContent>
+                    </DetailContent>
+                </TimelineItem>
+            </Timeline>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Empty State" Description="Use TimelineEmpty when there are no items to show. Accepts optional custom content.">
+        <DemoBlock Code="@TimelineDemoCode.EmptyState">
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs text-muted-foreground mb-2">Default message</p>
+                    <Timeline>
+                        <TimelineEmpty />
+                    </Timeline>
+                </div>
+                <div>
+                    <p class="text-xs text-muted-foreground mb-2">Custom message</p>
+                    <Timeline>
+                        <TimelineEmpty>
+                            No events yet — check back soon.
+                        </TimelineEmpty>
+                    </Timeline>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Parameters for Timeline and its sub-components.">
+        <DemoPropsTable Rows="@_timelineProps" />
+        <p class="text-sm font-semibold mt-4 mb-2">TimelineItem</p>
+        <DemoPropsTable Rows="@_timelineItemProps" />
+        <p class="text-sm font-semibold mt-4 mb-2">TimelineIcon</p>
+        <DemoPropsTable Rows="@_timelineIconProps" />
+        <p class="text-sm font-semibold mt-4 mb-2">TimelineEmpty</p>
+        <DemoPropsTable Rows="@_timelineEmptyProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>

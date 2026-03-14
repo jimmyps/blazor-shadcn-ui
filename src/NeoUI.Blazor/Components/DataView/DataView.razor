@@ -1,0 +1,414 @@
+@namespace NeoUI.Blazor
+@typeparam TItem where TItem : class
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+
+@* Column registration — DataViewColumn children cascade from this value *@
+<CascadingValue Value="this" TValue="DataView<TItem>" IsFixed="true">
+@if (Fields is not null)
+{
+    <div style="display:none">@Fields</div>
+}
+@if (ChildContent is not null)
+{
+    <div style="display:none">@ChildContent</div>
+}
+
+<div class="@ContainerCssClass" @attributes="AdditionalAttributes">
+
+    @* ── Loading ──────────────────────────────────────────────────────── *@
+    @if (Loading)
+    {
+        <div class="flex items-center justify-center py-12 text-muted-foreground">
+            <div class="flex items-center gap-2">
+                <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <span class="text-sm">@LoadingText</span>
+            </div>
+        </div>
+    }
+
+    @* ── Empty / No-results ───────────────────────────────────────────── *@
+    else if (!IsVirtualized && !HasItems)
+    {
+        <div class="flex flex-col items-center justify-center py-12 text-center gap-2 text-muted-foreground">
+            @if (EmptyTemplate is not null)
+            {
+                @EmptyTemplate
+            }
+            else
+            {
+                <p class="text-sm">@EmptyText</p>
+            }
+        </div>
+    }
+
+    @* ── Content ──────────────────────────────────────────────────────── *@
+    else
+    {
+        @if (Header is not null)
+        {
+            <div class="mb-4">@Header</div>
+        }
+
+        @* ── Toolbar ─────────────────────────────────────────────────── *@
+        @if (ShowToolbarRow)
+        {
+            <div class="flex items-center gap-2 mb-3">
+
+                @* Left: built-in search + sort *@
+                @if (HasSearch)
+                {
+                    <Input Value="@_searchValue"
+                           ValueChanged="@((string v) => { _searchValue = v; HandleSearchInput(new ChangeEventArgs { Value = v }); })"
+                           @oninput="HandleSearchInput"
+                           Placeholder="Search…"
+                           Class="h-8 w-48 text-sm" />
+                }
+
+                @if (HasSort)
+                {
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="h-8 gap-1.5">
+                                <LucideIcon Name="arrow-up-down" Size="14" />
+                                Sort@(string.IsNullOrEmpty(_sortColumnId) ? "" : $": {_columns.FirstOrDefault(c => c.Id == _sortColumnId)?.Header}")
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent Align="PopoverAlign.Start">
+                            @foreach (var col in _columns.Where(c => c.Sortable))
+                            {
+                                var colId = col.Id;
+                                <DropdownMenuItem OnClick="@(() => SetSort(colId))" Class="flex items-center justify-between gap-6">
+                                    @col.Header
+                                    <LucideIcon Name="@GetSortIconName(colId)" Size="14"
+                                                Class="@(_sortColumnId == colId ? "text-primary" : "text-muted-foreground/40")" />
+                                </DropdownMenuItem>
+                            }
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                }
+
+                @* Right: custom actions + layout toggle *@
+                @if (ToolbarActions is not null || CanToggleLayout)
+                {
+                    <div class="ml-auto flex items-center gap-2">
+                        @if (ToolbarActions is not null)
+                        {
+                            @ToolbarActions
+                        }
+                        @if (CanToggleLayout)
+                        {
+                            <div class="flex items-center gap-1 rounded-md border border-border p-1">
+                                <Button Variant="ButtonVariant.Ghost"
+                                        Size="ButtonSize.Icon"
+                                        OnClick="@(() => SetLayout(DataViewLayout.List))"
+                                        Class="@ClassNames.cn("h-7 w-7", _layout == DataViewLayout.List ? "bg-accent text-accent-foreground" : "")"
+                                        AriaLabel="List view">
+                                    <LucideIcon Name="list" Size="16" />
+                                </Button>
+                                <Button Variant="ButtonVariant.Ghost"
+                                        Size="ButtonSize.Icon"
+                                        OnClick="@(() => SetLayout(DataViewLayout.Grid))"
+                                        Class="@ClassNames.cn("h-7 w-7", _layout == DataViewLayout.Grid ? "bg-accent text-accent-foreground" : "")"
+                                        AriaLabel="Grid view">
+                                    <LucideIcon Name="layout-grid" Size="16" />
+                                </Button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        @* ── No-results after filtering ───────────────────────────────── *@
+        @if (!IsVirtualized && !HasFilteredItems)
+        {
+            <div class="flex flex-col items-center justify-center py-10 text-center gap-1 text-muted-foreground">
+                <LucideIcon Name="search-x" Size="28" Class="mb-1" />
+                <p class="text-sm font-medium">No results</p>
+                <p class="text-xs">Try a different search term or clear the filters.</p>
+            </div>
+        }
+        else
+        {
+
+        @* ── Grid ────────────────────────────────────────────────────── *@
+        @if (_layout == DataViewLayout.Grid)
+        {
+            var _selectable = SelectionMode != DataViewSelectionMode.None;
+            @if (GroupBy is not null)
+            {
+                var _groups = PagedItems.Select((item, i) => (item, i)).GroupBy(x => GroupBy(x.item));
+                <div class="space-y-6">
+                @foreach (var group in _groups)
+                {
+                    <div>
+                        <div class="mb-2 px-0.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                            @if (GroupHeaderTemplate is not null)
+                            {
+                                @GroupHeaderTemplate(group.Key)
+                            }
+                            else
+                            {
+                                @group.Key?.ToString()
+                            }
+                        </div>
+                        <div class="@GridCssClass">
+                        @foreach (var (item, idx) in group)
+                        {
+                            @if (_selectable)
+                            {
+                                <div @key="GetItemKey(item)"
+                                     id="@ItemContainerId(idx)"
+                                     role="option"
+                                     aria-selected="@IsSelected(item).ToString().ToLower()"
+                                     class="@GetGridItemClass(item, idx)"
+                                     @onclick="() => HandleItemClick(item, idx)">
+                                    @if (ItemTemplate is not null) { @ItemTemplate(item) }
+                                    else if (GridTemplate is not null) { @GridTemplate(item) }
+                                    @if (CheckVariant != DataViewCheckVariant.None)
+                                    {
+                                        <div class="absolute top-2 right-2 pointer-events-none z-10">
+                                            <LucideIcon Name="@GetCheckIconName" Size="16" Class="@GetCheckClass(item, true)" />
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                @if (ItemTemplate is not null) { <div @key="GetItemKey(item)">@ItemTemplate(item)</div> }
+                                else if (GridTemplate is not null) { <div @key="GetItemKey(item)">@GridTemplate(item)</div> }
+                            }
+                        }
+                        </div>
+                    </div>
+                }
+                </div>
+            }
+            else
+            {
+                <div class="@GridCssClass"
+                     role="@(_selectable ? "listbox" : null)"
+                     tabindex="@(_selectable ? "0" : null)"
+                     aria-multiselectable="@(_selectable && SelectionMode == DataViewSelectionMode.Multiple ? "true" : null)"
+                     aria-activedescendant="@(_selectable ? ActiveDescendantId : null)"
+                     @onkeydown="@(_selectable ? HandleKeyDown : null)"
+                     @onkeydown:preventDefault="@_shouldPreventDefault"
+                     @onfocus="@(_selectable ? HandleContainerFocus : null)"
+                     @onblur="@(_selectable ? HandleContainerBlur : null)">
+                    @for (var i = 0; i < PagedItems.Count; i++)
+                    {
+                        var item = PagedItems[i];
+                        var idx  = i;
+                        @if (_selectable)
+                        {
+                            <div @key="GetItemKey(item)"
+                                 id="@ItemContainerId(idx)"
+                                 role="option"
+                                 aria-selected="@IsSelected(item).ToString().ToLower()"
+                                 class="@GetGridItemClass(item, idx)"
+                                 @onclick="() => HandleItemClick(item, idx)">
+                                @if (ItemTemplate is not null) { @ItemTemplate(item) }
+                                else if (GridTemplate is not null) { @GridTemplate(item) }
+                                @if (CheckVariant != DataViewCheckVariant.None)
+                                {
+                                    <div class="absolute top-2 right-2 pointer-events-none z-10">
+                                        <LucideIcon Name="@GetCheckIconName" Size="16" Class="@GetCheckClass(item, true)" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            @if (ItemTemplate is not null) { <div @key="GetItemKey(item)">@ItemTemplate(item)</div> }
+                            else if (GridTemplate is not null) { <div @key="GetItemKey(item)">@GridTemplate(item)</div> }
+                        }
+                    }
+                </div>
+            }
+        }
+
+        @* ── List ─────────────────────────────────────────────────────── *@
+        else
+        {
+            var _selectable = SelectionMode != DataViewSelectionMode.None;
+            @if (GroupBy is not null)
+            {
+                var _groups = PagedItems.Select((item, i) => (item, i)).GroupBy(x => GroupBy(x.item));
+                <div class="flex flex-col gap-4">
+                @foreach (var group in _groups)
+                {
+                    <div>
+                        <div class="px-1 py-1 mb-1 text-xs font-semibold text-muted-foreground uppercase tracking-wide border-b border-border">
+                            @if (GroupHeaderTemplate is not null)
+                            {
+                                @GroupHeaderTemplate(group.Key)
+                            }
+                            else
+                            {
+                                @group.Key?.ToString()
+                            }
+                        </div>
+                        <div class="flex flex-col divide-y divide-border">
+                        @foreach (var (item, idx) in group)
+                        {
+                            @if (_selectable)
+                            {
+                                <div @key="GetItemKey(item)"
+                                     id="@ItemContainerId(idx)"
+                                     role="option"
+                                     aria-selected="@IsSelected(item).ToString().ToLower()"
+                                     class="@GetListItemClass(item, idx)"
+                                     @onclick="() => HandleItemClick(item, idx)">
+                                    <div class="flex-1 min-w-0">
+                                        @if (ItemTemplate is not null) { @ItemTemplate(item) }
+                                        else if (ListTemplate is not null) { @ListTemplate(item) }
+                                    </div>
+                                    @if (CheckVariant != DataViewCheckVariant.None)
+                                    {
+                                        <div class="flex items-center justify-center w-8 shrink-0">
+                                            <LucideIcon Name="@GetCheckIconName" Size="16" Class="@GetCheckClass(item)" />
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                @if (ItemTemplate is not null) { <div @key="GetItemKey(item)">@ItemTemplate(item)</div> }
+                                else if (ListTemplate is not null) { <div @key="GetItemKey(item)">@ListTemplate(item)</div> }
+                            }
+                        }
+                        </div>
+                    </div>
+                }
+                </div>
+            }
+            else
+            {
+                @* ── Server mode: virtualized infinite scroll (list only) ─── *@
+                @if (IsServerMode)
+                {
+                    var _provider = ItemsProvider!;
+                    <div class="overflow-auto border rounded-md" style="height: @Height">
+                        <div class="@ListCssClass">
+                            <Virtualize @ref="_virtualizeRef"
+                                        ItemsProvider="@_provider"
+                                        ItemSize="@ItemHeight"
+                                        OverscanCount="@VirtualizeOverscanCount">
+                                <ItemContent Context="item">
+                                    <div @key="GetItemKey(item)" class="@GetListItemClass(item, -1)">
+                                        <div class="flex-1 min-w-0">
+                                            @if (ItemTemplate is not null) { @ItemTemplate(item) }
+                                            else if (ListTemplate is not null) { @ListTemplate(item) }
+                                        </div>
+                                    </div>
+                                </ItemContent>
+                                <Placeholder>
+                                    <div class="flex items-center gap-3 px-3 border-b border-border animate-pulse"
+                                         style="height: @(ItemHeight)px">
+                                        <div class="h-3 w-3/4 rounded bg-muted" />
+                                    </div>
+                                </Placeholder>
+                            </Virtualize>
+                        </div>
+                    </div>
+                }
+                else if (Virtualize)
+                {
+                    var _clientItems = SortedItems.ToList();
+                    <div class="overflow-auto border rounded-md" style="height: @Height">
+                        <div class="@ListCssClass">
+                            <Virtualize @ref="_virtualizeRef"
+                                        Items="@_clientItems"
+                                        ItemSize="@ItemHeight"
+                                        OverscanCount="@VirtualizeOverscanCount">
+                                <ItemContent Context="item">
+                                    <div @key="GetItemKey(item)" class="@GetListItemClass(item, -1)">
+                                        <div class="flex-1 min-w-0">
+                                            @if (ItemTemplate is not null) { @ItemTemplate(item) }
+                                            else if (ListTemplate is not null) { @ListTemplate(item) }
+                                        </div>
+                                    </div>
+                                </ItemContent>
+                            </Virtualize>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                var _listSelectable = SelectionMode != DataViewSelectionMode.None;
+                <div class="@ListCssClass"
+                     role="@(_listSelectable ? "listbox" : null)"
+                     tabindex="@(_listSelectable ? "0" : null)"
+                     aria-multiselectable="@(_listSelectable && SelectionMode == DataViewSelectionMode.Multiple ? "true" : null)"
+                     aria-activedescendant="@(_listSelectable ? ActiveDescendantId : null)"
+                     @onkeydown="@(_listSelectable ? HandleKeyDown : null)"
+                     @onkeydown:preventDefault="@_shouldPreventDefault"
+                     @onfocus="@(_listSelectable ? HandleContainerFocus : null)"
+                     @onblur="@(_listSelectable ? HandleContainerBlur : null)">
+                    @for (var i = 0; i < PagedItems.Count; i++)
+                    {
+                        var item = PagedItems[i];
+                        var idx  = i;
+                        @if (_listSelectable)
+                        {
+                            <div @key="GetItemKey(item)"
+                                 id="@ItemContainerId(idx)"
+                                 role="option"
+                                 aria-selected="@IsSelected(item).ToString().ToLower()"
+                                 class="@GetListItemClass(item, idx)"
+                                 @onclick="() => HandleItemClick(item, idx)">
+                                <div class="flex-1 min-w-0">
+                                    @if (ItemTemplate is not null) { @ItemTemplate(item) }
+                                    else if (ListTemplate is not null) { @ListTemplate(item) }
+                                </div>
+                                @if (CheckVariant != DataViewCheckVariant.None)
+                                {
+                                    <div class="flex items-center justify-center w-8 shrink-0">
+                                        <LucideIcon Name="@GetCheckIconName" Size="16" Class="@GetCheckClass(item)" />
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            @if (ItemTemplate is not null) { <div @key="GetItemKey(item)">@ItemTemplate(item)</div> }
+                            else if (ListTemplate is not null) { <div @key="GetItemKey(item)">@ListTemplate(item)</div> }
+                        }
+                    }
+                </div>
+                }
+            }
+        }
+
+        @* ── Pagination ───────────────────────────────────────────────── *@
+        @if (!IsVirtualized && ShowPagination && IsPaginated && SortedItems.Count > 0)
+        {
+            <Pagination State="@_paginationState"
+                        PageSizes="@PageSizes"
+                        OnPageChanged="@HandlePageChanged"
+                        OnPageSizeChanged="@HandlePageSizeChanged"
+                        Class="flex items-center justify-between pt-4 border-t border-border mt-4">
+                <PaginationInfo />
+                <PaginationContent Class="flex items-center gap-6 lg:gap-8">
+                    <PaginationPageSizeSelector />
+                    <div class="flex items-center gap-2">
+                        <PaginationPageDisplay />
+                        <div class="flex items-center gap-1">
+                            <PaginationItem><PaginationFirst /></PaginationItem>
+                            <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
+                            <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
+                            <PaginationItem><PaginationLast /></PaginationItem>
+                        </div>
+                    </div>
+                </PaginationContent>
+            </Pagination>
+        }
+
+        } @* end HasFilteredItems *@
+    } @* end else (has items) *@
+
+</div>
+</CascadingValue>

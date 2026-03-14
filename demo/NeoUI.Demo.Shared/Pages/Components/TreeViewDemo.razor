@@ -1,0 +1,317 @@
+﻿@page "/components/tree-view"
+
+<PageTitle>Tree View - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Tree View"
+        Description="Displays hierarchical data with expand/collapse, single or multi-select, checkboxes, and optional drag-and-drop reordering." />
+
+    <DemoSection Title="Basic" Description="Nested file tree. Click a node to select it; selected item's ID is reported below.">
+        <DemoBlock Code="@TreeViewDemoCode.Basic">
+            <div class="border rounded-md p-3 max-w-xs">
+                <TreeView TItem="FileNode"
+                          Items="@_fileTree"
+                          ChildrenProperty="@(n => n.Children)"
+                          ValueField="@(n => n.Path)"
+                          TextField="@(n => n.Name)"
+                          IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
+                          SelectionMode="TreeSelectionMode.Single"
+                          @bind-SelectedValue="_selectedPath" />
+            </div>
+            @if (!string.IsNullOrEmpty(_selectedPath))
+            {
+                <p class="mt-2 text-sm text-muted-foreground">Selected: <strong>@_selectedPath</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Checkboxes" Description="Checkbox state is tracked via CheckedValues. Nodes show check, empty, or indeterminate state.">
+        <DemoBlock Code="@TreeViewDemoCode.Checkboxes">
+            <div class="border rounded-md p-3 max-w-xs">
+                <TreeView TItem="OrgNode"
+                          Items="@_orgTree"
+                          ChildrenProperty="@(n => n.Reports)"
+                          ValueField="@(n => n.Id)"
+                          TextField="@(n => n.Name)"
+                          IconField="@(n => n.Reports?.Count > 0 ? "users" : "user")"
+                          Checkable="true"
+                          DefaultExpandAll="true"
+                          @bind-CheckedValues="_checkedPeople" />
+            </div>
+            <p class="mt-2 text-sm text-muted-foreground">
+                @if (_checkedPeople.Count == 0)
+                {
+                    <span>No items checked.</span>
+                }
+                else
+                {
+                    <span>Checked: <strong>@string.Join(", ", _orgFlat.Where(n => _checkedPeople.Contains(n.Id)).Select(n => n.Name))</strong></span>
+                }
+            </p>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Feature Installer" Description="PropagateChecks=true: checking a package group selects all features inside it; a partially-selected group shows an indeterminate state.">
+        <DemoBlock Code="@TreeViewDemoCode.PropagateChecks">
+            @if (_installed)
+            {
+                <div class="border rounded-md p-4 max-w-sm space-y-3">
+                    <div class="flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
+                        <LucideIcon Name="circle-check" Size="16" />
+                        <span>Installation complete!</span>
+                    </div>
+                    <p class="text-sm text-muted-foreground">
+                        @SelectedFeatureCount features installed · @SelectedSizeMb MB
+                    </p>
+                    <ul class="text-xs text-muted-foreground space-y-0.5 pl-4 list-disc">
+                        @foreach (var f in SelectedLeaves)
+                        {
+                            <li>@f.Name</li>
+                        }
+                    </ul>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="HandleReset">
+                        Reset
+                    </Button>
+                </div>
+            }
+            else
+            {
+                <div class="border rounded-md overflow-hidden max-w-sm">
+                    @* Header *@
+                    <div class="px-4 py-3 border-b bg-muted/40 flex items-center gap-2">
+                        <LucideIcon Name="package" Size="15" Class="text-muted-foreground" />
+                        <span class="text-sm font-medium">Select Features to Install</span>
+                    </div>
+
+                    @* Tree *@
+                    <div class="p-3 max-h-72 overflow-y-auto">
+                        <TreeView TItem="FeatureNode"
+                                  Items="@_featureTree"
+                                  ChildrenProperty="@(n => n.Children)"
+                                  ValueField="@(n => n.Id)"
+                                  TextField="@(n => n.Name)"
+                                  IconField="@(n => n.Icon)"
+                                  Checkable="true"
+                                  PropagateChecks="true"
+                                  DefaultExpandAll="true"
+                                  @bind-CheckedValues="_installFeatures" />
+                    </div>
+
+                    @* Footer *@
+                    <div class="px-4 py-3 border-t bg-muted/40 flex items-center justify-between gap-4">
+                        <div class="text-xs text-muted-foreground leading-tight">
+                            @if (SelectedFeatureCount == 0)
+                            {
+                                <span>No features selected</span>
+                            }
+                            else
+                            {
+                                <span><strong>@SelectedFeatureCount</strong> features · <strong>@SelectedSizeMb MB</strong></span>
+                            }
+                        </div>
+                        <div class="flex items-center gap-2">
+                            @if (_installFeatures.Count > 0)
+                            {
+                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" OnClick="HandleReset">
+                                    Clear
+                                </Button>
+                            }
+                            <Button Size="ButtonSize.Small"
+                                    Disabled="@(SelectedFeatureCount == 0)"
+                                    OnClick="HandleInstall">
+                                Install
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Multi-Select" Description="SelectionMode.Multiple + Ctrl/Cmd lets you select several nodes.">
+        <DemoBlock Code="@TreeViewDemoCode.MultiSelect">
+            <div class="border rounded-md p-3 max-w-xs">
+                <TreeView TItem="OrgNode"
+                          Items="@_orgTree"
+                          ChildrenProperty="@(n => n.Reports)"
+                          ValueField="@(n => n.Id)"
+                          TextField="@(n => n.Name)"
+                          SelectionMode="TreeSelectionMode.Multiple"
+                          DefaultExpandAll="true"
+                          @bind-SelectedValues="_selectedPeople" />
+            </div>
+            @if (_selectedPeople?.Count > 0)
+            {
+                <p class="mt-2 text-sm text-muted-foreground">
+                    Selected: @string.Join(", ", _orgFlat.Where(n => _selectedPeople.Contains(n.Id)).Select(n => n.Name))
+                </p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Flat Data with ParentField" Description="Pass a flat list — ValueField + ParentField build the hierarchy.">
+        <DemoBlock Code="@TreeViewDemoCode.FlatData">
+            <div class="border rounded-md p-3 max-w-xs">
+                <TreeView TItem="CategoryNode"
+                          Items="@_categories"
+                          ValueField="@(c => c.Id)"
+                          ParentField="@(c => c.ParentId)"
+                          TextField="@(c => c.Label)"
+                          IconField="@(c => c.ParentId == null ? "layers" : "tag")"
+                          SelectionMode="TreeSelectionMode.Single"
+                          @bind-SelectedValue="_selectedCategory" />
+            </div>
+            @if (!string.IsNullOrEmpty(_selectedCategory))
+            {
+                var cat = _categories.FirstOrDefault(c => c.Id == _selectedCategory);
+                <p class="mt-2 text-sm text-muted-foreground">Selected: <strong>@cat?.Label</strong></p>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Expand All &amp; Show Lines" Description="DefaultExpandAll opens every node; ShowLines draws connecting guides.">
+        <DemoBlock Code="@TreeViewDemoCode.Lines">
+            <div class="border rounded-md p-3 max-w-xs">
+                <TreeView TItem="FileNode"
+                          Items="@_fileTree"
+                          ChildrenProperty="@(n => n.Children)"
+                          ValueField="@(n => n.Path)"
+                          TextField="@(n => n.Name)"
+                          IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
+                          DefaultExpandAll="true"
+                          ShowLines="true" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Search / Filter" Description="Bind SearchText to filter visible nodes. Parents are kept visible when a descendant matches; matched text is highlighted.">
+        <DemoBlock Code="@TreeViewDemoCode.Search">
+            <div class="space-y-2 max-w-xs">
+                <Input @bind-Value="_searchText" Placeholder="Search nodes…" Class="h-8 text-sm" />
+                <div class="border rounded-md p-3">
+                    <TreeView TItem="FileNode"
+                              Items="@_fileTree"
+                              ChildrenProperty="@(n => n.Children)"
+                              ValueField="@(n => n.Path)"
+                              TextField="@(n => n.Name)"
+                              IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
+                              SearchText="@_searchText"
+                              DefaultExpandAll="true" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Loading &amp; Error States" Description="Pass LoadingNodes and ErrorNodes to show per-node async feedback. OnRetryLoad fires when the user clicks Retry.">
+        <DemoBlock Code="@TreeViewDemoCode.LoadingError">
+            <div class="border rounded-md p-3 max-w-xs">
+                <TreeView TItem="LazyNode"
+                          Items="@_lazyRoots"
+                          ChildrenProperty="@(n => _childrenDict.TryGetValue(n.Id, out var c) ? c : n.Children)"
+                          HasChildrenField="@(n => n.HasChildren)"
+                          ValueField="@(n => n.Id)"
+                          TextField="@(n => n.Label)"
+                          IconField="@(n => n.HasChildren ? "folder" : "file")"
+                          LoadingNodes="@_loadingNodes"
+                          ErrorNodes="@_errorNodes"
+                          OnNodeExpand="@HandleNodeExpand"
+                          OnRetryLoad="@HandleRetryLoad" />
+            </div>
+            <p class="mt-2 text-xs text-muted-foreground">Expand a folder → simulates loading → error → click Retry to succeed.</p>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Load Children Async" Description="Set LoadChildrenAsync and the tree manages loading, error and caching automatically — no extra state needed.">
+        <DemoBlock Code="@TreeViewDemoCode.LoadChildrenAsync">
+            <div class="border rounded-md p-3 max-w-xs">
+                <TreeView TItem="LazyNode"
+                          Items="@_lazyRoots2"
+                          HasChildrenField="@(n => n.HasChildren)"
+                          ValueField="@(n => n.Id)"
+                          TextField="@(n => n.Label)"
+                          IconField="@(n => n.HasChildren ? "folder" : "file")"
+                          LoadChildrenAsync="@FetchChildren" />
+            </div>
+            <p class="mt-2 text-xs text-muted-foreground">Children are fetched once and cached. Retry clears the cache for that node.</p>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="TreeView component parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string? _selectedPath;
+
+    private HashSet<string> _checkedPeople = new();
+    private HashSet<string>? _selectedPeople;
+
+    private string? _selectedCategory;
+
+    private string _searchText = "";
+
+    // ── Loading & Error demo (manual) ─────────────────────────────────────
+    private readonly Dictionary<string, List<LazyNode>> _childrenDict = new();
+    private readonly HashSet<string> _loadingNodes = new();
+    private readonly HashSet<string> _errorNodes   = new();
+
+    private async Task HandleNodeExpand(string nodeId)
+    {
+        // Skip if already loaded, loading, or in error state
+        if (_childrenDict.ContainsKey(nodeId)
+            || _loadingNodes.Contains(nodeId)
+            || _errorNodes.Contains(nodeId)) return;
+
+        _loadingNodes.Add(nodeId);
+        StateHasChanged();
+        await Task.Delay(1500);
+        _loadingNodes.Remove(nodeId);
+        _errorNodes.Add(nodeId); // simulate error on first expand
+        StateHasChanged();
+    }
+
+    private async Task HandleRetryLoad(string nodeId)
+    {
+        _errorNodes.Remove(nodeId);
+        _loadingNodes.Add(nodeId);
+        StateHasChanged();
+        await Task.Delay(1200);
+        _loadingNodes.Remove(nodeId);
+        _childrenDict[nodeId] = nodeId switch
+        {
+            "docs" => [new("doc1", "Report.pdf", false), new("doc2", "Notes.txt", false)],
+            "pics" => [new("pic1", "Photo.jpg", false), new("pic2", "Screenshot.png", false)],
+            _      => []
+        };
+        StateHasChanged();
+    }
+
+    // ── LoadChildrenAsync demo (automatic) ────────────────────────────────
+    private static readonly List<LazyNode> _lazyRoots2 =
+    [
+        new("srv-docs", "Documents", true),
+        new("srv-pics", "Pictures",  true),
+        new("readme",   "README.md", false),
+    ];
+
+    private static int _fetchAttempts = 0;
+
+    private async Task<IEnumerable<LazyNode>> FetchChildren(LazyNode node)
+    {
+        await Task.Delay(1200); // simulate network
+        _fetchAttempts++;
+        // Simulate an error on the very first fetch to demonstrate retry
+        if (_fetchAttempts == 1) throw new Exception("Network error");
+        return node.Id switch
+        {
+            "srv-docs" => [new("d1", "Report.pdf", false), new("d2", "Notes.txt", false)],
+            "srv-pics" => [new("p1", "Photo.jpg", false), new("p2", "Screenshot.png", false)],
+            _          => []
+        };
+    }
+}

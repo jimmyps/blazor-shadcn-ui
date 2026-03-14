@@ -2,6 +2,247 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-14 — Ten new components, four new chart types, DataTable server-side data, and chart reliability fixes
+
+> **Branch: `copilot/new-components-v4`**  
+> Affects `NeoUI.Blazor`. Component count rises from **85+** to **100+**. All changes are additive — no breaking changes to existing APIs.
+
+---
+
+### ✨ New Components (6)
+
+#### `Timeline` — `/components/timeline`
+
+A fully-composable chronological event display. Supports three statuses (`Pending`, `Active`, `Completed`), custom icon content, dashed/solid/none connector styles, collapsible items, and alternating (`Left`/`Right`/`Alternate`) alignment.
+
+**Sub-components:** `Timeline`, `TimelineItem`, `TimelineHeader`, `TimelineTitle`, `TimelineDescription`, `TimelineTime`, `TimelineIcon`, `TimelineConnector`, `TimelineContent`, `TimelineEmpty`
+
+**Enums:** `TimelineAlign`, `TimelineColor`, `TimelineSize`, `TimelineStatus`, `TimelineIconVariant`, `TimelineConnectorStyle`, `TimelineConnectorFit`
+
+**Demo sections:**
+
+| Section | What it shows |
+|---|---|
+| **Basic** | Shorthand `Title`/`Time`/`Description` params — no child slots. Status drives circle colour automatically. |
+| **With Custom Icons** | `IconContent` slot with arbitrary Blazor content; `ChildContent` for the item body. |
+| **Alignment** | `Left` and `Right` icon placement; `ShowConnector=false` on the last item. |
+| **Alternating Layout** | `TimelineAlign.Alternate` distributes even items left, odd items right. |
+| **Icon Variants** | `Solid` (filled circle) vs `Outline` (hollow ring) for event-type differentiation. |
+| **Sizes** | `Small`, `Default`, and `Large` controlling icon diameter and item gap. |
+| **Connector Styles** | `Solid`, `Dashed`, and `Dotted` connectors for optional or uncertain steps. |
+| **Connector Spacing** | Per-item `ConnectorClass` to control height for variable-height card content. |
+| **Collapsible Items** | `IsCollapsible` wraps the item in a `Collapsible`; `DetailContent` is the expandable body. |
+| **Connected Fit** | `ConnectorFit.Connected` runs the line flush against the icon for compact process flows. |
+| **Large Collapsible Content** | Rich expandable sections — ideal for changelogs and release notes. |
+| **Empty State** | `TimelineEmpty` with optional custom slot content. |
+
+---
+
+#### `TreeView` — `/components/tree-view`
+
+Hierarchical data display with expand/collapse, single and multi-select, tri-state checkbox propagation, and optional drag-and-drop node reordering. Driven by a generic `TItem` with lambda-based child/value/text/icon resolution — no schema definition required.
+
+**Sub-components:** `TreeView<TItem>`, `TreeItem<TItem>`, `TreeItemNode<TItem>`
+
+**Enums:** `TreeSelectionMode`, `CheckStateKind`
+
+**Demo sections:**
+
+| Section | What it shows |
+|---|---|
+| **Basic** | Nested file tree; click to select, selected path reported below. |
+| **Checkboxes** | `CheckedValues` binding; check, empty, and indeterminate states per node. |
+| **Feature Installer** | `PropagateChecks=true` — checking a group selects all children; partial groups show indeterminate. |
+| **Multi-Select** | `SelectionMode.Multiple` with Ctrl/Cmd click. |
+| **Flat Data with ParentField** | Build the hierarchy from a flat list via `ValueField` + `ParentField`. |
+| **Expand All & Show Lines** | `DefaultExpandAll` and `ShowLines` connecting guides. |
+| **Search / Filter** | `SearchText` binding; parent nodes kept visible when a descendant matches, matched text highlighted. |
+| **Loading & Error States** | `LoadingNodes` / `ErrorNodes` for per-node async feedback; `OnRetryLoad` callback. |
+| **Load Children Async** | `LoadChildrenAsync` delegate — tree manages loading state, errors, and caching automatically. |
+
+---
+
+#### `DataView` — `/components/data-view`
+
+Switchable list/grid layout container for data collections. Provides declarative column definitions that automatically wire the search input, sort dropdown, and keyboard navigation. Includes built-in pagination, single/multi/none selection modes, infinite scroll, client-side virtualization, and a flexible `ItemTemplate` slot for completely custom item rendering.
+
+**Sub-components:** `DataView<TItem>`, `DataViewColumn<TItem>`, `DataViewListTemplate`, `DataViewGridTemplate`
+
+**Enums:** `DataViewLayout`, `DataViewSelectionMode`, `DataViewCheckVariant`
+
+**Demo sections:**
+
+| Section | What it shows |
+|---|---|
+| **Basic** | Searchable user list; `DataViewColumn` fields auto-wire search input and sort dropdown. |
+| **List / Grid Switcher** | Both `ListTemplate` and `GridTemplate` provided — layout toggle appears automatically in the toolbar. |
+| **Single Selection** | Click to select/deselect; ↑↓ to navigate, Space/Enter to toggle. |
+| **Multiple Selection** | Toggle selection; count badge and Clear button wired via `ToolbarActions` slot. |
+| **Check Variant** | `CircleCheck` (always reserves space) vs `Check` (hidden when unselected) vs `None`. |
+| **Grouping** | `GroupBy` to bucket items by field; `GroupHeaderTemplate` for custom group headers. |
+| **Infinite Scroll (Server-Side)** | `OnLoadMore` callback; new pages appended as the user scrolls. |
+| **Virtualize (Client-Side)** | `Virtualize=true` for large in-memory collections with minimal DOM nodes. |
+| **Search & Sort** | Multiple `DataViewColumn` with `Filterable` and `Sortable` flags. |
+| **Toolbar with Custom Actions** | `ToolbarActions` slot (Export, Add) rendered alongside search/sort and layout toggle. |
+| **Pagination** | `PageSize` and `PageSizes` for built-in paging footer. |
+| **Loading State** | Skeleton shown while data is being fetched. |
+| **Empty State** | Custom content when item list is empty. |
+
+---
+
+#### `DynamicForm` — `/components/dynamic-form`
+
+Schema-driven form renderer. Pass a `FormSchema` (list of `FormFieldDefinition` records) and the component renders the appropriate NeoUI input for each field type — `Text`, `Email`, `Password`, `Number`, `Date`, `DateRange`, `Select`, `MultiSelect`, `Checkbox`, `Switch`, `Slider`, `SliderRange`, `Textarea`, `Rating`, `ColorPicker`, `TimePicker`, `FileUpload`, `InputOtp`, `MaskedInput`, `CurrencyInput`, `RichText`, and `MarkdownEditor`. Handles validation rules and emits `@bind-Values` and `OnFieldChanged`.
+
+**Components:** `DynamicForm`, `FormSection`, `DynamicFieldRenderer`
+
+**Types:** `FormSchema`, `FormFieldChangedEventArgs`, `DateRangeValue`, `SliderRangeValue`
+
+**Enums:** `FieldType` (24 variants), `FormLayout`, `ValidationType`
+
+**Demo sections:**
+
+| Section | What it shows |
+|---|---|
+| **Basic Contact Form** | Flat schema in a single column — name, email, phone, message. |
+| **Two-Column Layout** | `FormLayout.TwoColumn` for wider forms. |
+| **Sections** | `FormSection` grouping with collapsible support. |
+| **Field Types Showcase** | All 24 `FieldType` values rendered in a single live form. |
+| **Validation** | Required, min/max length, email, and custom validator with a summary panel. |
+| **Conditional Visibility** | `VisibleWhen` expressions — fields appear or hide based on other field values. |
+
+---
+
+#### `TagInput` — `/components/tag-input`
+
+An input field that manages a list of string tags/chips. Configurable add-triggers (`Enter`, `Comma`, `Tab`, `Space`, `Blur`, or any combination), async suggestion callbacks, duplicate prevention, max-tag limit, and `Backspace` removal. Supports `Outlined` and `Ghost` visual variants.
+
+**Types:** `TagInput`, `TagInputTrigger` (flags enum), `TagInputVariant`
+
+**Demo sections:**
+
+| Section | What it shows |
+|---|---|
+| **Basic** | Enter or comma to add; Backspace removes last tag. |
+| **With Suggestions** | `OnSearchSuggestions` async callback filters a list as the user types. |
+| **Static Suggestions** | `Suggestions` parameter with a fixed list. |
+| **Max Tags & Duplicates** | `MaxTags` limit and `AllowDuplicates` toggle. |
+| **Trigger Keys** | `AddTrigger` flags enum — configure exactly which keys submit a tag. |
+| **Variants** | `Default`, `Outlined`, and `Ghost` tag styles. |
+| **Clearable** | `Clearable=true` shows a clear-all button when tags are present. |
+| **Disabled** | All interaction blocked. |
+
+---
+
+#### `SplitButton` — `/components/split-button`
+
+Pairs a prominent primary-action button with a chevron-triggered dropdown for secondary actions. Supports the same `Variant` and `Size` tokens as `Button`, a separator between primary and trigger, and composable `SplitButtonItem` children inside the dropdown.
+
+**Sub-components:** `SplitButton`, `SplitButtonItem`, `SplitButtonSeparator`
+
+**Demo sections:**
+
+| Section | What it shows |
+|---|---|
+| **Basic** | Primary action on left, dropdown arrow on right. |
+| **Variants** | All `ButtonVariant` tokens applied to a split button. |
+| **Sizes** | `Small`, `Default`, and `Large`. |
+| **With Icon** | `Icon` slot prepending a Lucide icon to the primary label. |
+| **Disabled** | Both segments disabled when `Disabled=true`. |
+
+---
+
+### ✨ New Chart Types (4) + New Chart Demo (1)
+
+All four new chart types follow the same composable, Recharts-inspired declarative API as the existing chart components. Additionally, a new demo page was added for `RadialBarChart`, which already existed as a component.
+
+#### `CandlestickChart` + `Candlestick` series — `/components/chart/candlestick`
+
+OHLC / candlestick chart for financial and time-series price data. The `Candlestick` series accepts `OpenKey`, `HighKey`, `LowKey`, `CloseKey`, and `DateKey` data-key parameters, plus separate `BullishColor`/`BearishColor` styling.
+
+| Demo Section | What it shows |
+|---|---|
+| **Basic** | Simple OHLC chart with rising/falling colours. |
+
+#### `FunnelChart` + `Funnel` series — `/components/chart/funnel`
+
+Pipeline and conversion funnel (or pyramid in ascending sort). The `Funnel` series exposes `DataKey`, `NameKey`, `Sort` (`Ascending`/`Descending`/`None`), `Align` (`Left`/`Center`/`Right`), `Gap`, `MinSize`, `MaxSize`, `Top`, and `Bottom` layout parameters.
+
+| Demo Section | What it shows |
+|---|---|
+| **Sales Pipeline** | Standard top-down funnel with descending values and a legend. |
+| **Conversion Rates** | Percentage-based funnel with a custom tooltip formatter. |
+| **Pyramid (Ascending)** | Inverted funnel / pyramid using `FunnelSort.Ascending`. |
+
+#### `GaugeChart` + `Gauge` series — `/components/chart/gauge`
+
+Circular gauge and speedometer charts, configurable as a classic semi-circle KPI gauge or a full-circle progress ring. When multiple `Gauge` series are declared in one `GaugeChart`, the component automatically tiles them horizontally — center positions and a scaled radius (`min(150/N, 75)%`) are computed per-series so adjacent arcs never overlap.
+
+Key parameters: `StartAngle`, `EndAngle`, `SplitNumber`, `ShowPointer`, `ShowSplitLine`, `ShowAxisLabel`, `ShowProgress`, `ProgressWidth`, `AxisLineWidth`, `DetailFontSize`, `DetailOffsetY`, `ShowTitle`, `Fill`.
+
+| Demo Section | What it shows |
+|---|---|
+| **Single KPI Gauge** | Classic semi-circle gauge for a single metric value. |
+| **Multiple Gauges** | Three gauges (CPU/Memory/Disk) auto-tiled side-by-side in one chart. |
+| **Progress Ring** | Full-circle gauge (`StartAngle=90`, `EndAngle=-270`) styled as a clean progress ring with `ShowPointer=false` and `SplitNumber=0`. |
+
+#### `HeatmapChart` + `Heatmap` series + `VisualMap` primitive — `/components/chart/heatmap`
+
+Intensity grid charts for activity calendars and correlation matrices. Uses `XKey`/`YKey`/`ValueKey` data-key parameters on the `Heatmap` series. The `VisualMap` primitive controls color-stop ranges, show/hide legend, orientation, and min/max scaling.
+
+| Demo Section | What it shows |
+|---|---|
+| **Activity Calendar** | Hour-by-day activity heatmap, similar to a GitHub contribution graph. |
+| **Correlation Matrix** | Pearson correlation between numeric features with a diverging color scale. |
+
+#### `RadialBarChart` — new demo page `/components/chart/radial-bar` _(component pre-existing)_
+
+A demo page was added for the pre-existing `RadialBarChart` component.
+
+| Demo Section | What it shows |
+|---|---|
+| **Basic** | Single series across categories in a circular layout. |
+| **Multi-Series** | Several series plotted side-by-side for direct comparison. |
+| **Stacked** | Stacked series showing composition and total at a glance. |
+
+---
+
+### ✨ Enhancement — `DataTable` Server-Side Data
+
+Added a lightweight server-side data callback to `DataTable<TData>`. Wire up `ServerData` to any async delegate and the table handles paging, sorting, and search automatically:
+
+```csharp
+ServerData="@(async req => new DataTableResult<Order> { Items = pagedOrders, TotalCount = total })"
+```
+
+**New types:**
+
+| Type | Description |
+|---|---|
+| `DataTableRequest` | Page, PageSize, SortColumn, SortDirection, SearchText |
+| `DataTableResult<TData>` | Items (current page), TotalCount (all pages) |
+
+---
+
+### 🐛 Bug Fixes
+
+#### `ChartContainer` — width class override
+`ContainerStyle` previously emitted `width:99%` as an inline style, which silently overrode any CSS class providing an explicit width (e.g. `Class="w-[200px]"` on progress rings). The inline width has been removed; width is now controlled entirely by the CSS classes, which restores correct sizing for all fixed-width gauge containers.
+
+#### `GaugeChart` — progress arc ignored `Fill` color
+`EChartsGaugeProgress.color` is not a valid ECharts property and was silently ignored, causing the progress arc to use ECharts' default palette color instead of the component's `Fill`. A series-level `itemStyle.color` is now set from `resolvedColor` so the arc respects the `Fill` parameter.
+
+#### `FunnelChart` — legend overlap with funnel body
+The funnel series `Top` was hardcoded to `"10"`, meaning the funnel body started immediately below the chart top edge and overlapped any top-positioned `Legend`. Fixed by:
+1. Adding explicit `Top` and `Bottom` parameters to `Funnel.razor` (default `null`).
+2. Using `funnel.Top ?? "10"` in `FunnelChart.BuildSeries` — no more source-level legend-detection heuristics.
+3. Updating the Sales Pipeline demo to pass `Top="60"` only on the section that has a legend.
+
+#### `GaugeChart` — multiple gauges rendered stacked at center
+When two or more `Gauge` series were declared in a single `GaugeChart`, all series defaulted to `center: ['50%','50%']` and `radius: '75%'`, stacking every gauge on top of the others. `BuildSeries` now computes per-series `Center` (`[(i+0.5)/N*100%, 55%]`) and a scaled `Radius` (`min(⌊150/N⌋, 75)%`) whenever `total > 1`.
+
+---
+
 ## 2026-3-12 – DataGrid — New Blazor-native ServerSide Row Model
 
 > **Library change.** Affects `DataGrid<TItem>` in `NeoUI.Blazor`. Introduces `IDataGridServerDataProvider<TItem>` and `HttpDataGridProvider<TItem>` in `NeoUI.Blazor`, and updates the DataGrid JavaScript in `NeoUI.Blazor`. `DataGridDensity.Comfortable` has been renamed to `DataGridDensity.Medium`; `Comfortable` is retained as an `[Obsolete]` alias for backward compatibility.

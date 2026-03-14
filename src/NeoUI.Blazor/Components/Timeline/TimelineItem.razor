@@ -1,0 +1,101 @@
+@namespace NeoUI.Blazor
+
+<li class="@CssClass" @attributes="AdditionalAttributes">
+    <div class="@ContentGridClass">
+        @if (Align == TimelineAlign.Left)
+        {
+            @IconColumn
+            <div class="@ContentWrapperClass">@ContentBody</div>
+        }
+        else if (Align == TimelineAlign.Right)
+        {
+            <div class="@ContentWrapperEndClass" data-timeline-end>@ContentBody</div>
+            @IconColumn
+        }
+        else if (IsReversed)
+        {
+            <div class="@ContentWrapperEndClass" data-timeline-end>@ContentBody</div>
+            @IconColumn
+            @DateColumn
+        }
+        else
+        {
+            @DateColumn
+            @IconColumn
+            <div class="@ContentWrapperClass">@ContentBody</div>
+        }
+    </div>
+</li>
+
+@code {
+    private RenderFragment IconColumn => __builder =>
+    {
+        <div class="flex flex-col items-center self-stretch">
+            <div class="relative z-[1]">
+                @if (IconContent is not null)
+                {
+                    @IconContent
+                }
+                else
+                {
+                    <TimelineIcon Color="@IconColor"
+                                  Size="@EffectiveIconSize"
+                                  Status="@Status"
+                                  Variant="@IconVariant"
+                                  Loading="@Loading" />
+                }
+            </div>
+            @if (ShowConnector)
+            {
+                <TimelineConnector Status="@Status"
+                                   Color="@ConnectorColor"
+                                   ConnectorStyle="@ConnectorStyle"
+                                   Class="@ComputedConnectorClass" />
+            }
+        </div>
+    };
+
+    private RenderFragment DateColumn => __builder =>
+    {
+        <div class="@DateColumnClass">
+            @if (TimeContent is not null)
+            {
+                @TimeContent
+            }
+            else if (UseShorthand && Time is not null)
+            {
+                <TimelineTime Class="text-right pr-4">@Time</TimelineTime>
+            }
+        </div>
+    };
+
+    private RenderFragment ContentBody => __builder =>
+    {
+        @if (UseShorthand)
+        {
+            <TimelineContent>
+                <TimelineHeader>
+                    <TimelineTitle>@Title</TimelineTitle>
+                </TimelineHeader>
+                @if (Description is not null)
+                {
+                    <TimelineDescription>@Description</TimelineDescription>
+                }
+            </TimelineContent>
+        }
+        else if (IsCollapsible && DetailContent is not null)
+        {
+            <Collapsible DefaultOpen="@DefaultOpen">
+                <CollapsibleTrigger AsChild="false" Class="flex w-full items-center gap-2 cursor-pointer">
+                    <div class="flex-1">@ChildContent</div>
+                    <LucideIcon Name="chevron-down" Size="16" Class="transition-transform duration-200 group-data-[state=open]:rotate-180 shrink-0" />
+                </CollapsibleTrigger>
+                <CollapsibleContent>@DetailContent</CollapsibleContent>
+            </Collapsible>
+        }
+        else
+        {
+            @ChildContent
+        }
+    };
+}

@@ -1,0 +1,93 @@
+@page "/components/chart/funnel"
+@using NeoUI.Blazor.Charts
+
+<PageTitle>Funnel Chart - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-6xl">
+
+    <DemoPageHeader
+        Title="Funnel Chart"
+        Description="Visualise pipeline stages, conversion rates, and hierarchical proportions. Each stage narrows to reflect drop-off." />
+
+    <DemoSection Title="Sales Pipeline" Description="Standard top-down funnel with descending values.">
+        <DemoBlock Code="@FunnelChartExamples.SalesCode">
+            <ChartContainer Height="300" Class="w-full">
+                <FunnelChart Data="@_salesPipeline">
+                    <ChartTooltip />
+                    <Legend TextColor="var(--foreground)" />
+                    <Funnel DataKey="count" NameKey="stage" ShowLabel="true" Top="60" />
+                </FunnelChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Conversion Rates" Description="Percentage-based funnel showing conversion at each step.">
+        <DemoBlock Code="@FunnelChartExamples.ConversionCode">
+            <ChartContainer Height="300" Class="w-full">
+                <FunnelChart Data="@_conversionData">
+                    <ChartTooltip Formatter="@("function(v,n){ return [v+'%', n]; }")" />
+                    <Funnel DataKey="pct" NameKey="step" ShowLabel="true" />
+                </FunnelChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Pyramid (Ascending)" Description="Inverted funnel / pyramid with FunnelSort.Ascending.">
+        <DemoBlock Code="@FunnelChartExamples.PyramidCode">
+            <ChartContainer Height="300" Class="w-full">
+                <FunnelChart Data="@_pyramidData">
+                    <ChartTooltip />
+                    <Funnel DataKey="value" NameKey="tier" Sort="FunnelSort.Ascending" ShowLabel="true" />
+                </FunnelChart>
+            </ChartContainer>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="FunnelChart and Funnel series parameters.">
+        <DemoPropsTable Rows="@_props" />
+    </DemoSection>
+
+    <DemoPageSubNav ParentSlug="chart" />
+</div>
+
+@code {
+    private record PipelineStage(string stage, int count);
+    private static readonly PipelineStage[] _salesPipeline =
+    [
+        new("Leads",       12_400),
+        new("Prospects",    8_200),
+        new("Qualified",    4_700),
+        new("Proposals",    2_100),
+        new("Closed Won",     780),
+    ];
+
+    private record ConversionStep(string step, double pct);
+    private static readonly ConversionStep[] _conversionData =
+    [
+        new("Page Views",    100.0),
+        new("Sign-up Click",  34.2),
+        new("Registration",   18.7),
+        new("Activated",       9.4),
+        new("Paid",            3.1),
+    ];
+
+    private record PyramidTier(string tier, int value);
+    private static readonly PyramidTier[] _pyramidData =
+    [
+        new("Bronze", 500),
+        new("Silver", 280),
+        new("Gold",   120),
+        new("Platinum", 40),
+    ];
+
+    private static readonly IReadOnlyList<DemoPropRow> _props =
+    [
+        new("DataKey",   "string",      "required", "Numeric property driving each segment size."),
+        new("NameKey",   "string",      "required", "Label property for each segment."),
+        new("Sort",      "FunnelSort",  "Descending","Sort order: Descending, Ascending, or None."),
+        new("Align",     "FunnelAlign", "Center",   "Horizontal alignment of the funnel: Left, Center, Right."),
+        new("Gap",       "int?",        "null",     "Gap in pixels between segments."),
+        new("ShowLabel", "bool",        "false",    "Render value labels on each segment."),
+        new("Fill",      "string?",     "null",     "Uniform segment color (default: uses chart palette)."),
+    ];
+}
