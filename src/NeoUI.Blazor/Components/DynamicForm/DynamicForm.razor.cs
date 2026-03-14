@@ -153,6 +153,12 @@ public partial class DynamicForm : ComponentBase
         return EvaluateCondition(section.VisibleWhen);
     }
 
+    // Compiled once; matches user@domain.tld with at least 2-char TLD, no spaces or extra @.
+    private static readonly System.Text.RegularExpressions.Regex _emailRegex =
+        new(@"^[^@\s]+@[^@\s]+(\.[^@\s]{2,})+$",
+            System.Text.RegularExpressions.RegexOptions.Compiled |
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
     // ── Validation ─────────────────────────────────────────────────────
 
     private void ValidateAll()
@@ -188,7 +194,7 @@ public partial class DynamicForm : ComponentBase
                     errors.Add(string.IsNullOrEmpty(message) ? $"Minimum {min} characters required." : message); break;
                 case ValidationType.MaxLength when v.Value is int max && str.Length > max:
                     errors.Add(string.IsNullOrEmpty(message) ? $"Maximum {max} characters allowed." : message); break;
-                case ValidationType.Email when !string.IsNullOrEmpty(str) && !str.Contains('@'):
+                case ValidationType.Email when !string.IsNullOrEmpty(str) && !_emailRegex.IsMatch(str):
                     errors.Add(string.IsNullOrEmpty(message) ? "Enter a valid email address." : message); break;
                 case ValidationType.Pattern when !string.IsNullOrEmpty(v.Pattern) && !string.IsNullOrEmpty(str):
                     if (!System.Text.RegularExpressions.Regex.IsMatch(str, v.Pattern))

@@ -31,7 +31,11 @@ public partial class DynamicFieldRenderer : ComponentBase
 
     // ── Identity & state ─────────────────────────────────────────────
 
-    private string FieldId => $"field-{Field.Name}";
+    // Per-instance unique prefix: prevents duplicate element IDs when the same
+    // field name (e.g. "email") appears in multiple DynamicForm instances on one page.
+    private readonly string _uid = Guid.NewGuid().ToString("N")[..8];
+
+    private string FieldId => $"field-{_uid}-{Field.Name}";
     private bool   HasErrors => Errors.Count > 0;
 
     /// <summary>
