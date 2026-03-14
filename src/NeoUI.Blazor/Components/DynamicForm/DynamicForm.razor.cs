@@ -164,9 +164,25 @@ public partial class DynamicForm : ComponentBase
     private void ValidateAll()
     {
         _fieldErrors.Clear();
-        var fields = Schema?.Sections.SelectMany(s => s.Fields).Concat(Schema.Fields)
-                  ?? Schema?.Fields
-                  ?? Enumerable.Empty<FormFieldDefinition>();
+        IEnumerable<FormFieldDefinition> fields;
+        if (Schema is null)
+        {
+            fields = Enumerable.Empty<FormFieldDefinition>();
+        }
+        else if (Schema.Sections.Count > 0)
+        {
+            // When sections are present, Fields is ignored per FormSchema contract.
+            // Only validate fields in visible sections that are themselves visible.
+            fields = Schema.Sections
+                .Where(IsSectionVisible)
+                .SelectMany(s => s.Fields)
+                .Where(IsFieldVisible);
+        }
+        else
+        {
+            // Flat field list — skip invisible fields.
+            fields = Schema.Fields.Where(IsFieldVisible);
+        }
         foreach (var f in fields) ValidateField(f);
     }
 
