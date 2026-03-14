@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using System.Globalization;
 
 namespace NeoUI.Blazor;
 
@@ -100,7 +101,9 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     public void RegisterPreset(FilterPresetDefinition preset)
     {
         if (!_presets.Any(p => p.Name == preset.Name))
+        {
             _presets.Add(preset);
+        }
     }
 
     // ── Actions ───────────────────────────────────────────────────────────────
@@ -230,4 +233,143 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         Value = c.Value,
         SecondaryValue = c.SecondaryValue
     };
+
+    public void RestoreMatchingPresetSelection(FilterGroup? filters = null)
+    {
+        if (PresetsVariant != FilterPresetsVariant.Tabs)
+        {
+            return;
+        }
+
+        _activePresetName = FindMatchingPresetName(filters ?? Filters);
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private string? FindMatchingPresetName(FilterGroup? filters)
+    {
+        if (filters == null || !_presets.Any())
+        {
+            return null;
+        }
+
+        return _presets.FirstOrDefault(preset => AreEquivalentGroups(preset.Filters, filters))?.Name;
+    }
+
+    private static bool AreEquivalentGroups(FilterGroup? left, FilterGroup? right)
+    {
+        if (ReferenceEquals(left, right))
+        {
+            return true;
+        }
+
+        if (left == null || right == null)
+        {
+            return false;
+        }
+
+        if (left.Logic != right.Logic)
+        {
+            return false;
+        }
+
+        if (left.Conditions.Count != right.Conditions.Count || left.NestedGroups.Count != right.NestedGroups.Count)
+        {
+            return false;
+        }
+
+        return BuildConditionSignatures(left.Conditions).SequenceEqual(BuildConditionSignatures(right.Conditions), StringComparer.Ordinal)
+            && BuildGroupSignatures(left.NestedGroups).SequenceEqual(BuildGroupSignatures(right.NestedGroups), StringComparer.Ordinal);
+    }
+
+    private static IReadOnlyList<string> BuildConditionSignatures(IEnumerable<FilterCondition> conditions)
+        => conditions.Select(BuildConditionSignature)
+            .OrderBy(signature => signature, StringComparer.Ordinal)
+            .ToList();
+
+    private static IReadOnlyList<string> BuildGroupSignatures(IEnumerable<FilterGroup> groups)
+        => groups.Select(BuildGroupSignature)
+            .OrderBy(signature => signature, StringComparer.Ordinal)
+            .ToList();
+
+    private static string BuildGroupSignature(FilterGroup group)
+    {
+        var conditionSignatures = BuildConditionSignatures(group.Conditions)
+            .OrderBy(signature => signature, StringComparer.Ordinal);
+
+        var nestedGroupSignatures = BuildGroupSignatures(group.NestedGroups)
+            .OrderBy(signature => signature, StringComparer.Ordinal);
+
+        return $"{group.Logic}|[{string.Join(";", conditionSignatures)}]|[{string.Join(";", nestedGroupSignatures)}]";
+    }
+
+    private static string BuildConditionSignature(FilterCondition condition)
+        => string.Join("|",
+            condition.Field,
+            condition.Operator,
+            NormalizeValueSignature(condition.Value),
+            NormalizeValueSignature(condition.SecondaryValue));
+
+    private static string NormalizeValueSignature(object? value)
+    {
+        if (value == null)
+        {
+            return "<null>";
+        }
+
+        if (value is not string && value is IEnumerable<string> values)
+        {
+            return $"[{string.Join(",", values.OrderBy(item => item, StringComparer.OrdinalIgnoreCase).Select(item => item ?? string.Empty))}]";
+        }
+
+        if (TryConvertToDecimal(value, out var decimalValue))
+        {
+            return decimalValue.ToString(CultureInfo.InvariantCulture);
+        }
+
+        if (value is bool boolValue)
+        {
+            return boolValue ? "true" : "false";
+        }
+
+        if (value is DateOnly dateOnly)
+        {
+            return dateOnly.ToString("O", CultureInfo.InvariantCulture);
+        }
+
+        if (value is DateTime dateTime)
+        {
+            return dateTime.ToString("O", CultureInfo.InvariantCulture);
+        }
+
+        return value.ToString() ?? string.Empty;
+    }
+
+    private static bool TryConvertToDecimal(object value, out decimal result)
+    {
+        result = default;
+
+        return value switch
+        {
+            byte byteValue => SetDecimal(byteValue, out result),
+            sbyte sbyteValue => SetDecimal(sbyteValue, out result),
+            short shortValue => SetDecimal(shortValue, out result),
+            ushort ushortValue => SetDecimal(ushortValue, out result),
+            int intValue => SetDecimal(intValue, out result),
+            uint uintValue => SetDecimal(uintValue, out result),
+            long longValue => SetDecimal(longValue, out result),
+            ulong ulongValue => SetDecimal(ulongValue, out result),
+            float floatValue => SetDecimal((decimal)floatValue, out result),
+            double doubleValue => SetDecimal((decimal)doubleValue, out result),
+            decimal decimalValue => SetDecimal(decimalValue, out result),
+            string stringValue => decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out result)
+                || decimal.TryParse(stringValue, NumberStyles.Any, CultureInfo.CurrentCulture, out result),
+            _ => false
+        };
+    }
+
+    private static bool SetDecimal(decimal value, out decimal result)
+    {
+        result = value;
+        return true;
+    }
 }
