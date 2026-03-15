@@ -457,6 +457,33 @@
             </DataView>
         </DemoBlock>
     </DemoSection>
+    <DemoSection Title="Infinite Columns"
+                 Description="Set GridColumnMinWidth to a CSS length such as '160px' or '10rem'. The grid uses repeat(auto-fill, minmax(…, 1fr)) so tiles fill the available width automatically — no fixed column count needed. Resize the window to see the column count adapt.">
+        <DemoBlock Code="@DataViewDemoCode.InfiniteColumns">
+            <DataView Items="@_products" PageSize="12" ItemKey="@(p => p.Id)"
+                      Layout="DataViewLayout.Grid"
+                      GridColumnMinWidth="160px">
+                <Fields>
+                    <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
+                </Fields>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2 h-full">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <p class="font-medium text-sm truncate">@p.Name</p>
+                                <p class="text-xs text-muted-foreground flex-1">@p.Category</p>
+                                <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="DataView component parameters.">
         <DemoPropsTable Rows="@_props" />
     </DemoSection>

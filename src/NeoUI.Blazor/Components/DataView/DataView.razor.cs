@@ -138,6 +138,14 @@ public partial class DataView<TItem> : ComponentBase
     /// <summary>Column count in Grid layout (1–6).</summary>
     [Parameter] public int GridColumns { get; set; } = 3;
 
+    /// <summary>
+    /// Minimum tile width used to compute auto-fill columns in Grid layout, e.g. <c>"160px"</c> or <c>"12rem"</c>.
+    /// When set, the grid uses <c>repeat(auto-fill, minmax(GridColumnMinWidth, 1fr))</c> so the number of
+    /// columns grows automatically to fill the available container width.
+    /// Overrides <see cref="GridColumns"/> when both are provided.
+    /// </summary>
+    [Parameter] public string? GridColumnMinWidth { get; set; }
+
     /// <summary>Child content — used to place <see cref="DataViewListTemplate{TItem}"/> and <see cref="DataViewGridTemplate{TItem}"/> sub-components.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -474,15 +482,21 @@ public partial class DataView<TItem> : ComponentBase
 
     private string GridCssClass => ClassNames.cn(
         "grid gap-4 focus:outline-none",
-        GridColumns switch
-        {
-            1 => "grid-cols-1",
-            2 => "grid-cols-1 sm:grid-cols-2",
-            4 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
-            5 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-5",
-            6 => "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
-            _ => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-        });
+        string.IsNullOrEmpty(GridColumnMinWidth)
+            ? GridColumns switch
+            {
+                1 => "grid-cols-1",
+                2 => "grid-cols-1 sm:grid-cols-2",
+                4 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+                5 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-5",
+                6 => "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
+                _ => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            }
+            : null);
+
+    private string? GridStyle => string.IsNullOrEmpty(GridColumnMinWidth)
+        ? null
+        : $"grid-template-columns: repeat(auto-fill, minmax({GridColumnMinWidth}, 1fr));";
 
     private static string ListCssClass => "flex flex-col divide-y divide-border focus:outline-none";
 

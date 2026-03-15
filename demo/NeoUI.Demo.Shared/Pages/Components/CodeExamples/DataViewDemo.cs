@@ -51,6 +51,7 @@ partial class DataViewDemo
         new("PageSize",            "int",                    "0",              "Initial items per page. 0 = all items, no pagination."),
         new("PageSizes",           "int[]",                  "[10,25,50,100]", "Page-size options shown in the selector."),
         new("GridColumns",         "int",                    "3",              "Column count in Grid layout (1–6)."),
+        new("GridColumnMinWidth",  "string?",                "null",           "Minimum tile width for auto-fill columns, e.g. \"160px\". Overrides GridColumns when set."),
         new("ShowToolbar",         "bool",                   "true",           "Whether the toolbar is visible."),
         new("ToolbarActions",      "RenderFragment?",        "null",           "Custom content on the right of the toolbar (after search/sort, before the layout toggle)."),
         new("Fields",              "RenderFragment?",        "null",           "DataViewColumn declarations that enable toolbar search and sort."),
@@ -312,6 +313,32 @@ partial class DataViewDemo
                 }
             }
             """;
+        public const string InfiniteColumns =
+            """
+            @* GridColumnMinWidth drives repeat(auto-fill, minmax(…, 1fr)) — columns fill the width automatically *@
+            <DataView Items="@_products" PageSize="12" ItemKey="@(p => p.Id)"
+                      Layout="DataViewLayout.Grid"
+                      GridColumnMinWidth="160px">
+                <Fields>
+                    <DataViewColumn TItem="Product" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
+                </Fields>
+                <GridTemplate Context="p">
+                    <Card Class="h-full">
+                        <CardContent Class="pt-5">
+                            <div class="flex flex-col gap-2 h-full">
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <p class="font-medium text-sm truncate">@p.Name</p>
+                                <p class="text-xs text-muted-foreground flex-1">@p.Category</p>
+                                <span class="text-sm font-bold">$@p.Price.ToString("F2")</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </GridTemplate>
+            </DataView>
+            """;
+
         public const string VirtualizeClient =
             """
             @* All 500 items in memory — only visible DOM nodes are rendered *@
