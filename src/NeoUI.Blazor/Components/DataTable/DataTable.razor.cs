@@ -654,12 +654,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
 
         // Client-side virtualise: filter + sort the full dataset but skip the
         // pagination slice; the Virtualize component handles windowing.
+        // _processedData and _filteredData are kept in sync so selection state
+        // (IsAllSelected, IsSomeSelected, "select all N items") works correctly.
         if (Virtualize)
         {
             var allData = Data ?? Array.Empty<TData>();
             if (PreprocessData != null) allData = await PreprocessData(allData);
             var filtered = ApplyFiltering(allData);
+            _filteredData = filtered;
             _virtualizeItems = ApplySorting(filtered).ToList();
+            _processedData = _virtualizeItems;
             return;
         }
 
