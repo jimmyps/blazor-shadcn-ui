@@ -462,7 +462,7 @@
         <DemoBlock Code="@DataViewDemoCode.InfiniteColumns">
             <DataView Items="@_products" PageSize="12" ItemKey="@(p => p.Id)"
                       Layout="DataViewLayout.Grid"
-                      GridColumnMinWidth="40" @* 40 = 10 rem ≈ 160 px *@>
+                      GridColumnMinWidth="40">
                 <Fields>
                     <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
                 </Fields>
