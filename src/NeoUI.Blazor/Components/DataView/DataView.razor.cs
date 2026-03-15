@@ -473,7 +473,7 @@ public partial class DataView<TItem> : ComponentBase
     private string ContainerCssClass => ClassNames.cn("w-full", Class);
 
     private string GridCssClass => ClassNames.cn(
-        "grid gap-4 focus:outline-none",
+        "grid gap-4 outline-none",
         GridColumns switch
         {
             1 => "grid-cols-1",
@@ -484,7 +484,7 @@ public partial class DataView<TItem> : ComponentBase
             _ => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         });
 
-    private static string ListCssClass => "flex flex-col divide-y divide-border focus:outline-none";
+    private static string ListCssClass => "flex flex-col divide-y divide-border outline-none";
 
     // ── Lifecycle ─────────────────────────────────────────────────────────
 
