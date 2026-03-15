@@ -155,7 +155,7 @@
                                 @group.Key?.ToString()
                             }
                         </div>
-                        <div class="@GridCssClass" style="@GridStyle">
+                        <div class="@GridCssClass">
                         @foreach (var (item, idx) in group)
                         {
                             @if (_selectable)
@@ -189,7 +189,7 @@
             }
             else
             {
-                <div class="@GridCssClass" style="@GridStyle"
+                <div class="@GridCssClass"
                      role="@(_selectable ? "listbox" : null)"
                      tabindex="@(_selectable ? "0" : null)"
                      aria-multiselectable="@(_selectable && SelectionMode == DataViewSelectionMode.Multiple ? "true" : null)"

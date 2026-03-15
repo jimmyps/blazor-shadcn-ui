@@ -139,9 +139,11 @@ public partial class DataView<TItem> : ComponentBase
     [Parameter] public int GridColumns { get; set; } = 3;
 
     /// <summary>
-    /// Minimum tile width used to compute auto-fill columns in Grid layout, e.g. <c>"160px"</c> or <c>"12rem"</c>.
-    /// When set, the grid uses <c>repeat(auto-fill, minmax(GridColumnMinWidth, 1fr))</c> so the number of
-    /// columns grows automatically to fill the available container width.
+    /// Minimum tile width for auto-fill columns in Grid layout. Accepts a Tailwind spacing key
+    /// (e.g. <c>"40"</c> = 10 rem ≈ 160 px, <c>"48"</c> = 12 rem ≈ 192 px) or an arbitrary CSS value
+    /// in Tailwind bracket notation (e.g. <c>"[160px]"</c>, <c>"[12rem]"</c>).
+    /// When set, the grid emits <c>grid-auto-fill-{value}</c> so the number of columns grows
+    /// automatically to fill the available container width.
     /// Overrides <see cref="GridColumns"/> when both are provided.
     /// </summary>
     [Parameter] public string? GridColumnMinWidth { get; set; }
@@ -492,11 +494,7 @@ public partial class DataView<TItem> : ComponentBase
                 6 => "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
                 _ => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             }
-            : null);
-
-    private string? GridStyle => string.IsNullOrEmpty(GridColumnMinWidth)
-        ? null
-        : $"grid-template-columns: repeat(auto-fill, minmax({GridColumnMinWidth}, 1fr));";
+            : $"grid-auto-fill-{GridColumnMinWidth}");
 
     private static string ListCssClass => "flex flex-col divide-y divide-border focus:outline-none";
 
