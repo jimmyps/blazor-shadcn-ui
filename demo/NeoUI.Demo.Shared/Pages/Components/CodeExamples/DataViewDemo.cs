@@ -51,7 +51,7 @@ partial class DataViewDemo
         new("PageSize",            "int",                    "0",              "Initial items per page. 0 = all items, no pagination."),
         new("PageSizes",           "int[]",                  "[10,25,50,100]", "Page-size options shown in the selector."),
         new("GridColumns",         "int",                    "3",              "Column count in Grid layout (1–6)."),
-        new("GridColumnMinWidth",  "string?",                "null",           "Minimum tile width for auto-fill columns. Accepts a Tailwind spacing key (\"40\" = 10 rem) or bracket notation (\"[160px]\"). Emits grid-auto-fill-{value}. Overrides GridColumns when set."),
+        new("GridColumnMinWidth",  "int",                    "0",              "Tailwind spacing key for auto-fill column min-width (e.g. 40 = 10 rem ≈ 160 px). Emits grid-auto-fill-{n}. 0 = disabled; falls back to GridColumns."),
         new("ShowToolbar",         "bool",                   "true",           "Whether the toolbar is visible."),
         new("ToolbarActions",      "RenderFragment?",        "null",           "Custom content on the right of the toolbar (after search/sort, before the layout toggle)."),
         new("Fields",              "RenderFragment?",        "null",           "DataViewColumn declarations that enable toolbar search and sort."),
@@ -315,8 +315,8 @@ partial class DataViewDemo
             """;
         public const string InfiniteColumns =
             """
-            @* GridColumnMinWidth emits grid-auto-fill-{value} — tiles fill the width automatically *@
-            @* Use a Tailwind spacing key ("40" = 10 rem ≈ 160 px) or bracket notation ("[160px]") *@
+            @* GridColumnMinWidth emits grid-auto-fill-{n} — tiles fill the width automatically *@
+            @* Value is a Tailwind spacing key: 40 = 10 rem ≈ 160 px *@
             <DataView Items="@_products" PageSize="12" ItemKey="@(p => p.Id)"
                       Layout="DataViewLayout.Grid"
                       GridColumnMinWidth="40">
