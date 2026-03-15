@@ -30,7 +30,7 @@
                     </div>
                 }
             }
-            else if (!_processedData.Any())
+            else if (!IsVirtualized && !_processedData.Any())
             {
                 @if (EmptyTemplate != null)
                 {
