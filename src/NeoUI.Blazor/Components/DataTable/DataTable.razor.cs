@@ -275,6 +275,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <summary>Cached ItemHeight value for ShouldRender optimization.</summary>
     private float _lastItemHeight;
 
+    /// <summary>Cached VirtualizeOverscanCount value for ShouldRender optimization.</summary>
+    private int _lastVirtualizeOverscanCount;
+
     /// <summary>
     /// Gets or sets the client-side data source for the table.
     /// When <see cref="ServerData"/> is provided this can be omitted (defaults to an empty collection).
@@ -514,13 +517,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     [Parameter]
     public bool ColumnsVisibility { get; set; } = true;
 
-    /// <summary>
-    /// Gets the computed CSS classes for the outer container element.
-    /// </summary>
-    /// <summary>Total number of visible columns including the selection checkbox column.</summary>
+    /// <summary>Total number of visible columns including the selection checkbox column. Always at least 1 to avoid invalid colspan="0".</summary>
     private int VisibleColumnCount =>
-        _columns.Count(c => c.Visible) +
-        (SelectionMode == DataTableSelectionMode.Multiple ? 1 : 0);
+        Math.Max(1, _columns.Count(c => c.Visible) +
+        (SelectionMode == DataTableSelectionMode.Multiple ? 1 : 0));
 
     private string ContainerCssClass => ClassNames.cn(
         "w-full space-y-4",
@@ -1134,7 +1134,8 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             || _lastColumnsVisibility != ColumnsVisibility;
         var virtualizeChanged = _lastVirtualize != Virtualize
             || _lastHeight != Height
-            || _lastItemHeight != ItemHeight;
+            || _lastItemHeight != ItemHeight
+            || _lastVirtualizeOverscanCount != VirtualizeOverscanCount;
 
         if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || serverResultChanged || styleChanged || virtualizeChanged)
         {
@@ -1159,6 +1160,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             _lastVirtualize = Virtualize;
             _lastHeight = Height;
             _lastItemHeight = ItemHeight;
+            _lastVirtualizeOverscanCount = VirtualizeOverscanCount;
             return true;
         }
 

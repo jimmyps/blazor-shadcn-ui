@@ -321,7 +321,7 @@ partial class DataViewDemo
                       Layout="DataViewLayout.Grid"
                       GridColumnMinWidth="40">
                 <Fields>
-                    <DataViewColumn TItem="Product" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
+                    <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
                 </Fields>
                 <GridTemplate Context="p">
                     <Card Class="h-full">
