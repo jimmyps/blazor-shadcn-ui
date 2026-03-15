@@ -458,11 +458,11 @@
         </DemoBlock>
     </DemoSection>
     <DemoSection Title="Infinite Columns"
-                 Description="Set GridColumnMinWidth to a Tailwind spacing key (e.g. 40 = 10 rem ≈ 160 px). The component emits the grid-auto-fill-{value} utility so tiles fill the available width automatically — no fixed column count needed. Resize the window to see the column count adapt.">
+                 Description="Set GridColumnMinWidth to any CSS length (e.g. \"160px\", \"10rem\") or a bare Tailwind spacing key (e.g. \"40\"). The component automatically fills the container width with as many columns as fit — no fixed column count needed. Resize the window to see the column count adapt.">
         <DemoBlock Code="@DataViewDemoCode.InfiniteColumns">
             <DataView Items="@_products" PageSize="12" ItemKey="@(p => p.Id)"
                       Layout="DataViewLayout.Grid"
-                      GridColumnMinWidth="40">
+                      GridColumnMinWidth="160px">
                 <Fields>
                     <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
                 </Fields>

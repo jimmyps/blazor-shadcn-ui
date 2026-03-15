@@ -51,7 +51,7 @@ partial class DataViewDemo
         new("PageSize",            "int",                    "0",              "Initial items per page. 0 = all items, no pagination."),
         new("PageSizes",           "int[]",                  "[10,25,50,100]", "Page-size options shown in the selector."),
         new("GridColumns",         "int",                    "3",              "Column count in Grid layout (1–6)."),
-        new("GridColumnMinWidth",  "int",                    "0",              "Tailwind spacing key for auto-fill column min-width (e.g. 40 = 10 rem ≈ 160 px). Emits grid-auto-fill-{n}. 0 = disabled; falls back to GridColumns."),
+        new("GridColumnMinWidth",  "string?",                "null",           "Min tile width for auto-fill grid columns. Accepts any CSS length (e.g. \"160px\", \"10rem\") or a Tailwind spacing key (e.g. \"40\"). null/empty = disabled; falls back to GridColumns."),
         new("ShowToolbar",         "bool",                   "true",           "Whether the toolbar is visible."),
         new("ToolbarActions",      "RenderFragment?",        "null",           "Custom content on the right of the toolbar (after search/sort, before the layout toggle)."),
         new("Fields",              "RenderFragment?",        "null",           "DataViewColumn declarations that enable toolbar search and sort."),
@@ -315,11 +315,11 @@ partial class DataViewDemo
             """;
         public const string InfiniteColumns =
             """
-            @* GridColumnMinWidth emits grid-auto-fill-{n} — tiles fill the width automatically *@
-            @* Value is a Tailwind spacing key: 40 = 10 rem ≈ 160 px *@
+            @* GridColumnMinWidth accepts any CSS length or a Tailwind spacing key *@
+            @* "160px", "10rem", "40" (= 10 rem via Tailwind spacing) all work *@
             <DataView Items="@_products" PageSize="12" ItemKey="@(p => p.Id)"
                       Layout="DataViewLayout.Grid"
-                      GridColumnMinWidth="40">
+                      GridColumnMinWidth="160px">
                 <Fields>
                     <DataViewColumn TItem="ProductRow" Header="Name" Property="@(p => p.Name)" Filterable="true" Sortable="true" />
                 </Fields>
