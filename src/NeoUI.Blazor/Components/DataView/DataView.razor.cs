@@ -453,16 +453,16 @@ public partial class DataView<TItem> : ComponentBase
     // ── CSS & icon helpers ────────────────────────────────────────────────
 
     private string GetListItemClass(TItem item, int index) => ClassNames.cn(
-        "flex items-center transition-colors",
+        "flex items-center transition-all outline-none border-2 border-transparent ",
         SelectionMode != DataViewSelectionMode.None ? "cursor-pointer select-none" : null,
         index < 0 ? "border-b border-border" : null,
         IsSelected(item) ? "bg-accent/50" : "hover:bg-muted/30",
-        _focusedIndex == index && index >= 0 ? "outline outline-2 -outline-offset-2 outline-ring rounded-sm" : null);
+        _focusedIndex == index && index >= 0 ? "border-2 border-primary rounded-sm" : null);
 
     private string GetGridItemClass(TItem item, int index) => ClassNames.cn(
-        "relative cursor-pointer select-none rounded-lg transition-all",
+        "relative cursor-pointer select-none rounded-lg transition-all outline-none border-2 border-transparent",
         IsSelected(item) ? "ring-2 ring-primary" : "hover:ring-1 hover:ring-border",
-        _focusedIndex == index ? "outline outline-2 outline-offset-1 outline-ring" : null);
+        _focusedIndex == index ? "border-2 border-primary" : null);
 
     private string GetCheckIconName =>
         CheckVariant == DataViewCheckVariant.Check ? "check" : "circle-check";
@@ -495,7 +495,7 @@ public partial class DataView<TItem> : ComponentBase
                 _ => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             });
 
-    private static string ListCssClass => "flex flex-col divide-y divide-border focus:outline-none";
+    private static string ListCssClass => "flex flex-col divide-y divide-border outline-none";
 
     // ── Lifecycle ─────────────────────────────────────────────────────────
 
