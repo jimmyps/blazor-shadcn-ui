@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @typeparam TData where TData : class
+@using Microsoft.AspNetCore.Components.Web.Virtualization
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass">
         @if (ShowToolbar)
@@ -14,7 +15,8 @@
             </DataTableToolbar>
         }
 
-        <div class="@TableContainerCssClass">
+        <div class="@TableContainerCssClass"
+             style="@(IsVirtualized ? $"height:{Height};overflow-y:auto" : null)">
             @if (IsLoading)
             {
                 @if (LoadingTemplate != null)
@@ -53,7 +55,7 @@
                                                  OnSelectionChange="HandleSelectionChange"
                                                  Class="@TableCssClass"
                                                  AriaLabel="@AriaLabel">
-                    <TableHeader Class="@HeaderClass">
+                    <TableHeader Class="@ClassNames.cn(HeaderClass, IsVirtualized ? "sticky top-0 z-10 bg-background" : null)">
                         <TableRow TData="TData" Class="@ComputedHeaderRowClass">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
@@ -148,49 +150,56 @@
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        @foreach (var item in _processedData)
+                        @if (IsVirtualizedServerMode)
                         {
-                            var isSelected = _tableState.Selection.IsSelected(item);
-                            <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelected)">
-                                @if (SelectionMode == DataTableSelectionMode.Multiple)
-                                {
-                                    <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")" role="gridcell">
-                                        <div @onclick:stopPropagation="true">
-                                            <Checkbox Checked="@isSelected"
-                                                      CheckedChanged="@(async (bool isChecked) => await HandleRowSelectionChanged(item, isChecked))"
-                                                      AriaLabel="@($"Select this row")" />
-                                        </div>
-                                    </TableCell>
-                                }
-                                @foreach (var column in _columns.Where(c => c.Visible))
-                                {
-                                    var cellAlignmentClass = column.Alignment switch
-                                    {
-                                        ColumnAlignment.Center => "text-center",
-                                        ColumnAlignment.Right => "text-right",
-                                        _ => "text-left"
-                                    };
-                                    
-                                    <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlignmentClass, column.CellClass)">
-                                        @if (column.CellTemplate != null)
-                                        {
-                                            @column.CellTemplate(item)
-                                        }
-                                        else
-                                        {
-                                            var value = column.Property(item);
-                                            @(value?.ToString() ?? "")
-                                        }
-                                    </TableCell>
-                                }
-                            </TableRow>
+                            <Virtualize @ref="_virtualizeRef"
+                                        ItemsProvider="VirtualizeProviderAdapter"
+                                        ItemSize="@ItemHeight"
+                                        OverscanCount="@VirtualizeOverscanCount"
+                                        Context="item">
+                                <ItemContent>
+                                    @{ var isSelectedVS = _tableState.Selection.IsSelected(item); }
+                                    <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVS)">
+                                        @RenderRowCells(item, isSelectedVS)
+                                    </TableRow>
+                                </ItemContent>
+                                <Placeholder>
+                                    <tr style="height:@(ItemHeight)px">
+                                        <td colspan="@VisibleColumnCount" class="@ClassNames.cn(BodyCellPaddingClass, "align-middle")">
+                                            <div class="h-3 w-3/4 rounded bg-muted animate-pulse" />
+                                        </td>
+                                    </tr>
+                                </Placeholder>
+                            </Virtualize>
+                        }
+                        else if (Virtualize)
+                        {
+                            <Virtualize Items="@_virtualizeItems"
+                                        ItemSize="@ItemHeight"
+                                        OverscanCount="@VirtualizeOverscanCount"
+                                        Context="item">
+                                @{ var isSelectedVC = _tableState.Selection.IsSelected(item); }
+                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVC)">
+                                    @RenderRowCells(item, isSelectedVC)
+                                </TableRow>
+                            </Virtualize>
+                        }
+                        else
+                        {
+                            @foreach (var item in _processedData)
+                            {
+                                var isSelected = _tableState.Selection.IsSelected(item);
+                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelected)">
+                                    @RenderRowCells(item, isSelected)
+                                </TableRow>
+                            }
                         }
                     </TableBody>
                 </Table>
             }
         </div>
 
-        @if (ShowPagination && !IsLoading && _processedData.Any())
+        @if (ShowPagination && !IsLoading && !IsVirtualized && _processedData.Any())
         {
             <Pagination State="@_tableState.Pagination"
                         PageSizes="@PageSizes"
@@ -216,4 +225,43 @@
 
     @* Capture column definitions *@
     @Columns
+
 </CascadingValue>
+
+@* ── Shared row-cell render fragment ────────────────────────────────────── *@
+@* Extracted to avoid duplicating the cell markup across three Virtualize    *@
+@* branches while keeping it accessible to the razor template.              *@
+@code {
+    private RenderFragment RenderRowCells(TData item, bool isSelected) =>
+        @<text>
+            @if (SelectionMode == DataTableSelectionMode.Multiple)
+            {
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")" role="gridcell">
+                    <div @onclick:stopPropagation="true">
+                        <Checkbox Checked="@isSelected"
+                                  CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(item, chk))"
+                                  AriaLabel="Select this row" />
+                    </div>
+                </TableCell>
+            }
+            @foreach (var col in _columns.Where(c => c.Visible))
+            {
+                var cellAlign = col.Alignment switch
+                {
+                    ColumnAlignment.Center => "text-center",
+                    ColumnAlignment.Right  => "text-right",
+                    _                      => "text-left"
+                };
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass)">
+                    @if (col.CellTemplate != null)
+                    {
+                        @col.CellTemplate(item)
+                    }
+                    else
+                    {
+                        @(col.Property(item)?.ToString() ?? "")
+                    }
+                </TableCell>
+            }
+        </text>;
+}

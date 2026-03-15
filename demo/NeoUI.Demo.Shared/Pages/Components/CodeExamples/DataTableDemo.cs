@@ -28,6 +28,12 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("LoadingTemplate", "RenderFragment?", "null", "Custom content shown when IsLoading is true."),
                 new("AriaLabel", "string?", "null", "ARIA label applied to the &lt;table&gt; element."),
                 new("Class", "string?", "null", "Extra CSS classes on the outer container div."),
+                new("ServerData", "Func<DataTableRequest, Task<DataTableResult<TData>>>?", "null", "Server-side paged data callback. Request carries Page, PageSize, SortDescriptors, and SearchText."),
+                new("ItemsProvider", "DataTableVirtualProvider<TData>?", "null", "Server-side virtualised provider for infinite scroll. Request carries StartIndex, Count, SortDescriptors, SearchText, and CancellationToken. Overrides Data and ServerData when set."),
+                new("Virtualize", "bool", "false", "Client-side DOM-windowing via Virtualize. All rows stay in memory; only visible nodes are rendered. Pagination is hidden."),
+                new("ItemHeight", "float", "40", "Row height in px passed to the virtualizer as ItemSize. Must match your actual row height when Virtualize=true or ItemsProvider is set."),
+                new("Height", "string", "\"400px\"", "CSS height of the scroll container. Required when Virtualize=true or ItemsProvider is set."),
+                new("VirtualizeOverscanCount", "int", "3", "Extra rows rendered beyond the viewport to reduce blank flicker during fast scrolling."),
                 new("OnSort", "EventCallback<(string, SortDirection)>", "—", "Fires when the user changes the sort column or direction."),
                 new("OnFilter", "EventCallback<string?>", "—", "Fires when the global search value changes."),
                 new("PreprocessData", "Func<IEnumerable<TData>, Task<IEnumerable<TData>>>?", "null", "Async hook to transform data before filtering and sorting."),
@@ -164,29 +170,20 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 <DataTable TData="Order" ServerData="LoadOrders" InitialPageSize="10"
                            PageSizes="@(new[]{ 10, 25, 50 })">
                     <Columns>
-                        <DataTableColumn TData="Order" TValue="int"    Property="@(o => o.Id)"       Header="ID"       Sortable />
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Customer)" Header="Customer" Sortable Filterable />
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Product)"  Header="Product"  Sortable Filterable />
-                        <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Status)"   Header="Status" />
-                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"  Header="Amount"   Sortable />
+                        <DataTableColumn TData="Order" TValue="int"     Property="@(o => o.Id)"       Header="ID"       Sortable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)" Header="Customer" Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Product)"  Header="Product"  Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"   Header="Status" />
+                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"   Header="Amount"   Sortable />
                     </Columns>
                 </DataTable>
 
                 @code {
                     private record Order(int Id, string Customer, string Product, string Status, decimal Amount);
 
-                    private static readonly Order[] _allOrders = Enumerable.Range(1, 1000).Select(i => new Order(
-                        i,
-                        $"Customer {i}",
-                        i % 3 == 0 ? "Widget Pro" : i % 3 == 1 ? "Gadget Lite" : "Device Max",
-                        i % 4 == 0 ? "Pending" : i % 4 == 1 ? "Shipped" : i % 4 == 2 ? "Delivered" : "Cancelled",
-                        Math.Round((decimal)(new Random(i).NextDouble() * 500 + 10), 2)
-                    )).ToArray();
-
                     private async Task<DataTableResult<Order>> LoadOrders(DataTableRequest req)
                     {
-                        await Task.Delay(300); // simulate network latency
-
+                        await Task.Delay(300);
                         var query = _allOrders.AsEnumerable();
 
                         if (!string.IsNullOrWhiteSpace(req.SearchText))
@@ -194,16 +191,17 @@ namespace NeoUI.Demo.Shared.Pages.Components
                                 o.Customer.Contains(req.SearchText, StringComparison.OrdinalIgnoreCase) ||
                                 o.Product.Contains(req.SearchText, StringComparison.OrdinalIgnoreCase));
 
-                        if (!string.IsNullOrWhiteSpace(req.SortColumn))
-                            query = (req.SortColumn, req.SortDirection) switch
+                        var sort = req.SortDescriptors.FirstOrDefault();
+                        if (sort is not null)
+                            query = (sort.ColumnId, sort.Direction) switch
                             {
-                                ("id", SortDirection.Ascending)          => query.OrderBy(o => o.Id),
-                                ("id", _)                                => query.OrderByDescending(o => o.Id),
-                                ("customer", SortDirection.Ascending)    => query.OrderBy(o => o.Customer),
-                                ("customer", _)                          => query.OrderByDescending(o => o.Customer),
-                                ("amount", SortDirection.Ascending)      => query.OrderBy(o => o.Amount),
-                                ("amount", _)                            => query.OrderByDescending(o => o.Amount),
-                                _                                        => query
+                                ("id",       SortDirection.Ascending) => query.OrderBy(o => o.Id),
+                                ("id",       _)                       => query.OrderByDescending(o => o.Id),
+                                ("customer", SortDirection.Ascending) => query.OrderBy(o => o.Customer),
+                                ("customer", _)                       => query.OrderByDescending(o => o.Customer),
+                                ("amount",   SortDirection.Ascending) => query.OrderBy(o => o.Amount),
+                                ("amount",   _)                       => query.OrderByDescending(o => o.Amount),
+                                _                                     => query
                             };
 
                         var total = query.Count();
@@ -211,6 +209,70 @@ namespace NeoUI.Demo.Shared.Pages.Components
                         return new DataTableResult<Order> { Items = items, TotalCount = total };
                     }
                 }
+                """;
+
+        private const string _infiniteScrollServerCode = """
+                <DataTable TData="Order"
+                           ItemsProvider="@LoadOrdersVirtual"
+                           ItemHeight="40"
+                           Height="360px">
+                    <Columns>
+                        <DataTableColumn TData="Order" TValue="int"     Property="@(o => o.Id)"       Header="ID"       Sortable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)" Header="Customer" Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Product)"  Header="Product"  Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"   Header="Status" />
+                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"   Header="Amount"   Sortable />
+                    </Columns>
+                </DataTable>
+
+                @code {
+                    private async ValueTask<ItemsProviderResult<Order>> LoadOrdersVirtual(DataTableVirtualRequest req)
+                    {
+                        await Task.Delay(150); // simulate network latency
+                        var query = _allOrders.AsEnumerable();
+
+                        if (!string.IsNullOrWhiteSpace(req.SearchText))
+                            query = query.Where(o =>
+                                o.Customer.Contains(req.SearchText, StringComparison.OrdinalIgnoreCase) ||
+                                o.Product.Contains(req.SearchText, StringComparison.OrdinalIgnoreCase));
+
+                        // SortDescriptors holds the active sort — currently at most one entry,
+                        // designed for multi-column sort in the future.
+                        var sort = req.SortDescriptors.FirstOrDefault();
+                        if (sort is not null)
+                            query = (sort.ColumnId, sort.Direction) switch
+                            {
+                                ("id",       SortDirection.Ascending) => query.OrderBy(o => o.Id),
+                                ("id",       _)                       => query.OrderByDescending(o => o.Id),
+                                ("customer", SortDirection.Ascending) => query.OrderBy(o => o.Customer),
+                                ("customer", _)                       => query.OrderByDescending(o => o.Customer),
+                                ("amount",   SortDirection.Ascending) => query.OrderBy(o => o.Amount),
+                                ("amount",   _)                       => query.OrderByDescending(o => o.Amount),
+                                _                                     => query
+                            };
+
+                        var total = query.Count();
+                        var items = query.Skip(req.StartIndex).Take(req.Count).ToList();
+                        return new(items, total);
+                    }
+                }
+                """;
+
+        private const string _virtualizeClientCode = """
+                @* All rows in memory — only visible DOM nodes are rendered *@
+                <DataTable TData="Order"
+                           Data="@_allOrders"
+                           Virtualize="true"
+                           ItemHeight="40"
+                           Height="360px">
+                    <Columns>
+                        <DataTableColumn TData="Order" TValue="int"     Property="@(o => o.Id)"       Header="ID"       Sortable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)" Header="Customer" Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Product)"  Header="Product"  Sortable Filterable />
+                        <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"   Header="Status" />
+                        <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"   Header="Amount"   Sortable />
+                    </Columns>
+                </DataTable>
                 """;
     }
 }
