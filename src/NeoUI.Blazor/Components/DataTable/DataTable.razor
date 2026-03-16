@@ -30,7 +30,7 @@
                     </div>
                 }
             }
-            else if (!_processedData.Any())
+            else if (!IsVirtualized && !_processedData.Any())
             {
                 @if (EmptyTemplate != null)
                 {
@@ -159,7 +159,7 @@
                                         Context="item">
                                 <ItemContent>
                                     @{ var isSelectedVS = _tableState.Selection.IsSelected(item); }
-                                    <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVS)">
+                                    <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVS)" style="@($"height:{ItemHeight}px")">
                                         @RenderRowCells(item, isSelectedVS)
                                     </TableRow>
                                 </ItemContent>
@@ -179,7 +179,7 @@
                                         OverscanCount="@VirtualizeOverscanCount"
                                         Context="item">
                                 @{ var isSelectedVC = _tableState.Selection.IsSelected(item); }
-                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVC)">
+                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVC)" style="@($"height:{ItemHeight}px")">
                                     @RenderRowCells(item, isSelectedVC)
                                 </TableRow>
                             </Virtualize>

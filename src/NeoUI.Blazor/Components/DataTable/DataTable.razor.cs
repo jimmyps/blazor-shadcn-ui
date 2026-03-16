@@ -851,6 +851,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         if (IsVirtualizedServerMode && _virtualizeRef is not null)
         {
             await _virtualizeRef.RefreshDataAsync();
+            _serverResultVersion++;
             return;
         }
 
