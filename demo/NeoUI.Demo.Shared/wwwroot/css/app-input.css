@@ -74,3 +74,8 @@
   }
 }
 
+/* grid-auto-fill-{spacing|[length]} — mirrors the utility defined in the component library */
+@utility grid-auto-fill-* {
+  grid-template-columns: repeat(auto-fill, minmax(--value(--spacing, [length]), 1fr));
+}
+

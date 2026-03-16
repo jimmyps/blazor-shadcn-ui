@@ -7,12 +7,151 @@
 
     <DemoPageHeader
         Title="State Persistence"
-        Description="Save and restore filter state using localStorage or other persistence mechanisms." />
+        Description="Persist filter state to localStorage and restore it on page load so users keep their working view across refreshes." />
 
-    <DemoSection Title="Coming Soon" Description="Full localStorage integration example is coming in a future release.">
-        <div class="bg-muted p-6 rounded-lg">
-            <pre class="text-sm overflow-x-auto font-mono"><code>@_persistenceCode</code></pre>
-        </div>
+    <DemoSection Title="Auto-save to localStorage"
+                 Description="Every filter change is serialized to localStorage. Refresh the page or click Restore Saved State to bring the saved view back.">
+        <DemoBlock Code="@_persistenceCode">
+            <div class="space-y-4">
+                <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                    <div>
+                        <h2 class="text-lg font-semibold">Orders</h2>
+                        <p class="text-sm text-muted-foreground">
+                            @_filteredOrders.Count of @_allOrders.Count shown.
+                            Saved under <code class="rounded bg-muted px-1 py-0.5 text-xs">@StorageKey</code>.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <Button Size="ButtonSize.Small"
+                                Variant="ButtonVariant.Outline"
+                                OnClick="RestoreSavedStateAsync"
+                                Disabled="@(!_hasSavedState)">
+                            Restore Saved State
+                        </Button>
+
+                        <Button Size="ButtonSize.Small"
+                                Variant="ButtonVariant.Outline"
+                                OnClick="ResetBuilder">
+                            Reset Builder
+                        </Button>
+
+                        <Button Size="ButtonSize.Small"
+                                Variant="ButtonVariant.Ghost"
+                                OnClick="ClearSavedStateAsync"
+                                Disabled="@(!_hasSavedState)">
+                            Clear Saved State
+                        </Button>
+                    </div>
+                </div>
+
+                <div class="rounded-md border bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
+                    <span class="font-medium text-foreground">Status:</span> @_statusMessage
+                </div>
+
+                <FilterBuilder @ref="_filterBuilder"
+                               @key="_builderRenderKey"
+                               TData="Order"
+                               @bind-Filters="_activeFilters"
+                               OnFilterChange="HandleFilterChange"
+                               PresetsVariant="FilterPresetsVariant.Tabs">
+                    <FilterFields>
+                        <FilterField Field="OrderNumber"
+                                     Label="Order #"
+                                     Icon="hash"
+                                     Type="FilterFieldType.Text"
+                                     Placeholder="Find an order..." />
+                        <FilterField Field="Customer"
+                                     Label="Customer"
+                                     Icon="user"
+                                     Type="FilterFieldType.Select"
+                                     EditorType="FilterEditorType.Combobox"
+                                     Options="@_customerOptions" />
+                        <FilterField Field="Status"
+                                     Label="Status"
+                                     Icon="activity"
+                                     Type="FilterFieldType.Select"
+                                     Options="@_statusOptions" />
+                        <FilterField Field="Priority"
+                                     Label="Priority"
+                                     Icon="circle-alert"
+                                     Type="FilterFieldType.Select"
+                                     Options="@_priorityOptions" />
+                        <FilterField Field="Amount"
+                                     Label="Amount"
+                                     Icon="dollar-sign"
+                                     Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency"
+                                     Min="0" />
+                    </FilterFields>
+                    <FilterPresets>
+                        <FilterPreset Name="Pending" Icon="clock" Filters="@GetPendingFilters()" />
+                        <FilterPreset Name="High Value" Icon="trending-up" Filters="@GetHighValueFilters()" />
+                    </FilterPresets>
+                </FilterBuilder>
+
+                <div class="grid gap-4 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
+                    <DataTable TData="Order" Data="@_filteredOrders" InitialPageSize="5" ShowToolbar="false">
+                        <Columns>
+                            <DataTableColumn TData="Order" TValue="string" Property="@(o => o.OrderNumber)" Header="Order #" Sortable />
+                            <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Customer)" Header="Customer" Sortable />
+                            <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Status)" Header="Status" Sortable>
+                                <CellTemplate Context="order">
+                                    <Badge Variant="@GetStatusVariant(order.Status)">@order.Status</Badge>
+                                </CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Priority)" Header="Priority" Sortable>
+                                <CellTemplate Context="order">
+                                    <Badge Variant="@GetPriorityVariant(order.Priority)">@order.Priority</Badge>
+                                </CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)" Header="Amount" Sortable Alignment="ColumnAlignment.Right">
+                                <CellTemplate Context="order">
+                                    <span>$@order.Amount.ToString("N2")</span>
+                                </CellTemplate>
+                            </DataTableColumn>
+                        </Columns>
+                    </DataTable>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection>
+        <Collapsible Class="rounded-lg border">
+            <CollapsibleTrigger Class="flex w-full h-9 items-center justify-between text-sm font-medium hover:bg-muted/50 rounded-md px-3 [&_svg]:transition-transform [&_svg]:duration-200 data-[state=open]:[&_svg]:rotate-180">
+                <span>Persisted JSON</span>
+                <LucideIcon Name="chevron-down" Size="16" />
+            </CollapsibleTrigger>
+            <CollapsibleContent Class="border-t">
+                @if (_hasSavedState && !string.IsNullOrWhiteSpace(_savedStateJson))
+                {
+                    <div class="bg-muted/20 p-4">
+                        <pre class="max-h-96 overflow-auto text-xs">@_savedStateJson</pre>
+                    </div>
+                }
+                else
+                {
+                    <div class="p-4 text-sm text-muted-foreground">
+                        No saved filter state yet. Add a filter to create one.
+                    </div>
+                }
+            </CollapsibleContent>
+        </Collapsible>
+
+        <Alert Variant="AlertVariant.Info">
+            <Icon><LucideIcon Name="info" Class="h-4 w-4" /></Icon>
+            <ChildContent>
+                <AlertTitle>What this demo shows</AlertTitle>
+                <AlertDescription>
+                    <ul class="mt-1 list-disc space-y-1 pl-5">
+                        <li><code>@@bind-Filters</code> is the persistence boundary for the component.</li>
+                        <li>Filter changes are serialized to <code>localStorage</code> so a refresh keeps the same view.</li>
+                        <li>Restore logic normalizes JSON values back into editor-friendly types such as strings and decimals.</li>
+                    </ul>
+                </AlertDescription>
+            </ChildContent>
+        </Alert>
     </DemoSection>
 
     <DemoPageSubNav ParentSlug="filter" />
