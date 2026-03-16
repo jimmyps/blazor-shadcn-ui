@@ -2,9 +2,148 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-16 — DataTable virtualization, adaptive DataView grid, and sort API update
+
+> **Release: `v3.6.1`**  
+> **Library change.** Affects `DataTable<TData>` and `DataView<TItem>` in `NeoUI.Blazor`. Introduces two virtualisation modes and a new adaptive grid parameter. Contains one **breaking change** to `DataTableRequest`.
+
+---
+
+### ⚠️ Breaking Change — `DataTableRequest` sort fields replaced by `SortDescriptors`
+
+`DataTableRequest.SortColumn` and `DataTableRequest.SortDirection` have been removed. Sort state is now expressed as `SortDescriptors` (`IReadOnlyList<SortDescriptor>`), matching the multi-column sort model used internally.
+
+**Migration — update your `ServerData` callback:**
+
+```csharp
+// Before
+ServerData="@(async req => {
+    var col = req.SortColumn;
+    var dir = req.SortDirection;
+    ...
+})"
+
+// After
+ServerData="@(async req => {
+    var sort = req.SortDescriptors.FirstOrDefault();
+    var col  = sort?.Column;
+    var dir  = sort?.Direction;
+    ...
+})"
+```
+
+---
+
+### ✨ Enhancement — `DataTable<TData>` server-side virtualisation (infinite scrolling)
+
+A new `ItemsProvider` parameter wires `DataTable` directly to Blazor's `<Virtualize>` component for demand-driven, server-side infinite scroll. Set `ItemsProvider` instead of `ServerData` and the table fetches rows on demand as the user scrolls — no explicit pagination required.
+
+The delegate receives a `DataTableVirtualRequest` with full sort, search, and cancellation context:
+
+```csharp
+ItemsProvider="@(async req => {
+    var page = await _api.GetPageAsync(
+        req.StartIndex, req.Count,
+        req.SortDescriptors, req.SearchText,
+        req.CancellationToken);
+    return new(page.Data, page.TotalCount);
+})"
+```
+
+**New parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ItemsProvider` | `DataTableVirtualProvider<TData>?` | `null` | Activates server-side virtualised mode. Set instead of `ServerData`. |
+| `ItemHeight` | `float` | `40` | Approximate row height in pixels (`ItemSize` hint passed to the virtualizer). Must match your actual row height. |
+| `Height` | `string` | `"400px"` | CSS height of the scrollable table container. Required when either virtualisation mode is active. |
+| `VirtualizeOverscanCount` | `int` | `3` | Extra rows rendered beyond the visible viewport to reduce blank-row flicker during fast scrolling. |
+
+**New public types:**
+
+| Type | Description |
+|---|---|
+| `DataTableVirtualProvider<TData>` | Delegate type for the `ItemsProvider` parameter. |
+| `DataTableVirtualRequest` | Request context: `StartIndex`, `Count`, `SortDescriptors`, `SearchText`, `CancellationToken`. |
+| `SortDescriptor` | Single-column sort descriptor: `Column` and `Direction`. |
+
+---
+
+### ✨ Enhancement — `DataTable<TData>` client-side DOM windowing
+
+`Virtualize="true"` enables Blazor `<Virtualize>` for large in-memory datasets. All rows stay in memory; only the visible nodes are rendered, reducing DOM size and scroll jank for collections of ≈500–20 000 rows where full pagination is undesirable. Requires `ItemHeight` and `Height` to be set so the virtualizer can compute scroll geometry.
+
+---
+
+### ✨ Enhancement — `DataView<TItem>` adaptive auto-fill grid columns
+
+A new `GridColumnMinWidth` parameter enables CSS `repeat(auto-fill, minmax(…, 1fr))` column layout. The browser computes the column count automatically based on the available container width — no manual breakpoint math required. Accepts any CSS length (`"160px"`, `"10rem"`) or a bare Tailwind spacing key (`"40"`). Overrides `GridColumns` when set.
+
+---
+
+### 📖 Demo — `DataTable<TData>` virtualisation sections
+
+Two new sections added to the `/components/datatable` demo page:
+
+| Section | What it shows |
+|---|---|
+| **Infinite Scroll (Server-Side)** | `ItemsProvider` delegate; rows fetched on demand via `<Virtualize>`; receives `StartIndex`, `Count`, `SortDescriptors`, and `SearchText` — no page/page-size math needed. Sorting and global search trigger an automatic virtualizer refresh. |
+| **Virtualize (Client-Side)** | `Virtualize=true` with a large in-memory dataset. All data stays in memory; only visible DOM rows are rendered. Search and sort still run client-side. Demonstrates the `ItemHeight` and `Height` requirements. |
+
+---
+
+### 📖 Demo — `DataView<TItem>` adaptive grid section
+
+One new section added to the `/components/data-view` demo page:
+
+| Section | What it shows |
+|---|---|
+| **Infinite GridView Columns** | `GridColumnMinWidth="160px"` — the browser computes the column count automatically from container width via `repeat(auto-fill, minmax(…, 1fr))`. Resize the viewport to see the column count adapt live with no JavaScript or breakpoint logic required. |
+
+---
+
+### 🐛 Bug Fixes
+
+#### `DataTable` — empty-state template shown in virtualised modes
+
+The empty-state template appeared incorrectly when either virtualisation mode was active because `_processedData` is intentionally unpopulated in those paths. The guard now bypasses the empty check entirely when virtualisation is enabled.
+
+#### `DataTable` — invalid HTML from `<Virtualize>` spacer elements
+
+Blazor's `<Virtualize>` was emitting `<div>` spacer elements inside `<tbody>`, producing invalid HTML. The spacer element is now explicitly set to `<tr>` via `SpacerElement="tr"`.
+
+#### `DataTable` — `colspan="0"` on placeholder rows when all columns hidden
+
+`VisibleColumnCount` was not guarded against zero, producing `colspan="0"` on loading and empty-state rows when all columns were toggled off. The count is now clamped to a minimum of `1`.
+
+#### `DataTable` — selection state broken in client-side `Virtualize` mode
+
+`IsAllSelected` and `IsSomeSelected` read from `_processedData`, which is bypassed in client `Virtualize` mode. `_processedData` and `_filteredData` are now kept in sync with `_virtualizeItems` so selection state correctly reflects the full dataset.
+
+#### `DataView` — focus-ring flicker on the listbox container
+
+`focus:outline-none` suppressed the browser outline only while the container itself had focus, leaving a default black ring visible in some focus states. Replaced with unconditional `outline-none`.
+
+#### `DataView` — duplicate `@oninput` handler on search input
+
+A duplicate `@oninput` event handler was attached to the search `<input>`, causing the search callback to fire twice per keystroke. The redundant handler has been removed.
+
+---
+
+### Changed
+
+- `DataTableRequest.SortDescriptors` replaces `SortColumn` / `SortDirection` — see Breaking Change above.
+- `DataView` item focus indicator now uses `outline-ring` consistently for both focused and unfocused states, improving visual consistency and accessibility.
+- `DataTable` demo — inactive status badge changed from `BadgeVariant.Destructive` to `BadgeVariant.Secondary`.
+- `DataTable` demo — Server-Side Data section reordered to appear before Global Search & Column Visibility for a more logical progression.
+- `NeoUI.Blazor.Primitives` dependency bumped from `3.4.0` → `3.6.0`.
+- `grid-auto-fill-*` CSS utility migrated from the Tailwind v3 `matchUtilities` plugin to a native Tailwind v4 `@utility` block in both the component library and demo CSS inputs.
+
+---
+
 ## 2026-3-14 — Ten new components, four new chart types, DataTable server-side data, and chart reliability fixes
 
-> **Branch: `copilot/new-components-v4`**  
+> **Release: `v3.6.0`**  
 > Affects `NeoUI.Blazor`. Component count rises from **85+** to **100+**. All changes are additive — no breaking changes to existing APIs.
 
 ---
