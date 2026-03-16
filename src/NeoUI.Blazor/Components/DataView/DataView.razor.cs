@@ -139,13 +139,14 @@ public partial class DataView<TItem> : ComponentBase
     [Parameter] public int GridColumns { get; set; } = 3;
 
     /// <summary>
-    /// Minimum tile width for auto-fill columns in Grid layout, expressed as a Tailwind spacing key
-    /// (e.g. <c>40</c> = 10 rem ≈ 160 px, <c>48</c> = 12 rem ≈ 192 px).
-    /// When non-zero, the grid emits <c>grid-auto-fill-{value}</c> so the number of columns grows
-    /// automatically to fill the available container width.
-    /// Overrides <see cref="GridColumns"/> when set.
+    /// Minimum tile width for auto-fill columns in Grid layout.
+    /// Accepts any CSS length string (e.g. <c>"160px"</c>, <c>"10rem"</c>) or a bare Tailwind
+    /// spacing key (e.g. <c>"40"</c> = 10 rem). Raw CSS values are automatically wrapped in
+    /// Tailwind's arbitrary-value brackets so <c>"160px"</c> emits <c>grid-auto-fill-[160px]</c>.
+    /// When set, the number of columns grows automatically to fill the container width.
+    /// Overrides <see cref="GridColumns"/> when set. <c>null</c> or empty = disabled.
     /// </summary>
-    [Parameter] public int GridColumnMinWidth { get; set; } = 0;
+    [Parameter] public string? GridColumnMinWidth { get; set; }
 
     /// <summary>Child content — used to place <see cref="DataViewListTemplate{TItem}"/> and <see cref="DataViewGridTemplate{TItem}"/> sub-components.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -483,8 +484,8 @@ public partial class DataView<TItem> : ComponentBase
 
     private string GridCssClass => ClassNames.cn(
         "grid gap-4 focus:outline-none",
-        GridColumnMinWidth > 0
-            ? $"grid-auto-fill-{GridColumnMinWidth}"
+        !string.IsNullOrWhiteSpace(GridColumnMinWidth)
+            ? BuildGridAutoFillClass(GridColumnMinWidth!)
             : GridColumns switch
             {
                 1 => "grid-cols-1",
@@ -496,6 +497,21 @@ public partial class DataView<TItem> : ComponentBase
             });
 
     private static string ListCssClass => "flex flex-col divide-y divide-border outline-none";
+
+    /// <summary>
+    /// Converts a CSS length or Tailwind spacing key into a <c>grid-auto-fill-*</c> class.
+    /// Raw CSS values (e.g. "160px", "10rem") are wrapped in Tailwind arbitrary-value
+    /// brackets; spacing keys (e.g. "40") and already-bracketed values pass through unchanged.
+    /// </summary>
+    private static string BuildGridAutoFillClass(string value)
+    {
+        var v = value.Trim();
+        // Tailwind spacing key (pure integer) or already uses bracket notation → pass through
+        if (int.TryParse(v, out _) || v.StartsWith('['))
+            return $"grid-auto-fill-{v}";
+        // CSS length (e.g. "160px", "10rem", "50%") → wrap in brackets
+        return $"grid-auto-fill-[{v}]";
+    }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────
 

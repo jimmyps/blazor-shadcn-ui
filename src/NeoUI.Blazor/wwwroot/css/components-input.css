@@ -5,6 +5,15 @@
 /* Configure source paths for scanning Razor files */
 @source "../../Components";
 
+/* grid-auto-fill-{spacing|[length]} utility
+   Defined here with @utility (Tailwind v4 API) because matchUtilities
+   in tailwind.config.js plugins is a v3-only API not supported in v4.
+   --value(--spacing, [length]) matches spacing-scale keys (e.g. 40 = 10rem)
+   and arbitrary CSS length values in brackets (e.g. [160px], [10rem]). */
+@utility grid-auto-fill-* {
+  grid-template-columns: repeat(auto-fill, minmax(--value(--spacing, [length]), 1fr));
+}
+
 /* Component structural variables */
 @layer base {
   :root {

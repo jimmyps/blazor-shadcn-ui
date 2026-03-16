@@ -156,6 +156,7 @@
                                         ItemsProvider="VirtualizeProviderAdapter"
                                         ItemSize="@ItemHeight"
                                         OverscanCount="@VirtualizeOverscanCount"
+                                        SpacerElement="tr"
                                         Context="item">
                                 <ItemContent>
                                     @{ var isSelectedVS = _tableState.Selection.IsSelected(item); }
@@ -177,6 +178,7 @@
                             <Virtualize Items="@_virtualizeItems"
                                         ItemSize="@ItemHeight"
                                         OverscanCount="@VirtualizeOverscanCount"
+                                        SpacerElement="tr"
                                         Context="item">
                                 @{ var isSelectedVC = _tableState.Selection.IsSelected(item); }
                                 <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVC)" style="@($"height:{ItemHeight}px")">
