@@ -138,6 +138,16 @@ public partial class DataView<TItem> : ComponentBase
     /// <summary>Column count in Grid layout (1–6).</summary>
     [Parameter] public int GridColumns { get; set; } = 3;
 
+    /// <summary>
+    /// Minimum tile width for auto-fill columns in Grid layout.
+    /// Accepts any CSS length string (e.g. <c>"160px"</c>, <c>"10rem"</c>) or a bare Tailwind
+    /// spacing key (e.g. <c>"40"</c> = 10 rem). Raw CSS values are automatically wrapped in
+    /// Tailwind's arbitrary-value brackets so <c>"160px"</c> emits <c>grid-auto-fill-[160px]</c>.
+    /// When set, the number of columns grows automatically to fill the container width.
+    /// Overrides <see cref="GridColumns"/> when set. <c>null</c> or empty = disabled.
+    /// </summary>
+    [Parameter] public string? GridColumnMinWidth { get; set; }
+
     /// <summary>Child content — used to place <see cref="DataViewListTemplate{TItem}"/> and <see cref="DataViewGridTemplate{TItem}"/> sub-components.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -444,16 +454,16 @@ public partial class DataView<TItem> : ComponentBase
     // ── CSS & icon helpers ────────────────────────────────────────────────
 
     private string GetListItemClass(TItem item, int index) => ClassNames.cn(
-        "flex items-center transition-colors",
+        "flex items-center transition-all",
         SelectionMode != DataViewSelectionMode.None ? "cursor-pointer select-none" : null,
         index < 0 ? "border-b border-border" : null,
         IsSelected(item) ? "bg-accent/50" : "hover:bg-muted/30",
-        _focusedIndex == index && index >= 0 ? "outline outline-2 -outline-offset-2 outline-ring rounded-sm" : null);
+        _focusedIndex == index && index >= 0 ? "outline outline-2 -outline-offset-2 outline-ring rounded-sm" : "outline-ring");
 
     private string GetGridItemClass(TItem item, int index) => ClassNames.cn(
         "relative cursor-pointer select-none rounded-lg transition-all",
         IsSelected(item) ? "ring-2 ring-primary" : "hover:ring-1 hover:ring-border",
-        _focusedIndex == index ? "outline outline-2 outline-offset-1 outline-ring" : null);
+        _focusedIndex == index ? "outline outline-2 outline-offset-1 outline-ring" : "outline-ring");
 
     private string GetCheckIconName =>
         CheckVariant == DataViewCheckVariant.Check ? "check" : "circle-check";
@@ -474,17 +484,34 @@ public partial class DataView<TItem> : ComponentBase
 
     private string GridCssClass => ClassNames.cn(
         "grid gap-4 focus:outline-none",
-        GridColumns switch
-        {
-            1 => "grid-cols-1",
-            2 => "grid-cols-1 sm:grid-cols-2",
-            4 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
-            5 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-5",
-            6 => "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
-            _ => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-        });
+        !string.IsNullOrWhiteSpace(GridColumnMinWidth)
+            ? BuildGridAutoFillClass(GridColumnMinWidth!)
+            : GridColumns switch
+            {
+                1 => "grid-cols-1",
+                2 => "grid-cols-1 sm:grid-cols-2",
+                4 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+                5 => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-5",
+                6 => "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
+                _ => "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            });
 
-    private static string ListCssClass => "flex flex-col divide-y divide-border focus:outline-none";
+    private static string ListCssClass => "flex flex-col divide-y divide-border outline-none";
+
+    /// <summary>
+    /// Converts a CSS length or Tailwind spacing key into a <c>grid-auto-fill-*</c> class.
+    /// Raw CSS values (e.g. "160px", "10rem") are wrapped in Tailwind arbitrary-value
+    /// brackets; spacing keys (e.g. "40") and already-bracketed values pass through unchanged.
+    /// </summary>
+    private static string BuildGridAutoFillClass(string value)
+    {
+        var v = value.Trim();
+        // Tailwind spacing key (pure integer) or already uses bracket notation → pass through
+        if (int.TryParse(v, out _) || v.StartsWith('['))
+            return $"grid-auto-fill-{v}";
+        // CSS length (e.g. "160px", "10rem", "50%") → wrap in brackets
+        return $"grid-auto-fill-[{v}]";
+    }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────
 

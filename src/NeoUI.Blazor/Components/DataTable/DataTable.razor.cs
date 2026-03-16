@@ -1,5 +1,6 @@
-using NeoUI.Blazor.Primitives;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
+using NeoUI.Blazor.Primitives;
 
 namespace NeoUI.Blazor;
 
@@ -144,6 +145,18 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     private bool _selectAllDropdownOpen = false;
 
+    /// <summary>Blazor Virtualize component reference used to trigger RefreshDataAsync.</summary>
+    private Virtualize<TData>? _virtualizeRef;
+
+    /// <summary>Pre-sorted/filtered item list supplied to the client-side Virtualize component.</summary>
+    private List<TData> _virtualizeItems = new();
+
+    /// <summary>True when the component operates in virtualised server-side mode.</summary>
+    private bool IsVirtualizedServerMode => ItemsProvider is not null;
+
+    /// <summary>True when any form of virtualised rendering is active.</summary>
+    private bool IsVirtualized => IsVirtualizedServerMode || Virtualize;
+
     /// <summary>
     /// Cached reference to the ServerData delegate for ShouldRender optimization.
     /// </summary>
@@ -250,6 +263,21 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     private bool _lastColumnsVisibility;
 
+    /// <summary>Cached Virtualize value for ShouldRender optimization.</summary>
+    private bool _lastVirtualize;
+
+    /// <summary>Cached ItemsProvider reference for ShouldRender optimization.</summary>
+    private DataTableVirtualProvider<TData>? _lastItemsProvider;
+
+    /// <summary>Cached Height value for ShouldRender optimization.</summary>
+    private string _lastHeight = string.Empty;
+
+    /// <summary>Cached ItemHeight value for ShouldRender optimization.</summary>
+    private float _lastItemHeight;
+
+    /// <summary>Cached VirtualizeOverscanCount value for ShouldRender optimization.</summary>
+    private int _lastVirtualizeOverscanCount;
+
     /// <summary>
     /// Gets or sets the client-side data source for the table.
     /// When <see cref="ServerData"/> is provided this can be omitted (defaults to an empty collection).
@@ -267,8 +295,49 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     [Parameter]
     public Func<DataTableRequest, Task<DataTableResult<TData>>>? ServerData { get; set; }
 
-    /// <summary>True when the component is operating in server-side data mode.</summary>
+    /// <summary>True when the component is operating in server-side paged data mode.</summary>
     private bool IsServerMode => ServerData is not null;
+
+    /// <summary>
+    /// Server-side data provider for virtualised infinite-scroll rendering.
+    /// When set, <see cref="Data"/> and <see cref="ServerData"/> are ignored, pagination is
+    /// hidden, and rows are rendered via <c>&lt;Virtualize&gt;</c>.
+    /// The delegate receives a <see cref="DataTableVirtualRequest"/> with the current window
+    /// offset, sort descriptors, and search text, and must return an
+    /// <see cref="Microsoft.AspNetCore.Components.Web.Virtualization.ItemsProviderResult{TData}"/>
+    /// containing the slice and the total matching-item count.
+    /// </summary>
+    [Parameter] public DataTableVirtualProvider<TData>? ItemsProvider { get; set; }
+
+    /// <summary>
+    /// When <c>true</c> and <see cref="Data"/> is set, renders rows via
+    /// <c>&lt;Virtualize Items&gt;</c> instead of a plain loop.
+    /// All filtering and sorting still run client-side; only DOM nodes outside the
+    /// viewport are removed. Pagination is hidden in this mode.
+    /// Has no effect when <see cref="ItemsProvider"/> is also set.
+    /// </summary>
+    [Parameter] public bool Virtualize { get; set; }
+
+    /// <summary>
+    /// Approximate height of a single row in pixels used by the virtualizer as
+    /// <c>ItemSize</c>. Defaults to 40 px (dense row height). Adjust to match your
+    /// actual row height when <see cref="Virtualize"/> is <c>true</c> or
+    /// <see cref="ItemsProvider"/> is set.
+    /// </summary>
+    [Parameter] public float ItemHeight { get; set; } = 40f;
+
+    /// <summary>
+    /// CSS height of the virtualised scroll container, e.g. <c>"400px"</c> or
+    /// <c>"calc(100vh - 200px)"</c>. Required when <see cref="Virtualize"/> is
+    /// <c>true</c> or <see cref="ItemsProvider"/> is set. Defaults to <c>"400px"</c>.
+    /// </summary>
+    [Parameter] public string Height { get; set; } = "400px";
+
+    /// <summary>
+    /// Number of extra rows rendered beyond the visible viewport to reduce blank
+    /// flicker during fast scrolling. Defaults to 3.
+    /// </summary>
+    [Parameter] public int VirtualizeOverscanCount { get; set; } = 3;
 
     /// <summary>
     /// Gets or sets the column definitions as child content.
@@ -448,9 +517,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     [Parameter]
     public bool ColumnsVisibility { get; set; } = true;
 
-    /// <summary>
-    /// Gets the computed CSS classes for the outer container element.
-    /// </summary>
+    /// <summary>Total number of visible columns including the selection checkbox column. Always at least 1 to avoid invalid colspan="0".</summary>
+    private int VisibleColumnCount =>
+        Math.Max(1, _columns.Count(c => c.Visible) +
+        (SelectionMode == DataTableSelectionMode.Multiple ? 1 : 0));
+
     private string ContainerCssClass => ClassNames.cn(
         "w-full space-y-4",
         Class
@@ -577,22 +648,40 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     private async Task ProcessDataAsync()
     {
+        // Virtualised server mode: the Virtualize component drives fetching via
+        // the ItemsProvider delegate — nothing to compute here.
+        if (IsVirtualizedServerMode) return;
+
+        // Client-side virtualise: filter + sort the full dataset but skip the
+        // pagination slice; the Virtualize component handles windowing.
+        // _processedData and _filteredData are kept in sync so selection state
+        // (IsAllSelected, IsSomeSelected, "select all N items") works correctly.
+        if (Virtualize)
+        {
+            var allData = Data ?? Array.Empty<TData>();
+            if (PreprocessData != null) allData = await PreprocessData(allData);
+            var filtered = ApplyFiltering(allData);
+            _filteredData = filtered;
+            _virtualizeItems = ApplySorting(filtered).ToList();
+            _processedData = _virtualizeItems;
+            return;
+        }
+
         if (IsServerMode)
         {
             var request = new DataTableRequest
             {
-                Page       = _tableState.Pagination.CurrentPage,
-                PageSize   = _tableState.Pagination.PageSize,
-                SortColumn = _tableState.Sorting.SortedColumn,
-                SortDirection = _tableState.Sorting.Direction,
-                SearchText = string.IsNullOrWhiteSpace(_globalSearchValue) ? null : _globalSearchValue
+                Page             = _tableState.Pagination.CurrentPage,
+                PageSize         = _tableState.Pagination.PageSize,
+                SortDescriptors  = BuildSortDescriptors(),
+                SearchText       = string.IsNullOrWhiteSpace(_globalSearchValue) ? null : _globalSearchValue
             };
 
             var result = await ServerData!(request);
             _processedData = result.Items.ToList();
-            _filteredData  = _processedData; // not used for filtering in server mode
+            _filteredData  = _processedData;
             _tableState.Pagination.TotalItems = result.TotalCount;
-            _serverResultVersion++; // signal ShouldRender that processed data changed
+            _serverResultVersion++;
             return;
         }
 
@@ -618,6 +707,36 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             .Skip(_tableState.Pagination.StartIndex)
             .Take(_tableState.Pagination.PageSize)
             .ToList();
+    }
+
+    /// <summary>
+    /// Builds the current sort descriptor list from the active single-column sort state.
+    /// Returns an empty list when no sort is active. The list shape is ready to carry
+    /// multiple descriptors once multi-column sorting is added.
+    /// </summary>
+    private IReadOnlyList<SortDescriptor> BuildSortDescriptors() =>
+        _tableState.Sorting.Direction == SortDirection.None
+            ? []
+            : [new SortDescriptor(_tableState.Sorting.SortedColumn, _tableState.Sorting.Direction)];
+
+    /// <summary>
+    /// Builds a <see cref="DataTableVirtualRequest"/> from the current table state and
+    /// the supplied virtualizer request. Called by the Virtualize ItemsProvider wrapper.
+    /// </summary>
+    private DataTableVirtualRequest BuildVirtualRequest(ItemsProviderRequest req) =>
+        new(req.StartIndex, req.Count, BuildSortDescriptors(),
+            string.IsNullOrWhiteSpace(_globalSearchValue) ? null : _globalSearchValue,
+            req.CancellationToken);
+
+    /// <summary>
+    /// Adapts <see cref="ItemsProvider"/> into the <see cref="ItemsProviderDelegate{TData}"/>
+    /// shape expected by Blazor's Virtualize component.
+    /// </summary>
+    private async ValueTask<ItemsProviderResult<TData>> VirtualizeProviderAdapter(
+        ItemsProviderRequest req)
+    {
+        var result = await ItemsProvider!(BuildVirtualRequest(req));
+        return result;
     }
 
     /// <summary>
@@ -707,13 +826,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <param name="sortInfo">The column ID and sort direction.</param>
     private async Task HandleSortChange((string ColumnId, SortDirection Direction) sortInfo)
     {
-        // Invoke custom callback if provided
         if (OnSort.HasDelegate)
-        {
             await OnSort.InvokeAsync(sortInfo);
+
+        if (IsVirtualizedServerMode && _virtualizeRef is not null)
+        {
+            await _virtualizeRef.RefreshDataAsync();
+            StateHasChanged();
+            return;
         }
 
-        // Automatic sorting will happen in ProcessDataAsync via state binding
         await ProcessDataAsync();
         StateHasChanged();
     }
@@ -727,17 +849,20 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     {
         _globalSearchValue = value;
 
-        // Invoke custom callback if provided
         if (OnFilter.HasDelegate)
-        {
             await OnFilter.InvokeAsync(_globalSearchValue);
+
+        if (IsVirtualizedServerMode && _virtualizeRef is not null)
+        {
+            await _virtualizeRef.RefreshDataAsync();
+            _serverResultVersion++;
+            return;
         }
 
         // Reset to first page when filtering
         _tableState.Pagination.CurrentPage = 1;
 
         await ProcessDataAsync();
-        // StateHasChanged() not needed - Blazor auto-renders after async event handlers
     }
 
     /// <summary>
@@ -994,7 +1119,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <returns>True if the component should re-render; otherwise, false.</returns>
     protected override bool ShouldRender()
     {
-        var dataChanged = !ReferenceEquals(_lastData, Data) || !ReferenceEquals(_lastServerData, ServerData);
+        var dataChanged = !ReferenceEquals(_lastData, Data)
+            || !ReferenceEquals(_lastServerData, ServerData)
+            || !ReferenceEquals(_lastItemsProvider, ItemsProvider);
         var selectionModeChanged = _lastSelectionMode != SelectionMode;
         var loadingChanged = _lastIsLoading != IsLoading;
         var columnsChanged = _lastColumnsVersion != _columnsVersion;
@@ -1010,11 +1137,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             || _lastBodyRowClass != BodyRowClass
             || _lastCellBorder != CellBorder
             || _lastColumnsVisibility != ColumnsVisibility;
+        var virtualizeChanged = _lastVirtualize != Virtualize
+            || _lastHeight != Height
+            || _lastItemHeight != ItemHeight
+            || _lastVirtualizeOverscanCount != VirtualizeOverscanCount;
 
-        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || serverResultChanged || styleChanged)
+        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || serverResultChanged || styleChanged || virtualizeChanged)
         {
             _lastData = Data;
             _lastServerData = ServerData;
+            _lastItemsProvider = ItemsProvider;
             _lastSelectionMode = SelectionMode;
             _lastIsLoading = IsLoading;
             _lastColumnsVersion = _columnsVersion;
@@ -1030,6 +1162,10 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             _lastBodyRowClass = BodyRowClass;
             _lastCellBorder = CellBorder;
             _lastColumnsVisibility = ColumnsVisibility;
+            _lastVirtualize = Virtualize;
+            _lastHeight = Height;
+            _lastItemHeight = ItemHeight;
+            _lastVirtualizeOverscanCount = VirtualizeOverscanCount;
             return true;
         }
 
