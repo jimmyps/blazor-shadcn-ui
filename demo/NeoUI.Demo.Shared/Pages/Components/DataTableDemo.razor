@@ -135,6 +135,62 @@
     </DemoSection>
 
     <DemoSection
+        Title="Server-Side Data"
+        Description="Use the ServerData callback to load, sort, filter and paginate data on the server. The component passes a DataTableRequest with the current page, page size, sort column and search text. Returns DataTableResult&lt;T&gt; with the page of items and total count.">
+        <DemoBlock Code="@_serverDataCode">
+            <DataTable TData="Order" ServerData="@LoadOrders" InitialPageSize="10"
+                       PageSizes="@(new[]{ 10, 25, 50 })">
+                <Columns>
+                    <DataTableColumn TData="Order" TValue="int" Property="@(o => o.Id)" Header="ID" Sortable Width="80px" />
+                    <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Customer)" Header="Customer" Sortable Filterable />
+                    <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Product)" Header="Product" Sortable Filterable />
+                    <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Status)" Header="Status" />
+                    <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)" Header="Amount" Sortable Alignment="ColumnAlignment.Right" />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Infinite Scroll (Server-Side)"
+        Description="Set ItemsProvider to a DataTableVirtualProvider delegate. The component renders rows via Virtualize so only visible rows are in the DOM. The delegate receives StartIndex, Count, SortDescriptors, and SearchText — no page/pageSize math needed. Sorting and search trigger a virtualizer refresh automatically.">
+        <DemoBlock Code="@_infiniteScrollServerCode">
+            <DataTable TData="Order"
+                       ItemsProvider="@LoadOrdersVirtual"
+                       ItemHeight="40"
+                       Height="360px">
+                <Columns>
+                    <DataTableColumn TData="Order" TValue="int"     Property="@(o => o.Id)"       Header="ID"       Sortable Alignment="ColumnAlignment.Right" />
+                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)"  Header="Customer" Sortable Filterable />
+                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Product)"   Header="Product"  Sortable Filterable />
+                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"    Header="Status" />
+                    <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"    Header="Amount"   Sortable Alignment="ColumnAlignment.Right" />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Virtualize (Client-Side)"
+        Description="Set Virtualize=true to keep all data in memory but only render visible DOM rows. Search and sort still run client-side. Useful for large in-memory datasets (500–20k rows) where you don't want pagination.">
+        <DemoBlock Code="@_virtualizeClientCode">
+            <DataTable TData="Order"
+                       Data="@_allOrders"
+                       Virtualize="true"
+                       ItemHeight="40"
+                       Height="360px">
+                <Columns>
+                    <DataTableColumn TData="Order" TValue="int"     Property="@(o => o.Id)"       Header="ID"       Sortable Alignment="ColumnAlignment.Right" />
+                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)"  Header="Customer" Sortable Filterable />
+                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Product)"   Header="Product"  Sortable Filterable />
+                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"    Header="Status" />
+                    <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"    Header="Amount"   Sortable Alignment="ColumnAlignment.Right" />
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Global Search &amp; Column Visibility"
         Description="Search across all columns and toggle column visibility.">
         <DemoBlock Code="@_searchCode">
@@ -147,27 +203,11 @@
                     <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
                     <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Status)" Header="Status">
                         <CellTemplate Context="person">
-                            <Badge Variant="@(person.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Destructive)">
+                            <Badge Variant="@(person.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">
                                 @person.Status
                             </Badge>
                         </CellTemplate>
                     </DataTableColumn>
-                </Columns>
-            </DataTable>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection Title="Server-Side Data"
-                 Description="Use the ServerData callback to load, sort, filter and paginate data on the server. The component passes a DataTableRequest with the current page, page size, sort column and search text. Returns DataTableResult&lt;T&gt; with the page of items and total count.">
-        <DemoBlock Code="@_serverDataCode">
-            <DataTable TData="Order" ServerData="@LoadOrders" InitialPageSize="10"
-                       PageSizes="@(new[]{ 10, 25, 50 })">
-                <Columns>
-                    <DataTableColumn TData="Order" TValue="int" Property="@(o => o.Id)" Header="ID" Sortable Width="80px" />
-                    <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Customer)" Header="Customer" Sortable Filterable />
-                    <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Product)" Header="Product" Sortable Filterable />
-                    <DataTableColumn TData="Order" TValue="string" Property="@(o => o.Status)" Header="Status" />
-                    <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)" Header="Amount" Sortable Alignment="ColumnAlignment.Right" />
                 </Columns>
             </DataTable>
         </DemoBlock>
@@ -283,45 +323,6 @@
                 <kbd class="px-2 py-1 bg-muted rounded text-sm font-mono">Click</kbd>
             </div>
         </div>
-    </DemoSection>
-
-    <DemoSection
-        Title="Infinite Scroll (Server-Side)"
-        Description="Set ItemsProvider to a DataTableVirtualProvider delegate. The component renders rows via Virtualize so only visible rows are in the DOM. The delegate receives StartIndex, Count, SortDescriptors, and SearchText — no page/pageSize math needed. Sorting and search trigger a virtualizer refresh automatically.">
-        <DemoBlock Code="@_infiniteScrollServerCode">
-            <DataTable TData="Order"
-                       ItemsProvider="@LoadOrdersVirtual"
-                       ItemHeight="40"
-                       Height="360px">
-                <Columns>
-                    <DataTableColumn TData="Order" TValue="int"     Property="@(o => o.Id)"       Header="ID"       Sortable Alignment="ColumnAlignment.Right" />
-                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)"  Header="Customer" Sortable Filterable />
-                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Product)"   Header="Product"  Sortable Filterable />
-                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"    Header="Status" />
-                    <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"    Header="Amount"   Sortable Alignment="ColumnAlignment.Right" />
-                </Columns>
-            </DataTable>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Virtualize (Client-Side)"
-        Description="Set Virtualize=true to keep all data in memory but only render visible DOM rows. Search and sort still run client-side. Useful for large in-memory datasets (500–20k rows) where you don't want pagination.">
-        <DemoBlock Code="@_virtualizeClientCode">
-            <DataTable TData="Order"
-                       Data="@_allOrders"
-                       Virtualize="true"
-                       ItemHeight="40"
-                       Height="360px">
-                <Columns>
-                    <DataTableColumn TData="Order" TValue="int"     Property="@(o => o.Id)"       Header="ID"       Sortable Alignment="ColumnAlignment.Right" />
-                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Customer)"  Header="Customer" Sortable Filterable />
-                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Product)"   Header="Product"  Sortable Filterable />
-                    <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"    Header="Status" />
-                    <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"    Header="Amount"   Sortable Alignment="ColumnAlignment.Right" />
-                </Columns>
-            </DataTable>
-        </DemoBlock>
     </DemoSection>
 
     <DemoSection

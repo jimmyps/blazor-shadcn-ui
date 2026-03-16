@@ -4,11 +4,6 @@
 /* Import Tailwind CSS */
 @import 'tailwindcss';
 
-/* grid-auto-fill-{spacing|[length]} — mirrors the utility defined in the component library */
-@utility grid-auto-fill-* {
-  grid-template-columns: repeat(auto-fill, minmax(--value(--spacing, [length]), 1fr));
-}
-
 /* Import new OKLCH single-theme file */
 @import '../styles/theme.css';
 
@@ -77,5 +72,10 @@
     -moz-appearance: textfield !important;
     appearance: textfield !important;
   }
+}
+
+/* grid-auto-fill-{spacing|[length]} — mirrors the utility defined in the component library */
+@utility grid-auto-fill-* {
+  grid-template-columns: repeat(auto-fill, minmax(--value(--spacing, [length]), 1fr));
 }
 

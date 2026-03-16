@@ -62,7 +62,6 @@
                 {
                     <Input Value="@_searchValue"
                            ValueChanged="@((string v) => { _searchValue = v; HandleSearchInput(new ChangeEventArgs { Value = v }); })"
-                           @oninput="HandleSearchInput"
                            Placeholder="Search…"
                            Class="h-8 w-48 text-sm" />
                 }
