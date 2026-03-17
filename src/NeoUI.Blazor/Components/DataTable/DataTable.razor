@@ -16,7 +16,8 @@
         }
 
         <div class="@TableContainerCssClass"
-             style="@(IsVirtualized ? $"height:{Height};overflow-y:auto" : null)">
+             style="@TableContainerStyle"
+             data-pinned-table="@(HasPinnedColumns ? "true" : null)">
             @if (IsLoading)
             {
                 @if (LoadingTemplate != null)
@@ -30,7 +31,7 @@
                     </div>
                 }
             }
-            else if (!IsVirtualized && !_processedData.Any())
+            else if (!IsVirtualized && (IsTreeMode ? !_treeRows.Any() : !_processedData.Any()))
             {
                 @if (EmptyTemplate != null)
                 {
@@ -54,12 +55,22 @@
                                                  OnSortChange="HandleSortChange"
                                                  OnSelectionChange="HandleSelectionChange"
                                                  Class="@TableCssClass"
+                                                 style="@TableBorderStyle"
                                                  AriaLabel="@AriaLabel">
+                    @if (HasTableFixed)
+                    {
+                        <colgroup>
+                            @foreach (var col in _columns.Where(c => c.Visible))
+                            {
+                                <col style="@GetColStyle(col)" />
+                            }
+                        </colgroup>
+                    }
                     <TableHeader Class="@ClassNames.cn(HeaderClass, IsVirtualized ? "sticky top-0 z-10 bg-background" : null)">
                         <TableRow TData="TData" Class="@ComputedHeaderRowClass">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
-                                <TableHeaderCell TData="TData" Class="@ClassNames.cn(HeaderCellPaddingClass, "text-left align-middle font-medium text-muted-foreground w-12")" role="columnheader">
+                                <TableHeaderCell TData="TData" Class="@ClassNames.cn(HeaderCellPaddingClass, "text-left align-middle font-medium text-muted-foreground w-12", CellBorderClass)" role="columnheader">
                                     <div @onclick:stopPropagation="true">
                                         @if (ShouldShowSelectAllPrompt())
                                         {
@@ -118,8 +129,9 @@
                                 };
 
                                 <TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
-                                                 Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass)"
-                                                 style="@GetColumnWidthStyle(column)"
+                                                 Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass, GetPinnedCellClass(column, isHeader: true), CellBorderClass)"
+                                                 style="@GetColumnStyle(column)"
+                                                 data-pinned="@(column.Pinned != ColumnPinnedSide.None ? "true" : null)"
                                                  aria-sort="@ariaSortValue">
                                     <div class="@ClassNames.cn("flex items-center gap-2", flexJustify)">
                                         <span>@column.Header</span>
@@ -173,7 +185,7 @@
                                 </Placeholder>
                             </Virtualize>
                         }
-                        else if (Virtualize)
+                        else if (Virtualize && !IsTreeMode)
                         {
                             <Virtualize Items="@_virtualizeItems"
                                         ItemSize="@ItemHeight"
@@ -185,6 +197,16 @@
                                     @RenderRowCells(item, isSelectedVC)
                                 </TableRow>
                             </Virtualize>
+                        }
+                        else if (IsTreeMode)
+                        {
+                            @foreach (var treeRow in _treeRows)
+                            {
+                                var isSelected = _tableState.Selection.IsSelected(treeRow.Item);
+                                <TableRow TData="TData" Item="@treeRow.Item" Class="@GetBodyRowClass(isSelected)">
+                                    @RenderTreeRowCells(treeRow, isSelected)
+                                </TableRow>
+                            }
                         }
                         else
                         {
@@ -201,7 +223,7 @@
             }
         </div>
 
-        @if (ShowPagination && !IsLoading && !IsVirtualized && _processedData.Any())
+        @if (ShowPagination && !IsLoading && !IsVirtualized && !IsTreeMode && _processedData.Any())
         {
             <Pagination State="@_tableState.Pagination"
                         PageSizes="@PageSizes"
@@ -238,7 +260,7 @@
         @<text>
             @if (SelectionMode == DataTableSelectionMode.Multiple)
             {
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")" role="gridcell">
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12", CellBorderClass)">
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
                                   CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(item, chk))"
@@ -254,7 +276,9 @@
                     ColumnAlignment.Right  => "text-right",
                     _                      => "text-left"
                 };
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass)">
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col), CellBorderClass)"
+                           data-pinned="@(col.Pinned != ColumnPinnedSide.None ? "true" : null)"
+                           style="@GetColumnStyle(col)">
                     @if (col.CellTemplate != null)
                     {
                         @col.CellTemplate(item)
@@ -262,6 +286,96 @@
                     else
                     {
                         @(col.Property(item)?.ToString() ?? "")
+                    }
+                </TableCell>
+            }
+        </text>;
+
+    private RenderFragment RenderTreeRowCells(TreeRow treeRow, bool isSelected) =>
+        @<text>
+            @if (SelectionMode == DataTableSelectionMode.Multiple)
+            {
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12", CellBorderClass)">
+                    <div @onclick:stopPropagation="true">
+                        <Checkbox Checked="@isSelected"
+                                  CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(treeRow.Item, chk))"
+                                  AriaLabel="Select this row" />
+                    </div>
+                </TableCell>
+            }
+            @{
+                var visibleCols = _columns.Where(c => c.Visible).ToList();
+            }
+            @foreach (var col in visibleCols)
+            {
+                var colIndex = visibleCols.IndexOf(col);
+                var cellAlign = col.Alignment switch
+                {
+                    ColumnAlignment.Center => "text-center",
+                    ColumnAlignment.Right  => "text-right",
+                    _                      => "text-left"
+                };
+                var isTreeCol = colIndex == 0;
+                var depthPad = isTreeCol && treeRow.Depth > 0 ? $"padding-left:{treeRow.Depth * 20 + 16}px" : null;
+                var baseStyle = GetColumnStyle(col);
+                var cellStyle = depthPad is null ? baseStyle : (baseStyle is null ? depthPad : $"{baseStyle};{depthPad}");
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col), CellBorderClass)"
+                           style="@cellStyle">
+                    @if (isTreeCol)
+                    {
+                        <span class="inline-flex items-center gap-1">
+                            @if (treeRow.HasChildren || treeRow.IsLoading)
+                            {
+                                <button type="button"
+                                        @onclick="@(async () => await ToggleExpand(treeRow.Item))"
+                                        @onclick:stopPropagation="true"
+                                        class="inline-flex items-center justify-center w-5 h-5 rounded-sm hover:bg-accent transition-colors shrink-0"
+                                        aria-label="@(treeRow.IsExpanded ? "Collapse" : "Expand")">
+                                    @if (treeRow.IsLoading)
+                                    {
+                                        <svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                                        </svg>
+                                    }
+                                    else if (treeRow.IsExpanded)
+                                    {
+                                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    }
+                                    else
+                                    {
+                                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    }
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="w-5 h-5 shrink-0 inline-block" />
+                            }
+                            @if (col.CellTemplate != null)
+                            {
+                                @col.CellTemplate(treeRow.Item)
+                            }
+                            else
+                            {
+                                @(col.Property(treeRow.Item)?.ToString() ?? "")
+                            }
+                        </span>
+                    }
+                    else
+                    {
+                        @if (col.CellTemplate != null)
+                        {
+                            @col.CellTemplate(treeRow.Item)
+                        }
+                        else
+                        {
+                            @(col.Property(treeRow.Item)?.ToString() ?? "")
+                        }
                     }
                 </TableCell>
             }

@@ -37,6 +37,11 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("OnSort", "EventCallback<(string, SortDirection)>", "—", "Fires when the user changes the sort column or direction."),
                 new("OnFilter", "EventCallback<string?>", "—", "Fires when the global search value changes."),
                 new("PreprocessData", "Func<IEnumerable<TData>, Task<IEnumerable<TData>>>?", "null", "Async hook to transform data before filtering and sorting."),
+                new("ChildrenProperty", "Func<TData, IEnumerable<TData>?>?", "null", "Returns child items for each row, activating tree mode. Children render inline with depth indentation. Incompatible with ItemsProvider (virtualised server mode)."),
+                new("LoadChildrenAsync", "Func<TData, Task<IEnumerable<TData>>>?", "null", "Lazy async child loader — called on first expand of a node. Activates tree mode. Use with HasChildrenField to control whether the expander is shown before loading."),
+                new("HasChildrenField", "Func<TData, bool>?", "null", "Hints whether a node has children without loading them. In lazy mode, the expander is shown for all nodes unless this is provided."),
+                new("ValueField", "Func<TData, string>?", "null", "Returns a stable unique key per item for tracking expanded state. Strongly recommended in tree mode; falls back to RuntimeHelpers.GetHashCode when omitted."),
+                new("ExpandedValues", "HashSet<string>?", "null", "Two-way bindable set of expanded row keys. Use @bind-ExpandedValues to persist or restore the expand state across renders."),
             ];
 
         private static readonly IReadOnlyList<DemoPropRow> _dataTableColumnProps =
@@ -54,6 +59,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("MaxWidth", "string?", "null", "Maximum column width CSS value."),
                 new("CellClass", "string?", "null", "Extra CSS classes on every body cell in this column."),
                 new("HeaderClass", "string?", "null", "Extra CSS classes on this column's header cell."),
+                new("Pinned", "ColumnPinnedSide", "None", "Sticks the column to the Left or Right edge during horizontal scroll. A shadow separator marks the boundary. Requires an explicit px Width for reliable offset calculation."),
             ];
 
         private const string _basicTableCode = """
@@ -164,6 +170,64 @@ namespace NeoUI.Demo.Shared.Pages.Components
                         <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
                     </Columns>
                 </DataTable>
+                """;
+
+        private const string _columnPinningCode = """
+                <DataTable TData="Employee" Data="@_employees" ShowPagination="false">
+                    <Columns>
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Name)"
+                            Header="Name" Width="200px" Pinned="ColumnPinnedSide.Left" Sortable />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Department)" Header="Department" Width="140px" Sortable />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Title)"      Header="Title"      Width="180px" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Location)"   Header="Location"   Width="130px" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Manager)"    Header="Manager"    Width="160px" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.StartDate)"  Header="Start Date" Width="120px" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Salary)"     Header="Salary"     Width="110px" Alignment="ColumnAlignment.Right" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Status)"     Header="Status"     Width="100px" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Name)"
+                            Header="Actions" Width="90px" Pinned="ColumnPinnedSide.Right" Alignment="ColumnAlignment.Center">
+                            <CellTemplate Context="e">
+                                <!-- action buttons -->
+                            </CellTemplate>
+                        </DataTableColumn>
+                    </Columns>
+                </DataTable>
+                """;
+
+        private const string _treeRowsCode = """
+                <DataTable TData="CoaAccount" Data="@_coaAccounts"
+                           ChildrenProperty="@(a => a.Children)"
+                           ValueField="@(a => a.Code)"
+                           ShowPagination="false">
+                    <Columns>
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Name)"
+                            Header="Account Name" Width="220px" Pinned="ColumnPinnedSide.Left" Sortable />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Code)"          Header="Code"           Width="80px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Type)"          Header="Type"           Width="120px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.DetailType)"    Header="Detail Type"    Width="190px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Description)"   Header="Description"    Width="240px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Currency)"      Header="Currency"       Width="90px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.TaxLine)"       Header="Tax Line"       Width="180px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.NormalBalance)" Header="Normal Balance" Width="140px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Balance)"       Header="Balance"        Width="130px" Alignment="ColumnAlignment.Right" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Status)"        Header="Status"         Width="90px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.CreatedBy)"     Header="Created By"     Width="130px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.LastModified)"  Header="Last Modified"  Width="130px" />
+                        <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Code)"
+                            Header="Actions" Width="80px" Pinned="ColumnPinnedSide.Right" Alignment="ColumnAlignment.Center">
+                            <CellTemplate Context="a">
+                                <!-- action buttons for leaf accounts -->
+                            </CellTemplate>
+                        </DataTableColumn>
+                    </Columns>
+                </DataTable>
+
+                @code {
+                    record CoaAccount(string Code, string Name, string Type, string DetailType,
+                        string Description, string Currency, string TaxLine, string NormalBalance,
+                        string Balance, string Status, string CreatedBy, string LastModified,
+                        List<CoaAccount> Children);
+                }
                 """;
 
         private const string _serverDataCode = """
