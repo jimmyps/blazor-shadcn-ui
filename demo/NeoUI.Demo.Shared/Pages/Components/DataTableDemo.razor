@@ -190,6 +190,114 @@
         </DemoBlock>
     </DemoSection>
 
+        <DemoSection
+        Title="Column Pinning"
+        Description="Pin columns to the left or right edge so they stay visible while scrolling horizontally. Add Pinned=&quot;ColumnPinnedSide.Left&quot; or Pinned=&quot;ColumnPinnedSide.Right&quot; to any column. Set an explicit Width on pinned columns so offsets can be calculated correctly.">
+        <DemoBlock Code="@_columnPinningCode">
+            <DataTable TData="PinnedEmployee" Data="@_pinnedEmployees" ShowPagination="false">
+                <Columns>
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Name)"
+                        Header="Name" Width="200px" Pinned="ColumnPinnedSide.Left" Sortable>
+                        <CellTemplate Context="e">
+                            <div>
+                                <p class="font-medium">@e.Name</p>
+                                <p class="text-xs text-muted-foreground">@e.Email</p>
+                            </div>
+                        </CellTemplate>
+                    </DataTableColumn>
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Department)" Header="Department" Width="140px" Sortable />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Title)"      Header="Title"      Width="180px" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Location)"   Header="Location"   Width="130px" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Manager)"    Header="Manager"    Width="160px" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.StartDate)"  Header="Start Date" Width="120px" Sortable />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Salary)"     Header="Salary"     Width="110px" Alignment="ColumnAlignment.Right" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Status)"     Header="Status"     Width="100px">
+                        <CellTemplate Context="e">
+                            <Badge Variant="@(e.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">@e.Status</Badge>
+                        </CellTemplate>
+                    </DataTableColumn>
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Name)"
+                        Header="Actions" Width="90px" Pinned="ColumnPinnedSide.Right" Alignment="ColumnAlignment.Center">
+                        <CellTemplate Context="e">
+                            <div class="flex items-center justify-center gap-1">
+                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="size-7">
+                                    <LucideIcon Name="pencil" Size="13" />
+                                </Button>
+                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="size-7 text-destructive hover:text-destructive">
+                                    <LucideIcon Name="trash-2" Size="13" />
+                                </Button>
+                            </div>
+                        </CellTemplate>
+                    </DataTableColumn>
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Self Referencing Rows (Chart of Accounts)"
+        Description="Set ChildrenProperty to render a self-referencing hierarchy in-place. Rows expand and collapse with chevrons. When searching, ancestor rows containing matching descendants are automatically expanded. Combined here with column pinning to keep Account Name visible while scrolling across all the accounting columns.">
+        <DemoBlock Code="@_treeRowsCode">
+            <DataTable TData="CoaAccount" Data="@_coaAccounts"
+                       ChildrenProperty="@(a => a.Children)"
+                       ValueField="@(a => a.Code)"
+                       ShowPagination="false">
+                <Columns>
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Name)"
+                        Header="Account Name" Width="220px" Pinned="ColumnPinnedSide.Left" Sortable />
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Code)"
+                        Header="Code" Width="80px" />
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Type)"
+                        Header="Type" Width="120px">
+                        <CellTemplate Context="a">
+                            <Badge Variant="@(a.Type switch {
+                                "Asset"     => BadgeVariant.Default,
+                                "Liability" => BadgeVariant.Destructive,
+                                "Equity"    => BadgeVariant.Secondary,
+                                "Revenue"   => BadgeVariant.Outline,
+                                _           => BadgeVariant.Secondary })">@a.Type</Badge>
+                        </CellTemplate>
+                    </DataTableColumn>
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Description)"
+                        Header="Description" Width="240px" />
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Currency)"
+                        Header="Currency" Width="90px" />
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Balance)"
+                        Header="Balance" Width="130px" Alignment="ColumnAlignment.Right">
+                        <CellTemplate Context="a">
+                            <span class="@(a.Balance.StartsWith("-") ? "text-destructive font-mono text-sm" : "font-mono text-sm")">@a.Balance</span>
+                        </CellTemplate>
+                    </DataTableColumn>
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Status)"
+                        Header="Status" Width="90px">
+                        <CellTemplate Context="a">
+                            @if (!string.IsNullOrEmpty(a.Status))
+                            {
+                                <Badge Variant="@(a.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">@a.Status</Badge>
+                            }
+                        </CellTemplate>
+                    </DataTableColumn>
+                    <DataTableColumn TData="CoaAccount" TValue="string" Property="@(a => a.Code)"
+                        Header="Actions" Width="80px" Pinned="ColumnPinnedSide.Right" Alignment="ColumnAlignment.Center">
+                        <CellTemplate Context="a">
+                            @if (!string.IsNullOrEmpty(a.CreatedBy))
+                            {
+                                <div class="flex items-center justify-center gap-1">
+                                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="size-7">
+                                        <LucideIcon Name="pencil" Size="13" />
+                                    </Button>
+                                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="size-7 text-destructive hover:text-destructive">
+                                        <LucideIcon Name="trash-2" Size="13" />
+                                    </Button>
+                                </div>
+                            }
+                        </CellTemplate>
+                    </DataTableColumn>
+                </Columns>
+            </DataTable>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection
         Title="Global Search &amp; Column Visibility"
         Description="Search across all columns and toggle column visibility.">
@@ -417,5 +525,87 @@
     private void EditPerson(Person person) { }
     private void AddNewPerson() { }
     private void ExportData() { }
+
+    // ── Column Pinning demo ───────────────────────────────────────────────────
+    private record PinnedEmployee(string Name, string Email, string Department, string Title,
+        string Location, string Manager, string StartDate, string Salary, string Status);
+
+    private static readonly PinnedEmployee[] _pinnedEmployees =
+    [
+        new("Alice Johnson",  "alice@acme.com",   "Engineering",  "Senior Engineer",        "New York",     "Carol White",  "Jan 2022", "$145,000", "Active"),
+        new("Bob Smith",      "bob@acme.com",     "Design",       "UI/UX Designer",         "San Francisco","Carol White",  "Mar 2022", "$120,000", "Active"),
+        new("Carol White",    "carol@acme.com",   "Engineering",  "Engineering Manager",    "New York",     "Henry Brown",  "Jun 2019", "$180,000", "Active"),
+        new("David Kim",      "david@acme.com",   "Product",      "Product Manager",        "Austin",       "Henry Brown",  "Sep 2021", "$155,000", "Active"),
+        new("Eva Martinez",   "eva@acme.com",     "Sales",        "Account Executive",      "Chicago",      "Frank Lee",    "Feb 2023", "$95,000",  "Active"),
+        new("Frank Lee",      "frank@acme.com",   "Sales",        "Sales Director",         "Chicago",      "Henry Brown",  "Apr 2018", "$165,000", "Active"),
+        new("Grace Taylor",   "grace@acme.com",   "Engineering",  "Frontend Engineer",      "Remote",       "Carol White",  "Jul 2023", "$125,000", "Active"),
+        new("Henry Brown",    "henry@acme.com",   "Executive",    "VP of Engineering",      "New York",     "—",            "Jan 2015", "$250,000", "Active"),
+        new("Ivan Petrov",    "ivan@acme.com",    "Engineering",  "Backend Engineer",       "Remote",       "Carol White",  "Nov 2022", "$130,000", "Inactive"),
+        new("Julia Chen",     "julia@acme.com",   "Design",       "Design Lead",            "San Francisco","Carol White",  "May 2021", "$140,000", "Active"),
+    ];
+
+    // ── Tree / Chart of Accounts demo ────────────────────────────────────────
+    private record CoaAccount(string Code, string Name, string Type, string DetailType,
+        string Description, string Currency, string TaxLine, string NormalBalance,
+        string Balance, string Status, string CreatedBy, string LastModified,
+        List<CoaAccount> Children);
+
+    private static readonly List<CoaAccount> _coaAccounts =
+    [
+        new("1000", "Assets", "Asset", "", "All asset accounts", "", "", "Debit", "", "", "", "", [
+            new("1100", "Current Assets", "Asset", "", "Short-term assets convertible within 12 months", "", "", "Debit", "", "", "", "", [
+                new("1110", "Cash & Cash Equivalents", "Asset", "Checking", "Operating bank accounts and petty cash",        "USD", "Balance Sheet", "Debit",  "$48,250.00",  "Active", "admin",   "Mar 10, 2026", []),
+                new("1120", "Accounts Receivable",     "Asset", "Accounts Receivable", "Amounts owed by customers for delivered goods/services", "USD", "A/R",           "Debit",  "$23,740.00",  "Active", "admin",   "Mar 8, 2026",  []),
+                new("1130", "Inventory",               "Asset", "Inventory",      "Raw materials, WIP, and finished goods on hand",      "USD", "Inventory",     "Debit",  "$31,500.00",  "Active", "jsmith",  "Mar 9, 2026",  []),
+                new("1140", "Prepaid Expenses",        "Asset", "Prepaid Expenses","Insurance, rent, and subscriptions paid in advance",  "USD", "Balance Sheet", "Debit",  "$4,200.00",   "Active", "jsmith",  "Feb 28, 2026", []),
+            ]),
+            new("1200", "Fixed Assets", "Asset", "", "Long-term tangible and intangible assets", "", "", "Debit", "", "", "", "", [
+                new("1210", "Property & Equipment",       "Asset", "Fixed Asset",              "Land, buildings, machinery, and vehicles",       "USD", "Balance Sheet", "Debit",  "$185,000.00", "Active", "admin",   "Jan 15, 2026", []),
+                new("1220", "Accumulated Depreciation",   "Asset", "Accumulated Depreciation", "Contra-asset reducing book value of fixed assets","USD", "Balance Sheet", "Credit", "-$42,300.00", "Active", "admin",   "Mar 10, 2026", []),
+                new("1230", "Intangible Assets",          "Asset", "Intangible Asset",         "Patents, trademarks, and purchased goodwill",     "USD", "Balance Sheet", "Debit",  "$15,000.00",  "Active", "jsmith",  "Jan 20, 2026", []),
+            ]),
+        ]),
+        new("2000", "Liabilities", "Liability", "", "All liability accounts", "", "", "Credit", "", "", "", "", [
+            new("2100", "Current Liabilities", "Liability", "", "Obligations due within 12 months", "", "", "Credit", "", "", "", "", [
+                new("2110", "Accounts Payable",     "Liability", "Accounts Payable",       "Amounts owed to vendors and suppliers",                 "USD", "A/P",           "Credit", "$18,600.00",  "Active", "admin",   "Mar 9, 2026",  []),
+                new("2120", "Accrued Liabilities",  "Liability", "Other Current Liability","Accrued wages, taxes, and short-term obligations",      "USD", "Balance Sheet", "Credit", "$7,850.00",   "Active", "jsmith",  "Mar 1, 2026",  []),
+                new("2130", "Short-term Debt",      "Liability", "Line of Credit",         "Current portion of long-term debt and credit lines",    "USD", "Balance Sheet", "Credit", "$25,000.00",  "Active", "admin",   "Feb 1, 2026",  []),
+            ]),
+            new("2200", "Long-term Liabilities", "Liability", "", "Obligations due beyond 12 months", "", "", "Credit", "", "", "", "", [
+                new("2210", "Long-term Debt",    "Liability", "Long-term Debt",      "Notes payable and mortgage obligations",         "USD", "Balance Sheet", "Credit", "$120,000.00", "Active", "admin",   "Jan 10, 2026", []),
+                new("2220", "Deferred Revenue",  "Liability", "Deferred Revenue",    "Revenue received but not yet earned",            "USD", "Balance Sheet", "Credit", "$5,500.00",   "Active", "jsmith",  "Feb 14, 2026", []),
+            ]),
+        ]),
+        new("3000", "Equity", "Equity", "", "Owner's equity and retained earnings", "", "", "Credit", "", "", "", "", [
+            new("3100", "Owner's Capital",    "Equity", "Owner's Equity",    "Initial and additional owner contributions", "USD", "Balance Sheet", "Credit", "$95,000.00",  "Active", "admin",  "Jan 1, 2026",  []),
+            new("3200", "Retained Earnings",  "Equity", "Retained Earnings", "Cumulative net income less dividends paid",  "USD", "Balance Sheet", "Credit", "$62,440.00",  "Active", "admin",  "Mar 10, 2026", []),
+            new("3300", "Common Stock",       "Equity", "Common Stock",      "Shares issued and outstanding at par value", "USD", "Balance Sheet", "Credit", "$50,000.00",  "Active", "admin",  "Jan 1, 2026",  []),
+        ]),
+        new("4000", "Revenue", "Revenue", "", "All revenue and income accounts", "", "", "Credit", "", "", "", "", [
+            new("4100", "Operating Revenue", "Revenue", "", "Revenue from primary business activities", "", "", "Credit", "", "", "", "", [
+                new("4110", "Sales Revenue",       "Revenue", "Sales of Product Income", "Revenue from product sales",              "USD", "Income",       "Credit", "$342,100.00", "Active", "jsmith", "Mar 10, 2026", []),
+                new("4120", "Service Revenue",     "Revenue", "Service/Fee Income",      "Revenue from professional services",      "USD", "Income",       "Credit", "$98,500.00",  "Active", "jsmith", "Mar 8, 2026",  []),
+                new("4130", "Subscription Revenue","Revenue", "Service/Fee Income",      "Recurring monthly and annual subscriptions","USD","Income",      "Credit", "$45,200.00",  "Active", "jsmith", "Mar 9, 2026",  []),
+            ]),
+            new("4200", "Other Revenue", "Revenue", "", "Non-operating income streams", "", "", "Credit", "", "", "", "", [
+                new("4210", "Interest Income", "Revenue", "Interest Earned",       "Interest earned on bank accounts and loans", "USD", "Other Income", "Credit", "$1,240.00", "Active", "admin", "Feb 20, 2026", []),
+                new("4220", "Other Income",    "Revenue", "Other Business Income", "Miscellaneous non-operating income",          "USD", "Other Income", "Credit", "$3,800.00", "Active", "admin", "Feb 15, 2026", []),
+            ]),
+        ]),
+        new("5000", "Expenses", "Expense", "", "All operating and non-operating expense accounts", "", "", "Debit", "", "", "", "", [
+            new("5100", "Cost of Goods Sold", "Expense", "", "Direct costs attributable to goods sold", "", "", "Debit", "", "", "", "", [
+                new("5110", "Cost of Goods Sold", "Expense", "Cost of Goods Sold", "Direct cost of products sold during the period",  "USD", "COGS",    "Debit", "$198,400.00", "Active", "admin",  "Mar 10, 2026", []),
+                new("5120", "Direct Labor",       "Expense", "Labor",              "Wages and benefits of production staff",          "USD", "Payroll", "Debit", "$62,300.00",  "Active", "jsmith", "Mar 9, 2026",  []),
+            ]),
+            new("5200", "Operating Expenses", "Expense", "", "Indirect costs of running the business", "", "", "Debit", "", "", "", "", [
+                new("5210", "Salaries & Wages",        "Expense", "Payroll Expenses",          "Compensation for non-production employees",   "USD", "Payroll",   "Debit", "$124,800.00", "Active", "admin",  "Mar 10, 2026", []),
+                new("5220", "Rent & Lease",             "Expense", "Rent or Lease",             "Office and warehouse facility rent",           "USD", "Operating", "Debit", "$36,000.00",  "Active", "jsmith", "Mar 1, 2026",  []),
+                new("5230", "Utilities",                "Expense", "Utilities",                 "Electricity, water, gas, and internet",        "USD", "Operating", "Debit", "$8,400.00",   "Active", "jsmith", "Mar 8, 2026",  []),
+                new("5240", "Marketing & Advertising",  "Expense", "Advertising/Promotional",   "Digital, print, and event advertising",        "USD", "Operating", "Debit", "$22,500.00",  "Active", "admin",  "Feb 10, 2026", []),
+                new("5250", "Professional Fees",        "Expense", "Legal & Professional Fees", "Legal, accounting, and consulting services",   "USD", "Operating", "Debit", "$15,600.00",  "Active", "admin",  "Feb 25, 2026", []),
+                new("5260", "Depreciation Expense",     "Expense", "Depreciation",              "Periodic allocation of fixed asset cost",      "USD", "Operating", "Debit", "$14,100.00",  "Active", "admin",  "Mar 10, 2026", []),
+            ]),
+        ]),
+    ];
 
 }

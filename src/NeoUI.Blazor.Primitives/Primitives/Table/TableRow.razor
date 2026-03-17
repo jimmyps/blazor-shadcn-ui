@@ -17,8 +17,10 @@
 @code {
     private ElementReference _elementRef;
     private bool _spaceKeyHandlerAttached = false;
+    private bool _clickInterceptAttached = false;
     private IJSObjectReference? _tableRowNavModule;
     private IJSObjectReference? _spaceKeyCleanup;
+    private IJSObjectReference? _clickInterceptCleanup;
 
     [CascadingParameter]
     private TableContext<TData> Context { get; set; } = default!;
@@ -51,7 +53,12 @@
 
     private bool IsSelectable => Context != null && Context.SelectionMode != SelectionMode.None;
 
-    private bool IsKeyboardNavigable => IsSelectable && Context != null && Context.EnableKeyboardNavigation;
+    private bool IsKeyboardNavigable => Context != null && Context.EnableKeyboardNavigation;
+
+    // Intercept clicks when selection is active so user-provided interactive
+    // content in cell templates (buttons, links, inputs) doesn't accidentally
+    // trigger row selection.
+    private bool NeedsClickIntercept => IsSelectable;
 
     /// <summary>
     /// Focus ring classes for keyboard navigation visibility.
@@ -68,31 +75,62 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && IsKeyboardNavigable && !_spaceKeyHandlerAttached)
+        try
         {
-            try
+            if (IsKeyboardNavigable && !_spaceKeyHandlerAttached)
             {
-                // Lazy-load the table row navigation module
                 _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
                     "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
 
-                // Attach event listener in capture phase to prevent Space from scrolling
-                // This runs before Blazor's event handler, allowing us to preventDefault
                 _spaceKeyCleanup = await _tableRowNavModule.InvokeAsync<IJSObjectReference>(
                     "preventSpaceKeyScroll", _elementRef);
                 _spaceKeyHandlerAttached = true;
             }
-            catch
+
+            if (NeedsClickIntercept && !_clickInterceptAttached)
             {
-                // Silently fail during prerendering
+                _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
+
+                _clickInterceptCleanup = await _tableRowNavModule.InvokeAsync<IJSObjectReference>(
+                    "interceptInteractiveClicks", _elementRef);
+                _clickInterceptAttached = true;
             }
+            else if (!NeedsClickIntercept && _clickInterceptAttached)
+            {
+                // Selection mode was disabled after initial render — detach the intercept.
+                if (_clickInterceptCleanup != null)
+                {
+                    await _clickInterceptCleanup.InvokeVoidAsync("dispose");
+                    await _clickInterceptCleanup.DisposeAsync();
+                    _clickInterceptCleanup = null;
+                }
+                _clickInterceptAttached = false;
+            }
+        }
+        catch (InvalidOperationException)
+        {
+            // Silently fail during prerendering when JS interop is not available.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Silently fail when the server circuit has disconnected.
         }
     }
 
-    private void HandleClick()
+    private async Task HandleClick()
     {
         if (Item != null && IsSelectable)
         {
+            // Skip row selection when the click originated from an interactive
+            // child element (user-provided button/link/input in a cell template).
+            if (_clickInterceptAttached && _tableRowNavModule != null)
+            {
+                var wasInteractive = await _tableRowNavModule.InvokeAsync<bool>(
+                    "consumeInteractiveClickFlag", _elementRef);
+                if (wasInteractive) return;
+            }
+
             Context.ToggleRowSelection(Item);
         }
     }
@@ -135,9 +173,13 @@
                 "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
             await _tableRowNavModule.InvokeVoidAsync("moveFocusToPreviousRow", _elementRef);
         }
-        catch
+        catch (InvalidOperationException)
         {
-            // Ignore JS interop errors (e.g., during prerendering)
+            // Ignore JS interop errors during prerendering.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore JS interop errors when the server circuit has disconnected.
         }
     }
 
@@ -149,9 +191,13 @@
                 "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
             await _tableRowNavModule.InvokeVoidAsync("moveFocusToNextRow", _elementRef);
         }
-        catch
+        catch (InvalidOperationException)
         {
-            // Ignore JS interop errors (e.g., during prerendering)
+            // Ignore JS interop errors during prerendering.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore JS interop errors when the server circuit has disconnected.
         }
     }
 
@@ -164,22 +210,23 @@
                 await _spaceKeyCleanup.InvokeVoidAsync("dispose");
                 await _spaceKeyCleanup.DisposeAsync();
             }
-            catch
+            catch { }
+        }
+
+        if (_clickInterceptCleanup != null)
+        {
+            try
             {
-                // Ignore disposal errors
+                await _clickInterceptCleanup.InvokeVoidAsync("dispose");
+                await _clickInterceptCleanup.DisposeAsync();
             }
+            catch { }
         }
 
         if (_tableRowNavModule != null)
         {
-            try
-            {
-                await _tableRowNavModule.DisposeAsync();
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
+            try { await _tableRowNavModule.DisposeAsync(); }
+            catch { }
         }
     }
 }
