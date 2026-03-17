@@ -136,6 +136,15 @@ public partial class DataTableColumn<TData, TValue> : ComponentBase where TData 
     public ColumnAlignment Alignment { get; set; } = ColumnAlignment.Left;
 
     /// <summary>
+    /// Gets or sets which edge this column is pinned to during horizontal scrolling.
+    /// Pinned columns use <c>position: sticky</c> and require an explicit <see cref="Width"/>
+    /// for accurate offset calculation when multiple columns are pinned on the same side.
+    /// Default is <see cref="ColumnPinnedSide.None"/>.
+    /// </summary>
+    [Parameter]
+    public ColumnPinnedSide Pinned { get; set; } = ColumnPinnedSide.None;
+
+    /// <summary>
     /// Gets or sets the parent DataTable component.
     /// Automatically set via cascading parameter.
     /// </summary>
