@@ -289,6 +289,82 @@
     outline: none !important;
   }
 
+  /* DataTable theming — all visual state (borders, hover, selected, pinned
+     backgrounds) lives here in CSS. C# only handles structure (padding,
+     alignment, z-index, sticky positioning, separators).
+
+     Rules are scoped to [data-pinned-table] where the behaviour differs from
+     normal tables (e.g. cell-level borders required by border-separate).
+     Hover/selected/pinned-bg apply only inside pinned tables so normal tables
+     keep their existing Tailwind tr-level utilities without regression. */
+
+  /* ── Cell Borders (pinned tables only) ──
+     With border-collapse: separate, tr-level border-b is hidden behind cells.
+     Each cell must draw its own bottom border. */
+  [data-pinned-table] .group\/row > td,
+  [data-pinned-table] .group\/row > th {
+    border-bottom: 1px solid var(--border);
+    transition: background-color 150ms ease;
+  }
+
+  /* ── Hover (pinned tables only) ──
+     Tint on ALL cells — identical for pinned and non-pinned so pinned cells
+     don't stay behind while non-pinned cells change colour.
+     Pinned cells use ~80% opacity bg via Tailwind (bg-background/90); hover
+     overrides to a semi-transparent muted tint to keep the frosted-glass look. */
+  [data-pinned-table] .group\/row:hover > td {
+    background-color: color-mix(in oklab, var(--muted) 80%, transparent);
+  }
+
+  /* ── Selected (pinned tables only) ──
+     Row background set so the <tr> doesn't bleed through under sticky cells. */
+  [data-pinned-table] .group\/row[aria-selected="true"] {
+    background-color: var(--muted);
+  }
+
+  [data-pinned-table] .group\/row[aria-selected="true"] > td {
+    background-color: var(--muted);
+  }
+
+
+  /* When columns are pinned, cells apply backdrop-filter which creates a stacking
+     context that paints over a tr-level box-shadow (ring). Drawing the ring as an
+     inset box-shadow on each cell instead avoids this problem.
+
+     Scoped to [data-pinned-table] so standard tables keep the existing tr-level
+     ring (focus:ring-inset on the <tr>) without regression.
+
+     position: relative + z-index only on :focus — permanent relative on <tr>
+     triggers a Chromium bug that hides cell borders under border-collapse: collapse. */
+  [data-pinned-table] [role="row"][tabindex="0"]:focus {
+    outline: none;
+    position: relative;
+    z-index: 10;
+    /* Suppress tr-level ring (focus:ring-inset from TableRow) — ring is drawn per-cell instead */
+    box-shadow: none !important;
+  }
+
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="cell"],
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="columnheader"] {
+    box-shadow: inset 0 2px 0 0 var(--ring), inset 0 -2px 0 0 var(--ring);
+    background: inherit;
+  }
+
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="cell"]:first-child,
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="columnheader"]:first-child {
+    box-shadow: inset 2px 0 0 0 var(--ring), inset 0 2px 0 0 var(--ring), inset 0 -2px 0 0 var(--ring);
+  }
+
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="cell"]:last-child,
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="columnheader"]:last-child {
+    box-shadow: inset -2px 0 0 0 var(--ring), inset 0 2px 0 0 var(--ring), inset 0 -2px 0 0 var(--ring);
+  }
+
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="cell"]:only-child,
+  [data-pinned-table] [role="row"][tabindex="0"]:focus > [role="columnheader"]:only-child {
+    box-shadow: inset 2px 0 0 0 var(--ring), inset -2px 0 0 0 var(--ring), inset 0 2px 0 0 var(--ring), inset 0 -2px 0 0 var(--ring);
+  }
+
   /* DataGrid animation utilities for Accordion/Collapsible */
   .grid-rows-\[0fr\] {
     grid-template-rows: 0fr;

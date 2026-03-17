@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
+using System.Runtime.CompilerServices;
 using NeoUI.Blazor.Primitives;
 
 namespace NeoUI.Blazor;
@@ -108,12 +109,25 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         /// Gets or sets the horizontal alignment for the column content.
         /// </summary>
         public ColumnAlignment Alignment { get; set; } = ColumnAlignment.Left;
+
+        /// <summary>
+        /// Gets or sets which edge this column is pinned to during horizontal scrolling.
+        /// </summary>
+        public ColumnPinnedSide Pinned { get; set; } = ColumnPinnedSide.None;
     }
 
     /// <summary>
     /// Stores the list of registered column definitions.
     /// </summary>
     private List<ColumnData> _columns = new();
+
+    /// <summary>
+    /// Width of the multi-select checkbox column in pixels.
+    /// Derived from the Tailwind class "w-12" (3 rem = 48 px at the default 16 px root font size)
+    /// used for the selection cell in both header and body rows.
+    /// If the class ever changes, update this constant to match.
+    /// </summary>
+    private const int SelectionColumnWidthPx = 48;
 
     /// <summary>
     /// Maintains the table state including sorting, filtering, pagination, and selection.
@@ -278,6 +292,32 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <summary>Cached VirtualizeOverscanCount value for ShouldRender optimization.</summary>
     private int _lastVirtualizeOverscanCount;
 
+    // ── Tree-mode state ──────────────────────────────────────────────────────
+
+    /// <summary>Represents a flattened row in the tree, carrying depth and expand state.</summary>
+    private record TreeRow(TData Item, int Depth, bool HasChildren, bool IsLoading, bool IsExpanded);
+
+    /// <summary>Flattened ordered list of visible tree rows.</summary>
+    private List<TreeRow> _treeRows = new();
+
+    /// <summary>Working set of expanded item keys.</summary>
+    private HashSet<string> _expandedRowsInternal = new();
+
+    /// <summary>Last known reference to ExpandedValues for change detection in OnParametersSetAsync.</summary>
+    private HashSet<string>? _lastExpandedValues;
+
+    /// <summary>Cache of lazily-fetched children keyed by parent item key.</summary>
+    private Dictionary<string, List<TData>> _fetchedChildren = new();
+
+    /// <summary>Set of item keys currently being loaded (shows spinner).</summary>
+    private HashSet<string> _loadingNodes = new();
+
+    /// <summary>Incremented whenever the tree expand/collapse state changes.</summary>
+    private int _treeVersion;
+
+    /// <summary>Cached tree version for ShouldRender optimization.</summary>
+    private int _lastTreeVersion;
+
     /// <summary>
     /// Gets or sets the client-side data source for the table.
     /// When <see cref="ServerData"/> is provided this can be omitted (defaults to an empty collection).
@@ -297,6 +337,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
 
     /// <summary>True when the component is operating in server-side paged data mode.</summary>
     private bool IsServerMode => ServerData is not null;
+
+    /// <summary>True when tree mode is active (ChildrenProperty or LoadChildrenAsync is set, and not in VirtualizedServer mode).</summary>
+    private bool IsTreeMode => !IsVirtualizedServerMode && (ChildrenProperty is not null || LoadChildrenAsync is not null);
 
     /// <summary>
     /// Server-side data provider for virtualised infinite-scroll rendering.
@@ -338,6 +381,39 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// flicker during fast scrolling. Defaults to 3.
     /// </summary>
     [Parameter] public int VirtualizeOverscanCount { get; set; } = 3;
+
+    /// <summary>
+    /// Provides child items for in-memory tree rendering.
+    /// Tree mode is active when this or <see cref="LoadChildrenAsync"/> is set.
+    /// </summary>
+    [Parameter] public Func<TData, IEnumerable<TData>?>? ChildrenProperty { get; set; }
+
+    /// <summary>
+    /// Provides children lazily per node via an async fetch.
+    /// Mutually exclusive benefit with <see cref="ChildrenProperty"/>; only one should be set.
+    /// </summary>
+    [Parameter] public Func<TData, Task<IEnumerable<TData>>>? LoadChildrenAsync { get; set; }
+
+    /// <summary>
+    /// Optional hint telling the table whether a node has children (shows expander without pre-loading).
+    /// </summary>
+    [Parameter] public Func<TData, bool>? HasChildrenField { get; set; }
+
+    /// <summary>
+    /// Required in tree mode: returns a stable unique string key for each item, used to track expand state.
+    /// Falls back to <see cref="RuntimeHelpers.GetHashCode"/> when not provided.
+    /// </summary>
+    [Parameter] public Func<TData, string>? ValueField { get; set; }
+
+    /// <summary>
+    /// Gets or sets the set of currently expanded item keys for two-way binding.
+    /// </summary>
+    [Parameter] public HashSet<string>? ExpandedValues { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the expanded item keys change.
+    /// </summary>
+    [Parameter] public EventCallback<HashSet<string>> ExpandedValuesChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the column definitions as child content.
@@ -517,6 +593,21 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     [Parameter]
     public bool ColumnsVisibility { get; set; } = true;
 
+    /// <summary>
+    /// Controls the column-sizing algorithm used by the table.
+    /// <list type="bullet">
+    ///   <item><see cref="TableColumnSizing.Auto"/> (default) — <c>table-layout: auto</c>;
+    ///   column <c>Width</c> values are hints the browser may override.</item>
+    ///   <item><see cref="TableColumnSizing.Fixed"/> — <c>table-layout: fixed</c>;
+    ///   column widths are strictly honoured via a rendered <c>&lt;colgroup&gt;</c>.
+    ///   Use this when you need guaranteed fixed widths without column pinning, or when
+    ///   combining fixed widths with future column-resizing support.</item>
+    /// </list>
+    /// Tables with pinned columns always use fixed sizing regardless of this setting.
+    /// </summary>
+    [Parameter]
+    public TableColumnSizing ColumnSizing { get; set; } = TableColumnSizing.Auto;
+
     /// <summary>Total number of visible columns including the selection checkbox column. Always at least 1 to avoid invalid colspan="0".</summary>
     private int VisibleColumnCount =>
         Math.Max(1, _columns.Count(c => c.Visible) +
@@ -529,17 +620,61 @@ public partial class DataTable<TData> : ComponentBase where TData : class
 
     /// <summary>
     /// Gets the computed CSS classes for the table container element.
+    /// overflow-x-auto is always present so sticky columns work from the first render
+    /// without waiting for a re-render to detect HasPinnedColumns.
     /// </summary>
     private string TableContainerCssClass => ClassNames.cn(
-        "rounded-md border"
+        "rounded-md border overflow-x-auto"
     );
 
     /// <summary>
+    /// Gets the inline style for the table container, combining height/scroll for virtualization.
+    /// </summary>
+    private string? TableContainerStyle => IsVirtualized ? $"height:{Height};overflow-y:auto" : null;
+
+    /// <summary>True when at least one visible column is pinned left or right.</summary>
+    private bool HasPinnedColumns => _columns.Any(c => c.Pinned != ColumnPinnedSide.None);
+
+    /// <summary>
+    /// Returns true when the table should use <c>table-layout: fixed</c>.
+    /// Fixed layout is required whenever any column is pinned (sticky positioning needs
+    /// stable widths) or when <see cref="ColumnSizing"/> is explicitly set to
+    /// <see cref="TableColumnSizing.Fixed"/>. It causes the browser to strictly
+    /// honour the widths supplied via the &lt;colgroup&gt; elements; columns whose total
+    /// exceeds the container width overflow it, enabling horizontal scrolling.
+    /// </summary>
+    private bool HasTableFixed =>
+        ColumnSizing == TableColumnSizing.Fixed || HasPinnedColumns;
+
+    /// <summary>
     /// Gets the computed CSS classes for the table element.
+    /// Adds <c>table-fixed</c> (table-layout: fixed) when pinned columns are present so that
+    /// column widths defined via &lt;colgroup&gt; are strictly honoured and the table can
+    /// overflow its container horizontally.
     /// </summary>
     private string TableCssClass => ClassNames.cn(
-        "w-full caption-bottom text-sm"
+        "w-full caption-bottom text-sm",
+        HasTableFixed ? "table-fixed" : null
     );
+
+    /// <summary>
+    /// Inline style applied to the &lt;table&gt; element when pinned columns are present.
+    /// TanStack Table's sticky-pinning example documents this as required: sticky columns
+    /// with borders or box-shadows only work correctly under <c>border-collapse: separate</c>
+    /// because <c>border-collapse: collapse</c> shares borders between adjacent cells and the
+    /// browser's resolution algorithm can suppress them, especially when a <c>backdrop-filter</c>
+    /// or <c>z-index</c> stacking context is involved.
+    /// <c>border-spacing: 0</c> keeps the visual layout identical to the collapsed model.
+    /// </summary>
+    private string? TableBorderStyle =>
+        HasPinnedColumns ? "border-collapse: separate; border-spacing: 0" : null;
+
+    /// <summary>
+    /// Gets the inline width style for a single &lt;col&gt; element inside &lt;colgroup&gt;.
+    /// Only emitted when the table is in fixed-layout mode.
+    /// </summary>
+    private string? GetColStyle(ColumnData column) =>
+        !string.IsNullOrWhiteSpace(column.Width) ? $"width: {column.Width}" : null;
 
     /// <summary>
     /// Gets the padding classes for header cells based on the Dense setting.
@@ -567,7 +702,12 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// the optional BodyRowClass override.
     /// </summary>
     private string GetBodyRowClass(bool isSelected) => ClassNames.cn(
-        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        HasPinnedColumns
+            // Pinned: group/row + bg-background so CSS can handle hover/selected/border
+            // per-cell (required because border-collapse:separate hides tr-level borders)
+            ? "group/row bg-background transition-colors"
+            // Normal: standard Tailwind tr-level utilities — no regression
+            : "group border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
         isSelected ? "bg-muted" : null,
         CellBorder ? "divide-x divide-border" : null,
         BodyRowClass
@@ -589,6 +729,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     protected override async Task OnParametersSetAsync()
     {
+        // Sync externally-provided ExpandedValues into internal state.
+        // Use SetEquals so that in-place mutations of the same HashSet instance are also detected.
+        if (ExpandedValues is not null &&
+            (!ReferenceEquals(ExpandedValues, _lastExpandedValues) ||
+             !_expandedRowsInternal.SetEquals(ExpandedValues)))
+        {
+            _lastExpandedValues = ExpandedValues;
+            _expandedRowsInternal = new HashSet<string>(ExpandedValues);
+        }
+
         // Keep selection mode in sync with parameter
         _tableState.Selection.Mode = GetPrimitiveSelectionMode();
 
@@ -636,10 +786,17 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             CellTemplate = column.CellTemplate,
             CellClass = column.CellClass,
             HeaderClass = column.HeaderClass,
-            Alignment = column.Alignment
+            Alignment = column.Alignment,
+            Pinned = column.Pinned
         };
 
         _columns.Add(columnData);
+        _columnsVersion++;
+        // Schedule a re-render so properties that depend on _columns (HasTableFixed, HasPinnedColumns,
+        // column offsets, colgroup, etc.) are evaluated with the fully-populated column list.
+        // Calling StateHasChanged here is safe — Blazor batches re-renders triggered during a
+        // render cycle and applies them after the current batch completes.
+        StateHasChanged();
     }
 
     /// <summary>
@@ -652,11 +809,42 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         // the ItemsProvider delegate — nothing to compute here.
         if (IsVirtualizedServerMode) return;
 
+        // Tree mode: build flat tree from root items (server or local).
+        if (IsTreeMode)
+        {
+            if (IsServerMode)
+            {
+                var request = new DataTableRequest
+                {
+                    Page            = _tableState.Pagination.CurrentPage,
+                    PageSize        = _tableState.Pagination.PageSize,
+                    SortDescriptors = BuildSortDescriptors(),
+                    SearchText      = string.IsNullOrWhiteSpace(_globalSearchValue) ? null : _globalSearchValue
+                };
+                var result = await ServerData!(request);
+                _processedData = result.Items.ToList();
+                _filteredData  = _processedData;
+                _tableState.Pagination.TotalItems = result.TotalCount;
+                _serverResultVersion++;
+            }
+            else
+            {
+                var treeData = Data ?? Array.Empty<TData>();
+                if (PreprocessData != null) treeData = await PreprocessData(treeData);
+                _filteredData  = ApplyTreeFiltering(treeData).ToList();
+                var sorted     = ApplySorting(_filteredData);
+                _tableState.Pagination.TotalItems = sorted.Count();
+                _processedData = sorted.ToList();
+            }
+            BuildTreeRows();
+            return;
+        }
+
         // Client-side virtualise: filter + sort the full dataset but skip the
         // pagination slice; the Virtualize component handles windowing.
         // _processedData and _filteredData are kept in sync so selection state
         // (IsAllSelected, IsSomeSelected, "select all N items") works correctly.
-        if (Virtualize)
+        if (Virtualize && !IsTreeMode)
         {
             var allData = Data ?? Array.Empty<TData>();
             if (PreprocessData != null) allData = await PreprocessData(allData);
@@ -1052,12 +1240,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
-    /// Builds the inline style attribute for column width constraints.
-    /// Returns null if no width constraints are specified.
+    /// Builds the complete inline style for a column, covering width constraints and sticky pinning.
     /// </summary>
-    /// <param name="column">The column to get width styles for.</param>
-    /// <returns>A CSS style string or null if no width is specified.</returns>
-    private string? GetColumnWidthStyle(ColumnData column)
+    private string? GetColumnStyle(ColumnData column)
     {
         var styles = new List<string>();
 
@@ -1070,7 +1255,258 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         if (!string.IsNullOrWhiteSpace(column.MaxWidth))
             styles.Add($"max-width: {column.MaxWidth}");
 
-        return styles.Any() ? string.Join("; ", styles) : null;
+        if (column.Pinned != ColumnPinnedSide.None)
+        {
+            styles.Add("position: sticky");
+            styles.Add(column.Pinned == ColumnPinnedSide.Left
+                ? $"left: {GetPinnedOffset(column)}px"
+                : $"right: {GetPinnedOffset(column)}px");
+
+            // Separator between the pinned group and scrollable columns.
+            // Must be an inline style — TailwindMerge treats border-r/border-l and
+            // border-b as the same conflict group, so border-r added via a class gets
+            // dropped when border-b appears later in the cn() call.
+            if (IsLastPinnedLeft(column))
+                styles.Add("border-right: 1px solid var(--border)");
+            else if (IsFirstPinnedRight(column))
+                styles.Add("border-left: 1px solid var(--border)");
+        }
+
+        return styles.Count > 0 ? string.Join("; ", styles) : null;
+    }
+
+    /// <summary>
+    /// Returns extra CSS classes for a pinned column cell.
+    /// Background, hover, selected, and border-b are all handled by
+    /// .group/row CSS rules in components-input.css — cells only need
+    /// sticky z-index classes here. The data-pinned attribute triggers
+    /// the CSS background-color: inherit rule for opaque sticky coverage.
+    /// </summary>
+    private string GetPinnedCellClass(ColumnData column, bool isHeader = false)
+    {
+        if (column.Pinned == ColumnPinnedSide.None) return string.Empty;
+
+        return isHeader ? "z-20 bg-background/40 backdrop-blur-sm" : "z-[1] bg-background/60 backdrop-blur-sm";
+    }
+
+    /// <summary>
+    /// Computes the sticky offset (px) for a pinned column based on the combined widths
+    /// of all preceding pinned columns on the same side.
+    /// When <see cref="SelectionMode"/> is <see cref="DataTableSelectionMode.Multiple"/> the
+    /// selection checkbox column precedes all data columns and its width is added to the
+    /// offset of every left-pinned column so they don't overlap it at scroll position 0.
+    /// </summary>
+    private int GetPinnedOffset(ColumnData column)
+    {
+        var offset = 0;
+        if (column.Pinned == ColumnPinnedSide.Left)
+        {
+            // Reserve space for the non-sticky selection checkbox column when present.
+            if (SelectionMode == DataTableSelectionMode.Multiple)
+                offset += SelectionColumnWidthPx;
+
+            foreach (var col in _columns.Where(c => c.Visible && c.Pinned == ColumnPinnedSide.Left))
+            {
+                if (ReferenceEquals(col, column)) break;
+                offset += ParsePxWidth(col.Width);
+            }
+        }
+        else
+        {
+            var rightPinned = _columns.Where(c => c.Visible && c.Pinned == ColumnPinnedSide.Right).ToList();
+            var idx = rightPinned.FindIndex(c => ReferenceEquals(c, column));
+            for (var i = idx + 1; i < rightPinned.Count; i++)
+                offset += ParsePxWidth(rightPinned[i].Width);
+        }
+        return offset;
+    }
+
+    private bool IsLastPinnedLeft(ColumnData column)
+    {
+        var last = _columns.LastOrDefault(c => c.Visible && c.Pinned == ColumnPinnedSide.Left);
+        return last is not null && ReferenceEquals(last, column);
+    }
+
+    private bool IsFirstPinnedRight(ColumnData column)
+    {
+        var first = _columns.FirstOrDefault(c => c.Visible && c.Pinned == ColumnPinnedSide.Right);
+        return first is not null && ReferenceEquals(first, column);
+    }
+
+    /// <summary>
+    /// Parses an integer pixel value from a CSS width string such as <c>"200px"</c>.
+    /// </summary>
+    /// <returns>
+    /// The integer pixel value when the string ends with <c>px</c> and contains a valid integer;
+    /// otherwise 0. Pinned columns <b>must</b> use a pixel width (e.g. <c>"200px"</c>) so that
+    /// <see cref="GetPinnedOffset"/> can compute correct sticky <c>left</c>/<c>right</c> values.
+    /// Other CSS length units (%, rem, em, …) are not supported and will result in an offset of 0,
+    /// which can cause adjacent pinned columns to overlap.
+    /// </returns>
+    private static int ParsePxWidth(string? width)
+    {
+        if (!string.IsNullOrWhiteSpace(width) && width.TrimEnd().EndsWith("px") &&
+            int.TryParse(width.TrimEnd()[..^2].Trim(), out var px))
+            return px;
+        return 0;
+    }
+
+    // ── Tree-mode helper methods ─────────────────────────────────────────────
+
+    /// <summary>Returns a stable string key for the given item.</summary>
+    private string GetItemKey(TData item) =>
+        ValueField?.Invoke(item) ?? RuntimeHelpers.GetHashCode(item).ToString();
+
+    /// <summary>Filters root items for tree mode, auto-expanding ancestors with matching descendants.</summary>
+    private IEnumerable<TData> ApplyTreeFiltering(IEnumerable<TData> data)
+    {
+        if (string.IsNullOrWhiteSpace(_globalSearchValue))
+            return data;
+
+        // Lazy-load mode: only filter roots (cannot walk children without fetching).
+        if (ChildrenProperty is null)
+            return ApplyFiltering(data);
+
+        var searchValue = _globalSearchValue;
+        var filterableColumns = _columns.Where(c => c.Filterable).ToList();
+        if (filterableColumns.Count == 0) filterableColumns = _columns;
+
+        var result = data.Where(item =>
+            MatchesSearch(item, searchValue, filterableColumns) ||
+            HasMatchingDescendant(item, searchValue, filterableColumns))
+            .ToList();
+
+        foreach (var item in result)
+            AutoExpandForSearch(item, searchValue, filterableColumns);
+
+        return result;
+    }
+
+    private bool HasMatchingDescendant(TData item, string searchValue, List<ColumnData> filterableColumns)
+    {
+        if (ChildrenProperty is null) return false;
+        var children = ChildrenProperty(item);
+        if (children is null) return false;
+        foreach (var child in children)
+        {
+            if (MatchesSearch(child, searchValue, filterableColumns)) return true;
+            if (HasMatchingDescendant(child, searchValue, filterableColumns)) return true;
+        }
+        return false;
+    }
+
+    private void AutoExpandForSearch(TData item, string searchValue, List<ColumnData> filterableColumns)
+    {
+        if (ChildrenProperty is null) return;
+        var children = ChildrenProperty(item);
+        if (children is null) return;
+        bool anyChildMatches = false;
+        foreach (var child in children)
+        {
+            if (MatchesSearch(child, searchValue, filterableColumns) ||
+                HasMatchingDescendant(child, searchValue, filterableColumns))
+            {
+                anyChildMatches = true;
+                AutoExpandForSearch(child, searchValue, filterableColumns);
+            }
+        }
+        if (anyChildMatches)
+            _expandedRowsInternal.Add(GetItemKey(item));
+    }
+
+    /// <summary>Rebuilds <see cref="_treeRows"/> from <see cref="_processedData"/>.</summary>
+    private void BuildTreeRows()
+    {
+        _treeRows = new List<TreeRow>();
+        FlattenTree(_processedData, 0, _treeRows);
+    }
+
+    private void FlattenTree(IEnumerable<TData> items, int depth, List<TreeRow> result)
+    {
+        foreach (var item in items)
+        {
+            var key = GetItemKey(item);
+            bool hasChildren;
+            if (ChildrenProperty is not null)
+            {
+                var children = ChildrenProperty(item);
+                hasChildren = HasChildrenField?.Invoke(item) ?? (children?.Any() == true);
+            }
+            else
+            {
+                hasChildren = HasChildrenField?.Invoke(item) ??
+                    (_fetchedChildren.TryGetValue(key, out var fc) ? fc.Count > 0 : true);
+            }
+
+            var isExpanded = _expandedRowsInternal.Contains(key);
+            var isLoading  = _loadingNodes.Contains(key);
+            result.Add(new TreeRow(item, depth, hasChildren, isLoading, isExpanded));
+
+            if (isExpanded && !isLoading)
+            {
+                if (ChildrenProperty is not null)
+                {
+                    var children = ChildrenProperty(item) ?? Enumerable.Empty<TData>();
+                    FlattenTree(children, depth + 1, result);
+                }
+                else if (_fetchedChildren.TryGetValue(key, out var fetched))
+                {
+                    FlattenTree(fetched, depth + 1, result);
+                }
+            }
+        }
+    }
+
+    /// <summary>Toggles the expanded state of the given tree node, fetching children lazily if needed.</summary>
+    private async Task ToggleExpand(TData item)
+    {
+        var key = GetItemKey(item);
+        if (_expandedRowsInternal.Contains(key))
+        {
+            _expandedRowsInternal.Remove(key);
+        }
+        else
+        {
+            if (LoadChildrenAsync is not null && !_fetchedChildren.ContainsKey(key))
+            {
+                _loadingNodes.Add(key);
+                BuildTreeRows();
+                _treeVersion++;
+                StateHasChanged();
+                try
+                {
+                    var children = await LoadChildrenAsync(item);
+                    _fetchedChildren[key] = children.ToList();
+                }
+                catch
+                {
+                    _loadingNodes.Remove(key);
+                    BuildTreeRows();
+                    _treeVersion++;
+                    StateHasChanged();
+                    return;
+                }
+                _loadingNodes.Remove(key);
+
+                // Don't expand if the load returned no children — the expander would
+                // disappear (hasChildren becomes false) with no way to collapse.
+                if (_fetchedChildren[key].Count == 0)
+                {
+                    BuildTreeRows();
+                    _treeVersion++;
+                    StateHasChanged();
+                    return;
+                }
+            }
+            _expandedRowsInternal.Add(key);
+        }
+
+        if (ExpandedValuesChanged.HasDelegate)
+            await ExpandedValuesChanged.InvokeAsync(new HashSet<string>(_expandedRowsInternal));
+
+        BuildTreeRows();
+        _treeVersion++;
+        StateHasChanged();
     }
 
     /// <summary>
@@ -1141,8 +1577,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             || _lastHeight != Height
             || _lastItemHeight != ItemHeight
             || _lastVirtualizeOverscanCount != VirtualizeOverscanCount;
+        var treeVersionChanged = _lastTreeVersion != _treeVersion;
 
-        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || serverResultChanged || styleChanged || virtualizeChanged)
+        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || serverResultChanged || styleChanged || virtualizeChanged || treeVersionChanged)
         {
             _lastData = Data;
             _lastServerData = ServerData;
@@ -1166,6 +1603,7 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             _lastHeight = Height;
             _lastItemHeight = ItemHeight;
             _lastVirtualizeOverscanCount = VirtualizeOverscanCount;
+            _lastTreeVersion = _treeVersion;
             return true;
         }
 
