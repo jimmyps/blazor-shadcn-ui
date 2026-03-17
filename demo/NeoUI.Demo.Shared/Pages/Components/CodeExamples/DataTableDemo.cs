@@ -43,7 +43,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("ValueField", "Func<TData, string>?", "null", "Returns a stable unique key per item for tracking expanded state. Strongly recommended in tree mode; falls back to RuntimeHelpers.GetHashCode when omitted."),
                 new("ExpandedValues", "HashSet<string>?", "null", "Two-way bindable set of expanded row keys. Use @bind-ExpandedValues to persist or restore the expand state across renders."),
                 new("Resizable", "bool", "false", "Adds drag handles on column headers so users can adjust widths at runtime. Activates table-layout:fixed automatically. Per-column Resizable on DataTableColumn overrides this."),
-                new("MinColumnWidth", "int", "50", "Minimum column width in pixels enforced during drag-to-resize."),
+                new("MinColumnWidth", "int", "80", "Minimum column width in pixels enforced during drag-to-resize."),
                 new("OnColumnResize", "EventCallback<(string, string)>", "—", "Fires when the user finishes resizing a column. Provides (ColumnId, NewCssWidth)."),
                 new("Reorderable", "bool", "false", "Lets users drag column headers to reorder them. Columns animate into place as you drag. Pinned and selection columns are excluded. Per-column Reorderable overrides this."),
                 new("OnColumnReorder", "EventCallback<(string, int)>", "—", "Fires when the user drops a column into a new position. Provides (ColumnId, NewIndex)."),

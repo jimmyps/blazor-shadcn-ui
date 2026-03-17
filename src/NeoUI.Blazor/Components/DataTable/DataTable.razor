@@ -16,7 +16,7 @@
             </DataTableToolbar>
         }
 
-        <ContextMenu @bind-Open="_contextMenuOpen" X="@_contextMenuX" Y="@_contextMenuY">
+        <ContextMenu @ref="_rowContextMenuRef">
         <div @ref="_tableContainerRef"
              class="@TableContainerCssClass"
              style="@TableContainerStyle"
@@ -65,7 +65,7 @@
                         <colgroup>
                             @foreach (var col in _columns.Where(c => c.Visible))
                             {
-                                <col data-col-id="@col.Id" style="@GetColStyle(col)" />
+                                <col @key="col.Id" data-col-id="@col.Id" style="@GetColStyle(col)" />
                             }
                         </colgroup>
                     }
@@ -131,7 +131,7 @@
                                     _ => ""
                                 };
 
-                                <TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
+                                <TableHeaderCell @key="column.Id" TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
                                                  Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass, GetPinnedCellClass(column, isHeader: true), (column.ResizeEnabled || column.ReorderEnabled) ? "relative overflow-visible" : null)"
                                                  style="@GetColumnStyle(column)"
                                                  data-pinned="@(column.Pinned != ColumnPinnedSide.None ? "true" : null)"
@@ -238,10 +238,13 @@
             }
         </div>
 
-        @if (RowContextMenu != null && _contextMenuItem != null)
+        @if (RowContextMenu != null)
         {
             <ContextMenuContent>
-                @RowContextMenu(BuildRowMenuContext(_contextMenuItem))
+                @if (_contextMenuItem != null)
+                {
+                    @RowContextMenu(BuildRowMenuContext(_contextMenuItem))
+                }
             </ContextMenuContent>
         }
         </ContextMenu>
@@ -299,8 +302,9 @@
                     ColumnAlignment.Right  => "text-right",
                     _                      => "text-left"
                 };
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
+                <TableCell @key="col.Id" Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
                            data-pinned="@(col.Pinned != ColumnPinnedSide.None ? "true" : null)"
+                           data-col-id="@col.Id"
                            style="@GetColumnStyle(col)">
                     @if (col.CellTemplate != null)
                     {
@@ -342,8 +346,9 @@
                 var depthPad = isTreeCol && treeRow.Depth > 0 ? $"padding-left:{treeRow.Depth * 20 + 16}px" : null;
                 var baseStyle = GetColumnStyle(col);
                 var cellStyle = depthPad is null ? baseStyle : (baseStyle is null ? depthPad : $"{baseStyle};{depthPad}");
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
-                           style="@cellStyle">
+                <TableCell @key="col.Id" Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
+                           style="@cellStyle"
+                           data-col-id="@col.Id">
                     @if (isTreeCol)
                     {
                         <span class="inline-flex items-center gap-1">

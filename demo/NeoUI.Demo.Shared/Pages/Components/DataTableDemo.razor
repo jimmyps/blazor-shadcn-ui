@@ -299,6 +299,104 @@
     </DemoSection>
 
     <DemoSection
+        Title="Column Resizing &amp; Reordering"
+        Description="Enable Resizable to add drag handles on column headers for width adjustment. Enable Reorderable to let users drag columns into a new order — columns shift smoothly into place as you drag. Both work independently or together. Per-column Resizable/Reorderable overrides the table-level default.">
+        <DemoBlock Code="@_resizeReorderCode">
+            <DataTable TData="PinnedEmployee" Data="@_pinnedEmployees"
+                       HeaderBorder="true"
+                       Resizable="true"
+                       Reorderable="true"
+                       ShowPagination="false"
+                       OnColumnResize="@(args => _lastResizeEvent = $"{args.ColumnId}: {args.Width}")"
+                       OnColumnReorder="@(args => _lastReorderEvent = $"{args.ColumnId} → index {args.NewIndex}")">
+                <Columns>
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Name)"       Header="Name"       Width="160px" Sortable CellClass="truncate" HeaderClass="overflow-hidden" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Department)" Header="Department" Width="140px" Sortable CellClass="truncate" HeaderClass="overflow-hidden" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Title)"      Header="Title"      Width="180px" CellClass="truncate" HeaderClass="overflow-hidden" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Location)"   Header="Location"   Width="130px" CellClass="truncate" HeaderClass="overflow-hidden" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Salary)"     Header="Salary"     Width="110px" Alignment="ColumnAlignment.Right" CellClass="truncate" HeaderClass="overflow-hidden" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Status)"     Header="Status"     Width="100px" HeaderClass="overflow-hidden">
+                        <CellTemplate Context="e">
+                            <Badge Variant="@(e.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">@e.Status</Badge>
+                        </CellTemplate>
+                    </DataTableColumn>
+                </Columns>
+            </DataTable>
+            @if (!string.IsNullOrEmpty(_lastResizeEvent) || !string.IsNullOrEmpty(_lastReorderEvent))
+            {
+                <div class="mt-3 flex gap-4 text-sm text-muted-foreground">
+                    @if (!string.IsNullOrEmpty(_lastResizeEvent))
+                    {
+                        <span>Last resize: <code class="text-foreground">@_lastResizeEvent</code></span>
+                    }
+                    @if (!string.IsNullOrEmpty(_lastReorderEvent))
+                    {
+                        <span>Last reorder: <code class="text-foreground">@_lastReorderEvent</code></span>
+                    }
+                </div>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Row Context Menu"
+        Description="Right-click any row to open a context menu scoped to that row. The RowContextMenu render fragment receives a DataTableRowMenuContext with the row's item, current selection, and visible column IDs. Use any ContextMenuItem, ContextMenuSeparator, or sub-menu components inside it.">
+        <DemoBlock Code="@_rowContextMenuCode">
+            <DataTable TData="PinnedEmployee" Data="@_pinnedEmployees"
+                       EnableKeyboardNavigation="false"
+                       ShowPagination="false">
+                <Columns>
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Name)"       Header="Name"       Sortable />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Department)" Header="Department" Sortable />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Title)"      Header="Title" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Salary)"     Header="Salary" Alignment="ColumnAlignment.Right" />
+                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Status)"     Header="Status">
+                        <CellTemplate Context="e">
+                            <Badge Variant="@(e.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">@e.Status</Badge>
+                        </CellTemplate>
+                    </DataTableColumn>
+                </Columns>
+                <RowContextMenu Context="ctx">
+                    <ContextMenuItem OnClick="@(() => _ctxAction = $"Edit: {ctx.Item.Name}")">
+                        <LucideIcon Name="pencil" Size="14" Class="mr-2" />
+                        Edit
+                    </ContextMenuItem>
+                    <ContextMenuItem OnClick="@(() => _ctxAction = $"View: {ctx.Item.Name}")">
+                        <LucideIcon Name="eye" Size="14" Class="mr-2" />
+                        View Details
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem OnClick="@(() => _ctxAction = $"Copy: {ctx.Item.Name}")">
+                        <LucideIcon Name="copy" Size="14" Class="mr-2" />
+                        Copy Row
+                    </ContextMenuItem>
+                    @if (ctx.SelectedItems.Count > 1)
+                    {
+                        <ContextMenuSeparator />
+                        <ContextMenuItem OnClick="@(() => _ctxAction = $"Export {ctx.SelectedItems.Count} rows")">
+                            <LucideIcon Name="download" Size="14" Class="mr-2" />
+                            Export @ctx.SelectedItems.Count Selected
+                        </ContextMenuItem>
+                    }
+                    <ContextMenuSeparator />
+                    <ContextMenuItem Class="text-destructive focus:text-destructive"
+                                     OnClick="@(() => _ctxAction = $"Delete: {ctx.Item.Name}")">
+                        <LucideIcon Name="trash-2" Size="14" Class="mr-2" />
+                        Delete
+                    </ContextMenuItem>
+                </RowContextMenu>
+            </DataTable>
+            @if (!string.IsNullOrEmpty(_ctxAction))
+            {
+                <div class="mt-3 text-sm text-muted-foreground">
+                    Last action: <code class="text-foreground">@_ctxAction</code>
+                </div>
+            }
+        </DemoBlock>
+    </DemoSection>
+
+
+    <DemoSection
         Title="Global Search &amp; Column Visibility"
         Description="Search across all columns and toggle column visibility.">
         <DemoBlock Code="@_searchCode">
@@ -431,102 +529,6 @@
                 <kbd class="px-2 py-1 bg-muted rounded text-sm font-mono">Click</kbd>
             </div>
         </div>
-    </DemoSection>
-
-    <DemoSection
-        Title="Column Resizing &amp; Reordering"
-        Description="Enable Resizable to add drag handles on column headers for width adjustment. Enable Reorderable to let users drag columns into a new order — columns shift smoothly into place as you drag. Both work independently or together. Per-column Resizable/Reorderable overrides the table-level default.">
-        <DemoBlock Code="@_resizeReorderCode">
-            <DataTable TData="PinnedEmployee" Data="@_pinnedEmployees"
-                       Resizable="true"
-                       Reorderable="true"
-                       ShowPagination="false"
-                       OnColumnResize="@(args => _lastResizeEvent = $"{args.ColumnId}: {args.Width}")"
-                       OnColumnReorder="@(args => _lastReorderEvent = $"{args.ColumnId} → index {args.NewIndex}")">
-                <Columns>
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Name)"       Header="Name"       Width="160px" Sortable />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Department)" Header="Department" Width="140px" Sortable />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Title)"      Header="Title"      Width="180px" />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Location)"   Header="Location"   Width="130px" />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Salary)"     Header="Salary"     Width="110px" Alignment="ColumnAlignment.Right" />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Status)"     Header="Status"     Width="100px">
-                        <CellTemplate Context="e">
-                            <Badge Variant="@(e.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">@e.Status</Badge>
-                        </CellTemplate>
-                    </DataTableColumn>
-                </Columns>
-            </DataTable>
-            @if (!string.IsNullOrEmpty(_lastResizeEvent) || !string.IsNullOrEmpty(_lastReorderEvent))
-            {
-                <div class="mt-3 flex gap-4 text-sm text-muted-foreground">
-                    @if (!string.IsNullOrEmpty(_lastResizeEvent))
-                    {
-                        <span>Last resize: <code class="text-foreground">@_lastResizeEvent</code></span>
-                    }
-                    @if (!string.IsNullOrEmpty(_lastReorderEvent))
-                    {
-                        <span>Last reorder: <code class="text-foreground">@_lastReorderEvent</code></span>
-                    }
-                </div>
-            }
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Row Context Menu"
-        Description="Right-click any row to open a context menu scoped to that row. The RowContextMenu render fragment receives a DataTableRowMenuContext with the row's item, current selection, and visible column IDs. Use any ContextMenuItem, ContextMenuSeparator, or sub-menu components inside it.">
-        <DemoBlock Code="@_rowContextMenuCode">
-            <DataTable TData="PinnedEmployee" Data="@_pinnedEmployees"
-                       SelectionMode="DataTableSelectionMode.Multiple"
-                       ShowPagination="false">
-                <Columns>
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Name)"       Header="Name"       Sortable />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Department)" Header="Department" Sortable />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Title)"      Header="Title" />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Salary)"     Header="Salary" Alignment="ColumnAlignment.Right" />
-                    <DataTableColumn TData="PinnedEmployee" TValue="string" Property="@(e => e.Status)"     Header="Status">
-                        <CellTemplate Context="e">
-                            <Badge Variant="@(e.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">@e.Status</Badge>
-                        </CellTemplate>
-                    </DataTableColumn>
-                </Columns>
-                <RowContextMenu Context="ctx">
-                    <ContextMenuItem OnClick="@(() => _ctxAction = $"Edit: {ctx.Item.Name}")">
-                        <LucideIcon Name="pencil" Size="14" Class="mr-2" />
-                        Edit
-                    </ContextMenuItem>
-                    <ContextMenuItem OnClick="@(() => _ctxAction = $"View: {ctx.Item.Name}")">
-                        <LucideIcon Name="eye" Size="14" Class="mr-2" />
-                        View Details
-                    </ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem OnClick="@(() => _ctxAction = $"Copy: {ctx.Item.Name}")">
-                        <LucideIcon Name="copy" Size="14" Class="mr-2" />
-                        Copy Row
-                    </ContextMenuItem>
-                    @if (ctx.SelectedItems.Count > 1)
-                    {
-                        <ContextMenuSeparator />
-                        <ContextMenuItem OnClick="@(() => _ctxAction = $"Export {ctx.SelectedItems.Count} rows")">
-                            <LucideIcon Name="download" Size="14" Class="mr-2" />
-                            Export @ctx.SelectedItems.Count Selected
-                        </ContextMenuItem>
-                    }
-                    <ContextMenuSeparator />
-                    <ContextMenuItem Class="text-destructive focus:text-destructive"
-                                     OnClick="@(() => _ctxAction = $"Delete: {ctx.Item.Name}")">
-                        <LucideIcon Name="trash-2" Size="14" Class="mr-2" />
-                        Delete
-                    </ContextMenuItem>
-                </RowContextMenu>
-            </DataTable>
-            @if (!string.IsNullOrEmpty(_ctxAction))
-            {
-                <div class="mt-3 text-sm text-muted-foreground">
-                    Last action: <code class="text-foreground">@_ctxAction</code>
-                </div>
-            }
-        </DemoBlock>
     </DemoSection>
 
     <DemoSection

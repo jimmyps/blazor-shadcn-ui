@@ -75,6 +75,12 @@
                 _context.Close();
             }
         }
+        else if (Open.HasValue && Open.Value && _context.IsOpen && (X > 0 || Y > 0) && (X != _context.X || Y != _context.Y))
+        {
+            // Menu is already open but coordinates changed (e.g. right-click on a different row).
+            // Reposition the menu at the new location without toggling open state.
+            _context.Open(X, Y);
+        }
     }
 
     private async void HandleContextStateChanged()
@@ -93,6 +99,9 @@
             await OnClose.InvokeAsync();
         }
     }
+
+    /// <summary>Opens the context menu at the specified viewport coordinates without requiring a parameter round-trip.</summary>
+    public void OpenAt(double x, double y) => _context.Open(x, y);
 
     public void Dispose()
     {

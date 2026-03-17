@@ -1,6 +1,7 @@
 @namespace NeoUI.Blazor
 @* ContextMenu - styled context menu wrapper *@
-<ContextMenuRootPrimitive Open="@Open"
+<ContextMenuRootPrimitive @ref="_primitive"
+                 Open="@Open"
                  OpenChanged="OpenChanged"
                  OnOpen="OnOpen"
                  OnClose="OnClose"
@@ -51,4 +52,9 @@
     /// </summary>
     [Parameter]
     public double Y { get; set; }
+
+    private ContextMenuRootPrimitive? _primitive;
+
+    /// <summary>Opens the context menu at the specified viewport coordinates.</summary>
+    public void OpenAt(double x, double y) => _primitive?.OpenAt(x, y);
 }

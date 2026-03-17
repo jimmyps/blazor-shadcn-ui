@@ -351,14 +351,8 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
 
     // ── Row context menu state ──────────────────────────────────────────────────
 
-    /// <summary>Whether the row context menu is currently open.</summary>
-    private bool _contextMenuOpen;
-
-    /// <summary>Viewport X coordinate where the context menu should open.</summary>
-    private double _contextMenuX;
-
-    /// <summary>Viewport Y coordinate where the context menu should open.</summary>
-    private double _contextMenuY;
+    /// <summary>Component reference used to programmatically open the row context menu.</summary>
+    private ContextMenu? _rowContextMenuRef;
 
     /// <summary>The row item that was right-clicked.</summary>
     private TData? _contextMenuItem;
@@ -588,10 +582,10 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public bool Resizable { get; set; }
 
     /// <summary>
-    /// Minimum column width in pixels enforced during drag-to-resize. Default is 50.
+    /// Minimum column width in pixels enforced during drag-to-resize. Default is 80.
     /// </summary>
     [Parameter]
-    public int MinColumnWidth { get; set; } = 50;
+    public int MinColumnWidth { get; set; } = 80;
 
     /// <summary>
     /// Event callback invoked when the user finishes resizing a column.
@@ -1315,9 +1309,9 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     private void HandleRowContextMenu(TData item, MouseEventArgs e)
     {
         _contextMenuItem = item;
-        _contextMenuX = e.ClientX;
-        _contextMenuY = e.ClientY;
-        _contextMenuOpen = true;
+        // Open directly on the ContextMenu ref — bypasses @bind-Open timing issues
+        // so every right-click reliably repositions and shows the menu.
+        _rowContextMenuRef?.OpenAt(e.ClientX, e.ClientY);
     }
 
     /// <summary>
@@ -1781,10 +1775,17 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
         var col = _columns.FirstOrDefault(c => c.Id == columnId);
         if (col is null) return;
 
+        // JS has already committed the DOM reorder — update C# state only.
+        // StateHasChanged() is intentionally omitted: the DOM is correct and
+        // Blazor will reconcile cleanly on any subsequent render (sort/filter/etc.)
+        // because _columns order now matches the DOM order.
         _columns.Remove(col);
         var clamped = Math.Clamp(newIndex, 0, _columns.Count);
         _columns.Insert(clamped, col);
         _columnsVersion++;
+        // Sync Blazor's virtual DOM so it matches the JS-committed DOM order.
+        // No JS re-init occurs (_reorderCleanup is not nulled), so this render
+        // is a near-no-op diff — DOM and _columns are already in agreement.
         StateHasChanged();
 
         if (OnColumnReorder.HasDelegate)
