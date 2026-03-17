@@ -2,6 +2,61 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-17 — DataTable column pinning and hierarchical tree rows
+
+> **Release: `v3.6.2`**  
+> **Library change.** Affects `DataTable<TData>` in `NeoUI.Blazor` and `TableRow` in `NeoUI.Blazor.Primitives`. All changes are additive — no breaking changes to existing APIs.
+
+---
+
+### ✨ New Feature — `DataTable<TData>` column pinning
+
+Columns can now be pinned to the left or right edge of the table, staying fixed while the rest of the table scrolls horizontally. Pinned columns render with a frosted-glass treatment — semi-transparent background with backdrop blur — so scrolled content bleeds through subtly while keeping cell content fully readable. Separator borders mark the boundary between pinned and scrollable regions, and all interaction states (hover, selected, keyboard focus) render correctly across both pinned and non-pinned cells.
+
+**New `DataGridColumn` parameter:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `Pinned` | `ColumnPinnedSide` | Pins the column. `Left` anchors to the left edge; `Right` to the right; `None` (default) leaves it unpinned. |
+
+**New enum:** `ColumnPinnedSide` — `None`, `Left`, `Right`
+
+---
+
+### ✨ New Feature — `DataTable<TData>` hierarchical / self-referencing tree rows
+
+`DataTable` can now display hierarchical data from a self-referencing model. Rows expand and collapse inline, with optional lazy loading of children on demand via an async delegate. Search automatically expands ancestor nodes to reveal matching descendants, and pagination is hidden in tree mode.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `ChildrenProperty` | `Func<TData, IEnumerable<TData>?>?` | Returns child items for a row. Activates tree mode when set. |
+| `LoadChildrenAsync` | `Func<TData, Task<IEnumerable<TData>>>?` | Lazy-loads children on first expand. Used when children are not pre-populated. |
+| `HasChildrenField` | `Func<TData, bool>?` | Determines whether an expand toggle is shown before children are loaded. |
+| `ValueField` | `Func<TData, object>?` | Unique key per row, used to track expanded state. |
+| `ExpandedValues` | `IEnumerable<object>?` | Externally controlled set of expanded row keys. |
+| `ExpandedValuesChanged` | `EventCallback<IEnumerable<object>>` | Notifies when expanded state changes. |
+
+---
+
+### ✨ Enhancement — `DataTable<TData>` keyboard navigation
+
+Arrow-key row navigation (`↑` / `↓`) and `Enter` / `Space` selection are now fully operational. Navigation is independent of `SelectionMode` — arrow keys move focus in all modes. Interactive elements inside cells (buttons, inputs, checkboxes) receive their own keyboard events without interfering with row-level handling.
+
+---
+
+### 📖 Demo — Column pinning and tree rows sections
+
+Two new sections added to the `/components/datatable` demo page:
+
+| Section | What it shows |
+|---|---|
+| **Column Pinning** | Employee directory with 8 columns — Name pinned left, Actions pinned right. Demonstrates frosted-glass effect, separator borders, and full hover/selected/focus states while scrolling. |
+| **Tree / Hierarchical Rows (Chart of Accounts)** | 13-column accounting hierarchy with lazy-loaded children. Account Name pinned left, Actions pinned right — combines tree rows and column pinning in one demo. Expand/collapse, search with auto-expand, and async child loading. |
+
+---
+
 ## 2026-3-16 — DataTable virtualization, adaptive DataView grid, and sort API update
 
 > **Release: `v3.6.1`**  
