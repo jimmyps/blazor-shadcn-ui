@@ -1,4 +1,7 @@
-/* Base styles for theme system */
+/* Base styles for theme system
+
+   Obsolete: This file is no longer used. The styles have been moved to the theme layer (theme.css) to ensure they are applied before any component styles.
+*/
 @layer base {
   * {
     border-color: var(--border);
