@@ -10,6 +10,8 @@
     class="@ComputedClass"
     @onclick="HandleClick"
     @onkeydown="HandleKeyDown"
+    @oncontextmenu="OnContextMenu"
+    @oncontextmenu:preventDefault="@OnContextMenu.HasDelegate"
     @attributes="AdditionalAttributes">
     @ChildContent
 </tr>
@@ -48,6 +50,13 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the row is right-clicked.
+    /// Prevents the browser's native context menu when a delegate is provided.
+    /// </summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnContextMenu { get; set; }
 
     private bool IsSelected => Item != null && Context != null && Context.IsSelected(Item);
 

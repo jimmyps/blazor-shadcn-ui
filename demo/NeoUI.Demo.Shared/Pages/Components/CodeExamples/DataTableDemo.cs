@@ -42,6 +42,12 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("HasChildrenField", "Func<TData, bool>?", "null", "Hints whether a node has children without loading them. In lazy mode, the expander is shown for all nodes unless this is provided."),
                 new("ValueField", "Func<TData, string>?", "null", "Returns a stable unique key per item for tracking expanded state. Strongly recommended in tree mode; falls back to RuntimeHelpers.GetHashCode when omitted."),
                 new("ExpandedValues", "HashSet<string>?", "null", "Two-way bindable set of expanded row keys. Use @bind-ExpandedValues to persist or restore the expand state across renders."),
+                new("Resizable", "bool", "false", "Adds drag handles on column headers so users can adjust widths at runtime. Activates table-layout:fixed automatically. Per-column Resizable on DataTableColumn overrides this."),
+                new("MinColumnWidth", "int", "50", "Minimum column width in pixels enforced during drag-to-resize."),
+                new("OnColumnResize", "EventCallback<(string, string)>", "—", "Fires when the user finishes resizing a column. Provides (ColumnId, NewCssWidth)."),
+                new("Reorderable", "bool", "false", "Lets users drag column headers to reorder them. Columns animate into place as you drag. Pinned and selection columns are excluded. Per-column Reorderable overrides this."),
+                new("OnColumnReorder", "EventCallback<(string, int)>", "—", "Fires when the user drops a column into a new position. Provides (ColumnId, NewIndex)."),
+                new("RowContextMenu", "RenderFragment<DataTableRowMenuContext<TData>>?", "null", "Template for the context menu shown on row right-click. Receives DataTableRowMenuContext with Item, SelectedItems, and VisibleColumns."),
             ];
 
         private static readonly IReadOnlyList<DemoPropRow> _dataTableColumnProps =
@@ -60,6 +66,8 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("CellClass", "string?", "null", "Extra CSS classes on every body cell in this column."),
                 new("HeaderClass", "string?", "null", "Extra CSS classes on this column's header cell."),
                 new("Pinned", "ColumnPinnedSide", "None", "Sticks the column to the Left or Right edge during horizontal scroll. A shadow separator marks the boundary. Requires an explicit px Width for reliable offset calculation."),
+                new("Resizable", "bool?", "null", "Per-column resize override. null inherits the table-level Resizable setting."),
+                new("Reorderable", "bool?", "null", "Per-column reorder override. null inherits the table-level Reorderable setting. Pinned columns and the selection column are always excluded."),
             ];
 
         private const string _basicTableCode = """
@@ -336,6 +344,51 @@ namespace NeoUI.Demo.Shared.Pages.Components
                         <DataTableColumn TData="Order" TValue="string"  Property="@(o => o.Status)"   Header="Status" />
                         <DataTableColumn TData="Order" TValue="decimal" Property="@(o => o.Amount)"   Header="Amount"   Sortable />
                     </Columns>
+                </DataTable>
+                """;
+
+        private const string _resizeReorderCode = """
+                <DataTable TData="Employee"
+                           Data="@employees"
+                           Resizable="true"
+                           Reorderable="true"
+                           OnColumnResize="@(args => Console.WriteLine($"{args.ColumnId}: {args.Width}"))"
+                           OnColumnReorder="@(args => Console.WriteLine($"{args.ColumnId} → index {args.NewIndex}"))">
+                    <Columns>
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Name)"       Header="Name"       Width="160px" Sortable />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Department)" Header="Department" Width="140px" Sortable />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Title)"      Header="Title"      Width="180px" />
+                        @* Disable resize/reorder on a specific column *@
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Status)"     Header="Status"
+                                         Resizable="false" Reorderable="false" Width="100px" />
+                    </Columns>
+                </DataTable>
+                """;
+
+        private const string _rowContextMenuCode = """
+                <DataTable TData="Employee"
+                           Data="@employees"
+                           SelectionMode="DataTableSelectionMode.Multiple">
+                    <Columns>
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Name)"   Header="Name"   Sortable />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Status)" Header="Status" />
+                    </Columns>
+                    <RowContextMenu Context="ctx">
+                        <ContextMenuItem OnClick="@(() => Edit(ctx.Item))">
+                            <LucideIcon Name="pencil" Size="14" Class="mr-2" /> Edit
+                        </ContextMenuItem>
+                        <ContextMenuSeparator />
+                        @if (ctx.SelectedItems.Count > 1)
+                        {
+                            <ContextMenuItem OnClick="@(() => ExportSelected(ctx.SelectedItems))">
+                                Export @ctx.SelectedItems.Count Selected
+                            </ContextMenuItem>
+                        }
+                        <ContextMenuItem Class="text-destructive focus:text-destructive"
+                                         OnClick="@(() => Delete(ctx.Item))">
+                            <LucideIcon Name="trash-2" Size="14" Class="mr-2" /> Delete
+                        </ContextMenuItem>
+                    </RowContextMenu>
                 </DataTable>
                 """;
     }

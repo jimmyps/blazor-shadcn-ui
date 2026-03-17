@@ -3,7 +3,9 @@
 <ContextMenuRootPrimitive Open="@Open"
                  OpenChanged="OpenChanged"
                  OnOpen="OnOpen"
-                 OnClose="OnClose">
+                 OnClose="OnClose"
+                 X="@X"
+                 Y="@Y">
     @ChildContent
 </ContextMenuRootPrimitive>
 
@@ -37,4 +39,16 @@
     /// </summary>
     [Parameter]
     public EventCallback OnClose { get; set; }
+
+    /// <summary>
+    /// X coordinate for programmatic positioning (used with <see cref="Open"/>).
+    /// </summary>
+    [Parameter]
+    public double X { get; set; }
+
+    /// <summary>
+    /// Y coordinate for programmatic positioning (used with <see cref="Open"/>).
+    /// </summary>
+    [Parameter]
+    public double Y { get; set; }
 }
