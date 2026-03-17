@@ -60,6 +60,10 @@
                     @if (HasTableFixed)
                     {
                         <colgroup>
+                            @if (SelectionMode == DataTableSelectionMode.Multiple)
+                            {
+                                <col style="width: @(SelectionColumnWidthPx)px" />
+                            }
                             @foreach (var col in _columns.Where(c => c.Visible))
                             {
                                 <col style="@GetColStyle(col)" />
