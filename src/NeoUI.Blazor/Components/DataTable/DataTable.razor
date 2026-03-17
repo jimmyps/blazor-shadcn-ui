@@ -70,7 +70,7 @@
                         <TableRow TData="TData" Class="@ComputedHeaderRowClass">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
-                                <TableHeaderCell TData="TData" Class="@ClassNames.cn(HeaderCellPaddingClass, "text-left align-middle font-medium text-muted-foreground w-12", CellBorderClass)" role="columnheader">
+                                <TableHeaderCell TData="TData" Class="@ClassNames.cn(HeaderCellPaddingClass, "text-left align-middle font-medium text-muted-foreground w-12")" role="columnheader">
                                     <div @onclick:stopPropagation="true">
                                         @if (ShouldShowSelectAllPrompt())
                                         {
@@ -129,7 +129,7 @@
                                 };
 
                                 <TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
-                                                 Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass, GetPinnedCellClass(column, isHeader: true), CellBorderClass)"
+                                                 Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass, GetPinnedCellClass(column, isHeader: true))"
                                                  style="@GetColumnStyle(column)"
                                                  data-pinned="@(column.Pinned != ColumnPinnedSide.None ? "true" : null)"
                                                  aria-sort="@ariaSortValue">
@@ -260,7 +260,7 @@
         @<text>
             @if (SelectionMode == DataTableSelectionMode.Multiple)
             {
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12", CellBorderClass)">
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")">
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
                                   CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(item, chk))"
@@ -276,7 +276,7 @@
                     ColumnAlignment.Right  => "text-right",
                     _                      => "text-left"
                 };
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col), CellBorderClass)"
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
                            data-pinned="@(col.Pinned != ColumnPinnedSide.None ? "true" : null)"
                            style="@GetColumnStyle(col)">
                     @if (col.CellTemplate != null)
@@ -295,7 +295,7 @@
         @<text>
             @if (SelectionMode == DataTableSelectionMode.Multiple)
             {
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12", CellBorderClass)">
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")">
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
                                   CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(treeRow.Item, chk))"
@@ -306,9 +306,9 @@
             @{
                 var visibleCols = _columns.Where(c => c.Visible).ToList();
             }
-            @foreach (var col in visibleCols)
+            @for (var colIndex = 0; colIndex < visibleCols.Count; colIndex++)
             {
-                var colIndex = visibleCols.IndexOf(col);
+                var col = visibleCols[colIndex];
                 var cellAlign = col.Alignment switch
                 {
                     ColumnAlignment.Center => "text-center",
@@ -319,7 +319,7 @@
                 var depthPad = isTreeCol && treeRow.Depth > 0 ? $"padding-left:{treeRow.Depth * 20 + 16}px" : null;
                 var baseStyle = GetColumnStyle(col);
                 var cellStyle = depthPad is null ? baseStyle : (baseStyle is null ? depthPad : $"{baseStyle};{depthPad}");
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col), CellBorderClass)"
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
                            style="@cellStyle">
                     @if (isTreeCol)
                     {
