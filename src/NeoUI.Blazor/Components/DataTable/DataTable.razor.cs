@@ -122,6 +122,14 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     private List<ColumnData> _columns = new();
 
     /// <summary>
+    /// Width of the multi-select checkbox column in pixels.
+    /// Derived from the Tailwind class "w-12" (3 rem = 48 px at the default 16 px root font size)
+    /// used for the selection cell in both header and body rows.
+    /// If the class ever changes, update this constant to match.
+    /// </summary>
+    private const int SelectionColumnWidthPx = 48;
+
+    /// <summary>
     /// Maintains the table state including sorting, filtering, pagination, and selection.
     /// </summary>
     private TableState<TData> _tableState = new();
@@ -662,16 +670,6 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         HasPinnedColumns ? "border-collapse: separate; border-spacing: 0" : null;
 
     /// <summary>
-    /// CSS class added to every header and body cell when the table uses
-    /// <c>border-collapse: separate</c> (i.e., when columns are pinned).
-    /// With <c>separate</c>, the <c>border-b</c> on &lt;tr&gt; rows is hidden behind cells
-    /// (tr borders are not visible when border-spacing is 0 and cells have a background).
-    /// Each cell must therefore draw its own bottom border — handled by the
-    /// <c>.group/row &gt; td, .group/row &gt; th</c> rule in components-input.css.
-    /// </summary>
-    private string CellBorderClass => string.Empty;
-
-    /// <summary>
     /// Gets the inline width style for a single &lt;col&gt; element inside &lt;colgroup&gt;.
     /// Only emitted when the table is in fixed-layout mode.
     /// </summary>
@@ -731,8 +729,11 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     protected override async Task OnParametersSetAsync()
     {
-        // Sync externally-provided ExpandedValues into internal state
-        if (ExpandedValues is not null && !ReferenceEquals(ExpandedValues, _lastExpandedValues))
+        // Sync externally-provided ExpandedValues into internal state.
+        // Use SetEquals so that in-place mutations of the same HashSet instance are also detected.
+        if (ExpandedValues is not null &&
+            (!ReferenceEquals(ExpandedValues, _lastExpandedValues) ||
+             !_expandedRowsInternal.SetEquals(ExpandedValues)))
         {
             _lastExpandedValues = ExpandedValues;
             _expandedRowsInternal = new HashSet<string>(ExpandedValues);
@@ -1291,12 +1292,19 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <summary>
     /// Computes the sticky offset (px) for a pinned column based on the combined widths
     /// of all preceding pinned columns on the same side.
+    /// When <see cref="SelectionMode"/> is <see cref="DataTableSelectionMode.Multiple"/> the
+    /// selection checkbox column precedes all data columns and its width is added to the
+    /// offset of every left-pinned column so they don't overlap it at scroll position 0.
     /// </summary>
     private int GetPinnedOffset(ColumnData column)
     {
         var offset = 0;
         if (column.Pinned == ColumnPinnedSide.Left)
         {
+            // Reserve space for the non-sticky selection checkbox column when present.
+            if (SelectionMode == DataTableSelectionMode.Multiple)
+                offset += SelectionColumnWidthPx;
+
             foreach (var col in _columns.Where(c => c.Visible && c.Pinned == ColumnPinnedSide.Left))
             {
                 if (ReferenceEquals(col, column)) break;
@@ -1325,6 +1333,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         return first is not null && ReferenceEquals(first, column);
     }
 
+    /// <summary>
+    /// Parses an integer pixel value from a CSS width string such as <c>"200px"</c>.
+    /// </summary>
+    /// <returns>
+    /// The integer pixel value when the string ends with <c>px</c> and contains a valid integer;
+    /// otherwise 0. Pinned columns <b>must</b> use a pixel width (e.g. <c>"200px"</c>) so that
+    /// <see cref="GetPinnedOffset"/> can compute correct sticky <c>left</c>/<c>right</c> values.
+    /// Other CSS length units (%, rem, em, …) are not supported and will result in an offset of 0,
+    /// which can cause adjacent pinned columns to overlap.
+    /// </returns>
     private static int ParsePxWidth(string? width)
     {
         if (!string.IsNullOrWhiteSpace(width) && width.TrimEnd().EndsWith("px") &&
@@ -1469,12 +1487,22 @@ public partial class DataTable<TData> : ComponentBase where TData : class
                     return;
                 }
                 _loadingNodes.Remove(key);
+
+                // Don't expand if the load returned no children — the expander would
+                // disappear (hasChildren becomes false) with no way to collapse.
+                if (_fetchedChildren[key].Count == 0)
+                {
+                    BuildTreeRows();
+                    _treeVersion++;
+                    StateHasChanged();
+                    return;
+                }
             }
             _expandedRowsInternal.Add(key);
         }
 
         if (ExpandedValuesChanged.HasDelegate)
-            await ExpandedValuesChanged.InvokeAsync(_expandedRowsInternal);
+            await ExpandedValuesChanged.InvokeAsync(new HashSet<string>(_expandedRowsInternal));
 
         BuildTreeRows();
         _treeVersion++;

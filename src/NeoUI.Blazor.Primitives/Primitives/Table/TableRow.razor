@@ -75,34 +75,42 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        try
         {
-            try
+            if (IsKeyboardNavigable && !_spaceKeyHandlerAttached)
             {
-                if (IsKeyboardNavigable && !_spaceKeyHandlerAttached)
-                {
-                    _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
+                _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
 
-                    _spaceKeyCleanup = await _tableRowNavModule.InvokeAsync<IJSObjectReference>(
-                        "preventSpaceKeyScroll", _elementRef);
-                    _spaceKeyHandlerAttached = true;
-                }
-
-                if (NeedsClickIntercept && !_clickInterceptAttached)
-                {
-                    _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-                        "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
-
-                    _clickInterceptCleanup = await _tableRowNavModule.InvokeAsync<IJSObjectReference>(
-                        "interceptInteractiveClicks", _elementRef);
-                    _clickInterceptAttached = true;
-                }
+                _spaceKeyCleanup = await _tableRowNavModule.InvokeAsync<IJSObjectReference>(
+                    "preventSpaceKeyScroll", _elementRef);
+                _spaceKeyHandlerAttached = true;
             }
-            catch
+
+            if (NeedsClickIntercept && !_clickInterceptAttached)
             {
-                // Silently fail during prerendering
+                _tableRowNavModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
+
+                _clickInterceptCleanup = await _tableRowNavModule.InvokeAsync<IJSObjectReference>(
+                    "interceptInteractiveClicks", _elementRef);
+                _clickInterceptAttached = true;
             }
+            else if (!NeedsClickIntercept && _clickInterceptAttached)
+            {
+                // Selection mode was disabled after initial render — detach the intercept.
+                if (_clickInterceptCleanup != null)
+                {
+                    await _clickInterceptCleanup.InvokeVoidAsync("dispose");
+                    await _clickInterceptCleanup.DisposeAsync();
+                    _clickInterceptCleanup = null;
+                }
+                _clickInterceptAttached = false;
+            }
+        }
+        catch
+        {
+            // Silently fail during prerendering
         }
     }
 

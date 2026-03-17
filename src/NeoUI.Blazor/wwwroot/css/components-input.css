@@ -289,15 +289,15 @@
     outline: none !important;
   }
 
-/* DataTable theming — all visual state (borders, hover, selected, pinned
-   backgrounds) lives here in CSS. C# only handles structure (padding,
-   alignment, z-index, sticky positioning, separators).
+  /* DataTable theming — all visual state (borders, hover, selected, pinned
+     backgrounds) lives here in CSS. C# only handles structure (padding,
+     alignment, z-index, sticky positioning, separators).
 
-   Rules are scoped to [data-pinned-table] where the behaviour differs from
-   normal tables (e.g. cell-level borders required by border-separate).
-   Hover/selected/pinned-bg apply only inside pinned tables so normal tables
-   keep their existing Tailwind tr-level utilities without regression. */
-@layer utilities {
+     Rules are scoped to [data-pinned-table] where the behaviour differs from
+     normal tables (e.g. cell-level borders required by border-separate).
+     Hover/selected/pinned-bg apply only inside pinned tables so normal tables
+     keep their existing Tailwind tr-level utilities without regression. */
+
   /* ── Cell Borders (pinned tables only) ──
      With border-collapse: separate, tr-level border-b is hidden behind cells.
      Each cell must draw its own bottom border. */
@@ -325,7 +325,6 @@
   [data-pinned-table] .group\/row[aria-selected="true"] > td {
     background-color: var(--muted);
   }
-}
 
 
   /* When columns are pinned, cells apply backdrop-filter which creates a stacking
