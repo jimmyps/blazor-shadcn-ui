@@ -635,6 +635,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <summary>True when at least one visible column is pinned left or right.</summary>
     private bool HasPinnedColumns => _columns.Any(c => c.Pinned != ColumnPinnedSide.None);
 
+    /// <summary>True when at least one visible column is pinned to the left.</summary>
+    private bool HasLeftPinnedColumns => _columns.Any(c => c.Pinned == ColumnPinnedSide.Left);
+
     /// <summary>
     /// Returns true when the table should use <c>table-layout: fixed</c>.
     /// Fixed layout is required whenever any column is pinned (sticky positioning needs
@@ -1290,18 +1293,35 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     }
 
     /// <summary>
+    /// Returns the inline style to pin the selection checkbox column when left-pinned data
+    /// columns are present.  The column is always at <c>left: 0</c> — it is the leftmost
+    /// sticky cell and has no predecessors to account for.
+    /// </summary>
+    private string? GetSelectionColumnStyle() =>
+        HasLeftPinnedColumns ? "position: sticky; left: 0px" : null;
+
+    /// <summary>
+    /// Returns the sticky CSS classes for the selection checkbox column when left-pinned
+    /// data columns are present.  Uses the same z-index / backdrop tiers as data columns.
+    /// </summary>
+    private string GetSelectionColumnClass(bool isHeader = false) =>
+        HasLeftPinnedColumns
+            ? (isHeader ? "z-20 bg-background/40 backdrop-blur-sm" : "z-[1] bg-background/60 backdrop-blur-sm")
+            : string.Empty;
+
+    /// <summary>
     /// Computes the sticky offset (px) for a pinned column based on the combined widths
     /// of all preceding pinned columns on the same side.
     /// When <see cref="SelectionMode"/> is <see cref="DataTableSelectionMode.Multiple"/> the
-    /// selection checkbox column precedes all data columns and its width is added to the
-    /// offset of every left-pinned column so they don't overlap it at scroll position 0.
+    /// sticky selection checkbox column precedes all data columns and its width is added to the
+    /// offset of every left-pinned column so they don't overlap it.
     /// </summary>
     private int GetPinnedOffset(ColumnData column)
     {
         var offset = 0;
         if (column.Pinned == ColumnPinnedSide.Left)
         {
-            // Reserve space for the non-sticky selection checkbox column when present.
+            // Reserve space for the sticky selection checkbox column when present.
             if (SelectionMode == DataTableSelectionMode.Multiple)
                 offset += SelectionColumnWidthPx;
 
