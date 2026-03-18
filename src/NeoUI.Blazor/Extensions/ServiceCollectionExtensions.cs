@@ -18,7 +18,43 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddNeoUIComponents(this IServiceCollection services)
+        => AddNeoUIComponents(services, configureLocalizer: null);
+
+    /// <summary>
+    /// Adds NeoUI.Blazor components services to the service collection with optional localizer configuration.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configureLocalizer">
+    /// An optional action to configure the <see cref="DefaultLocalizer"/> at startup.
+    /// Use this to override specific string keys without subclassing.
+    /// <example>
+    /// <code>
+    /// builder.Services.AddNeoUIComponents(localizer =>
+    /// {
+    ///     localizer.Set("Combobox.Placeholder", "Wählen Sie eine Option...");
+    ///     localizer.Set("DataTable.Loading", "Laden...");
+    /// });
+    /// </code>
+    /// </example>
+    /// </param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddNeoUIComponents(
+        this IServiceCollection services,
+        Action<DefaultLocalizer>? configureLocalizer)
     {
+        // Register localizer — consumers may replace this registration with a custom ILocalizer
+        // implementation (e.g. a subclass that delegates to IStringLocalizer<T>).
+        if (configureLocalizer is not null)
+        {
+            var localizer = new DefaultLocalizer();
+            configureLocalizer(localizer);
+            services.AddScoped<ILocalizer>(_ => localizer);
+        }
+        else
+        {
+            services.AddScoped<ILocalizer, DefaultLocalizer>();
+        }
+
         // Register template renderer for DataGrid cell templates
         // This enables rendering of Blazor components (like Badge) inside AG DataGrid cells
         services.AddScoped<IDataGridDataGridTemplateRenderer, DataGridTemplateRenderer>();

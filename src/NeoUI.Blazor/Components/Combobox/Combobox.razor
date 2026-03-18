@@ -27,9 +27,9 @@
             </PopoverTrigger>
             <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
                 <CommandContent>
-                    <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@SearchPlaceholder" />
+                    <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@EffectiveSearchPlaceholder" />
                     <CommandList>
-                        <CommandEmpty>@EmptyMessage</CommandEmpty>
+                        <CommandEmpty>@EffectiveEmptyMessage</CommandEmpty>
                         <CommandGroup>
                             @foreach (var item in Items)
                             {

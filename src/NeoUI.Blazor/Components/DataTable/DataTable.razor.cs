@@ -116,6 +116,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         public ColumnPinnedSide Pinned { get; set; } = ColumnPinnedSide.None;
     }
 
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
     /// <summary>
     /// Stores the list of registered column definitions.
     /// </summary>

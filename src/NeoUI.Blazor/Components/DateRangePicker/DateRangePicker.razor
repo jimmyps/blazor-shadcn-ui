@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
+@inject ILocalizer Localizer
 @* DateRangePicker - Date range selection with two dates *@
 
 <Popover @bind-Open="_isOpen">
@@ -19,7 +20,7 @@
             @if (ShowPresets)
             {
                 <div class="flex flex-col gap-1 p-3 border-r min-w-[140px]">
-                    <span class="text-xs font-medium text-muted-foreground mb-1">Quick Select</span>
+                    <span class="text-xs font-medium text-muted-foreground mb-1">@Localizer["DateRangePicker.QuickSelect"]</span>
                     @foreach (var preset in GetAvailablePresets())
                     {
                         var capturedPreset = preset;
@@ -78,7 +79,7 @@
                             @if (_startDate.HasValue && _endDate.HasValue)
                             {
                                 var days = (_endDate.Value.DayNumber - _startDate.Value.DayNumber) + 1;
-                                <span>@days day(s) selected</span>
+                                <span>@Localizer["DateRangePicker.DaysSelected", days]</span>
                             }
                         </div>
                         <div class="flex gap-2">
@@ -86,13 +87,13 @@
                                     Size="ButtonSize.Small" 
                                     Disabled="@(!_startDate.HasValue && !_endDate.HasValue)"
                                     @onclick="ClearSelection">
-                                Clear
+                                @Localizer["DateRangePicker.Clear"]
                             </Button>
                             <Button Variant="ButtonVariant.Default" 
                                     Size="ButtonSize.Small" 
                                     Disabled="@(!_startDate.HasValue || !_endDate.HasValue)"
                                     @onclick="ApplySelection">
-                                Apply
+                                @Localizer["DateRangePicker.Apply"]
                             </Button>
                         </div>
                     </div>
@@ -217,9 +218,10 @@
 
     /// <summary>
     /// Placeholder text when no date range is selected.
+    /// When null, falls back to the localizer value for "DateRangePicker.Placeholder".
     /// </summary>
     [Parameter]
-    public string Placeholder { get; set; } = "Pick a date range";
+    public string? Placeholder { get; set; }
 
     /// <summary>
     /// Date format string for displaying dates.
@@ -350,7 +352,7 @@
         var format = DateFormat ?? "d";
 
         if (_startDate == null && _endDate == null)
-            return Placeholder;
+            return Placeholder ?? Localizer["DateRangePicker.Placeholder"];
 
         if (_startDate != null && _endDate == null)
             return _startDate.Value.ToString(format, culture) + " - ...";
@@ -418,7 +420,7 @@
         }
         else
         {
-            attrs.Add("aria-label", "Select date range");
+            attrs.Add("aria-label", Localizer["DateRangePicker.Placeholder"]);
         }
 
         return attrs;
@@ -569,14 +571,14 @@
 
     private string GetPresetLabel(DateRangePreset preset) => preset switch
     {
-        DateRangePreset.Today => "Today",
-        DateRangePreset.Yesterday => "Yesterday",
-        DateRangePreset.Last7Days => "Last 7 days",
-        DateRangePreset.Last30Days => "Last 30 days",
-        DateRangePreset.ThisMonth => "This month",
-        DateRangePreset.LastMonth => "Last month",
-        DateRangePreset.ThisYear => "This year",
-        _ => "Custom"
+        DateRangePreset.Today => Localizer["DateRangePicker.Today"],
+        DateRangePreset.Yesterday => Localizer["DateRangePicker.Yesterday"],
+        DateRangePreset.Last7Days => Localizer["DateRangePicker.Last7Days"],
+        DateRangePreset.Last30Days => Localizer["DateRangePicker.Last30Days"],
+        DateRangePreset.ThisMonth => Localizer["DateRangePicker.ThisMonth"],
+        DateRangePreset.LastMonth => Localizer["DateRangePicker.LastMonth"],
+        DateRangePreset.ThisYear => Localizer["DateRangePicker.ThisYear"],
+        _ => Localizer["DateRangePicker.Custom"]
     };
 
     private string GetPresetButtonClass(DateRangePreset preset)

@@ -27,7 +27,7 @@
                 else
                 {
                     <div class="flex items-center justify-center p-8 text-muted-foreground">
-                        <div class="text-sm">Loading...</div>
+                        <div class="text-sm">@Localizer["DataTable.Loading"]</div>
                     </div>
                 }
             }
@@ -40,7 +40,7 @@
                 else
                 {
                     <Empty>
-                        <EmptyTitle>No results found</EmptyTitle>
+                        <EmptyTitle>@Localizer["DataTable.NoResultsFound"]</EmptyTitle>
                     </Empty>
                 }
             }
@@ -84,21 +84,21 @@
                                                 <DropdownMenuTrigger Class="inline-flex items-center justify-center p-0 bg-transparent border-0 hover:bg-transparent focus:outline-none">
                                                     <Checkbox Checked="@IsAllSelected()"
                                                               Indeterminate="@IsSomeSelected()"
-                                                              AriaLabel="Select rows - click to see options"
+                                                              AriaLabel="@Localizer["DataTable.SelectRowsAriaLabel"]"
                                                               Class="pointer-events-none" />
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent Side="PopoverSide.Bottom" Align="PopoverAlign.Start">
                                                     <DropdownMenuItem OnClick="@HandleSelectAllOnCurrentPage">
-                                                        Select all on this page (@_processedData.Count() items)
+                                                        @Localizer["DataTable.SelectAllOnPage", _processedData.Count()]
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem OnClick="@HandleSelectAllItems">
-                                                        Select all @GetTotalFilteredItemCount() items
+                                                        @Localizer["DataTable.SelectAllItems", GetTotalFilteredItemCount()]
                                                     </DropdownMenuItem>
                                                     @if (_tableState.Selection.HasSelection)
                                                     {
                                                         <DropdownMenuSeparator />
                                                         <DropdownMenuItem OnClick="@HandleClearSelection">
-                                                            Clear selection
+                                                            @Localizer["DataTable.ClearSelection"]
                                                         </DropdownMenuItem>
                                                     }
                                                 </DropdownMenuContent>
@@ -109,7 +109,7 @@
                                             <Checkbox Checked="@IsAllSelected()"
                                                       CheckedChanged="@(async (bool isChecked) => await HandleSelectAllChanged(isChecked))"
                                                       Indeterminate="@IsSomeSelected()"
-                                                      AriaLabel="Select all rows" />
+                                                      AriaLabel="@Localizer["DataTable.SelectAllRows"]" />
                                         }
                                     </div>
                                 </TableHeaderCell>
@@ -272,7 +272,7 @@
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
                                   CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(item, chk))"
-                                  AriaLabel="Select this row" />
+                                  AriaLabel="@Localizer["DataTable.SelectThisRow"]" />
                     </div>
                 </TableCell>
             }
@@ -309,7 +309,7 @@
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
                                   CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(treeRow.Item, chk))"
-                                  AriaLabel="Select this row" />
+                                  AriaLabel="@Localizer["DataTable.SelectThisRow"]" />
                     </div>
                 </TableCell>
             }

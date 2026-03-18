@@ -23,7 +23,7 @@
                 {
                     <button type="button"
                             class="ml-0.5 rounded-full outline-none focus-visible:ring-1 focus-visible:ring-ring hover:bg-secondary-foreground/20"
-                            aria-label="@($"Remove {tag}")"
+                            aria-label="@Localizer["TagInput.RemoveTag", tag]"
                             @onclick="GetRemoveHandler(tag)"
                             @onclick:stopPropagation="true">
                         <LucideIcon Name="x" Size="12" Class="h-3 w-3" />
@@ -52,7 +52,7 @@
     {
         <button type="button"
                 class="ml-auto shrink-0 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                aria-label="Clear all tags"
+                aria-label="@Localizer["TagInput.ClearAllTags"]"
                 @onclick="ClearAll"
                 @onclick:stopPropagation="true">
             <LucideIcon Name="x" Size="14" Class="h-3.5 w-3.5" />
@@ -72,7 +72,7 @@
                     ZIndex="60">
         <ul id="@_contentId"
             role="listbox"
-            aria-label="Tag suggestions"
+            aria-label="@Localizer["TagInput.TagSuggestions"]"
             class="rounded-md border bg-popover text-popover-foreground shadow-md outline-none p-1 max-h-48 overflow-y-auto">
             @for (int i = 0; i < _filteredSuggestions.Count; i++)
             {
