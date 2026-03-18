@@ -154,14 +154,24 @@ export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
                     if (col) col.style.width = `${newWidth}px`;
                 }
 
+                let resizeDone = false;
+
                 async function onPointerUp(e) {
+                    if (resizeDone) return;
+                    resizeDone = true;
+
                     const finalWidth = Math.max(effectiveMin, startWidth + (e.clientX - startX));
                     th.style.width = `${finalWidth}px`;
                     if (col) col.style.width = `${finalWidth}px`;
 
-                    handle.releasePointerCapture(e.pointerId);
+                    // Remove all listeners BEFORE releasing capture — releasing capture
+                    // synchronously dispatches lostpointercapture, which would otherwise
+                    // re-enter this handler with clientX=0 in Safari, corrupting the width.
                     handle.removeEventListener('pointermove', onPointerMove);
                     handle.removeEventListener('pointerup', onPointerUp);
+                    handle.removeEventListener('pointercancel', onPointerUp);
+                    handle.removeEventListener('lostpointercapture', onPointerUp);
+                    handle.releasePointerCapture(e.pointerId);
 
                     // Skip the round-trip when nothing moved (e.g. the two pointer-up
                     // events that precede a dblclick would otherwise fire needlessly).
