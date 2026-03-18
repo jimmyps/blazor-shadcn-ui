@@ -716,6 +716,17 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     {
         return customColor ?? $"var(--chart-{(index % 5) + 1})";
     }
+
+    /// <summary>
+    /// Gets color for a slice/segment at index, cycling through a custom palette when provided.
+    /// Falls back to the auto CSS-variable palette when <paramref name="customColors"/> is null or empty.
+    /// </summary>
+    protected string GetSliceColor(int index, string[]? customColors)
+    {
+        if (customColors is { Length: > 0 })
+            return customColors[index % customColors.Length];
+        return $"var(--chart-{(index % 5) + 1})";
+    }
     
     /// <summary>
     /// Maps AnimationEasing enum to ECharts easing string.
