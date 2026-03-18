@@ -88,6 +88,7 @@
         new("Align",     "FunnelAlign", "Center",   "Horizontal alignment of the funnel: Left, Center, Right."),
         new("Gap",       "int?",        "null",     "Gap in pixels between segments."),
         new("ShowLabel", "bool",        "false",    "Render value labels on each segment."),
-        new("Fill",      "string?",     "null",     "Uniform segment color (default: uses chart palette)."),
+        new("Fill",      "string?",     "null",     "Inherited from SeriesBase. Not used for per-segment coloring — use Colors instead."),
+        new("Colors",    "string[]?",   "null",     "Custom color palette cycling across segments. null = auto CSS-variable palette (--chart-1 … --chart-5)."),
     ];
 }
