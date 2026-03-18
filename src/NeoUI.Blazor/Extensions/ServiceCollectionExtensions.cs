@@ -46,9 +46,15 @@ public static class ServiceCollectionExtensions
         // implementation (e.g. a subclass that delegates to IStringLocalizer<T>).
         if (configureLocalizer is not null)
         {
-            var localizer = new DefaultLocalizer();
-            configureLocalizer(localizer);
-            services.AddScoped<ILocalizer>(_ => localizer);
+            // Create a new DefaultLocalizer per scope so each circuit/request has its own
+            // independent instance. The configureLocalizer action is applied to each instance,
+            // ensuring consistent initial state without shared mutable dictionary state.
+            services.AddScoped<ILocalizer>(_ =>
+            {
+                var localizer = new DefaultLocalizer();
+                configureLocalizer(localizer);
+                return localizer;
+            });
         }
         else
         {
