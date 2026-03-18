@@ -39,6 +39,19 @@
     [Parameter]
     public EventCallback OnClose { get; set; }
 
+    /// <summary>
+    /// X coordinate to open the context menu at. Used when <see cref="Open"/> is set programmatically
+    /// (i.e. without a <c>ContextMenuTrigger</c> right-click gesture).
+    /// </summary>
+    [Parameter]
+    public double X { get; set; }
+
+    /// <summary>
+    /// Y coordinate to open the context menu at. Used when <see cref="Open"/> is set programmatically.
+    /// </summary>
+    [Parameter]
+    public double Y { get; set; }
+
     protected override void OnInitialized()
     {
         if (Open.HasValue && Open.Value)
@@ -55,12 +68,18 @@
         {
             if (Open.Value)
             {
-                _context.Open(_context.X, _context.Y);
+                _context.Open(X != 0 || Y != 0 ? X : _context.X, X != 0 || Y != 0 ? Y : _context.Y);
             }
             else
             {
                 _context.Close();
             }
+        }
+        else if (Open.HasValue && Open.Value && _context.IsOpen && (X > 0 || Y > 0) && (X != _context.X || Y != _context.Y))
+        {
+            // Menu is already open but coordinates changed (e.g. right-click on a different row).
+            // Reposition the menu at the new location without toggling open state.
+            _context.Open(X, Y);
         }
     }
 
@@ -80,6 +99,9 @@
             await OnClose.InvokeAsync();
         }
     }
+
+    /// <summary>Opens the context menu at the specified viewport coordinates without requiring a parameter round-trip.</summary>
+    public void OpenAt(double x, double y) => _context.Open(x, y);
 
     public void Dispose()
     {
