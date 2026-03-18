@@ -1387,6 +1387,16 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
         return styles.Count > 0 ? string.Join("; ", styles) : null;
     }
 
+    /// <summary>Returns the inline style for a column's header cell, extending
+    /// <see cref="GetColumnStyle"/> with header-only properties such as the
+    /// grab cursor for reorderable columns.</summary>
+    private string? GetHeaderCellStyle(ColumnData column)
+    {
+        var base_ = GetColumnStyle(column);
+        if (!column.ReorderEnabled) return base_;
+        return base_ is null ? "cursor: grab" : base_ + "; cursor: grab";
+    }
+
     /// <summary>
     /// Returns extra CSS classes for a pinned column cell.
     /// Background, hover, selected, and border-b are all handled by

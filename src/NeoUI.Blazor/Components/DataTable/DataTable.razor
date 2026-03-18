@@ -133,7 +133,7 @@
 
                                 <TableHeaderCell @key="column.Id" TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
                                                  Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass, GetPinnedCellClass(column, isHeader: true), (column.ResizeEnabled || column.ReorderEnabled) ? "relative overflow-visible" : null)"
-                                                 style="@GetColumnStyle(column)"
+                                                 style="@GetHeaderCellStyle(column)"
                                                  data-pinned="@(column.Pinned != ColumnPinnedSide.None ? "true" : null)"
                                                  data-col-id="@column.Id"
                                                  draggable="@(column.ReorderEnabled ? "true" : null)"

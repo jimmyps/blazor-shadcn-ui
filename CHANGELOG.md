@@ -2,6 +2,102 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-18 — Add DataTable column resizing, column reordering, and row context menu
+
+> **Release: `v3.6.3`**  
+> **Library change.** Affects `DataTable<TData>` in `NeoUI.Blazor`, `ContextMenu` in `NeoUI.Blazor`, and `ContextMenuRootPrimitive` / `TableRow` in `NeoUI.Blazor.Primitives`. All changes are additive — no breaking changes to existing APIs.
+
+---
+
+### ✨ New Feature — `DataTable<TData>` column resizing
+
+Columns can now be drag-resized at runtime via a handle on the right edge of each header cell. Double-clicking a resize handle auto-fits the column to its widest rendered content using an off-screen sandbox measurement strategy (single forced-reflow batch). Resizing enforces a configurable minimum width and clamps against the natural width of the header content so the sort icon is never clipped.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Resizable` | `bool` | `false` | Enables resize handles on all columns. Activates `table-layout: fixed` automatically. |
+| `MinColumnWidth` | `int` | `80` | Minimum column width in pixels enforced during drag. |
+| `OnColumnResize` | `EventCallback<(string ColumnId, string Width)>` | — | Raised once when the user releases the resize handle. |
+
+**New `DataTableColumn` parameter:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `Resizable` | `bool?` | Per-column override. `null` inherits the table-level `Resizable` setting. |
+
+---
+
+### ✨ New Feature — `DataTable<TData>` column reordering
+
+Column headers can be dragged to reorder columns at runtime. The dragged column follows the cursor via `translateX` (no HTML5 ghost image). Adjacent columns shift with a 200 ms ease animation — identical to the dnd-kit `closestCenter` + `horizontalListSortingStrategy` behaviour. A 5 px movement threshold prevents accidental reorders on sort-header clicks. Pinned columns and the selection checkbox column are always excluded as both drag sources and drop targets. DOM order is committed immediately on drop with no Blazor re-render; C# state is synced via a single `JSInvokable` callback.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Reorderable` | `bool` | `false` | Enables drag-to-reorder on all eligible columns. |
+| `OnColumnReorder` | `EventCallback<(string ColumnId, int NewIndex)>` | — | Raised when a column is dropped into a new position. Provides the column ID and new zero-based display index. |
+
+**New `DataTableColumn` parameter:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `Reorderable` | `bool?` | Per-column override. `null` inherits the table-level `Reorderable` setting. Pinned columns are always excluded regardless of this value. |
+
+---
+
+### ✨ New Feature — `DataTable<TData>` row context menu
+
+Right-clicking any data row opens a context menu scoped to that row. The `RowContextMenu` render fragment receives a `DataTableRowMenuContext<TData>` with the row's item, the current selection, and the IDs of all visible columns. Any `ContextMenuItem`, `ContextMenuSeparator`, or sub-menu components are valid children. The menu repositions correctly when right-clicking different rows in quick succession without toggling the open state.
+
+**New `DataTable` parameter:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `RowContextMenu` | `RenderFragment<DataTableRowMenuContext<TData>>?` | Template for the context menu. Receives row and selection context. |
+
+**New type — `DataTableRowMenuContext<TData>`:**
+
+| Member | Type | Description |
+|---|---|---|
+| `Item` | `TData` | The data item for the right-clicked row. |
+| `SelectedItems` | `IReadOnlyList<TData>` | Currently selected items at the time of the right-click. |
+| `VisibleColumns` | `IReadOnlyList<string>` | IDs of all currently visible columns, in display order. |
+
+---
+
+### ✨ Enhancement — `ContextMenu` / `ContextMenuRootPrimitive` programmatic positioning
+
+`ContextMenu` and its underlying `ContextMenuRootPrimitive` now support fully programmatic open-and-position. This is the mechanism used by the new `DataTable` row context menu to open at the pointer location without a `ContextMenuTrigger`.
+
+**New parameters on `ContextMenu` and `ContextMenuRootPrimitive`:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `X` | `double` | Viewport X coordinate for programmatic positioning. |
+| `Y` | `double` | Viewport Y coordinate for programmatic positioning. |
+
+**New method on `ContextMenu` and `ContextMenuRootPrimitive`:**
+
+| Method | Description |
+|---|---|
+| `OpenAt(double x, double y)` | Opens (or repositions) the context menu at the specified viewport coordinates without a parameter round-trip. |
+
+---
+
+### 📖 Demo — Column resize, reorder, and row context menu sections
+
+Two new sections added to the `/components/datatable` demo page:
+
+| Section | What it shows |
+|---|---|
+| **Column Resize & Reorder** | Employee directory with `Resizable` and `Reorderable` enabled. Drag handles on every header, double-click to auto-fit, and live `OnColumnResize` / `OnColumnReorder` event readout below the table. |
+| **Row Context Menu** | Same employee dataset with a `RowContextMenu` that exposes per-row actions (View Profile, Send Email, separator, Remove) and displays the selected count when multiple rows are selected. |
+
+---
+
 ## 2026-3-17 — DataTable column pinning and hierarchical tree rows
 
 > **Release: `v3.6.2`**  

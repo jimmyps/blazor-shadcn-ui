@@ -8,6 +8,93 @@
  * Each feature returns a { dispose } handle that Blazor calls on DisposeAsync.
  */
 
+// ── Measurement sandbox ────────────────────────────────────────────────────────
+//
+// A single off-screen container reused across all auto-size measurements.
+// position:fixed keeps it out of the document flow → no scrollbar or layout impact.
+// Created lazily so the module can be parsed before document.body is ready.
+
+let _sandbox = null;
+
+function getSandbox() {
+    if (!_sandbox) {
+        _sandbox = document.createElement('div');
+        Object.assign(_sandbox.style, {
+            position:      'fixed',
+            top:           '-9999px',
+            left:          '-9999px',
+            visibility:    'hidden',
+            pointerEvents: 'none',
+        });
+        _sandbox.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(_sandbox);
+    }
+    return _sandbox;
+}
+
+/**
+ * Measures the natural fit-width for a column by cloning each cell's inner
+ * content element with `width: max-content` into the off-screen sandbox,
+ * then reading all rendered widths in a single forced-reflow pass.
+ *
+ * Strategy: batch-append ALL clones before measuring so the browser performs
+ * only one layout calculation instead of N separate reflows.
+ *
+ * @param {HTMLElement} containerEl - The table scroll container.
+ * @param {string}      colId       - The `data-col-id` value for the column.
+ * @param {number}      minWidth    - Minimum width in pixels to clamp the result.
+ * @returns {number} Fit width in pixels (>= minWidth).
+ */
+function measureColumnFitWidth(containerEl, colId, minWidth) {
+    const cells = containerEl.querySelectorAll(`[data-col-id="${colId}"]`);
+    if (!cells.length) return minWidth;
+
+    const sandbox = getSandbox();
+    const entries = [];
+
+    // 1. Batch-append all clones — no reads yet, defers the forced reflow.
+    //    font-* properties must be stamped explicitly onto each clone because the
+    //    sandbox inherits from <body>, not from the table's ancestor chain.
+    //    Reading getComputedStyle before appendChild ensures we sample the live DOM.
+    cells.forEach(cell => {
+        const cellCs  = getComputedStyle(cell);
+        const padding = parseFloat(cellCs.paddingLeft) + parseFloat(cellCs.paddingRight);
+        const inner   = cell.firstElementChild;
+
+        // Use the inner element's font if present, otherwise fall back to the cell's.
+        const fontCs = inner ? getComputedStyle(inner) : cellCs;
+        const probe  = inner ? inner.cloneNode(true) : document.createElement('span');
+        if (!inner) probe.textContent = cell.textContent.trim();
+
+        Object.assign(probe.style, {
+            width:         'max-content',
+            whiteSpace:    'nowrap',
+            fontFamily:    fontCs.fontFamily,
+            fontSize:      fontCs.fontSize,
+            fontWeight:    fontCs.fontWeight,
+            fontStyle:     fontCs.fontStyle,
+            fontVariant:   fontCs.fontVariant,
+            letterSpacing: fontCs.letterSpacing,
+            lineHeight:    fontCs.lineHeight,
+            textTransform: fontCs.textTransform,
+        });
+
+        sandbox.appendChild(probe);
+        entries.push({ clone: probe, padding });
+    });
+
+    // 2. Read all widths in a single pass (one forced reflow for the whole batch)
+    const widths = entries.map(({ clone, padding }) =>
+        Math.ceil(clone.getBoundingClientRect().width + padding)
+    );
+
+    // 3. Clean up all clones
+    entries.forEach(({ clone }) => sandbox.removeChild(clone));
+
+    return Math.max(minWidth, ...widths);
+}
+
+
 // ── Column Resizing ──────────────────────────────────────────────────────────
 
 /**
@@ -76,15 +163,39 @@ export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
                     handle.removeEventListener('pointermove', onPointerMove);
                     handle.removeEventListener('pointerup', onPointerUp);
 
-                    await dotNetRef.invokeMethodAsync('OnResizeCompleted', colId, finalWidth);
+                    // Skip the round-trip when nothing moved (e.g. the two pointer-up
+                    // events that precede a dblclick would otherwise fire needlessly).
+                    if (finalWidth !== startWidth)
+                        await dotNetRef.invokeMethodAsync('OnResizeCompleted', colId, finalWidth);
                 }
 
                 handle.addEventListener('pointermove', onPointerMove);
                 handle.addEventListener('pointerup', onPointerUp);
             };
 
+            // Double-click: auto-fit the column to the widest rendered cell content.
+            // Uses the persistent off-screen sandbox so table-layout:fixed clamping
+            // doesn't skew the measurement (scrollWidth returns the forced width,
+            // not the natural content width, under fixed layout).
+            const onDblClick = async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const colId = handle.dataset.resizeHandle;
+                const th  = containerEl.querySelector(`th[data-col-id="${colId}"]`);
+                const col = containerEl.querySelector(`col[data-col-id="${colId}"]`);
+                if (!th) return;
+
+                const fitWidth = measureColumnFitWidth(containerEl, colId, minWidth);
+                th.style.width = `${fitWidth}px`;
+                if (col) col.style.width = `${fitWidth}px`;
+                await dotNetRef.invokeMethodAsync('OnResizeCompleted', colId, fitWidth);
+            };
+
             handle.addEventListener('pointerdown', onPointerDown);
+            handle.addEventListener('dblclick', onDblClick);
             listeners.push({ el: handle, type: 'pointerdown', fn: onPointerDown });
+            listeners.push({ el: handle, type: 'dblclick',    fn: onDblClick });
         });
     }
 
@@ -202,11 +313,12 @@ export function initColumnReorder(containerEl, dotNetRef, reorderableIds) {
     // directly to the C# array operation:
     //   _columns.Remove(col); _columns.Insert(targetSlot, col);
     function findTargetSlot(dragVisualCenterX) {
-        const { dragIdx, originalCenters } = drag;
+        const { dragIdx, headers, originalCenters } = drag;
         let closestIdx = dragIdx;
         let closestDist = Math.abs(originalCenters[dragIdx] - dragVisualCenterX);
         for (let i = 0; i < originalCenters.length; i++) {
             if (i === dragIdx) continue;
+            if (headers[i].dataset.pinned === 'true') continue;  // pinned columns are never drop targets
             const dist = Math.abs(originalCenters[i] - dragVisualCenterX);
             if (dist < closestDist) {
                 closestDist = dist;
@@ -224,6 +336,7 @@ export function initColumnReorder(containerEl, dotNetRef, reorderableIds) {
         const { dragIdx, headers, dragWidth } = drag;
         headers.forEach((th, i) => {
             if (i === dragIdx) return;
+            if (th.dataset.pinned === 'true') return;  // never shift pinned columns
             let shift = 0;
             if (dragIdx < targetSlot && i > dragIdx && i <= targetSlot) shift = -dragWidth;
             else if (dragIdx > targetSlot && i >= targetSlot && i < dragIdx) shift = dragWidth;
@@ -245,9 +358,8 @@ export function initColumnReorder(containerEl, dotNetRef, reorderableIds) {
         th.addEventListener('dragstart', onDragStart);
         listeners.push({ el: th, type: 'dragstart', fn: onDragStart });
 
-        // Grab cursor on reorderable headers
-        th.style.cursor     = 'grab';
-        th.style.touchAction = 'none';   // prevent scroll-vs-drag conflict on touch
+        // touch-action: none prevents scroll-vs-drag conflict on touch devices
+        th.style.touchAction = 'none';
 
         const onPointerDown = (e) => {
             if (e.button !== 0 || drag) return;
@@ -374,7 +486,7 @@ export function initColumnReorder(containerEl, dotNetRef, reorderableIds) {
             listeners.forEach(({ el, type, fn }) => el.removeEventListener(type, fn));
             reorderableIds.forEach(colId => {
                 const th = containerEl.querySelector(`th[data-col-id="${colId}"]`);
-                if (th) { th.style.cursor = ''; th.style.touchAction = ''; }
+                if (th) { th.style.touchAction = ''; }
             });
             listeners.length = 0;
             clearAll();
