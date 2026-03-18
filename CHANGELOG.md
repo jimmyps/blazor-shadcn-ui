@@ -2,9 +2,79 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-18 — Chart color palette for Pie and Funnel
+## 2026-3-18 — Add DataTable column resizing, column reordering, row context menu, and add Chart color palette for Pie and Funnel
 
 > **Release: `v3.6.3`**  
+> **Library change.** Affects `DataTable<TData>` in `NeoUI.Blazor`. All changes are additive — no breaking changes.
+
+---
+
+### ✨ New Feature — `SyncWidthOnResize` — table width tracks column widths
+
+A new `SyncWidthOnResize` parameter (default `false`) keeps the `<table>` element's total width equal to the sum of all `<col>` widths during and after resize. When disabled (default), the table retains its container width and unused space shows the container background. Enable alongside `TableContainerClass="border-0"` for a borderless table that naturally shrinks when columns are narrowed.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `SyncWidthOnResize` | `bool` | `false` | Keeps `<table>` width = sum of all column widths during and after resize. Pair with `TableContainerClass="border-0"`. |
+
+---
+
+### ✨ New Feature — `TableContainerClass` — style the inner table wrapper
+
+A new `TableContainerClass` parameter allows passing Tailwind classes directly to the `<div>` that wraps the `<table>` (the element with `rounded-md border overflow-x-auto`). The existing `Class` parameter targets the outer container; `TableContainerClass` targets the grid's direct parent.
+
+**New `DataTable` parameter:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `TableContainerClass` | `string?` | `null` | Additional CSS classes on the inner table container div. Use `border-0` to remove the border. |
+
+---
+
+### ✨ New Feature — `Striped` / `StripeClass` — zebra row striping
+
+Two new parameters enable alternating row background colours. The stripe colour is intentionally lighter than hover (`/30` vs `/50`) so the visual hierarchy — stripe → hover → selected — is always legible.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Striped` | `bool` | `false` | Enables alternating row backgrounds (zebra striping). |
+| `StripeClass` | `string?` | `even:bg-muted/30 even:hover:bg-muted/70` | Tailwind class for the stripe. Override to change colour or swap odd/even, e.g. `odd:bg-blue-50 dark:odd:bg-blue-950/20`. |
+
+---
+
+### ✨ Improvement — Smooth column reorder animation
+
+On drop, the affected columns (dragged column + all shifted neighbours between source and target slot) fade out instantly, Blazor re-renders silently, then all affected columns fade back in at their new positions with a `500ms ease-in` opacity transition. Columns outside the affected range remain fully visible throughout.
+
+---
+
+### 🐛 Bug Fix — Column reorder double-invocation
+
+`OnAfterRenderAsync` used a `null` guard to skip re-initialising JS interop, but two concurrent renders could both pass the check before either `await` resolved — registering `pointerdown` on each `<th>` twice and causing `onUp` to fire twice per drop. Fixed by setting `_reorderInitializing` / `_resizeInitializing` bool flags synchronously before the `await`, preventing the race.
+
+---
+
+### 🐛 Bug Fix — Column reorder incorrect order after multiple moves
+
+After fixing double-invocation, the reorder position was still wrong after three or more moves. Root cause: JS `commitDomReorder` moved DOM nodes directly, desyncing Blazor's internal logical-element tree. Any subsequent Blazor render would diff against a stale virtual DOM and apply corrupt `insertBefore` operations. Fixed by removing `commitDomReorder` from the drop handler entirely — Blazor is now the sole owner of DOM element ordering. JS handles only visual feedback via CSS transforms; on drop, `OnColumnReordered` updates `_columns`, calls `StateHasChanged()`, and Blazor renders the correct order against an unmodified DOM.
+
+---
+
+
+### 🐛 Bug Fix — Column resize width reset in Safari
+
+`releasePointerCapture` dispatches `lostpointercapture` synchronously, which re-entered the `onPointerUp` handler with `clientX = 0` in Safari — causing the column to snap to its minimum width on every drag. Fixed by removing all event listeners **before** calling `releasePointerCapture`, and adding a `resizeDone` guard to prevent any double-invocation.
+
+Also fixed: `pointercancel` was registered but never removed — a minor listener leak now closed.
+
+---
+
+## Chart color palette for Pie and Funnel
+
 > **Library change.** Affects `PieChart<TData>` and `FunnelChart<TData>` in `NeoUI.Blazor`. Contains one **breaking change** to the `Pie` series component.
 
 ---

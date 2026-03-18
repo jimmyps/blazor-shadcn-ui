@@ -282,6 +282,16 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     private string? _lastBodyRowClass;
 
     /// <summary>
+    /// Cached Striped value for ShouldRender optimization.
+    /// </summary>
+    private bool _lastStriped;
+
+    /// <summary>
+    /// Cached StripeClass value for ShouldRender optimization.
+    /// </summary>
+    private string? _lastStripeClass;
+
+    /// <summary>
     /// Cached CellBorder value for ShouldRender optimization.
     /// </summary>
     private bool _lastCellBorder;
@@ -342,9 +352,13 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
 
     /// <summary>Cleanup handle returned by <c>initColumnResize</c> in datatable.js.</summary>
     private IJSObjectReference? _resizeCleanup;
+    /// <summary>Guards against double-init of resize JS when multiple renders overlap the await.</summary>
+    private bool _resizeInitializing;
 
     /// <summary>Cleanup handle returned by <c>initColumnReorder</c> in datatable.js.</summary>
     private IJSObjectReference? _reorderCleanup;
+    /// <summary>Guards against double-init of reorder JS when multiple renders overlap the await.</summary>
+    private bool _reorderInitializing;
 
     /// <summary>.NET object reference passed to JS so it can invoke JSInvokable callbacks.</summary>
     private DotNetObjectReference<DataTable<TData>>? _dotNetRef;
@@ -538,6 +552,22 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public string? Class { get; set; }
 
     /// <summary>
+    /// When true, the table's total width is kept in sync with the sum of all column widths during
+    /// and after resize. Useful when the table should shrink below its container width rather than
+    /// leaving empty space. Requires <see cref="TableContainerClass"/> <c>border-0</c> (or similar)
+    /// for the best visual result. Default is <c>false</c>.
+    /// </summary>
+    [Parameter]
+    public bool SyncWidthOnResize { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes for the inner table container (the div with the border and overflow).
+    /// Use e.g. <c>border-0</c> to remove the border.
+    /// </summary>
+    [Parameter]
+    public string? TableContainerClass { get; set; }
+
+    /// <summary>
     /// Gets or sets the ARIA label for the table.
     /// </summary>
     [Parameter]
@@ -667,6 +697,21 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public string? BodyRowClass { get; set; }
 
     /// <summary>
+    /// When true, applies alternating row background colours (zebra striping).
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool Striped { get; set; }
+
+    /// <summary>
+    /// Tailwind class applied to alternating rows when <see cref="Striped"/> is true.
+    /// Defaults to <c>even:bg-muted/50</c>. Override to change colour or swap odd/even,
+    /// e.g. <c>odd:bg-muted/30</c> or <c>even:bg-blue-50 dark:even:bg-blue-950/20</c>.
+    /// </summary>
+    [Parameter]
+    public string? StripeClass { get; set; }
+
+    /// <summary>
     /// Gets or sets whether to show vertical borders between body cells.
     /// Default is false.
     /// </summary>
@@ -711,7 +756,8 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     /// without waiting for a re-render to detect HasPinnedColumns.
     /// </summary>
     private string TableContainerCssClass => ClassNames.cn(
-        "rounded-md border overflow-x-auto"
+        "rounded-md border overflow-x-auto",
+        TableContainerClass
     );
 
     /// <summary>
@@ -798,11 +844,9 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     /// </summary>
     private string GetBodyRowClass(bool isSelected) => ClassNames.cn(
         HasPinnedColumns
-            // Pinned: group/row + bg-background so CSS can handle hover/selected/border
-            // per-cell (required because border-collapse:separate hides tr-level borders)
             ? "group/row bg-background transition-colors"
-            // Normal: standard Tailwind tr-level utilities — no regression
             : "group border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        Striped ? (StripeClass ?? "even:bg-muted/50 even:hover:bg-muted/70") : null,
         isSelected ? "bg-muted" : null,
         CellBorder ? "divide-x divide-border" : null,
         BodyRowClass
@@ -1713,6 +1757,8 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             || _lastHeaderClass != HeaderClass
             || _lastHeaderRowClass != HeaderRowClass
             || _lastBodyRowClass != BodyRowClass
+            || _lastStriped != Striped
+            || _lastStripeClass != StripeClass
             || _lastCellBorder != CellBorder
             || _lastColumnsVisibility != ColumnsVisibility;
         var virtualizeChanged = _lastVirtualize != Virtualize
@@ -1739,6 +1785,8 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             _lastHeaderClass = HeaderClass;
             _lastHeaderRowClass = HeaderRowClass;
             _lastBodyRowClass = BodyRowClass;
+            _lastStriped = Striped;
+            _lastStripeClass = StripeClass;
             _lastCellBorder = CellBorder;
             _lastColumnsVisibility = ColumnsVisibility;
             _lastVirtualize = Virtualize;
@@ -1760,14 +1808,16 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
         _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor/js/datatable.js");
 
-        if (HasResizableColumns && _resizeCleanup is null)
+        if (HasResizableColumns && _resizeCleanup is null && !_resizeInitializing)
         {
+            _resizeInitializing = true;
             _resizeCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(
-                "initColumnResize", _tableContainerRef, _dotNetRef, MinColumnWidth);
+                "initColumnResize", _tableContainerRef, _dotNetRef, MinColumnWidth, SyncWidthOnResize);
         }
 
-        if (HasReorderableColumns && _reorderCleanup is null)
+        if (HasReorderableColumns && _reorderCleanup is null && !_reorderInitializing)
         {
+            _reorderInitializing = true;
             var reorderableIds = _columns
                 .Where(c => c.Visible && c.ReorderEnabled)
                 .Select(c => c.Id)
@@ -1805,17 +1855,15 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
         var col = _columns.FirstOrDefault(c => c.Id == columnId);
         if (col is null) return;
 
-        // JS has already committed the DOM reorder — update C# state only.
-        // StateHasChanged() is intentionally omitted: the DOM is correct and
-        // Blazor will reconcile cleanly on any subsequent render (sort/filter/etc.)
-        // because _columns order now matches the DOM order.
+        // JS clears drag transforms but does NOT commit DOM reorder — Blazor must
+        // be the sole owner of DOM element ordering.  Update _columns and call
+        // StateHasChanged() so Blazor diffs old-vdom → new-vdom against an actual
+        // DOM that still matches old-vdom (original positions).  The diff produces
+        // correct insertBefore ops that move elements to the reordered positions.
         _columns.Remove(col);
         var clamped = Math.Clamp(newIndex, 0, _columns.Count);
         _columns.Insert(clamped, col);
         _columnsVersion++;
-        // Sync Blazor's virtual DOM so it matches the JS-committed DOM order.
-        // No JS re-init occurs (_reorderCleanup is not nulled), so this render
-        // is a near-no-op diff — DOM and _columns are already in agreement.
         StateHasChanged();
 
         if (OnColumnReorder.HasDelegate)

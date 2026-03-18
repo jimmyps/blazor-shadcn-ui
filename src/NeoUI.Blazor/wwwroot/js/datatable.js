@@ -107,8 +107,18 @@ function measureColumnFitWidth(containerEl, colId, minWidth) {
  * @param {number} minWidth - Minimum column width in pixels.
  * @returns {{ dispose: () => void }}
  */
-export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
+export function initColumnResize(containerEl, dotNetRef, minWidth = 80, syncWidthOnResize = false) {
     const listeners = [];
+
+    /** Sum all <col> widths and stamp the total onto the <table> element. */
+    function syncTableWidth() {
+        const table = containerEl.querySelector('table');
+        if (!table) return;
+        const cols = table.querySelectorAll('col[data-col-id]');
+        let total = 0;
+        cols.forEach(c => { total += parseFloat(c.style.width) || c.getBoundingClientRect().width; });
+        if (total > 0) table.style.width = `${total}px`;
+    }
 
     function attachHandles() {
         const handles = containerEl.querySelectorAll('[data-resize-handle]');
@@ -152,6 +162,7 @@ export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
                     const newWidth = Math.max(effectiveMin, startWidth + (e.clientX - startX));
                     th.style.width = `${newWidth}px`;
                     if (col) col.style.width = `${newWidth}px`;
+                    if (syncWidthOnResize) syncTableWidth();
                 }
 
                 let resizeDone = false;
@@ -163,6 +174,7 @@ export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
                     const finalWidth = Math.max(effectiveMin, startWidth + (e.clientX - startX));
                     th.style.width = `${finalWidth}px`;
                     if (col) col.style.width = `${finalWidth}px`;
+                    if (syncWidthOnResize) syncTableWidth();
 
                     // Remove all listeners BEFORE releasing capture — releasing capture
                     // synchronously dispatches lostpointercapture, which would otherwise
@@ -201,6 +213,7 @@ export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
                 const fitWidth = measureColumnFitWidth(containerEl, colId, minWidth);
                 th.style.width = `${fitWidth}px`;
                 if (col) col.style.width = `${fitWidth}px`;
+                if (syncWidthOnResize) syncTableWidth();
                 await dotNetRef.invokeMethodAsync('OnResizeCompleted', colId, fitWidth);
             };
 
@@ -212,6 +225,7 @@ export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
     }
 
     attachHandles();
+    if (syncWidthOnResize) syncTableWidth();
 
     return {
         dispose() {
@@ -276,11 +290,13 @@ export function initColumnReorder(containerEl, dotNetRef, reorderableIds) {
     // the dragged column while Blazor was re-rendering the committed order).
     clearAll();
 
-    // ── DOM commit ───────────────────────────────────────────────────────────
+    // ── DOM commit (retained for reference / potential future use) ──────────
     //
-    // Physically relocates the dragged column's <th>, <td>, and <col> nodes to
-    // their committed position.  No Blazor re-render is needed — state is synced
-    // via the JSInvokable callback which updates _columns without StateHasChanged.
+    // Physically relocates the dragged column's <th>, <td>, and <col> nodes.
+    //
+    // NOTE: This function is NOT called from onUp.  Blazor must be the sole
+    // owner of DOM ordering — JS DOM moves desync Blazor's internal logical-
+    // element tree, causing subsequent re-renders to corrupt column order.
     //
     // Reference cell formula: after removing the dragged column from its original
     // slot, the target element to insert-before is:
@@ -433,8 +449,11 @@ export function initColumnReorder(containerEl, dotNetRef, reorderableIds) {
                 }
             };
 
+            let dropDone = false;
+
             const onUp = async () => {
-                if (!drag) return;
+                if (!drag || dropDone) return;
+                dropDone = true;
                 const { started, colId: movedId, dragIdx, targetSlot, headers } = drag;
                 cleanup();
                 drag = null;
@@ -453,28 +472,39 @@ export function initColumnReorder(containerEl, dotNetRef, reorderableIds) {
                 };
                 document.addEventListener('click', eatClick, true);
 
+                // Clear transforms for all columns.  Do NOT call commitDomReorder() —
+                // Blazor must be the sole owner of DOM element ordering.  JS DOM moves
+                // desync Blazor's internal logical-element tree, causing subsequent
+                // renders to corrupt the column order.
+                headers.forEach(h =>
+                    setCells(h.dataset.colId, { transform: '', transition: 'none', zIndex: '', boxShadow: '' })
+                );
+
                 if (dragIdx !== targetSlot) {
-                    // Snap non-dragged columns back instantly (clear shift transforms)
-                    headers.forEach((h, i) => {
-                        if (i !== dragIdx)
-                            setCells(h.dataset.colId, { transform: '', transition: 'none', zIndex: '', opacity: '', boxShadow: '' });
-                    });
-
-                    // Physically insert the dragged column at its committed slot — the
-                    // column is still at its dragged transform offset, but now in the
-                    // correct DOM position.  Clearing transform below lands it perfectly.
-                    commitDomReorder(dragIdx, targetSlot, headers);
-
-                    // Reset dragged column: clear transform now that DOM is correct
-                    setCells(movedId, { transform: '', transition: 'none', zIndex: '', opacity: '', boxShadow: '' });
-
-                    // Sync C# state — no StateHasChanged, DOM is already committed
-                    await dotNetRef.invokeMethodAsync('OnColumnReordered', movedId, targetSlot);
-                } else {
-                    // No movement — just clear drag styles
-                    headers.forEach(h =>
-                        setCells(h.dataset.colId, { transform: '', transition: 'none', zIndex: '', opacity: '', boxShadow: '' })
+                    // Hide the entire affected range (dragged column + all shifted neighbours).
+                    // Snapping transforms back AND Blazor reordering both cause visible layout
+                    // shifts in these columns — hiding them makes the transition seamless.
+                    const lo = Math.min(dragIdx, targetSlot);
+                    const hi = Math.max(dragIdx, targetSlot);
+                    headers.slice(lo, hi + 1).forEach(h =>
+                        setCells(h.dataset.colId, { opacity: '0', transition: 'none' })
                     );
+
+                    // Guarantee the opacity:0 frame is painted before invoking C#.
+                    await new Promise(resolve => setTimeout(resolve, 10));
+
+                    // Notify C# — StateHasChanged() triggers a Blazor render that moves
+                    // DOM elements to their reordered positions.  By the time the await
+                    // resolves the render is committed and the column is in its new slot.
+                    await dotNetRef.invokeMethodAsync('OnColumnReordered', movedId, targetSlot);
+
+                    // Fade all affected columns back in at their new positions.
+                    // Use getHeaders() so we query the live DOM after Blazor's reorder.
+                    requestAnimationFrame(() => {
+                        getHeaders().forEach(h =>
+                            setCells(h.dataset.colId, { transition: 'opacity 350ms ease-in', opacity: '1' })
+                        );
+                    });
                 }
             };
 

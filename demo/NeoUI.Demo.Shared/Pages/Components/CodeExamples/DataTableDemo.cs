@@ -44,6 +44,9 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("ExpandedValues", "HashSet<string>?", "null", "Two-way bindable set of expanded row keys. Use @bind-ExpandedValues to persist or restore the expand state across renders."),
                 new("Resizable", "bool", "false", "Adds drag handles on column headers so users can adjust widths at runtime. Activates table-layout:fixed automatically. Per-column Resizable on DataTableColumn overrides this."),
                 new("MinColumnWidth", "int", "80", "Minimum column width in pixels enforced during drag-to-resize."),
+                new("SyncWidthOnResize", "bool", "false", "When true, the table's total width is updated to match the sum of all column widths during and after resize. Pair with TableContainerClass=\"border-0\" for the best visual result."),
+                new("Striped", "bool", "false", "Enables alternating row background (zebra striping)."),
+                new("StripeClass", "string?", "odd:bg-muted/30", "Tailwind class for the stripe. Override to change colour or swap odd/even, e.g. even:bg-muted/30."),
                 new("OnColumnResize", "EventCallback<(string, string)>", "—", "Fires when the user finishes resizing a column. Provides (ColumnId, NewCssWidth)."),
                 new("Reorderable", "bool", "false", "Lets users drag column headers to reorder them. Columns animate into place as you drag. Pinned and selection columns are excluded. Per-column Reorderable overrides this."),
                 new("OnColumnReorder", "EventCallback<(string, int)>", "—", "Fires when the user drops a column into a new position. Provides (ColumnId, NewIndex)."),
@@ -350,17 +353,26 @@ namespace NeoUI.Demo.Shared.Pages.Components
         private const string _resizeReorderCode = """
                 <DataTable TData="Employee"
                            Data="@employees"
+                           TableContainerClass="border-0"
+                           SyncWidthOnResize="true"
+                           Striped="true"
+                           HeaderBorder="true"
                            Resizable="true"
                            Reorderable="true"
+                           ShowPagination="false"
                            OnColumnResize="@(args => Console.WriteLine($"{args.ColumnId}: {args.Width}"))"
                            OnColumnReorder="@(args => Console.WriteLine($"{args.ColumnId} → index {args.NewIndex}"))">
                     <Columns>
-                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Name)"       Header="Name"       Width="160px" Sortable />
-                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Department)" Header="Department" Width="140px" Sortable />
-                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Title)"      Header="Title"      Width="180px" />
-                        @* Disable resize/reorder on a specific column *@
-                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Status)"     Header="Status"
-                                         Resizable="false" Reorderable="false" Width="100px" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Name)"       Header="Name"       Width="160px" Sortable CellClass="truncate" HeaderClass="overflow-hidden" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Department)" Header="Department" Width="140px" Sortable CellClass="truncate" HeaderClass="overflow-hidden" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Title)"      Header="Title"      Width="180px" CellClass="truncate" HeaderClass="overflow-hidden" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Location)"   Header="Location"   Width="130px" CellClass="truncate" HeaderClass="overflow-hidden" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Salary)"     Header="Salary"     Width="110px" Alignment="ColumnAlignment.Right" CellClass="truncate" HeaderClass="overflow-hidden" />
+                        <DataTableColumn TData="Employee" TValue="string" Property="@(e => e.Status)"     Header="Status"     Width="100px" HeaderClass="overflow-hidden">
+                            <CellTemplate Context="e">
+                                <Badge Variant="@(e.Status == "Active" ? BadgeVariant.Default : BadgeVariant.Secondary)">@e.Status</Badge>
+                            </CellTemplate>
+                        </DataTableColumn>
                     </Columns>
                 </DataTable>
                 """;

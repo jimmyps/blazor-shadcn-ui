@@ -303,6 +303,9 @@
         Description="Enable Resizable to add drag handles on column headers for width adjustment. Enable Reorderable to let users drag columns into a new order — columns shift smoothly into place as you drag. Both work independently or together. Per-column Resizable/Reorderable overrides the table-level default.">
         <DemoBlock Code="@_resizeReorderCode">
             <DataTable TData="PinnedEmployee" Data="@_pinnedEmployees"
+                       TableContainerClass="border-0"
+                       SyncWidthOnResize="true"
+                       Striped="true"
                        HeaderBorder="true"
                        Resizable="true"
                        Reorderable="true"
