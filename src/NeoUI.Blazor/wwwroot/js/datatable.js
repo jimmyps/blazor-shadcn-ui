@@ -171,6 +171,8 @@ export function initColumnResize(containerEl, dotNetRef, minWidth = 80) {
 
                 handle.addEventListener('pointermove', onPointerMove);
                 handle.addEventListener('pointerup', onPointerUp);
+                handle.addEventListener('pointercancel', onPointerUp);
+                handle.addEventListener('lostpointercapture', onPointerUp);
             };
 
             // Double-click: auto-fit the column to the widest rendered cell content.
