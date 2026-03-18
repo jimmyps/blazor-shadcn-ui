@@ -1,0 +1,237 @@
+@page "/components/localization"
+@inject ILocalizer Localizer
+
+<PageTitle>Localization - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Localization"
+        Description="A DI-registered service that resolves all component chrome strings — placeholders, ARIA labels, button labels, empty states — without modifying library source." />
+
+    <!-- ── Default strings ────────────────────────────────────────────────── -->
+    <DemoSection
+        Title="Default Behavior"
+        Description="When no explicit string parameters are passed, components fall back to the injected <code>ILocalizer</code>. The library ships with English defaults for every component.">
+        <DemoBlock Code="@LocalizationDemoCode.DefaultBehavior">
+            <div class="space-y-6">
+                <div class="space-y-1.5">
+                    <p class="text-xs font-medium text-muted-foreground">Combobox — no Placeholder/SearchPlaceholder/EmptyMessage parameters</p>
+                    <Combobox TItem="string"
+                              Items="@_frameworks"
+                              ValueSelector="@(s => s)"
+                              DisplaySelector="@(s => s)"
+                              PopoverWidth="w-[260px]" />
+                </div>
+                <div class="space-y-1.5">
+                    <p class="text-xs font-medium text-muted-foreground">TagInput — no Placeholder parameter</p>
+                    <div class="max-w-md">
+                        <TagInput @bind-Tags="_defaultTags" />
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <p class="text-xs font-medium text-muted-foreground">PaginationPrevious / PaginationNext — no Text parameter</p>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem><PaginationPrevious Href="#" /></PaginationItem>
+                            <PaginationItem><PaginationLink Href="#" IsActive="true">1</PaginationLink></PaginationItem>
+                            <PaginationItem><PaginationNext Href="#" /></PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- ── Per-instance override ──────────────────────────────────────────── -->
+    <DemoSection
+        Title="Per-Instance Override"
+        Description="Pass an explicit string parameter to any component to override the localizer for that instance. All string parameters are nullable — existing code passing explicit strings continues to work unchanged.">
+        <DemoBlock Code="@LocalizationDemoCode.PerInstanceOverride">
+            <div class="space-y-6">
+                <div class="space-y-1.5">
+                    <p class="text-xs font-medium text-muted-foreground">German overrides via parameters (no global config needed)</p>
+                    <Combobox TItem="string"
+                              Items="@_frameworks"
+                              ValueSelector="@(s => s)"
+                              DisplaySelector="@(s => s)"
+                              Placeholder="Framework auswählen..."
+                              SearchPlaceholder="Suchen..."
+                              EmptyMessage="Keine Ergebnisse gefunden."
+                              PopoverWidth="w-[260px]" />
+                </div>
+                <div class="space-y-1.5">
+                    <p class="text-xs font-medium text-muted-foreground">Custom Pagination labels</p>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem><PaginationPrevious Href="#" Text="Zurück" /></PaginationItem>
+                            <PaginationItem><PaginationLink Href="#" IsActive="true">1</PaginationLink></PaginationItem>
+                            <PaginationItem><PaginationNext Href="#" Text="Weiter" /></PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- ── Pattern A — startup Set() override ────────────────────────────── -->
+    <DemoSection
+        Title="Pattern A — Startup-Time Override"
+        Description="Configure the <code>DefaultLocalizer</code> at startup using the <code>AddNeoUIComponents</code> overload. All components using that key will render the customized string globally, with no component-level changes required.">
+        <DemoBlock Code="@LocalizationDemoCode.PatternA">
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- ── Pattern B — IStringLocalizer<T> integration ───────────────────── -->
+    <DemoSection
+        Title="Pattern B — Full IStringLocalizer&lt;T&gt; Integration"
+        Description="Subclass <code>DefaultLocalizer</code> to integrate with ASP.NET Core's <code>IStringLocalizer&lt;T&gt;</code> and <code>.resx</code> resource files. Only keys found in the resource file are substituted; the rest fall back to English defaults automatically.">
+        <DemoBlock Code="@LocalizationDemoCode.PatternB">
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- ── Live key resolver ─────────────────────────────────────────────── -->
+    <DemoSection
+        Title="Live Key Lookup"
+        Description="Try any localization key to see the resolved string from the currently active <code>ILocalizer</code>.">
+        <DemoBlock Code="@LocalizationDemoCode.LiveLookup">
+            <div class="space-y-3 max-w-md">
+                <div class="flex gap-2">
+                    <Input @bind-Value="_lookupKey"
+                           Placeholder="e.g. Combobox.Placeholder"
+                           Class="flex-1" />
+                    <Button Variant="ButtonVariant.Outline" OnClick="RunLookup">Resolve</Button>
+                </div>
+                @if (_lookupResult is not null)
+                {
+                    <div class="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2 text-sm">
+                        <span class="font-mono text-muted-foreground">@_lookupKey</span>
+                        <span class="text-muted-foreground">→</span>
+                        <span class="font-medium">@_lookupResult</span>
+                    </div>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <!-- ── Key reference table ───────────────────────────────────────────── -->
+    <DemoSection
+        Title="Key Reference"
+        Description="All built-in localization keys shipped with <code>DefaultLocalizer</code> and their English default values.">
+        <div class="rounded-lg border overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b bg-muted/50">
+                            <th class="px-4 py-3 text-left font-medium text-muted-foreground">Key</th>
+                            <th class="px-4 py-3 text-left font-medium text-muted-foreground">Default Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (key, value) in _keyReference)
+                        {
+                            <tr class="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                                <td class="px-4 py-2.5 font-mono text-xs text-foreground">@key</td>
+                                <td class="px-4 py-2.5 text-muted-foreground">@value</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private IReadOnlyList<string>? _defaultTags;
+    private string _lookupKey = "Combobox.Placeholder";
+    private string? _lookupResult;
+
+    private static readonly IReadOnlyList<string> _frameworks =
+        ["Blazor", "React", "Vue", "Angular", "Svelte", "SolidJS"];
+
+    private void RunLookup()
+    {
+        _lookupResult = string.IsNullOrWhiteSpace(_lookupKey)
+            ? null
+            : Localizer[_lookupKey];
+    }
+
+    // Built-in key reference sourced from DefaultLocalizer
+    private static readonly IReadOnlyList<(string Key, string Value)> _keyReference =
+    [
+        ("Alert.Dismiss",                    "Dismiss"),
+        ("Breadcrumb.Breadcrumb",            "breadcrumb"),
+        ("Breadcrumb.More",                  "More"),
+        ("Calendar.GoToPreviousMonth",        "Go to previous month"),
+        ("Calendar.GoToNextMonth",            "Go to next month"),
+        ("Carousel.NextSlide",               "Next slide"),
+        ("Carousel.PreviousSlide",           "Previous slide"),
+        ("Combobox.Placeholder",             "Select an option..."),
+        ("Combobox.SearchPlaceholder",       "Search..."),
+        ("Combobox.EmptyMessage",            "No results found."),
+        ("DataGrid.Loading",                 "Loading..."),
+        ("DataGrid.NoResultsFound",          "No results found"),
+        ("DataGrid.InitializingGrid",        "Initializing grid..."),
+        ("DataTable.Loading",                "Loading..."),
+        ("DataTable.NoResultsFound",         "No results found"),
+        ("DataTable.Search",                 "Search..."),
+        ("DataTable.Columns",                "Columns"),
+        ("DataTable.ToggleColumns",          "Toggle columns"),
+        ("DataTable.Filter",                 "Filter"),
+        ("DataTable.FilterColumns",          "Filter columns"),
+        ("DataTable.SelectRowsAriaLabel",    "Select rows - click to see options"),
+        ("DataTable.SelectAllOnPage",        "Select all on this page ({0} items)"),
+        ("DataTable.SelectAllItems",         "Select all {0} items"),
+        ("DataTable.ClearSelection",         "Clear selection"),
+        ("DataTable.SelectAllRows",          "Select all rows"),
+        ("DataTable.SelectThisRow",          "Select this row"),
+        ("DataView.SearchPlaceholder",       "Search..."),
+        ("DataView.NoResultsFound",          "No results found"),
+        ("DataView.Loading",                 "Loading..."),
+        ("DataView.LoadingMore",             "Loading more..."),
+        ("DataView.LoadMore",                "Load more"),
+        ("DataView.ListView",                "List view"),
+        ("DataView.GridView",                "Grid view"),
+        ("DataView.Sort",                    "Sort"),
+        ("DatePicker.Placeholder",           "Pick a date"),
+        ("DateRangePicker.Placeholder",      "Select date range"),
+        ("DateRangePicker.Apply",            "Apply"),
+        ("DateRangePicker.Clear",            "Clear"),
+        ("DateRangePicker.Today",            "Today"),
+        ("DateRangePicker.Yesterday",        "Yesterday"),
+        ("DateRangePicker.Last7Days",        "Last 7 days"),
+        ("DateRangePicker.Last30Days",       "Last 30 days"),
+        ("DateRangePicker.ThisMonth",        "This month"),
+        ("DateRangePicker.LastMonth",        "Last month"),
+        ("DateRangePicker.ThisYear",         "This year"),
+        ("DateRangePicker.Custom",           "Custom"),
+        ("DateRangePicker.DaysSelected",     "{0} day(s) selected"),
+        ("DateRangePicker.SelectEndDate",    "Select end date"),
+        ("DateRangePicker.QuickSelect",      "Quick Select"),
+        ("Dialog.Close",                     "Close"),
+        ("MultiSelect.Placeholder",          "Select items..."),
+        ("MultiSelect.SearchPlaceholder",    "Search..."),
+        ("MultiSelect.EmptyMessage",         "No results found."),
+        ("MultiSelect.SelectAll",            "Select All"),
+        ("MultiSelect.Clear",                "Clear"),
+        ("MultiSelect.Close",                "Close"),
+        ("NumericInput.IncreaseValue",       "Increase value"),
+        ("NumericInput.DecreaseValue",       "Decrease value"),
+        ("Pagination.Previous",              "Previous"),
+        ("Pagination.Next",                  "Next"),
+        ("Pagination.RowsPerPage",           "Rows per page"),
+        ("Pagination.ShowingFormat",         "Showing {0}–{1} of {2}"),
+        ("Pagination.PageFormat",            "Page {0} of {1}"),
+        ("Pagination.NoItems",               "No items"),
+        ("Rating.Rating",                    "Rating"),
+        ("ResponsiveNav.ToggleMenu",         "Toggle Menu"),
+        ("Sidebar.ToggleSidebar",            "Toggle Sidebar"),
+        ("TagInput.Placeholder",             "Add tag…"),
+        ("TagInput.RemoveTag",               "Remove {0}"),
+        ("TagInput.ClearAllTags",            "Clear all tags"),
+        ("TagInput.TagSuggestions",          "Tag suggestions"),
+    ];
+}

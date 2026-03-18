@@ -337,6 +337,7 @@ public static class ComponentRegistry
             new("split-button",     "Split Button",     "Combined action button with dropdown for secondary actions",                    "circle-chevron-down",   C, LY),
             new("tabs",             "Tabs",             "Tabbed interface for organizing related content",                                "folder",                C, LY),
             new("theme-switcher",   "Theme Switcher",   "Multi-theme colour palette switcher with live preview",                         "palette",               C, LY),
+            new("localization",     "Localization",     "DI-registered service for resolving all component chrome strings globally",      "languages",             C, LY),
 
             // ── Charts ────────────────────────────────────────────────────
             new("chart",            "Chart",            "Beautiful data visualizations with 8 chart types",                             "area-chart",            C, CH),
