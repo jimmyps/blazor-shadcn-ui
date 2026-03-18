@@ -117,9 +117,13 @@
                 _clickInterceptAttached = false;
             }
         }
-        catch
+        catch (InvalidOperationException)
         {
-            // Silently fail during prerendering
+            // Silently fail during prerendering when JS interop is not available.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Silently fail when the server circuit has disconnected.
         }
     }
 
@@ -178,9 +182,13 @@
                 "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
             await _tableRowNavModule.InvokeVoidAsync("moveFocusToPreviousRow", _elementRef);
         }
-        catch
+        catch (InvalidOperationException)
         {
-            // Ignore JS interop errors (e.g., during prerendering)
+            // Ignore JS interop errors during prerendering.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore JS interop errors when the server circuit has disconnected.
         }
     }
 
@@ -192,9 +200,13 @@
                 "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/table-row-nav.js");
             await _tableRowNavModule.InvokeVoidAsync("moveFocusToNextRow", _elementRef);
         }
-        catch
+        catch (InvalidOperationException)
         {
-            // Ignore JS interop errors (e.g., during prerendering)
+            // Ignore JS interop errors during prerendering.
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore JS interop errors when the server circuit has disconnected.
         }
     }
 

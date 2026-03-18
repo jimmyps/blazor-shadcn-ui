@@ -63,6 +63,10 @@
                     @if (HasTableFixed)
                     {
                         <colgroup>
+                            @if (SelectionMode == DataTableSelectionMode.Multiple)
+                            {
+                                <col style="width: @(SelectionColumnWidthPx)px" />
+                            }
                             @foreach (var col in _columns.Where(c => c.Visible))
                             {
                                 <col @key="col.Id" data-col-id="@col.Id" style="@GetColStyle(col)" />
@@ -73,7 +77,9 @@
                         <TableRow TData="TData" Class="@ComputedHeaderRowClass">
                             @if (SelectionMode == DataTableSelectionMode.Multiple)
                             {
-                                <TableHeaderCell TData="TData" Class="@ClassNames.cn(HeaderCellPaddingClass, "text-left align-middle font-medium text-muted-foreground w-12")" role="columnheader">
+                                <TableHeaderCell TData="TData" Class="@ClassNames.cn(HeaderCellPaddingClass, "text-left align-middle font-medium text-muted-foreground w-12", GetSelectionColumnClass(isHeader: true))" role="columnheader"
+                                                 data-pinned="@(HasLeftPinnedColumns ? "true" : null)"
+                                                 style="@GetSelectionColumnStyle()">
                                     <div @onclick:stopPropagation="true">
                                         @if (ShouldShowSelectAllPrompt())
                                         {
@@ -286,7 +292,9 @@
         @<text>
             @if (SelectionMode == DataTableSelectionMode.Multiple)
             {
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")">
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12", GetSelectionColumnClass())"
+                           data-pinned="@(HasLeftPinnedColumns ? "true" : null)"
+                           style="@GetSelectionColumnStyle()">
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
                                   CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(item, chk))"
@@ -322,7 +330,9 @@
         @<text>
             @if (SelectionMode == DataTableSelectionMode.Multiple)
             {
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12")">
+                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle w-12", GetSelectionColumnClass())"
+                           data-pinned="@(HasLeftPinnedColumns ? "true" : null)"
+                           style="@GetSelectionColumnStyle()">
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
                                   CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(treeRow.Item, chk))"
