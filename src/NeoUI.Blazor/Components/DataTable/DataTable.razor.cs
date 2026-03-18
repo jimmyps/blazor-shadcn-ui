@@ -1804,26 +1804,39 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _dotNetRef ??= DotNetObjectReference.Create(this);
-        _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/NeoUI.Blazor/js/datatable.js");
-
-        if (HasResizableColumns && _resizeCleanup is null && !_resizeInitializing)
+        try
         {
-            _resizeInitializing = true;
-            _resizeCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(
-                "initColumnResize", _tableContainerRef, _dotNetRef, MinColumnWidth, SyncWidthOnResize);
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoUI.Blazor/js/datatable.js");
+
+            if (HasResizableColumns && _resizeCleanup is null && !_resizeInitializing)
+            {
+                _resizeInitializing = true;
+                _resizeCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(
+                    "initColumnResize", _tableContainerRef, _dotNetRef, MinColumnWidth, SyncWidthOnResize);
+            }
+
+            if (HasReorderableColumns && _reorderCleanup is null && !_reorderInitializing)
+            {
+                _reorderInitializing = true;
+                var reorderableIds = _columns
+                    .Where(c => c.Visible && c.ReorderEnabled)
+                    .Select(c => c.Id)
+                    .ToArray();
+                _reorderCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(
+                    "initColumnReorder", _tableContainerRef, _dotNetRef, (object)reorderableIds);
+            }
         }
-
-        if (HasReorderableColumns && _reorderCleanup is null && !_reorderInitializing)
+        catch (JSDisconnectedException)
         {
-            _reorderInitializing = true;
-            var reorderableIds = _columns
-                .Where(c => c.Visible && c.ReorderEnabled)
-                .Select(c => c.Id)
-                .ToArray();
-            _reorderCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(
-                "initColumnReorder", _tableContainerRef, _dotNetRef, (object)reorderableIds);
+            _resizeInitializing = false;
+            _reorderInitializing = false;
+        }
+        catch (InvalidOperationException)
+        {
+            _resizeInitializing = false;
+            _reorderInitializing = false;
         }
     }
 
