@@ -2,6 +2,64 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-18 — Chart color palette for Pie and Funnel
+
+> **Release: `v3.6.3`**  
+> **Library change.** Affects `PieChart<TData>` and `FunnelChart<TData>` in `NeoUI.Blazor`. Contains one **breaking change** to the `Pie` series component.
+
+---
+
+### ⚠️ Breaking Change — `Pie` series: `Color` parameter removed
+
+The `Color` parameter on `<Pie>` has been removed. It was previously documented as a legacy no-op (it was never wired into the chart builder) so real-world impact is minimal, but any usage will cause a compile error.
+
+**Migration — replace `Color` with `Colors`:**
+
+```razor
+<!-- Before (was silently ignored) -->
+<Pie DataKey="Value" NameKey="Label" Color="#e11d48" />
+
+<!-- After — single color repeated across all slices -->
+<Pie DataKey="Value" NameKey="Label" Colors="@(new[] { "#e11d48" })" />
+
+<!-- Or provide a full palette -->
+<Pie DataKey="Value" NameKey="Label" Colors="@(new[] { "#e11d48", "#0ea5e9", "#16a34a" })" />
+```
+
+---
+
+### 🐛 Bug Fix — `PieChart` and `FunnelChart` not using the CSS variable color palette
+
+`PieChart` and `FunnelChart` were not applying any color to their data items, causing both charts to fall back to ECharts' built-in default colors instead of the theming CSS variables (`--chart-1` … `--chart-5`) used by every other chart type (`BarChart`, `LineChart`, `AreaChart`, `ScatterChart`, `RadarChart`, `RadialBarChart`, `GaugeChart`).
+
+Each slice / segment now receives an `itemStyle.color` entry at the data-item level, cycling through the auto palette by default.
+
+---
+
+### ✨ New Feature — `Pie` series: `Colors` parameter for custom slice palette
+
+A new `Colors` parameter on the `<Pie>` series component allows passing a custom color array. Colors are distributed across slices by index and wrap automatically when there are more slices than colors.
+
+**New `Pie` parameter:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Colors` | `string[]?` | `null` | Custom palette for slices. Cycles through the array — e.g. 3 colors for 5 slices → 0,1,2,0,1. `null` = auto CSS-variable palette. |
+
+---
+
+### ✨ New Feature — `Funnel` series: `Colors` parameter for custom segment palette
+
+Same capability added to `<Funnel>`. Each segment in a funnel series is assigned a color from the array, cycling as needed.
+
+**New `Funnel` parameter:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Colors` | `string[]?` | `null` | Custom palette for segments. Cycles through the array when there are more segments than colors. `null` = auto CSS-variable palette. |
+
+---
+
 ## 2026-3-17 — DataTable column pinning and hierarchical tree rows
 
 > **Release: `v3.6.2`**  

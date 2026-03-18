@@ -11,6 +11,13 @@
     /// <summary>Gets or sets the property name for category/stage names.</summary>
     [Parameter] public string? NameKey { get; set; }
 
+    /// <summary>
+    /// Gets or sets a custom color palette for segments. Each segment cycles through this array.
+    /// Null = auto palette (var(--chart-1) … var(--chart-5)).
+    /// Example: Colors="@(new[] { "#e11d48", "#0ea5e9", "#16a34a" })"
+    /// </summary>
+    [Parameter] public string[]? Colors { get; set; }
+
     /// <summary>Gets or sets the sort order for funnel segments.</summary>
     [Parameter] public FunnelSort Sort { get; set; } = FunnelSort.Descending;
     /// <summary>Gets or sets the horizontal alignment of funnel segments.</summary>
