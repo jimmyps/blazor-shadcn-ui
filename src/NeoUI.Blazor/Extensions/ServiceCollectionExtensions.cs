@@ -1,10 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
 using NeoUI.Blazor.Services;
 using NeoUI.Blazor.Services.Grid;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-
-using NeoUI.Blazor.Primitives;
-using NeoUI.Blazor.Primitives.Services;
 namespace NeoUI.Blazor.Extensions;
 
 /// <summary>
