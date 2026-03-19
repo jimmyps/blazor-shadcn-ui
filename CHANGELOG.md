@@ -65,7 +65,7 @@ New demo page covering the full localization system:
 
 ---
 
-## 2026-3-19 — `ChartTooltip` `AppendToBody` + ClassNames.cn standardization
+## `ChartTooltip` `AppendToBody` + ClassNames.cn standardization
 
 > **Internal / code quality + minor API addition to ChartTooltip.** No breaking changes. `NeoUI.Blazor` only.
 
