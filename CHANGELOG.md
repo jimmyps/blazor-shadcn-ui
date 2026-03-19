@@ -65,6 +65,227 @@ New demo page covering the full localization system:
 
 ---
 
+## 2026-3-18 — Add DataTable column resizing, column reordering, row context menu, and add Chart color palette for Pie and Funnel
+
+> **Release: `v3.6.3`**  
+> **Library change.** Affects `DataTable<TData>` in `NeoUI.Blazor`. All changes are additive — no breaking changes.
+
+---
+
+### ✨ New Feature — `SyncWidthOnResize` — table width tracks column widths
+
+A new `SyncWidthOnResize` parameter (default `false`) keeps the `<table>` element's total width equal to the sum of all `<col>` widths during and after resize. When disabled (default), the table retains its container width and unused space shows the container background. Enable alongside `TableContainerClass="border-0"` for a borderless table that naturally shrinks when columns are narrowed.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `SyncWidthOnResize` | `bool` | `false` | Keeps `<table>` width = sum of all column widths during and after resize. Pair with `TableContainerClass="border-0"`. |
+
+---
+
+### ✨ New Feature — `TableContainerClass` — style the inner table wrapper
+
+A new `TableContainerClass` parameter allows passing Tailwind classes directly to the `<div>` that wraps the `<table>` (the element with `rounded-md border overflow-x-auto`). The existing `Class` parameter targets the outer container; `TableContainerClass` targets the grid's direct parent.
+
+**New `DataTable` parameter:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `TableContainerClass` | `string?` | `null` | Additional CSS classes on the inner table container div. Use `border-0` to remove the border. |
+
+---
+
+### ✨ New Feature — `Striped` / `StripeClass` — zebra row striping
+
+Two new parameters enable alternating row background colours. The stripe colour is intentionally lighter than hover (`/30` vs `/50`) so the visual hierarchy — stripe → hover → selected — is always legible.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Striped` | `bool` | `false` | Enables alternating row backgrounds (zebra striping). |
+| `StripeClass` | `string?` | `even:bg-muted/30 even:hover:bg-muted/70` | Tailwind class for the stripe. Override to change colour or swap odd/even, e.g. `odd:bg-blue-50 dark:odd:bg-blue-950/20`. |
+
+---
+
+### ✨ Improvement — Smooth column reorder animation
+
+On drop, the affected columns (dragged column + all shifted neighbours between source and target slot) fade out instantly, Blazor re-renders silently, then all affected columns fade back in at their new positions with a `500ms ease-in` opacity transition. Columns outside the affected range remain fully visible throughout.
+
+---
+
+### 🐛 Bug Fix — Column reorder double-invocation
+
+`OnAfterRenderAsync` used a `null` guard to skip re-initialising JS interop, but two concurrent renders could both pass the check before either `await` resolved — registering `pointerdown` on each `<th>` twice and causing `onUp` to fire twice per drop. Fixed by setting `_reorderInitializing` / `_resizeInitializing` bool flags synchronously before the `await`, preventing the race.
+
+---
+
+### 🐛 Bug Fix — Column reorder incorrect order after multiple moves
+
+After fixing double-invocation, the reorder position was still wrong after three or more moves. Root cause: JS `commitDomReorder` moved DOM nodes directly, desyncing Blazor's internal logical-element tree. Any subsequent Blazor render would diff against a stale virtual DOM and apply corrupt `insertBefore` operations. Fixed by removing `commitDomReorder` from the drop handler entirely — Blazor is now the sole owner of DOM element ordering. JS handles only visual feedback via CSS transforms; on drop, `OnColumnReordered` updates `_columns`, calls `StateHasChanged()`, and Blazor renders the correct order against an unmodified DOM.
+
+---
+
+
+### 🐛 Bug Fix — Column resize width reset in Safari
+
+`releasePointerCapture` dispatches `lostpointercapture` synchronously, which re-entered the `onPointerUp` handler with `clientX = 0` in Safari — causing the column to snap to its minimum width on every drag. Fixed by removing all event listeners **before** calling `releasePointerCapture`, and adding a `resizeDone` guard to prevent any double-invocation.
+
+Also fixed: `pointercancel` was registered but never removed — a minor listener leak now closed.
+
+---
+
+## Chart color palette for Pie and Funnel
+
+> **Library change.** Affects `PieChart<TData>` and `FunnelChart<TData>` in `NeoUI.Blazor`. Contains one **breaking change** to the `Pie` series component.
+
+---
+
+### ⚠️ Breaking Change — `Pie` series: `Color` parameter removed
+
+The `Color` parameter on `<Pie>` has been removed. It was previously documented as a legacy no-op (it was never wired into the chart builder) so real-world impact is minimal, but any usage will cause a compile error.
+
+**Migration — replace `Color` with `Colors`:**
+
+```razor
+<!-- Before (was silently ignored) -->
+<Pie DataKey="Value" NameKey="Label" Color="#e11d48" />
+
+<!-- After — single color repeated across all slices -->
+<Pie DataKey="Value" NameKey="Label" Colors="@(new[] { "#e11d48" })" />
+
+<!-- Or provide a full palette -->
+<Pie DataKey="Value" NameKey="Label" Colors="@(new[] { "#e11d48", "#0ea5e9", "#16a34a" })" />
+```
+
+---
+
+### 🐛 Bug Fix — `PieChart` and `FunnelChart` not using the CSS variable color palette
+
+`PieChart` and `FunnelChart` were not applying any color to their data items, causing both charts to fall back to ECharts' built-in default colors instead of the theming CSS variables (`--chart-1` … `--chart-5`) used by every other chart type (`BarChart`, `LineChart`, `AreaChart`, `ScatterChart`, `RadarChart`, `RadialBarChart`, `GaugeChart`).
+
+Each slice / segment now receives an `itemStyle.color` entry at the data-item level, cycling through the auto palette by default.
+
+---
+
+### ✨ New Feature — `Pie` series: `Colors` parameter for custom slice palette
+
+A new `Colors` parameter on the `<Pie>` series component allows passing a custom color array. Colors are distributed across slices by index and wrap automatically when there are more slices than colors.
+
+**New `Pie` parameter:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Colors` | `string[]?` | `null` | Custom palette for slices. Cycles through the array — e.g. 3 colors for 5 slices → 0,1,2,0,1. `null` = auto CSS-variable palette. |
+
+---
+
+### ✨ New Feature — `Funnel` series: `Colors` parameter for custom segment palette
+
+Same capability added to `<Funnel>`. Each segment in a funnel series is assigned a color from the array, cycling as needed.
+
+**New `Funnel` parameter:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Colors` | `string[]?` | `null` | Custom palette for segments. Cycles through the array when there are more segments than colors. `null` = auto CSS-variable palette. |
+
+## Add DataTable column resizing, column reordering, and row context menu
+
+> **Library change.** Affects `DataTable<TData>` in `NeoUI.Blazor`, `ContextMenu` in `NeoUI.Blazor`, and `ContextMenuRootPrimitive` / `TableRow` in `NeoUI.Blazor.Primitives`. All changes are additive — no breaking changes to existing APIs.
+
+---
+
+### ✨ New Feature — `DataTable<TData>` column resizing
+
+Columns can now be drag-resized at runtime via a handle on the right edge of each header cell. Double-clicking a resize handle auto-fits the column to its widest rendered content using an off-screen sandbox measurement strategy (single forced-reflow batch). Resizing enforces a configurable minimum width and clamps against the natural width of the header content so the sort icon is never clipped.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Resizable` | `bool` | `false` | Enables resize handles on all columns. Activates `table-layout: fixed` automatically. |
+| `MinColumnWidth` | `int` | `80` | Minimum column width in pixels enforced during drag. |
+| `OnColumnResize` | `EventCallback<(string ColumnId, string Width)>` | — | Raised once when the user releases the resize handle. |
+
+**New `DataTableColumn` parameter:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `Resizable` | `bool?` | Per-column override. `null` inherits the table-level `Resizable` setting. |
+
+---
+
+### ✨ New Feature — `DataTable<TData>` column reordering
+
+Column headers can be dragged to reorder columns at runtime. The dragged column follows the cursor via `translateX` (no HTML5 ghost image). Adjacent columns shift with a 200 ms ease animation — identical to the dnd-kit `closestCenter` + `horizontalListSortingStrategy` behaviour. A 5 px movement threshold prevents accidental reorders on sort-header clicks. Pinned columns and the selection checkbox column are always excluded as both drag sources and drop targets. DOM order is committed immediately on drop with no Blazor re-render; C# state is synced via a single `JSInvokable` callback.
+
+**New `DataTable` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Reorderable` | `bool` | `false` | Enables drag-to-reorder on all eligible columns. |
+| `OnColumnReorder` | `EventCallback<(string ColumnId, int NewIndex)>` | — | Raised when a column is dropped into a new position. Provides the column ID and new zero-based display index. |
+
+**New `DataTableColumn` parameter:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `Reorderable` | `bool?` | Per-column override. `null` inherits the table-level `Reorderable` setting. Pinned columns are always excluded regardless of this value. |
+
+---
+
+### ✨ New Feature — `DataTable<TData>` row context menu
+
+Right-clicking any data row opens a context menu scoped to that row. The `RowContextMenu` render fragment receives a `DataTableRowMenuContext<TData>` with the row's item, the current selection, and the IDs of all visible columns. Any `ContextMenuItem`, `ContextMenuSeparator`, or sub-menu components are valid children. The menu repositions correctly when right-clicking different rows in quick succession without toggling the open state.
+
+**New `DataTable` parameter:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `RowContextMenu` | `RenderFragment<DataTableRowMenuContext<TData>>?` | Template for the context menu. Receives row and selection context. |
+
+**New type — `DataTableRowMenuContext<TData>`:**
+
+| Member | Type | Description |
+|---|---|---|
+| `Item` | `TData` | The data item for the right-clicked row. |
+| `SelectedItems` | `IReadOnlyList<TData>` | Currently selected items at the time of the right-click. |
+| `VisibleColumns` | `IReadOnlyList<string>` | IDs of all currently visible columns, in display order. |
+
+---
+
+### ✨ Enhancement — `ContextMenu` / `ContextMenuRootPrimitive` programmatic positioning
+
+`ContextMenu` and its underlying `ContextMenuRootPrimitive` now support fully programmatic open-and-position. This is the mechanism used by the new `DataTable` row context menu to open at the pointer location without a `ContextMenuTrigger`.
+
+**New parameters on `ContextMenu` and `ContextMenuRootPrimitive`:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `X` | `double` | Viewport X coordinate for programmatic positioning. |
+| `Y` | `double` | Viewport Y coordinate for programmatic positioning. |
+
+**New method on `ContextMenu` and `ContextMenuRootPrimitive`:**
+
+| Method | Description |
+|---|---|
+| `OpenAt(double x, double y)` | Opens (or repositions) the context menu at the specified viewport coordinates without a parameter round-trip. |
+
+---
+
+### 📖 Demo — Column resize, reorder, and row context menu sections
+
+Two new sections added to the `/components/datatable` demo page:
+
+| Section | What it shows |
+|---|---|
+| **Column Resize & Reorder** | Employee directory with `Resizable` and `Reorderable` enabled. Drag handles on every header, double-click to auto-fit, and live `OnColumnResize` / `OnColumnReorder` event readout below the table. |
+| **Row Context Menu** | Same employee dataset with a `RowContextMenu` that exposes per-row actions (View Profile, Send Email, separator, Remove) and displays the selected count when multiple rows are selected. |
+
+---
+
 ## 2026-3-17 — DataTable column pinning and hierarchical tree rows
 
 > **Release: `v3.6.2`**  

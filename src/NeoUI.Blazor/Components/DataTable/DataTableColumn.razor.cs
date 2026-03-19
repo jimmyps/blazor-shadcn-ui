@@ -145,6 +145,21 @@ public partial class DataTableColumn<TData, TValue> : ComponentBase where TData 
     public ColumnPinnedSide Pinned { get; set; } = ColumnPinnedSide.None;
 
     /// <summary>
+    /// Gets or sets whether this column shows a drag-to-resize handle.
+    /// <c>null</c> (default) inherits the table-level <c>Resizable</c> setting.
+    /// </summary>
+    [Parameter]
+    public bool? Resizable { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether this column can be reordered by dragging its header.
+    /// <c>null</c> (default) inherits the table-level <c>Reorderable</c> setting.
+    /// Pinned columns are always excluded from reordering regardless of this value.
+    /// </summary>
+    [Parameter]
+    public bool? Reorderable { get; set; }
+
+    /// <summary>
     /// Gets or sets the parent DataTable component.
     /// Automatically set via cascading parameter.
     /// </summary>

@@ -86,10 +86,12 @@
     public int MinAngle { get; set; } = 0;
 
     /// <summary>
-    /// Gets or sets the default color (for auto palette override, legacy).
+    /// Gets or sets a custom color palette for slices. Each slice cycles through this array.
+    /// Null or empty = auto palette (var(--chart-1) … var(--chart-5)).
+    /// Example: Colors="@(new[] { "#e11d48", "#0ea5e9", "#16a34a" })"
     /// </summary>
     [Parameter]
-    public string? Color { get; set; }
+    public string[]? Colors { get; set; }
 
     /// <summary>
     /// Gets or sets whether to show label lines.

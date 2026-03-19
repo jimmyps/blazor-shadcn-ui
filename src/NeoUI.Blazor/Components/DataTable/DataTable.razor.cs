@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
+using Microsoft.JSInterop;
 using System.Runtime.CompilerServices;
 using NeoUI.Blazor.Primitives;
 
@@ -37,7 +39,7 @@ namespace NeoUI.Blazor;
 /// &lt;/DataTable&gt;
 /// </code>
 /// </example>
-public partial class DataTable<TData> : ComponentBase where TData : class
+public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TData : class
 {
     /// <summary>
     /// Public class for storing column data without component parameters.
@@ -114,6 +116,18 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         /// Gets or sets which edge this column is pinned to during horizontal scrolling.
         /// </summary>
         public ColumnPinnedSide Pinned { get; set; } = ColumnPinnedSide.None;
+
+        /// <summary>
+        /// Gets or sets whether the column exposes a drag-to-resize handle on its right edge.
+        /// Resolved from <see cref="DataTableColumn{TData,TValue}.Resizable"/> falling back to the table-level <c>Resizable</c> parameter.
+        /// </summary>
+        public bool ResizeEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the column can be reordered by dragging its header.
+        /// Resolved from <see cref="DataTableColumn{TData,TValue}.Reorderable"/> falling back to the table-level <c>Reorderable</c> parameter.
+        /// </summary>
+        public bool ReorderEnabled { get; set; }
     }
 
     [Inject]
@@ -271,6 +285,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     private string? _lastBodyRowClass;
 
     /// <summary>
+    /// Cached Striped value for ShouldRender optimization.
+    /// </summary>
+    private bool _lastStriped;
+
+    /// <summary>
+    /// Cached StripeClass value for ShouldRender optimization.
+    /// </summary>
+    private string? _lastStripeClass;
+
+    /// <summary>
     /// Cached CellBorder value for ShouldRender optimization.
     /// </summary>
     private bool _lastCellBorder;
@@ -320,6 +344,35 @@ public partial class DataTable<TData> : ComponentBase where TData : class
 
     /// <summary>Cached tree version for ShouldRender optimization.</summary>
     private int _lastTreeVersion;
+
+    // ── JS interop state ─────────────────────────────────────────────────────
+
+    /// <summary>Reference to the table scroll container, passed to JS for resize/reorder init.</summary>
+    private ElementReference _tableContainerRef;
+
+    /// <summary>Cached reference to the imported datatable.js ES module.</summary>
+    private IJSObjectReference? _jsModule;
+
+    /// <summary>Cleanup handle returned by <c>initColumnResize</c> in datatable.js.</summary>
+    private IJSObjectReference? _resizeCleanup;
+    /// <summary>Guards against double-init of resize JS when multiple renders overlap the await.</summary>
+    private bool _resizeInitializing;
+
+    /// <summary>Cleanup handle returned by <c>initColumnReorder</c> in datatable.js.</summary>
+    private IJSObjectReference? _reorderCleanup;
+    /// <summary>Guards against double-init of reorder JS when multiple renders overlap the await.</summary>
+    private bool _reorderInitializing;
+
+    /// <summary>.NET object reference passed to JS so it can invoke JSInvokable callbacks.</summary>
+    private DotNetObjectReference<DataTable<TData>>? _dotNetRef;
+
+    // ── Row context menu state ──────────────────────────────────────────────────
+
+    /// <summary>Component reference used to programmatically open the row context menu.</summary>
+    private ContextMenu? _rowContextMenuRef;
+
+    /// <summary>The row item that was right-clicked.</summary>
+    private TData? _contextMenuItem;
 
     /// <summary>
     /// Gets or sets the client-side data source for the table.
@@ -502,6 +555,22 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     public string? Class { get; set; }
 
     /// <summary>
+    /// When true, the table's total width is kept in sync with the sum of all column widths during
+    /// and after resize. Useful when the table should shrink below its container width rather than
+    /// leaving empty space. Requires <see cref="TableContainerClass"/> <c>border-0</c> (or similar)
+    /// for the best visual result. Default is <c>false</c>.
+    /// </summary>
+    [Parameter]
+    public bool SyncWidthOnResize { get; set; }
+
+    /// <summary>
+    /// Gets or sets additional CSS classes for the inner table container (the div with the border and overflow).
+    /// Use e.g. <c>border-0</c> to remove the border.
+    /// </summary>
+    [Parameter]
+    public string? TableContainerClass { get; set; }
+
+    /// <summary>
     /// Gets or sets the ARIA label for the table.
     /// </summary>
     [Parameter]
@@ -534,6 +603,54 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     [Parameter]
     public EventCallback<string?> OnFilter { get; set; }
+
+    /// <summary>
+    /// When <c>true</c>, drag-to-resize handles appear on column headers, letting users adjust
+    /// column widths at runtime. Per-column <c>Resizable</c> on <see cref="DataTableColumn{TData,TValue}"/>
+    /// overrides this table-level default.
+    /// Activates <c>table-layout: fixed</c> automatically so widths are strictly honoured.
+    /// Default is <c>false</c>.
+    /// </summary>
+    [Parameter]
+    public bool Resizable { get; set; }
+
+    /// <summary>
+    /// Minimum column width in pixels enforced during drag-to-resize. Default is 80.
+    /// </summary>
+    [Parameter]
+    public int MinColumnWidth { get; set; } = 80;
+
+    /// <summary>
+    /// Event callback invoked when the user finishes resizing a column.
+    /// Provides the column ID and the new CSS width string (e.g. <c>"240px"</c>).
+    /// </summary>
+    [Parameter]
+    public EventCallback<(string ColumnId, string Width)> OnColumnResize { get; set; }
+
+    /// <summary>
+    /// When <c>true</c>, column headers can be dragged to reorder columns at runtime.
+    /// Per-column <c>Reorderable</c> on <see cref="DataTableColumn{TData,TValue}"/> overrides this default.
+    /// Pinned columns and the selection checkbox column are always excluded from reordering.
+    /// Default is <c>false</c>.
+    /// </summary>
+    [Parameter]
+    public bool Reorderable { get; set; }
+
+    /// <summary>
+    /// Event callback invoked when the user drops a column into a new position.
+    /// Provides the column ID and the new zero-based display index.
+    /// </summary>
+    [Parameter]
+    public EventCallback<(string ColumnId, int NewIndex)> OnColumnReorder { get; set; }
+
+    /// <summary>
+    /// Template for the context menu shown when a data row is right-clicked.
+    /// Receives a <see cref="DataTableRowMenuContext{TData}"/> with the row item, the current
+    /// selection, and the IDs of all visible columns.
+    /// Use <c>ContextMenuItem</c>, <c>ContextMenuSeparator</c>, etc. as child content.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<DataTableRowMenuContext<TData>>? RowContextMenu { get; set; }
 
     /// <summary>
     /// Gets or sets a custom function to preprocess data before filtering, sorting, and pagination.
@@ -583,6 +700,21 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     public string? BodyRowClass { get; set; }
 
     /// <summary>
+    /// When true, applies alternating row background colours (zebra striping).
+    /// Default is false.
+    /// </summary>
+    [Parameter]
+    public bool Striped { get; set; }
+
+    /// <summary>
+    /// Tailwind class applied to alternating rows when <see cref="Striped"/> is true.
+    /// Defaults to <c>even:bg-muted/50</c>. Override to change colour or swap odd/even,
+    /// e.g. <c>odd:bg-muted/30</c> or <c>even:bg-blue-50 dark:even:bg-blue-950/20</c>.
+    /// </summary>
+    [Parameter]
+    public string? StripeClass { get; set; }
+
+    /// <summary>
     /// Gets or sets whether to show vertical borders between body cells.
     /// Default is false.
     /// </summary>
@@ -627,7 +759,8 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// without waiting for a re-render to detect HasPinnedColumns.
     /// </summary>
     private string TableContainerCssClass => ClassNames.cn(
-        "rounded-md border overflow-x-auto"
+        "rounded-md border overflow-x-auto",
+        TableContainerClass
     );
 
     /// <summary>
@@ -638,19 +771,24 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// <summary>True when at least one visible column is pinned left or right.</summary>
     private bool HasPinnedColumns => _columns.Any(c => c.Pinned != ColumnPinnedSide.None);
 
+    /// <summary>True when at least one visible column has resize enabled.</summary>
+    private bool HasResizableColumns => _columns.Any(c => c.Visible && c.ResizeEnabled);
+
+    /// <summary>True when at least one visible column has reorder enabled.</summary>
+    private bool HasReorderableColumns => _columns.Any(c => c.Visible && c.ReorderEnabled);
+  
     /// <summary>True when at least one visible column is pinned to the left.</summary>
     private bool HasLeftPinnedColumns => _columns.Any(c => c.Pinned == ColumnPinnedSide.Left);
 
     /// <summary>
     /// Returns true when the table should use <c>table-layout: fixed</c>.
     /// Fixed layout is required whenever any column is pinned (sticky positioning needs
-    /// stable widths) or when <see cref="ColumnSizing"/> is explicitly set to
-    /// <see cref="TableColumnSizing.Fixed"/>. It causes the browser to strictly
-    /// honour the widths supplied via the &lt;colgroup&gt; elements; columns whose total
-    /// exceeds the container width overflow it, enabling horizontal scrolling.
+    /// stable widths), when <see cref="ColumnSizing"/> is explicitly set to
+    /// <see cref="TableColumnSizing.Fixed"/>, or when column resizing is enabled (resize
+    /// requires strict widths so columns don't snap back to auto-sized values mid-drag).
     /// </summary>
     private bool HasTableFixed =>
-        ColumnSizing == TableColumnSizing.Fixed || HasPinnedColumns;
+        ColumnSizing == TableColumnSizing.Fixed || HasPinnedColumns || Resizable;
 
     /// <summary>
     /// Gets the computed CSS classes for the table element.
@@ -709,11 +847,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
     /// </summary>
     private string GetBodyRowClass(bool isSelected) => ClassNames.cn(
         HasPinnedColumns
-            // Pinned: group/row + bg-background so CSS can handle hover/selected/border
-            // per-cell (required because border-collapse:separate hides tr-level borders)
             ? "group/row bg-background transition-colors"
-            // Normal: standard Tailwind tr-level utilities — no regression
             : "group border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        Striped ? (StripeClass ?? "even:bg-muted/50 even:hover:bg-muted/70") : null,
         isSelected ? "bg-muted" : null,
         CellBorder ? "divide-x divide-border" : null,
         BodyRowClass
@@ -793,7 +929,9 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             CellClass = column.CellClass,
             HeaderClass = column.HeaderClass,
             Alignment = column.Alignment,
-            Pinned = column.Pinned
+            Pinned = column.Pinned,
+            ResizeEnabled = column.Resizable ?? Resizable,
+            ReorderEnabled = (column.Reorderable ?? Reorderable) && column.Pinned == ColumnPinnedSide.None,
         };
 
         _columns.Add(columnData);
@@ -1218,6 +1356,24 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         StateHasChanged();
     }
 
+    private void HandleRowContextMenu(TData item, MouseEventArgs e)
+    {
+        _contextMenuItem = item;
+        // Open directly on the ContextMenu ref — bypasses @bind-Open timing issues
+        // so every right-click reliably repositions and shows the menu.
+        _rowContextMenuRef?.OpenAt(e.ClientX, e.ClientY);
+    }
+
+    /// <summary>
+    /// Builds the <see cref="DataTableRowMenuContext{TData}"/> passed to the RowContextMenu render fragment.
+    /// </summary>
+    private DataTableRowMenuContext<TData> BuildRowMenuContext(TData item) =>
+        new(
+            item,
+            _tableState.Selection.SelectedItems.ToList().AsReadOnly(),
+            _columns.Where(c => c.Visible).Select(c => c.Id ?? c.Header ?? "").ToList().AsReadOnly()
+        );
+
     /// <summary>
     /// Determines if all items on the current page are selected.
     /// Returns false if there are no items on the page.
@@ -1279,6 +1435,16 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         }
 
         return styles.Count > 0 ? string.Join("; ", styles) : null;
+    }
+
+    /// <summary>Returns the inline style for a column's header cell, extending
+    /// <see cref="GetColumnStyle"/> with header-only properties such as the
+    /// grab cursor for reorderable columns.</summary>
+    private string? GetHeaderCellStyle(ColumnData column)
+    {
+        var base_ = GetColumnStyle(column);
+        if (!column.ReorderEnabled) return base_;
+        return base_ is null ? "cursor: grab" : base_ + "; cursor: grab";
     }
 
     /// <summary>
@@ -1594,6 +1760,8 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             || _lastHeaderClass != HeaderClass
             || _lastHeaderRowClass != HeaderRowClass
             || _lastBodyRowClass != BodyRowClass
+            || _lastStriped != Striped
+            || _lastStripeClass != StripeClass
             || _lastCellBorder != CellBorder
             || _lastColumnsVisibility != ColumnsVisibility;
         var virtualizeChanged = _lastVirtualize != Virtualize
@@ -1620,6 +1788,8 @@ public partial class DataTable<TData> : ComponentBase where TData : class
             _lastHeaderClass = HeaderClass;
             _lastHeaderRowClass = HeaderRowClass;
             _lastBodyRowClass = BodyRowClass;
+            _lastStriped = Striped;
+            _lastStripeClass = StripeClass;
             _lastCellBorder = CellBorder;
             _lastColumnsVisibility = ColumnsVisibility;
             _lastVirtualize = Virtualize;
@@ -1631,5 +1801,105 @@ public partial class DataTable<TData> : ComponentBase where TData : class
         }
 
         return false;
+    }
+
+    // ── JS Lifecycle ─────────────────────────────────────────────────────────
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        try
+        {
+            _dotNetRef ??= DotNetObjectReference.Create(this);
+            _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoUI.Blazor/js/datatable.js");
+
+            if (HasResizableColumns && _resizeCleanup is null && !_resizeInitializing)
+            {
+                _resizeInitializing = true;
+                _resizeCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(
+                    "initColumnResize", _tableContainerRef, _dotNetRef, MinColumnWidth, SyncWidthOnResize);
+            }
+
+            if (HasReorderableColumns && _reorderCleanup is null && !_reorderInitializing)
+            {
+                _reorderInitializing = true;
+                var reorderableIds = _columns
+                    .Where(c => c.Visible && c.ReorderEnabled)
+                    .Select(c => c.Id)
+                    .ToArray();
+                _reorderCleanup = await _jsModule.InvokeAsync<IJSObjectReference>(
+                    "initColumnReorder", _tableContainerRef, _dotNetRef, (object)reorderableIds);
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            _resizeInitializing = false;
+            _reorderInitializing = false;
+        }
+        catch (InvalidOperationException)
+        {
+            _resizeInitializing = false;
+            _reorderInitializing = false;
+        }
+    }
+
+    /// <summary>
+    /// Invoked by JS when the user finishes dragging a resize handle.
+    /// Updates the column's runtime width and fires <see cref="OnColumnResize"/>.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnResizeCompleted(string columnId, double widthPx)
+    {
+        var col = _columns.FirstOrDefault(c => c.Id == columnId);
+        if (col is null) return;
+
+        col.Width = $"{Math.Round(widthPx)}px";
+        _columnsVersion++;
+        StateHasChanged();
+
+        if (OnColumnResize.HasDelegate)
+            await OnColumnResize.InvokeAsync((columnId, col.Width));
+    }
+
+    /// <summary>
+    /// Invoked by JS when the user drops a column header into a new position.
+    /// Reorders <see cref="_columns"/> and fires <see cref="OnColumnReorder"/>.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnColumnReordered(string columnId, int newIndex)
+    {
+        var col = _columns.FirstOrDefault(c => c.Id == columnId);
+        if (col is null) return;
+
+        // JS clears drag transforms but does NOT commit DOM reorder — Blazor must
+        // be the sole owner of DOM element ordering.  Update _columns and call
+        // StateHasChanged() so Blazor diffs old-vdom → new-vdom against an actual
+        // DOM that still matches old-vdom (original positions).  The diff produces
+        // correct insertBefore ops that move elements to the reordered positions.
+        _columns.Remove(col);
+        var clamped = Math.Clamp(newIndex, 0, _columns.Count);
+        _columns.Insert(clamped, col);
+        _columnsVersion++;
+        StateHasChanged();
+
+        if (OnColumnReorder.HasDelegate)
+            await OnColumnReorder.InvokeAsync((columnId, clamped));
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_resizeCleanup is not null)
+        {
+            try { await _resizeCleanup.InvokeVoidAsync("dispose"); } catch { }
+            await _resizeCleanup.DisposeAsync();
+        }
+        if (_reorderCleanup is not null)
+        {
+            try { await _reorderCleanup.InvokeVoidAsync("dispose"); } catch { }
+            await _reorderCleanup.DisposeAsync();
+        }
+        if (_jsModule is not null)
+            await _jsModule.DisposeAsync();
+        _dotNetRef?.Dispose();
     }
 }
