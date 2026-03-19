@@ -67,10 +67,10 @@ public class DefaultLocalizer : ILocalizer
         ["DataTable.SelectThisRow"] = "Select this row",
 
         // ── DataView ─────────────────────────────────────────────────────────
-        ["DataView.SearchPlaceholder"] = "Search...",
-        ["DataView.NoResultsFound"] = "No results found",
-        ["DataView.Loading"] = "Loading...",
-        ["DataView.LoadingMore"] = "Loading more...",
+        ["DataView.SearchPlaceholder"] = "Search…",
+        ["DataView.NoResultsFound"] = "No items to display.",
+        ["DataView.Loading"] = "Loading…",
+        ["DataView.LoadingMore"] = "Loading more…",
         ["DataView.LoadMore"] = "Load more",
         ["DataView.ListView"] = "List view",
         ["DataView.GridView"] = "Grid view",
@@ -80,7 +80,7 @@ public class DefaultLocalizer : ILocalizer
         ["DatePicker.Placeholder"] = "Pick a date",
 
         // ── DateRangePicker ──────────────────────────────────────────────────
-        ["DateRangePicker.Placeholder"] = "Select date range",
+        ["DateRangePicker.Placeholder"] = "Pick a date range",
         ["DateRangePicker.Apply"] = "Apply",
         ["DateRangePicker.Clear"] = "Clear",
         ["DateRangePicker.Today"] = "Today",
@@ -97,6 +97,9 @@ public class DefaultLocalizer : ILocalizer
 
         // ── Dialog / AlertDialog / Sheet / Drawer ────────────────────────────
         ["Dialog.Close"] = "Close",
+
+        // ── Toast ────────────────────────────────────────────────────────────
+        ["Toast.Close"] = "Close",
 
         // ── FileUpload ───────────────────────────────────────────────────────
         ["FileUpload.Accepted"] = "Accepted: {0}",
