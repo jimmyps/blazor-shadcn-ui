@@ -1,11 +1,12 @@
 @namespace NeoUI.Blazor
 @implements IDisposable
+@inject ILocalizer Localizer
 
 @* Command - self-contained searchable/filterable list component *@
 <CascadingValue Value="_context" IsFixed="false">
     <div class="@CssClass"
          role="group"
-         aria-label="Command menu"
+         aria-label="@Localizer["Command.MenuAriaLabel"]"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>

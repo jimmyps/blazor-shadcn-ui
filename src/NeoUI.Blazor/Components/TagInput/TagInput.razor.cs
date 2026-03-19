@@ -134,8 +134,11 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
 
     // ── Computed ───────────────────────────────────────────────────────
 
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
     private bool HasSuggestions => Suggestions is not null || OnSearchSuggestions is not null;
-    private string? EffectivePlaceholder => _currentTags.Count == 0 ? (Placeholder ?? "Add tag…") : null;
+    private string? EffectivePlaceholder => _currentTags.Count == 0 ? (Placeholder ?? Localizer["TagInput.Placeholder"]) : null;
 
     private string? ActiveDescendantId =>
         _suggestionsOpen && _suggestionIndex >= 0

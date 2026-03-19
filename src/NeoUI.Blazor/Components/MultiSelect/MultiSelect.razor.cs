@@ -82,27 +82,31 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Gets or sets the placeholder text shown when no items are selected.
+    /// When null, falls back to the localizer value for "MultiSelect.Placeholder".
     /// </summary>
     [Parameter]
-    public string Placeholder { get; set; } = "Select items...";
+    public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the placeholder text shown in the search input.
+    /// When null, falls back to the localizer value for "MultiSelect.SearchPlaceholder".
     /// </summary>
     [Parameter]
-    public string SearchPlaceholder { get; set; } = "Search...";
+    public string? SearchPlaceholder { get; set; }
 
     /// <summary>
     /// Gets or sets the message displayed when no items match the search.
+    /// When null, falls back to the localizer value for "MultiSelect.EmptyMessage".
     /// </summary>
     [Parameter]
-    public string EmptyMessage { get; set; } = "No results found.";
+    public string? EmptyMessage { get; set; }
 
     /// <summary>
     /// Gets or sets the label for the Select All option.
+    /// When null, falls back to the localizer value for "MultiSelect.SelectAll".
     /// </summary>
     [Parameter]
-    public string SelectAllLabel { get; set; } = "Select All";
+    public string? SelectAllLabel { get; set; }
 
     /// <summary>
     /// Gets or sets whether to show the Select All option.
@@ -112,15 +116,27 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Gets or sets the label for the Clear button.
+    /// When null, falls back to the localizer value for "MultiSelect.Clear".
     /// </summary>
     [Parameter]
-    public string ClearLabel { get; set; } = "Clear";
+    public string? ClearLabel { get; set; }
 
     /// <summary>
     /// Gets or sets the label for the Close button.
+    /// When null, falls back to the localizer value for "MultiSelect.Close".
     /// </summary>
     [Parameter]
-    public string CloseLabel { get; set; } = "Close";
+    public string? CloseLabel { get; set; }
+
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
+    private string EffectivePlaceholder => Placeholder ?? Localizer["MultiSelect.Placeholder"];
+    private string EffectiveSearchPlaceholder => SearchPlaceholder ?? Localizer["MultiSelect.SearchPlaceholder"];
+    private string EffectiveEmptyMessage => EmptyMessage ?? Localizer["MultiSelect.EmptyMessage"];
+    private string EffectiveSelectAllLabel => SelectAllLabel ?? Localizer["MultiSelect.SelectAll"];
+    private string EffectiveClearLabel => ClearLabel ?? Localizer["MultiSelect.Clear"];
+    private string EffectiveCloseLabel => CloseLabel ?? Localizer["MultiSelect.Close"];
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the multiselect container.

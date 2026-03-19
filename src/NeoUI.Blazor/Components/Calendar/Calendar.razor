@@ -1,8 +1,9 @@
 @namespace NeoUI.Blazor
 @using System.Globalization
+@inject ILocalizer Localizer
 
 @* Calendar - accessible month/day grid for date selection *@
-<div @ref="_calendarRef" @attributes="GetAttributes()" role="application" aria-label="Calendar" tabindex="0" 
+<div @ref="_calendarRef" @attributes="GetAttributes()" role="application" aria-label="@Localizer["Calendar.AriaLabel"]" tabindex="0" 
      @onkeydown="HandleKeyDown" @onkeydown:preventDefault="@_shouldPreventDefault"
      @onfocus="OnFocus" @onblur="OnBlur" @onfocusin="OnFocusIn">
     @* Header with navigation *@
@@ -14,7 +15,7 @@
                         @onclick="PreviousMonth"
                         disabled="@(!CanNavigatePrevious)"
                         class="@GetPrevNavButtonClass()"
-                        aria-label="Go to previous month">
+                        aria-label="@Localizer["Calendar.GoToPreviousMonth"]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m15 18-6-6 6-6"/>
                     </svg>
@@ -22,14 +23,14 @@
                 @if (CaptionLayout == CalendarCaptionLayout.Dropdown)
                 {
                     <div class="flex items-center gap-1">
-                        <select @bind="SelectedMonth" class="@GetDropdownClass()" aria-label="Select month"
+                        <select @bind="SelectedMonth" class="@GetDropdownClass()" aria-label="@Localizer["Calendar.SelectMonth"]"
                                 @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
                             @foreach (var month in GetMonths())
                             {
                                 <option value="@month.Value">@month.Name</option>
                             }
                         </select>
-                        <select @bind="SelectedYear" class="@GetDropdownClass()" aria-label="Select year"
+                        <select @bind="SelectedYear" class="@GetDropdownClass()" aria-label="@Localizer["Calendar.SelectYear"]"
                                 @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
                             @foreach (var year in GetYears())
                             {
@@ -48,7 +49,7 @@
                         @onclick="NextMonth"
                         disabled="@(!CanNavigateNext)"
                         class="@GetNextNavButtonClass()"
-                        aria-label="Go to next month">
+                        aria-label="@Localizer["Calendar.GoToNextMonth"]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="m9 18 6-6-6-6"/>
                     </svg>

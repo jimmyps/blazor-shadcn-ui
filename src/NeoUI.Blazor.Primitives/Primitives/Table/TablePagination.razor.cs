@@ -70,6 +70,39 @@ public partial class TablePagination<TData> : ComponentBase, IDisposable
     [Parameter]
     public string? Class { get; set; }
 
+    /// <summary>ARIA label for the navigation element. Default: "Pagination Navigation".</summary>
+    [Parameter] public string NavigationAriaLabel { get; set; } = "Pagination Navigation";
+
+    /// <summary>Text for the "First" button. Default: "First".</summary>
+    [Parameter] public string FirstText { get; set; } = "First";
+
+    /// <summary>ARIA label for the first-page button. Default: "Go to first page".</summary>
+    [Parameter] public string GoToFirstPageAriaLabel { get; set; } = "Go to first page";
+
+    /// <summary>Text for the "Previous" button. Default: "Previous".</summary>
+    [Parameter] public string PreviousText { get; set; } = "Previous";
+
+    /// <summary>ARIA label for the previous-page button. Default: "Go to previous page".</summary>
+    [Parameter] public string GoToPreviousPageAriaLabel { get; set; } = "Go to previous page";
+
+    /// <summary>Text for the "Next" button. Default: "Next".</summary>
+    [Parameter] public string NextText { get; set; } = "Next";
+
+    /// <summary>ARIA label for the next-page button. Default: "Go to next page".</summary>
+    [Parameter] public string GoToNextPageAriaLabel { get; set; } = "Go to next page";
+
+    /// <summary>Text for the "Last" button. Default: "Last".</summary>
+    [Parameter] public string LastText { get; set; } = "Last";
+
+    /// <summary>ARIA label for the last-page button. Default: "Go to last page".</summary>
+    [Parameter] public string GoToLastPageAriaLabel { get; set; } = "Go to last page";
+
+    /// <summary>Label text before the page-size selector. Default: "Items per page:".</summary>
+    [Parameter] public string ItemsPerPageText { get; set; } = "Items per page:";
+
+    /// <summary>ARIA label for the page-size select element. Default: "Select page size".</summary>
+    [Parameter] public string PageSizeAriaLabel { get; set; } = "Select page size";
+
     /// <summary>
     /// Gets the pagination context for the template.
     /// </summary>
