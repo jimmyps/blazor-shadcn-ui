@@ -1,9 +1,10 @@
 @namespace NeoUI.Blazor
+@inject ILocalizer Localizer
 
 <div id="@Context?.ListId"
      class="@CssClass"
      role="listbox"
-     aria-label="Command list">
+     aria-label="@Localizer["Command.ListAriaLabel"]">
     @ChildContent
 </div>
 

@@ -1,8 +1,9 @@
 @namespace NeoUI.Blazor
+@inject ILocalizer Localizer
 <div class="@CssClass">
     @if (ShowLabel)
     {
-        <p class="text-sm text-muted-foreground">@Label</p>
+        <p class="text-sm text-muted-foreground">@EffectiveLabel</p>
     }
     <Select TValue="string"
             Value="@_pageSizeValue"
@@ -42,10 +43,11 @@
     public bool ShowLabel { get; set; } = true;
 
     /// <summary>
-    /// Label text for the page size selector. Default: "Rows per page"
+    /// Label text for the page size selector.
+    /// When null, falls back to the localizer value for "Pagination.RowsPerPage".
     /// </summary>
     [Parameter]
-    public string Label { get; set; } = "Rows per page";
+    public string? Label { get; set; }
 
     /// <summary>
     /// Override page sizes from context. When null, uses context's PageSizes.
@@ -59,6 +61,7 @@
     [Parameter]
     public EventCallback<int> OnPageSizeChanged { get; set; }
 
+    private string EffectiveLabel => Label ?? Localizer["Pagination.RowsPerPage"];
     private int[] EffectivePageSizes => PageSizes ?? Context?.PageSizes ?? [10, 20, 50, 100];
 
     protected override void OnInitialized()

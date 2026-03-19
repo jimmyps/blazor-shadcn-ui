@@ -1,5 +1,6 @@
 @inject ThemeService ThemeService
 @implements IDisposable
+@inject ILocalizer Localizer
 
 @namespace NeoUI.Blazor
 
@@ -11,7 +12,7 @@
                     <Button Variant="ButtonVariant.Outline" 
                             Size="ButtonSize.Icon"
                             Class="@GetTriggerButtonClass()"
-                            AriaLabel="Change theme">
+                            AriaLabel="@Localizer["ThemeSwitcher.ChangeTheme"]">
                         <div class="size-4 rounded-full" style="@GetTriggerFillStyle()"></div>
                     </Button>
                 </PopoverTrigger>
@@ -25,13 +26,13 @@
         <div class="space-y-4">
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold">Theme Settings</h3>
+                    <h3 class="text-sm font-semibold">@Localizer["ThemeSwitcher.Settings"]</h3>
                     <DarkModeToggle />
                 </div>
             </div>
 
             <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Base Color</h4>
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
                 <div class="grid grid-cols-5 gap-2">
                     @foreach (var color in Enum.GetValues<BaseColor>())
                     {
@@ -46,7 +47,7 @@
             </div>
 
             <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Theme Color</h4>
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.ThemeColor"]</h4>
                 <div class="grid grid-cols-5 gap-2">
                     @foreach (var color in Enum.GetValues<PrimaryColor>())
                     {

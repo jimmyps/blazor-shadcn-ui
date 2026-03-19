@@ -130,6 +130,9 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
         public bool ReorderEnabled { get; set; }
     }
 
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
     /// <summary>
     /// Stores the list of registered column definitions.
     /// </summary>

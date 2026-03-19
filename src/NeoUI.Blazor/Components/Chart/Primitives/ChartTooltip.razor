@@ -58,7 +58,15 @@
     /// </summary>
     [Parameter]
     public string? TextColor { get; set; }
-    
+
+    /// <summary>
+    /// Gets or sets whether the tooltip DOM element is appended to document.body.
+    /// Enable this when the chart lives inside an overflow:hidden container to prevent clipping.
+    /// Maps to tooltip.appendToBody.
+    /// </summary>
+    [Parameter]
+    public bool? AppendToBody { get; set; }
+
     protected override void OnInitialized()
     {
         Parent?.RegisterChartTooltip(this);

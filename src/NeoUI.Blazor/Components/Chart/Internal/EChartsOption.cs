@@ -1041,6 +1041,13 @@ public sealed class EChartsTooltip
     /// </summary>
     [JsonPropertyName("textStyle")]
     public EChartsTextStyle? TextStyle { get; set; }
+
+    /// <summary>
+    /// Whether to append the tooltip DOM element to document.body.
+    /// Useful when the chart is inside an overflow:hidden container to prevent clipping.
+    /// </summary>
+    [JsonPropertyName("appendToBody")]
+    public bool? AppendToBody { get; set; }
 }
 
 /// <summary>

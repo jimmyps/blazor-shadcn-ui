@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
+@inject ILocalizer Localizer
 @* DatePicker - Date selection with Calendar in Popover *@
 
 <Popover @bind-Open="_isOpen">
@@ -114,9 +115,10 @@ private System.Globalization.CultureInfo EffectiveCulture =>
 
     /// <summary>
     /// Placeholder text when no date is selected.
+    /// When null, falls back to the localizer value for "DatePicker.Placeholder".
     /// </summary>
     [Parameter]
-    public string Placeholder { get; set; } = "Pick a date";
+    public string? Placeholder { get; set; }
 
     /// <summary>
     /// Date format string for displaying the selected date.
@@ -193,7 +195,7 @@ private System.Globalization.CultureInfo EffectiveCulture =>
     private string GetDisplayText()
     {
         if (_selectedDate == null)
-            return Placeholder;
+            return Placeholder ?? Localizer["DatePicker.Placeholder"];
 
         var culture = Culture ?? System.Globalization.CultureInfo.CurrentCulture;
         

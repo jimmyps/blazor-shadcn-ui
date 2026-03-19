@@ -1,10 +1,11 @@
 @namespace NeoUI.Blazor
 @typeparam TData where TData : class
+@inject ILocalizer Localizer
 <div class="flex items-center justify-between gap-2 pt-4">
     <div class="flex flex-1 items-center gap-2">
         <Input @bind-Value="@_searchValue"
                @bind-Value:after="@HandleSearchChanged"
-               Placeholder="Search..."
+               Placeholder="@Localizer["DataTable.Search"]"
                Class="h-8 w-[180px]" />
 
         @if (Columns.Any(c => c.Filterable))
@@ -20,12 +21,12 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                     </svg>
-                    Columns
+                    @Localizer["DataTable.Columns"]
                 </Button>
             </PopoverTrigger>
             <PopoverContent Class="w-[200px] p-0" Side="@PopoverSide.Bottom" Align="@PopoverAlign.End">
                 <div class="p-3">
-                    <div class="text-sm font-medium mb-1">Toggle columns</div>
+                    <div class="text-sm font-medium mb-1">@Localizer["DataTable.ToggleColumns"]</div>
                     @foreach (var column in Columns)
                     {
                         <div class="flex items-center gap-2 p-1 hover:bg-accent rounded-sm transition-colors cursor-pointer"

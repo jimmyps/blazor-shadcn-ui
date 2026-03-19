@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 
-<ol aria-label="Timeline" class="@CssClass" @attributes="AdditionalAttributes">
+<ol aria-label="@Localizer["Timeline.AriaLabel"]" class="@CssClass" @attributes="AdditionalAttributes">
     <CascadingValue Value="this" IsFixed="true">
         @if (ChildContent is not null)
         {
@@ -8,7 +8,7 @@
         }
         else
         {
-            <li class="text-sm text-muted-foreground py-4 text-center">No timeline items.</li>
+            <li class="text-sm text-muted-foreground py-4 text-center">@Localizer["Timeline.NoItems"]</li>
         }
     </CascadingValue>
 </ol>

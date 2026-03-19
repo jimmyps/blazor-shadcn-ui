@@ -24,7 +24,7 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                 </svg>
-                <span class="text-sm">@LoadingText</span>
+                <span class="text-sm">@EffectiveLoadingText</span>
             </div>
         </div>
     }
@@ -39,7 +39,7 @@
             }
             else
             {
-                <p class="text-sm">@EmptyText</p>
+                <p class="text-sm">@EffectiveEmptyText</p>
             }
         </div>
     }
@@ -62,7 +62,7 @@
                 {
                     <Input Value="@_searchValue"
                            ValueChanged="@((string v) => { _searchValue = v; HandleSearchInput(new ChangeEventArgs { Value = v }); })"
-                           Placeholder="Search…"
+                           Placeholder="@Localizer["DataView.SearchPlaceholder"]"
                            Class="h-8 w-48 text-sm" />
                 }
 
@@ -104,14 +104,14 @@
                                         Size="ButtonSize.Icon"
                                         OnClick="@(() => SetLayout(DataViewLayout.List))"
                                         Class="@ClassNames.cn("h-7 w-7", _layout == DataViewLayout.List ? "bg-accent text-accent-foreground" : "")"
-                                        AriaLabel="List view">
+                                        AriaLabel="@Localizer["DataView.ListView"]">
                                     <LucideIcon Name="list" Size="16" />
                                 </Button>
                                 <Button Variant="ButtonVariant.Ghost"
                                         Size="ButtonSize.Icon"
                                         OnClick="@(() => SetLayout(DataViewLayout.Grid))"
                                         Class="@ClassNames.cn("h-7 w-7", _layout == DataViewLayout.Grid ? "bg-accent text-accent-foreground" : "")"
-                                        AriaLabel="Grid view">
+                                        AriaLabel="@Localizer["DataView.GridView"]">
                                     <LucideIcon Name="layout-grid" Size="16" />
                                 </Button>
                             </div>
