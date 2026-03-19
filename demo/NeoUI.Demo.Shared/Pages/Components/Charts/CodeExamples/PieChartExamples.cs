@@ -16,7 +16,7 @@ partial class PieChartExamples
         new("RoseType",         "string?",            "null",      "Set to \"radius\" to render a Nightingale rose chart."),
         new("ShowLabel",        "bool",               "false",     "Whether to show slice labels."),
         new("EmphasisScaleSize","int",                "0",         "Scale-up amount on hover for emphasis effect."),
-        new("Color",            "string?",            "auto",      "Override the first slice color. Usually left to the palette."),
+        new("Colors",           "string[]?",          "null",      "Custom color palette cycling across slices. null = auto CSS-variable palette (--chart-1 … --chart-5)."),
         new("Class",            "string?",            "null",      "Additional CSS classes on the root element."),
     ];
 
@@ -40,7 +40,7 @@ partial class PieChartExamples
         <ChartContainer Height="250" Class="w-full">
             <PieChart Data="@FilteredBrowserData">
                 <ChartTooltip />
-                <Pie DataKey="value" NameKey="name" Color="var(--chart-1)">
+                <Pie DataKey="value" NameKey="name">
                     <LabelList Color="var(--muted-foreground)" />
                 </Pie>
             </PieChart>

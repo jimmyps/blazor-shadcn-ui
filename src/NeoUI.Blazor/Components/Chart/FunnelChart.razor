@@ -80,7 +80,12 @@
                 var count  = Math.Min(names.Count, values.Count);
                 var data   = new List<object?>(count);
                 for (var i = 0; i < count; i++)
-                    data.Add(new Dictionary<string, object?> { ["name"] = names[i], ["value"] = values[i] });
+                    data.Add(new Dictionary<string, object?>
+                    {
+                        ["name"] = names[i],
+                        ["value"] = values[i],
+                        ["itemStyle"] = new Dictionary<string, object> { ["color"] = GetSliceColor(i, funnel.Colors) }
+                    });
                 series.Data = data;
             }
 

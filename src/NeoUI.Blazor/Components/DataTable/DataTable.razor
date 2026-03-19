@@ -1,6 +1,7 @@
 @namespace NeoUI.Blazor
 @typeparam TData where TData : class
 @using Microsoft.AspNetCore.Components.Web.Virtualization
+@inject IJSRuntime JSRuntime
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerCssClass">
         @if (ShowToolbar)
@@ -15,7 +16,9 @@
             </DataTableToolbar>
         }
 
-        <div class="@TableContainerCssClass"
+        <ContextMenu @ref="_rowContextMenuRef">
+        <div @ref="_tableContainerRef"
+             class="@TableContainerCssClass"
              style="@TableContainerStyle"
              data-pinned-table="@(HasPinnedColumns ? "true" : null)">
             @if (IsLoading)
@@ -66,7 +69,7 @@
                             }
                             @foreach (var col in _columns.Where(c => c.Visible))
                             {
-                                <col style="@GetColStyle(col)" />
+                                <col @key="col.Id" data-col-id="@col.Id" style="@GetColStyle(col)" />
                             }
                         </colgroup>
                     }
@@ -134,10 +137,12 @@
                                     _ => ""
                                 };
 
-                                <TableHeaderCell TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
-                                                 Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass, GetPinnedCellClass(column, isHeader: true))"
-                                                 style="@GetColumnStyle(column)"
+                                <TableHeaderCell @key="column.Id" TData="TData" ColumnId="@(column.Sortable ? column.Id : null)"
+                                                 Class="@ClassNames.cn(HeaderCellPaddingClass, "align-middle font-medium text-muted-foreground", alignmentClass, column.Sortable ? "cursor-pointer select-none" : "", column.HeaderClass, GetPinnedCellClass(column, isHeader: true), (column.ResizeEnabled || column.ReorderEnabled) ? "relative overflow-visible" : null)"
+                                                 style="@GetHeaderCellStyle(column)"
                                                  data-pinned="@(column.Pinned != ColumnPinnedSide.None ? "true" : null)"
+                                                 data-col-id="@column.Id"
+                                                 draggable="@(column.ReorderEnabled ? "true" : null)"
                                                  aria-sort="@ariaSortValue">
                                     <div class="@ClassNames.cn("flex items-center gap-2", flexJustify)">
                                         <span>@column.Header</span>
@@ -163,6 +168,12 @@
                                             </svg>
                                         }
                                     </div>
+                                    @if (column.ResizeEnabled)
+                                    {
+                                        <div class="absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none z-10 hover:bg-border/80 active:bg-primary/60"
+                                             data-resize-handle="@column.Id"
+                                             @onclick:stopPropagation="true" />
+                                    }
                                 </TableHeaderCell>
                             }
                         </TableRow>
@@ -178,7 +189,8 @@
                                         Context="item">
                                 <ItemContent>
                                     @{ var isSelectedVS = _tableState.Selection.IsSelected(item); }
-                                    <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVS)" style="@($"height:{ItemHeight}px")">
+                                    <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVS)" style="@($"height:{ItemHeight}px")"
+                                                  OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(item, e)) : default)">
                                         @RenderRowCells(item, isSelectedVS)
                                     </TableRow>
                                 </ItemContent>
@@ -199,7 +211,8 @@
                                         SpacerElement="tr"
                                         Context="item">
                                 @{ var isSelectedVC = _tableState.Selection.IsSelected(item); }
-                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVC)" style="@($"height:{ItemHeight}px")">
+                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVC)" style="@($"height:{ItemHeight}px")"
+                                              OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(item, e)) : default)">
                                     @RenderRowCells(item, isSelectedVC)
                                 </TableRow>
                             </Virtualize>
@@ -209,7 +222,8 @@
                             @foreach (var treeRow in _treeRows)
                             {
                                 var isSelected = _tableState.Selection.IsSelected(treeRow.Item);
-                                <TableRow TData="TData" Item="@treeRow.Item" Class="@GetBodyRowClass(isSelected)">
+                                <TableRow TData="TData" Item="@treeRow.Item" Class="@GetBodyRowClass(isSelected)"
+                                              OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(treeRow.Item, e)) : default)">
                                     @RenderTreeRowCells(treeRow, isSelected)
                                 </TableRow>
                             }
@@ -219,7 +233,8 @@
                             @foreach (var item in _processedData)
                             {
                                 var isSelected = _tableState.Selection.IsSelected(item);
-                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelected)">
+                                <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelected)"
+                                              OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(item, e)) : default)">
                                     @RenderRowCells(item, isSelected)
                                 </TableRow>
                             }
@@ -228,6 +243,17 @@
                 </Table>
             }
         </div>
+
+        @if (RowContextMenu != null)
+        {
+            <ContextMenuContent>
+                @if (_contextMenuItem != null)
+                {
+                    @RowContextMenu(BuildRowMenuContext(_contextMenuItem))
+                }
+            </ContextMenuContent>
+        }
+        </ContextMenu>
 
         @if (ShowPagination && !IsLoading && !IsVirtualized && !IsTreeMode && _processedData.Any())
         {
@@ -284,8 +310,9 @@
                     ColumnAlignment.Right  => "text-right",
                     _                      => "text-left"
                 };
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
+                <TableCell @key="col.Id" Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
                            data-pinned="@(col.Pinned != ColumnPinnedSide.None ? "true" : null)"
+                           data-col-id="@col.Id"
                            style="@GetColumnStyle(col)">
                     @if (col.CellTemplate != null)
                     {
@@ -329,8 +356,9 @@
                 var depthPad = isTreeCol && treeRow.Depth > 0 ? $"padding-left:{treeRow.Depth * 20 + 16}px" : null;
                 var baseStyle = GetColumnStyle(col);
                 var cellStyle = depthPad is null ? baseStyle : (baseStyle is null ? depthPad : $"{baseStyle};{depthPad}");
-                <TableCell Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
-                           style="@cellStyle">
+                <TableCell @key="col.Id" Class="@ClassNames.cn(BodyCellPaddingClass, "align-middle [&:has([role=checkbox])]:pr-0", cellAlign, col.CellClass, GetPinnedCellClass(col))"
+                           style="@cellStyle"
+                           data-col-id="@col.Id">
                     @if (isTreeCol)
                     {
                         <span class="inline-flex items-center gap-1">

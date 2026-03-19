@@ -39,16 +39,19 @@
         {
             foreach (var pie in _pies)
             {
-                // Extract data for pie chart
+                // Extract data for pie chart — apply palette color per slice
                 var pieData = new List<Dictionary<string, object>>();
-                foreach (var item in Data)
+                var dataItems = Data.ToList();
+                for (int j = 0; j < dataItems.Count; j++)
                 {
+                    var item = dataItems[j];
                     var name = DataExtractor.GetValue(item, pie.NameKey)?.ToString() ?? "";
                     var value = Convert.ToDouble(DataExtractor.GetValue(item, pie.DataKey) ?? 0);
                     pieData.Add(new Dictionary<string, object>
                     {
                         ["name"] = name,
-                        ["value"] = value
+                        ["value"] = value,
+                        ["itemStyle"] = new Dictionary<string, object> { ["color"] = GetSliceColor(j, pie.Colors) }
                     });
                 }
 
