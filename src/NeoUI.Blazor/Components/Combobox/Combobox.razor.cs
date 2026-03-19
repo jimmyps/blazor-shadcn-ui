@@ -79,21 +79,31 @@ public partial class Combobox<TItem> : ComponentBase
 
     /// <summary>
     /// Gets or sets the placeholder text shown in the button when no item is selected.
+    /// When null, falls back to the localizer value for "Combobox.Placeholder".
     /// </summary>
     [Parameter]
-    public string Placeholder { get; set; } = "Select an option...";
+    public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the placeholder text shown in the search input.
+    /// When null, falls back to the localizer value for "Combobox.SearchPlaceholder".
     /// </summary>
     [Parameter]
-    public string SearchPlaceholder { get; set; } = "Search...";
+    public string? SearchPlaceholder { get; set; }
 
     /// <summary>
     /// Gets or sets the message displayed when no items match the search.
+    /// When null, falls back to the localizer value for "Combobox.EmptyMessage".
     /// </summary>
     [Parameter]
-    public string EmptyMessage { get; set; } = "No results found.";
+    public string? EmptyMessage { get; set; }
+
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
+    private string EffectivePlaceholder => Placeholder ?? Localizer["Combobox.Placeholder"];
+    private string EffectiveSearchPlaceholder => SearchPlaceholder ?? Localizer["Combobox.SearchPlaceholder"];
+    private string EffectiveEmptyMessage => EmptyMessage ?? Localizer["Combobox.EmptyMessage"];
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the combobox container.
@@ -180,10 +190,10 @@ public partial class Combobox<TItem> : ComponentBase
         get
         {
             if (string.IsNullOrWhiteSpace(Value))
-                return Placeholder;
+                return EffectivePlaceholder;
 
             var selectedItem = Items.FirstOrDefault(item => ValueSelector(item) == Value);
-            return selectedItem != null ? DisplaySelector(selectedItem) : Placeholder;
+            return selectedItem != null ? DisplaySelector(selectedItem) : EffectivePlaceholder;
         }
     }
 

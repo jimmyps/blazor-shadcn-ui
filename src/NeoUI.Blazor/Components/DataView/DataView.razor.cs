@@ -108,11 +108,23 @@ public partial class DataView<TItem> : ComponentBase
     /// <summary>Shows a loading spinner when true.</summary>
     [Parameter] public bool Loading { get; set; }
 
-    /// <summary>Text shown in the loading state.</summary>
-    [Parameter] public string LoadingText { get; set; } = "Loading…";
+    /// <summary>
+    /// Text shown in the loading state.
+    /// When null, falls back to the localizer value for "DataView.Loading".
+    /// </summary>
+    [Parameter] public string? LoadingText { get; set; }
 
-    /// <summary>Text shown when Items is empty and EmptyTemplate is null.</summary>
-    [Parameter] public string EmptyText { get; set; } = "No items to display.";
+    /// <summary>
+    /// Text shown when Items is empty and EmptyTemplate is null.
+    /// When null, falls back to the localizer value for "DataView.NoResultsFound".
+    /// </summary>
+    [Parameter] public string? EmptyText { get; set; }
+
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
+    private string EffectiveLoadingText => LoadingText ?? Localizer["DataView.Loading"];
+    private string EffectiveEmptyText => EmptyText ?? Localizer["DataView.NoResultsFound"];
 
     /// <summary>Whether to render the pagination bar (requires PageSize &gt; 0).</summary>
     [Parameter] public bool ShowPagination { get; set; } = true;

@@ -27,9 +27,9 @@
             </PopoverTrigger>
             <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
                 <CommandContent>
-                    <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@SearchPlaceholder" />
+                    <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@EffectiveSearchPlaceholder" />
                     <CommandList>
-                        <CommandEmpty>@EmptyMessage</CommandEmpty>
+                        <CommandEmpty>@EffectiveEmptyMessage</CommandEmpty>
                         <CommandGroup>
                             @foreach (var item in Items)
                             {
@@ -51,7 +51,7 @@
                                                  stroke-linecap="round"
                                                  stroke-linejoin="round"
                                                  class="h-4 w-4"
-                                                 aria-label="Selected">
+                                                 aria-label="@Localizer["Combobox.Selected"]">
                                                 <path d="M20 6 9 17l-5-5" />
                                             </svg>
                                         </span>

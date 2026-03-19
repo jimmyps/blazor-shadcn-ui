@@ -44,10 +44,15 @@ public partial class Breadcrumb : ComponentBase
     /// </summary>
     /// <remarks>
     /// Provides accessible label for screen readers.
-    /// Default value is "breadcrumb".
+    /// When null, falls back to the localizer value for "Breadcrumb.Breadcrumb".
     /// </remarks>
     [Parameter]
-    public string AriaLabel { get; set; } = "breadcrumb";
+    public string? AriaLabel { get; set; }
+
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
+    private string EffectiveAriaLabel => AriaLabel ?? Localizer["Breadcrumb.Breadcrumb"];
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the breadcrumb.

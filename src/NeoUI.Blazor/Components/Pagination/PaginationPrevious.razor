@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
+@inject ILocalizer Localizer
 
 <PaginationLink Href="@Href"
                 Size="@EffectiveSize"
@@ -9,11 +10,11 @@
     <LucideIcon Name="chevron-left" Class="h-4 w-4" />
     @if (ShowText)
     {
-        <span>@Text</span>
+        <span>@EffectiveText</span>
     }
     else
     {
-        <span class="sr-only">@Text</span>
+        <span class="sr-only">@EffectiveText</span>
     }
 </PaginationLink>
 
@@ -46,10 +47,11 @@
     public bool ShowText { get; set; } = true;
 
     /// <summary>
-    /// Custom text for the button. Default: "Previous"
+    /// Custom text for the button.
+    /// When null, falls back to the localizer value for "Pagination.Previous".
     /// </summary>
     [Parameter]
-    public string Text { get; set; } = "Previous";
+    public string? Text { get; set; }
 
     /// <summary>
     /// Size of the pagination link. Default: PaginationLinkSize.Default
@@ -57,6 +59,7 @@
     [Parameter]
     public PaginationLinkSize Size { get; set; } = PaginationLinkSize.Default;
 
+    private string EffectiveText => Text ?? Localizer["Pagination.Previous"];
     private bool IsDisabled => Disabled ?? (Context?.State != null && !Context.State.CanGoPrevious);
 
     private PaginationLinkSize EffectiveSize => ShowText ? Size : PaginationLinkSize.Icon;

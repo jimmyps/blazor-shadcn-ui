@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
+@inject ILocalizer Localizer
 
 @*
     FilterChip — interactive segmented chip for one active filter condition.
@@ -48,7 +49,7 @@
     <button type="button"
             class="flex items-center justify-center px-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0 self-stretch"
             @onclick="OnRemove"
-            aria-label="Remove filter">
+            aria-label="@Localizer["Filter.RemoveFilter"]">
         <LucideIcon Name="x" Size="12" />
     </button>
 </div>
@@ -124,30 +125,30 @@
             await ConditionChanged.InvokeAsync(Condition);
     }
 
-    private static string GetOperatorDisplayText(string value) =>
+    private string GetOperatorDisplayText(string value) =>
         Enum.TryParse<FilterOperator>(value, out var op) ? GetOperatorLabel(op) : value;
 
-    private static string GetOperatorLabel(FilterOperator op) => op switch
+    private string GetOperatorLabel(FilterOperator op) => op switch
     {
-        FilterOperator.Equals             => "is",
-        FilterOperator.NotEquals          => "is not",
-        FilterOperator.Contains           => "contains",
-        FilterOperator.NotContains        => "does not contain",
-        FilterOperator.StartsWith         => "starts with",
-        FilterOperator.EndsWith           => "ends with",
-        FilterOperator.IsEmpty            => "is empty",
-        FilterOperator.IsNotEmpty         => "is not empty",
-        FilterOperator.GreaterThan        => "is greater than",
-        FilterOperator.LessThan           => "is less than",
-        FilterOperator.GreaterThanOrEqual => "is ≥",
-        FilterOperator.LessThanOrEqual    => "is ≤",
-        FilterOperator.Between            => "is between",
-        FilterOperator.NotBetween         => "is not between",
-        FilterOperator.IsAnyOf            => "is any of",
-        FilterOperator.IsNoneOf           => "is none of",
-        FilterOperator.IsAllOf            => "is all of",
-        FilterOperator.IsTrue             => "is true",
-        FilterOperator.IsFalse            => "is false",
+        FilterOperator.Equals             => Localizer["Filter.Operator.Equals"],
+        FilterOperator.NotEquals          => Localizer["Filter.Operator.NotEquals"],
+        FilterOperator.Contains           => Localizer["Filter.Operator.Contains"],
+        FilterOperator.NotContains        => Localizer["Filter.Operator.NotContains"],
+        FilterOperator.StartsWith         => Localizer["Filter.Operator.StartsWith"],
+        FilterOperator.EndsWith           => Localizer["Filter.Operator.EndsWith"],
+        FilterOperator.IsEmpty            => Localizer["Filter.Operator.IsEmpty"],
+        FilterOperator.IsNotEmpty         => Localizer["Filter.Operator.IsNotEmpty"],
+        FilterOperator.GreaterThan        => Localizer["Filter.Operator.GreaterThan"],
+        FilterOperator.LessThan           => Localizer["Filter.Operator.LessThan"],
+        FilterOperator.GreaterThanOrEqual => Localizer["Filter.Operator.GreaterThanOrEqual"],
+        FilterOperator.LessThanOrEqual    => Localizer["Filter.Operator.LessThanOrEqual"],
+        FilterOperator.Between            => Localizer["Filter.Operator.Between"],
+        FilterOperator.NotBetween         => Localizer["Filter.Operator.NotBetween"],
+        FilterOperator.IsAnyOf            => Localizer["Filter.Operator.IsAnyOf"],
+        FilterOperator.IsNoneOf           => Localizer["Filter.Operator.IsNoneOf"],
+        FilterOperator.IsAllOf            => Localizer["Filter.Operator.IsAllOf"],
+        FilterOperator.IsTrue             => Localizer["Filter.Operator.IsTrue"],
+        FilterOperator.IsFalse            => Localizer["Filter.Operator.IsFalse"],
         _                                 => op.ToString()
     };
 }

@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
+@inject ILocalizer Localizer
 @using Microsoft.AspNetCore.Components.Web
 
 @*
@@ -22,7 +23,7 @@
     else
     {
         <LucideIcon Name="panel-left" Size="16" />
-        <span class="sr-only">Toggle Sidebar</span>
+        <span class="sr-only">@Localizer["Sidebar.ToggleSidebar"]</span>
     }
 </button>
 

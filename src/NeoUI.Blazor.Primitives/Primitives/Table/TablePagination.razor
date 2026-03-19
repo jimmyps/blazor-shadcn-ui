@@ -8,21 +8,21 @@
 else
 {
     @* Default headless structure with navigation buttons *@
-    <nav role="navigation" aria-label="Pagination Navigation" class="@Class">
+    <nav role="navigation" aria-label="@NavigationAriaLabel" class="@Class">
         <div>
             @* Navigation buttons *@
             <button type="button"
                     @onclick="Context.GoToFirstPage"
                     disabled="@(!State.CanGoPrevious)"
-                    aria-label="Go to first page">
-                First
+                    aria-label="@GoToFirstPageAriaLabel">
+                @FirstText
             </button>
 
             <button type="button"
                     @onclick="Context.GoToPreviousPage"
                     disabled="@(!State.CanGoPrevious)"
-                    aria-label="Go to previous page">
-                Previous
+                    aria-label="@GoToPreviousPageAriaLabel">
+                @PreviousText
             </button>
 
             @* Page info *@
@@ -39,25 +39,25 @@ else
             <button type="button"
                     @onclick="Context.GoToNextPage"
                     disabled="@(!State.CanGoNext)"
-                    aria-label="Go to next page">
-                Next
+                    aria-label="@GoToNextPageAriaLabel">
+                @NextText
             </button>
 
             <button type="button"
                     @onclick="Context.GoToLastPage"
                     disabled="@(!State.CanGoNext)"
-                    aria-label="Go to last page">
-                Last
+                    aria-label="@GoToLastPageAriaLabel">
+                @LastText
             </button>
 
             @* Page size selector *@
             @if (ShowPageSizeSelector)
             {
                 <label>
-                    Items per page:
+                    @ItemsPerPageText
                     <select @onchange="HandlePageSizeChangeEvent"
                             value="@State.PageSize"
-                            aria-label="SelectPrimitive page size">
+                            aria-label="@PageSizeAriaLabel">
                         @foreach (var size in PageSizeOptions)
                         {
                             <option value="@size">@size</option>

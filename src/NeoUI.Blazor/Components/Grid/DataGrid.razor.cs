@@ -148,6 +148,9 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     [Inject]
     private IServiceProvider ServiceProvider { get; set; } = default!;
 
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
     /// <summary>
     /// Gets or sets the host component that contains grid action methods.
     /// Set this to 'this' to enable auto-discovery of methods marked with [DataGridAction].
@@ -316,8 +319,16 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
     public string? InlineStyle { get; set; }
 
     /// <summary>
-    /// Gets or sets the localization key prefix for grid text resources.
+    /// Gets or sets the localization key prefix passed to AG Grid's own localization API.
     /// </summary>
+    /// <remarks>
+    /// This parameter is wired to AG Grid's built-in <c>localeText</c> mechanism and is
+    /// distinct from the NeoUI <see cref="ILocalizer"/> service which handles NeoUI component
+    /// chrome strings (loading overlays, empty states, etc.). Both systems can coexist:
+    /// use <see cref="LocalizationKeyPrefix"/> to customise AG Grid's internal cell/header
+    /// strings, and configure <see cref="ILocalizer"/> (via <c>AddNeoUIComponents()</c>) for
+    /// NeoUI-level strings.
+    /// </remarks>
     [Parameter]
     public string? LocalizationKeyPrefix { get; set; }
 
