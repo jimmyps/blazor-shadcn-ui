@@ -30,7 +30,7 @@
                     <button type="button"
                             @onclick="@(() => ScrollTo(index))"
                             class="@GetIndicatorButtonClass(i)"
-                            aria-label="@($"Go to slide {i + 1}")">
+                            aria-label="@Localizer["Carousel.GoToSlide", i + 1]">
                     </button>
                 }
             </div>

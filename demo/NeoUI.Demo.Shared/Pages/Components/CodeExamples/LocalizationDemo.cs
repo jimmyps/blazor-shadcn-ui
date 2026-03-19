@@ -4,6 +4,71 @@ partial class LocalizationDemo
 {
     private static class LocalizationDemoCode
     {
+        public const string LivePreview =
+            """
+            @* Build a DefaultLocalizer for the selected language, then pass strings
+               as explicit parameters — they override ILocalizer on a per-instance basis. *@
+
+            <ToggleGroup Type="ToggleGroupType.Single" Value="@_lang" ValueChanged="OnLangChanged">
+                <ToggleGroupItem Value="en">🇺🇸 English</ToggleGroupItem>
+                <ToggleGroupItem Value="de">🇩🇪 Deutsch</ToggleGroupItem>
+                <ToggleGroupItem Value="fr">🇫🇷 Français</ToggleGroupItem>
+                <ToggleGroupItem Value="es">🇪🇸 Español</ToggleGroupItem>
+                <ToggleGroupItem Value="ja">🇯🇵 日本語</ToggleGroupItem>
+            </ToggleGroup>
+
+            <Combobox TItem="string" Items="@items" ValueSelector="@(s => s)" DisplaySelector="@(s => s)"
+                      Placeholder="@_loc["Combobox.Placeholder"]"
+                      SearchPlaceholder="@_loc["Combobox.SearchPlaceholder"]"
+                      EmptyMessage="@_loc["Combobox.EmptyMessage"]" />
+
+            <MultiSelect TItem="string" Items="@items" ValueSelector="@(s => s)" DisplaySelector="@(s => s)"
+                         @bind-Values="_selected"
+                         Placeholder="@_loc["MultiSelect.Placeholder"]"
+                         SearchPlaceholder="@_loc["MultiSelect.SearchPlaceholder"]"
+                         EmptyMessage="@_loc["MultiSelect.EmptyMessage"]"
+                         SelectAllLabel="@_loc["MultiSelect.SelectAll"]"
+                         ClearLabel="@_loc["MultiSelect.Clear"]"
+                         CloseLabel="@_loc["MultiSelect.Close"]" />
+
+            <Pagination>
+                <PaginationContent>
+                    <PaginationItem><PaginationPrevious Href="#" Text="@_loc["Pagination.Previous"]" /></PaginationItem>
+                    <PaginationItem><PaginationLink Href="#" IsActive="true">1</PaginationLink></PaginationItem>
+                    <PaginationItem><PaginationNext Href="#" Text="@_loc["Pagination.Next"]" /></PaginationItem>
+                </PaginationContent>
+            </Pagination>
+
+            @* Culture-aware components (Calendar, DatePicker, DateRangePicker, NumericInput)
+               use CultureInfo.CurrentCulture automatically — no ILocalizer keys needed. *@
+
+            @code {
+                private static readonly Dictionary<string, Dictionary<string, string>> _translations = new()
+                {
+                    ["en"] = new() { ["Combobox.Placeholder"] = "Select an option...", ... },
+                    ["de"] = new() { ["Combobox.Placeholder"] = "Option auswählen...",  ... },
+                    // ... other languages
+                };
+
+                private string _lang = "en";
+                private ILocalizer _loc = BuildLocalizer("en");
+
+                private static ILocalizer BuildLocalizer(string lang)
+                {
+                    var loc = new DefaultLocalizer();
+                    foreach (var (key, val) in _translations[lang])
+                        loc.Set(key, val);
+                    return loc;
+                }
+
+                private void OnLangChanged(string? lang)
+                {
+                    _lang = lang ?? "en";
+                    _loc = BuildLocalizer(_lang);
+                }
+            }
+            """;
+
         public const string DefaultBehavior =
             """
             @* No explicit string params — all strings come from ILocalizer *@
@@ -45,9 +110,30 @@ partial class LocalizationDemo
             </Pagination>
             """;
 
+        public const string ScopedVsSingleton =
+            """
+            // Default: Scoped — one instance per circuit (Blazor Server) or session (WebAssembly).
+            // Required for Option B so each user's CultureInfo is resolved independently.
+            builder.Services.AddNeoUIComponents();
+            builder.Services.AddScoped<ILocalizer, AppLocalizer>(); // overrides the default Scoped registration
+
+            // Singleton — one shared instance for the entire app lifetime.
+            // Safe when all users share the same language (Option A or a fixed custom localizer).
+            // Must be registered AFTER AddNeoUIComponents() to override the default Scoped registration.
+            builder.Services.AddNeoUIComponents();
+            builder.Services.AddSingleton<ILocalizer>(_ =>
+            {
+                var loc = new DefaultLocalizer();
+                loc.Set("Combobox.Placeholder", "Wählen Sie eine Option...");
+                loc.Set("Pagination.Previous",  "Zurück");
+                loc.Set("Pagination.Next",      "Weiter");
+                return loc;
+            });
+            """;
+
         public const string PatternA =
             """
-            // Program.cs — startup-time key overrides (Pattern A)
+            // Program.cs — startup-time key overrides (Option A)
             builder.Services.AddNeoUIComponents(localizer =>
             {
                 localizer.Set("Combobox.Placeholder",      "Wählen Sie eine Option...");
@@ -61,7 +147,7 @@ partial class LocalizationDemo
 
         public const string PatternB =
             """
-            // AppLocalizer.cs — full IStringLocalizer<T> integration (Pattern B)
+            // AppLocalizer.cs — full IStringLocalizer<T> integration (Option B)
             public class AppLocalizer(IStringLocalizer<SharedResources> loc) : DefaultLocalizer
             {
                 public override string this[string key] =>

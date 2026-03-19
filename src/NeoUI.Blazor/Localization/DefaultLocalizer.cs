@@ -27,15 +27,24 @@ public class DefaultLocalizer : ILocalizer
         // ── Calendar ─────────────────────────────────────────────────────────
         ["Calendar.GoToPreviousMonth"] = "Go to previous month",
         ["Calendar.GoToNextMonth"] = "Go to next month",
+        ["Calendar.AriaLabel"] = "Calendar",
+        ["Calendar.SelectMonth"] = "Select month",
+        ["Calendar.SelectYear"] = "Select year",
 
         // ── Carousel ─────────────────────────────────────────────────────────
         ["Carousel.NextSlide"] = "Next slide",
         ["Carousel.PreviousSlide"] = "Previous slide",
+        ["Carousel.GoToSlide"] = "Go to slide {0}",
 
         // ── Combobox ─────────────────────────────────────────────────────────
         ["Combobox.Placeholder"] = "Select an option...",
         ["Combobox.SearchPlaceholder"] = "Search...",
         ["Combobox.EmptyMessage"] = "No results found.",
+        ["Combobox.Selected"] = "Selected",
+
+        // ── Command ──────────────────────────────────────────────────────────
+        ["Command.ListAriaLabel"] = "Command list",
+        ["Command.MenuAriaLabel"] = "Command menu",
 
         // ── DataGrid ─────────────────────────────────────────────────────────
         ["DataGrid.Loading"] = "Loading...",
@@ -89,6 +98,35 @@ public class DefaultLocalizer : ILocalizer
         // ── Dialog / AlertDialog / Sheet / Drawer ────────────────────────────
         ["Dialog.Close"] = "Close",
 
+        // ── FileUpload ───────────────────────────────────────────────────────
+        ["FileUpload.Accepted"] = "Accepted: {0}",
+        ["FileUpload.MaxSize"] = "Max size: {0}",
+        ["FileUpload.MaxFiles"] = "Max files: {0}",
+        ["FileUpload.FilesCount"] = "Files ({0})",
+        ["FileUpload.RemoveFile"] = "Remove {0}",
+
+        // ── Filter ───────────────────────────────────────────────────────────
+        ["Filter.RemoveFilter"] = "Remove filter",
+        ["Filter.Operator.Equals"] = "is",
+        ["Filter.Operator.NotEquals"] = "is not",
+        ["Filter.Operator.Contains"] = "contains",
+        ["Filter.Operator.NotContains"] = "does not contain",
+        ["Filter.Operator.StartsWith"] = "starts with",
+        ["Filter.Operator.EndsWith"] = "ends with",
+        ["Filter.Operator.IsEmpty"] = "is empty",
+        ["Filter.Operator.IsNotEmpty"] = "is not empty",
+        ["Filter.Operator.GreaterThan"] = "is greater than",
+        ["Filter.Operator.LessThan"] = "is less than",
+        ["Filter.Operator.GreaterThanOrEqual"] = "is ≥",
+        ["Filter.Operator.LessThanOrEqual"] = "is ≤",
+        ["Filter.Operator.Between"] = "is between",
+        ["Filter.Operator.NotBetween"] = "is not between",
+        ["Filter.Operator.IsAnyOf"] = "is any of",
+        ["Filter.Operator.IsNoneOf"] = "is none of",
+        ["Filter.Operator.IsAllOf"] = "is all of",
+        ["Filter.Operator.IsTrue"] = "is true",
+        ["Filter.Operator.IsFalse"] = "is false",
+
         // ── MultiSelect ──────────────────────────────────────────────────────
         ["MultiSelect.Placeholder"] = "Select items...",
         ["MultiSelect.SearchPlaceholder"] = "Search...",
@@ -96,6 +134,7 @@ public class DefaultLocalizer : ILocalizer
         ["MultiSelect.SelectAll"] = "Select All",
         ["MultiSelect.Clear"] = "Clear",
         ["MultiSelect.Close"] = "Close",
+        ["MultiSelect.ClearAllAriaLabel"] = "Clear all",
 
         // ── NumericInput ─────────────────────────────────────────────────────
         ["NumericInput.IncreaseValue"] = "Increase value",
@@ -108,6 +147,33 @@ public class DefaultLocalizer : ILocalizer
         ["Pagination.ShowingFormat"] = "Showing {0}–{1} of {2}",
         ["Pagination.PageFormat"] = "Page {0} of {1}",
         ["Pagination.NoItems"] = "No items",
+        ["Pagination.GoToFirstPage"] = "Go to first page",
+        ["Pagination.GoToLastPage"] = "Go to last page",
+
+        // ── RichTextEditor ───────────────────────────────────────────────────
+        ["RichTextEditor.Normal"] = "Normal",
+        ["RichTextEditor.Heading1"] = "Heading 1",
+        ["RichTextEditor.Heading2"] = "Heading 2",
+        ["RichTextEditor.Heading3"] = "Heading 3",
+        ["RichTextEditor.BoldTooltip"] = "Bold (Ctrl+B)",
+        ["RichTextEditor.ItalicTooltip"] = "Italic (Ctrl+I)",
+        ["RichTextEditor.UnderlineTooltip"] = "Underline (Ctrl+U)",
+        ["RichTextEditor.StrikethroughTooltip"] = "Strikethrough",
+        ["RichTextEditor.BulletListTooltip"] = "Bullet List",
+        ["RichTextEditor.NumberedListTooltip"] = "Numbered List",
+        ["RichTextEditor.InsertLinkTooltip"] = "Insert Link",
+        ["RichTextEditor.BlockquoteTooltip"] = "Blockquote",
+        ["RichTextEditor.CodeBlockTooltip"] = "Code Block",
+        ["RichTextEditor.EditLinkTitle"] = "Edit Link",
+        ["RichTextEditor.InsertLinkTitle"] = "Insert Link",
+        ["RichTextEditor.UpdateLinkDescription"] = "Update the URL or remove the link.",
+        ["RichTextEditor.InsertLinkDescription"] = "Enter the URL for the selected text.",
+        ["RichTextEditor.UrlLabel"] = "URL",
+        ["RichTextEditor.UrlPlaceholder"] = "https://example.com",
+        ["RichTextEditor.RemoveLink"] = "Remove Link",
+        ["RichTextEditor.Cancel"] = "Cancel",
+        ["RichTextEditor.Update"] = "Update",
+        ["RichTextEditor.Insert"] = "Insert",
 
         // ── Rating ───────────────────────────────────────────────────────────
         ["Rating.Rating"] = "Rating",
@@ -117,6 +183,16 @@ public class DefaultLocalizer : ILocalizer
 
         // ── Sidebar ──────────────────────────────────────────────────────────
         ["Sidebar.ToggleSidebar"] = "Toggle Sidebar",
+
+        // ── ThemeSwitcher ────────────────────────────────────────────────────
+        ["ThemeSwitcher.ChangeTheme"] = "Change theme",
+        ["ThemeSwitcher.Settings"] = "Theme Settings",
+        ["ThemeSwitcher.BaseColor"] = "Base Color",
+        ["ThemeSwitcher.ThemeColor"] = "Theme Color",
+
+        // ── Timeline ─────────────────────────────────────────────────────────
+        ["Timeline.AriaLabel"] = "Timeline",
+        ["Timeline.NoItems"] = "No timeline items.",
 
         // ── TagInput ─────────────────────────────────────────────────────────
         ["TagInput.Placeholder"] = "Add tag…",

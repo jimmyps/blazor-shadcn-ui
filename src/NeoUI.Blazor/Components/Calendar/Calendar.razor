@@ -3,7 +3,7 @@
 @inject ILocalizer Localizer
 
 @* Calendar - accessible month/day grid for date selection *@
-<div @ref="_calendarRef" @attributes="GetAttributes()" role="application" aria-label="Calendar" tabindex="0" 
+<div @ref="_calendarRef" @attributes="GetAttributes()" role="application" aria-label="@Localizer["Calendar.AriaLabel"]" tabindex="0" 
      @onkeydown="HandleKeyDown" @onkeydown:preventDefault="@_shouldPreventDefault"
      @onfocus="OnFocus" @onblur="OnBlur" @onfocusin="OnFocusIn">
     @* Header with navigation *@
@@ -23,14 +23,14 @@
                 @if (CaptionLayout == CalendarCaptionLayout.Dropdown)
                 {
                     <div class="flex items-center gap-1">
-                        <select @bind="SelectedMonth" class="@GetDropdownClass()" aria-label="Select month"
+                        <select @bind="SelectedMonth" class="@GetDropdownClass()" aria-label="@Localizer["Calendar.SelectMonth"]"
                                 @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
                             @foreach (var month in GetMonths())
                             {
                                 <option value="@month.Value">@month.Name</option>
                             }
                         </select>
-                        <select @bind="SelectedYear" class="@GetDropdownClass()" aria-label="Select year"
+                        <select @bind="SelectedYear" class="@GetDropdownClass()" aria-label="@Localizer["Calendar.SelectYear"]"
                                 @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
                             @foreach (var year in GetYears())
                             {

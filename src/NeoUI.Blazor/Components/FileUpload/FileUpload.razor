@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Forms
+@inject ILocalizer Localizer
 
 <div class="@WrapperClass" @ref="_dropZoneRef">
     <div class="@DropZoneCssClass"
@@ -38,19 +39,19 @@
                     @if (!string.IsNullOrEmpty(Accept))
                     {
                         <p class="text-xs text-muted-foreground">
-                            Accepted: @Accept
+                            @Localizer["FileUpload.Accepted", Accept]
                         </p>
                     }
                     @if (MaxFileSize > 0)
                     {
                         <p class="text-xs text-muted-foreground">
-                            Max size: @FormatFileSize(MaxFileSize)
+                            @Localizer["FileUpload.MaxSize", FormatFileSize(MaxFileSize)]
                         </p>
                     }
                     @if (MaxFiles.HasValue)
                     {
                         <p class="text-xs text-muted-foreground">
-                            Max files: @MaxFiles
+                            @Localizer["FileUpload.MaxFiles", MaxFiles!]
                         </p>
                     }
                 </div>
@@ -70,7 +71,7 @@
         <div class="mt-4 space-y-2">
             <div class="flex items-center justify-between">
                 <p class="text-sm font-medium">
-                    Files (@Files.Count@(MaxFiles.HasValue ? $"/{MaxFiles}" : ""))
+                    @Localizer["FileUpload.FilesCount", $"{Files.Count}{(MaxFiles.HasValue ? $"/{MaxFiles}" : "")}"]
                 </p>
                 <p class="text-xs text-muted-foreground">
                     Total: @FormatFileSize(Files.Sum(f => f.Size))
@@ -145,7 +146,7 @@
                                 @onclick="() => RemoveFile(index)"
                                 disabled="@Disabled"
                                 class="flex-shrink-0 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                aria-label="Remove @file.Name">
+                                aria-label="@Localizer["FileUpload.RemoveFile", file.Name]">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>

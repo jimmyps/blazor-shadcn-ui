@@ -2,6 +2,69 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-19 — DI-based ILocalizer localization system
+
+> **Release: `v3.6.4`**  
+> **Library change.** Affects `NeoUI.Blazor`. All changes are additive — no breaking changes to existing APIs.
+
+---
+
+### ✨ New Feature — `ILocalizer` / `DefaultLocalizer` localization abstraction
+
+All UI chrome strings rendered by NeoUI components — placeholders, button labels, ARIA attributes, empty states, pagination text, and screen-reader text — are now resolved through a single DI-registered `ILocalizer` abstraction. The library ships English defaults for every key out of the box.
+
+**New types:**
+
+| Type | Description |
+|---|---|
+| `ILocalizer` | Interface with two indexer overloads: `this[string key]` and `this[string key, params object[] arguments]`. |
+| `DefaultLocalizer` | Concrete implementation with all built-in English defaults. Supports runtime override via `Set(key, value)`. |
+
+**`AddNeoUIComponents()` overload:**
+
+```csharp
+builder.Services.AddNeoUIComponents(localizer =>
+{
+    localizer.Set("Combobox.Placeholder", "Wählen Sie eine Option...");
+    localizer.Set("DataTable.Loading", "Laden...");
+});
+```
+
+`ILocalizer` is registered as **Scoped** so each Blazor Server circuit and WebAssembly session gets an independent instance. A singleton variant is also supported for static startup-key overrides.
+
+**Components wired up:**
+
+`Alert`, `Breadcrumb`, `Calendar`, `Carousel`, `Combobox`, `DataGrid`, `DataTable`, `DataView`, `DatePicker`, `DateRangePicker`, `Dialog`, `MultiSelect`, `NumericInput`, `Pagination` (`PaginationPrevious`, `PaginationNext`, `PaginationInfo`, `PaginationPageDisplay`, `PaginationPageSizeSelector`), `Rating`, `ResponsiveNav`, `Sheet`, `Sidebar`, `TagInput`
+
+All string parameters on these components remain optional — existing code passing explicit strings continues to work unchanged, with the explicit value taking priority over the localizer.
+
+**Integration patterns:**
+
+| Pattern | How |
+|---|---|
+| **Option A — startup-time override** | Pass an `Action<DefaultLocalizer>` to `AddNeoUIComponents()`. |
+| **Option B — `IStringLocalizer<T>` / `.resx`** | Subclass `DefaultLocalizer`, override the indexers to delegate to `IStringLocalizer<T>`, register with `AddScoped<ILocalizer, AppLocalizer>()`. |
+
+---
+
+### 📖 Demo — `/components/localization` page
+
+New demo page covering the full localization system:
+
+| Section | What it shows |
+|---|---|
+| **Overview** | Library-chrome vs culture-aware formatting split, with live chip examples. |
+| **Live Language Preview** | `ToggleGroup` language switcher that rebuilds a `DefaultLocalizer` per selection; updates `Combobox`, `MultiSelect`, `TagInput`, `DatePicker`, and `Pagination` in real time across English, German, French, Spanish, and Japanese. |
+| **Default Behavior** | Components rendered without explicit string parameters, falling back to injected `ILocalizer`. |
+| **Per-Instance Override** | Explicit string parameters passed directly to components to override the localizer for a single instance. |
+| **Option A — Startup-Time Override** | Code snippet showing `AddNeoUIComponents(localizer => { ... })`. |
+| **Option B — Full IStringLocalizer&lt;T&gt; Integration** | Code snippet showing `DefaultLocalizer` subclass wired to `.resx` resource files. |
+| **DI Lifetime: Scoped vs Singleton** | Guidance on when to use each lifetime with registration examples. |
+| **Live Key Lookup** | Interactive key resolver backed by the injected `ILocalizer`. |
+| **Key Reference** | Full table of all 70+ built-in localization keys and their English default values. |
+
+---
+
 ## 2026-3-17 — DataTable column pinning and hierarchical tree rows
 
 > **Release: `v3.6.2`**  

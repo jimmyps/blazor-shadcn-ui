@@ -22,6 +22,9 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Timeline : ComponentBase
 {
+    [Inject]
+    private ILocalizer Localizer { get; set; } = default!;
+
     private int _itemCounter;
 
     /// <summary>Gets or sets the size variant controlling gap spacing between items.</summary>

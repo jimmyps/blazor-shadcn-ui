@@ -9,6 +9,140 @@
         Title="Localization"
         Description="A DI-registered service that resolves all component chrome strings — placeholders, ARIA labels, button labels, empty states — without modifying library source." />
 
+    <!-- ── Overview ─────────────────────────────────────────────────────── -->
+    <DemoSection
+        Title="Overview"
+        Description="Every string NeoUI components render as UI chrome — placeholders, button labels, ARIA attributes, empty states, pagination text — is resolved through a single DI-registered <code>ILocalizer</code> abstraction. The library ships with English defaults for all keys out of the box.">
+        <div class="space-y-4">
+            <Alert>
+                <AlertDescription>
+                    <code>ILocalizer</code> has <strong>no dependency on <code>IStringLocalizer</code></strong> or any specific
+                    localization framework. You choose your own strategy: a few <code>Set()</code> calls at startup, a subclass
+                    backed by <code>.resx</code> resource files, JSON, a database — the interface is yours to implement.
+                </AlertDescription>
+            </Alert>
+            <div class="grid gap-4 md:grid-cols-2">
+                <Card Class="bg-muted/50">
+                    <CardHeader>
+                        <CardTitle Class="text-sm font-medium">
+                            Library Chrome
+                            <span class="text-xs font-normal text-muted-foreground ml-1.5">via <code>ILocalizer</code></span>
+                        </CardTitle>
+                        <CardDescription>
+                            Strings owned by the library: placeholders, button labels, empty states,
+                            pagination text, ARIA labels, and screen-reader text.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (var ex in new[] { "Search...", "No results found", "Rows per page", "Next", "Add tag…", "Close" })
+                            {
+                                <span class="font-mono text-xs bg-muted rounded px-1.5 py-0.5">@ex</span>
+                            }
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card Class="bg-muted/50">
+                    <CardHeader>
+                        <CardTitle Class="text-sm font-medium">
+                            Culture-Aware Formatting
+                            <span class="text-xs font-normal text-muted-foreground ml-1.5">automatic</span>
+                        </CardTitle>
+                        <CardDescription>
+                            Calendar month/day names, date display formats, and numeric separators follow
+                            <code>CultureInfo.CurrentCulture</code> automatically — no <code>ILocalizer</code> keys required.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (var ex in new[] { "\"March\" → \"März\"", "1,234.56 → 1.234,56" })
+                            {
+                                <span class="font-mono text-xs bg-muted rounded px-1.5 py-0.5">@ex</span>
+                            }
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+            <Alert Variant="AlertVariant.Info">
+                <AlertDescription>
+                    <strong>Application data</strong> — column headers, option labels, and content text — is your
+                    responsibility. <code>ILocalizer</code> covers only the library's own UI chrome.
+                </AlertDescription>
+            </Alert>
+        </div>
+    </DemoSection>
+
+    <!-- ── Live Language Preview ─────────────────────────────────────────── -->
+    <DemoSection
+        Title="Live Language Preview"
+        Description="Select a language below to see component strings update in real time. Each option builds a <code>DefaultLocalizer</code> pre-populated with its translations, then passes strings as explicit parameters — the same technique you use in production.">
+        <DemoBlock Code="@LocalizationDemoCode.LivePreview">
+            <div class="space-y-5">
+                <div class="flex flex-wrap items-center gap-3">
+                    <span class="text-sm font-medium text-muted-foreground">Language:</span>
+                    <ToggleGroup Type="ToggleGroupType.Single" Value="@_previewLang" ValueChanged="OnPreviewLangChanged">
+                        @foreach (var lang in _languages)
+                        {
+                            <ToggleGroupItem Value="@lang.Code" Class="gap-1.5 text-xs px-2.5">
+                                <span>@lang.Flag</span>
+                                <span>@lang.Name</span>
+                            </ToggleGroupItem>
+                        }
+                    </ToggleGroup>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div class="space-y-1.5">
+                        <p class="text-xs font-medium text-muted-foreground">Combobox</p>
+                        <Combobox TItem="string"
+                                  Items="@_frameworks"
+                                  ValueSelector="@(s => s)"
+                                  DisplaySelector="@(s => s)"
+                                  Placeholder="@_previewLocalizer["Combobox.Placeholder"]"
+                                  SearchPlaceholder="@_previewLocalizer["Combobox.SearchPlaceholder"]"
+                                  EmptyMessage="@_previewLocalizer["Combobox.EmptyMessage"]"
+                                  PopoverWidth="w-[260px]" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <p class="text-xs font-medium text-muted-foreground">MultiSelect</p>
+                        <MultiSelect TItem="string"
+                                     Items="@_frameworks"
+                                     ValueSelector="@(s => s)"
+                                     DisplaySelector="@(s => s)"
+                                     @bind-Values="_liveMultiValues"
+                                     Placeholder="@_previewLocalizer["MultiSelect.Placeholder"]"
+                                     SearchPlaceholder="@_previewLocalizer["MultiSelect.SearchPlaceholder"]"
+                                     EmptyMessage="@_previewLocalizer["MultiSelect.EmptyMessage"]"
+                                     SelectAllLabel="@_previewLocalizer["MultiSelect.SelectAll"]"
+                                     ClearLabel="@_previewLocalizer["MultiSelect.Clear"]"
+                                     CloseLabel="@_previewLocalizer["MultiSelect.Close"]"
+                                     PopoverWidth="w-[260px]" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <p class="text-xs font-medium text-muted-foreground">TagInput</p>
+                        <TagInput @bind-Tags="_liveTags"
+                                  Placeholder="@_previewLocalizer["TagInput.Placeholder"]" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <p class="text-xs font-medium text-muted-foreground">DatePicker</p>
+                        <DatePicker Placeholder="@_previewLocalizer["DatePicker.Placeholder"]" />
+                    </div>
+                </div>
+                <div class="space-y-1.5">
+                    <p class="text-xs font-medium text-muted-foreground">Pagination</p>
+                    <Pagination>
+                        <PaginationContent>
+                            <PaginationItem><PaginationPrevious Href="#" Text="@_previewLocalizer["Pagination.Previous"]" /></PaginationItem>
+                            <PaginationItem><PaginationLink Href="#" IsActive="true">1</PaginationLink></PaginationItem>
+                            <PaginationItem><PaginationLink Href="#">2</PaginationLink></PaginationItem>
+                            <PaginationItem><PaginationLink Href="#">3</PaginationLink></PaginationItem>
+                            <PaginationItem><PaginationNext Href="#" Text="@_previewLocalizer["Pagination.Next"]" /></PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <!-- ── Default strings ────────────────────────────────────────────────── -->
     <DemoSection
         Title="Default Behavior"
@@ -74,20 +208,43 @@
         </DemoBlock>
     </DemoSection>
 
-    <!-- ── Pattern A — startup Set() override ────────────────────────────── -->
+    <!-- ── Option A — startup Set() override ────────────────────────────── -->
     <DemoSection
-        Title="Pattern A — Startup-Time Override"
+        Title="Option A — Startup-Time Override"
         Description="Configure the <code>DefaultLocalizer</code> at startup using the <code>AddNeoUIComponents</code> overload. All components using that key will render the customized string globally, with no component-level changes required.">
-        <DemoBlock Code="@LocalizationDemoCode.PatternA">
-        </DemoBlock>
+        <div class="rounded-lg border overflow-hidden bg-muted/50">
+            <pre class="p-4 text-xs overflow-x-auto font-mono leading-relaxed">@LocalizationDemoCode.PatternA</pre>
+        </div>
     </DemoSection>
 
-    <!-- ── Pattern B — IStringLocalizer<T> integration ───────────────────── -->
+    <!-- ── Option B — IStringLocalizer<T> integration ───────────────────── -->
     <DemoSection
-        Title="Pattern B — Full IStringLocalizer&lt;T&gt; Integration"
+        Title="@("Option B — Full IStringLocalizer<T> Integration")"
         Description="Subclass <code>DefaultLocalizer</code> to integrate with ASP.NET Core's <code>IStringLocalizer&lt;T&gt;</code> and <code>.resx</code> resource files. Only keys found in the resource file are substituted; the rest fall back to English defaults automatically.">
-        <DemoBlock Code="@LocalizationDemoCode.PatternB">
-        </DemoBlock>
+        <div class="rounded-lg border overflow-hidden bg-muted/50">
+            <pre class="p-4 text-xs overflow-x-auto font-mono leading-relaxed">@LocalizationDemoCode.PatternB</pre>
+        </div>
+    </DemoSection>
+
+    <!-- ── Scoped vs Singleton ───────────────────────────────────────────── -->
+    <DemoSection
+        Title="DI Lifetime: Scoped vs Singleton"
+        Description="<code>ILocalizer</code> is registered as <strong>Scoped</strong> by <code>AddNeoUIComponents()</code> — each Blazor Server circuit and each WebAssembly session gets its own independent instance.">
+        <div class="space-y-4">
+            <div class="grid gap-4 md:grid-cols-2">
+                <div class="p-4 border rounded-lg space-y-2">
+                    <p class="text-sm font-medium">Scoped <span class="text-xs font-normal text-muted-foreground ml-1">(default)</span></p>
+                    <p class="text-sm text-muted-foreground">One instance per Blazor Server circuit or WebAssembly session. Required for Option B so each user's <code>CultureInfo</code> is resolved independently.</p>
+                </div>
+                <div class="p-4 border rounded-lg space-y-2">
+                    <p class="text-sm font-medium">Singleton</p>
+                    <p class="text-sm text-muted-foreground">One shared instance for the entire application lifetime. Safe for Option A (static startup keys) and avoids per-circuit allocation. Incompatible with per-user culture switching.</p>
+                </div>
+            </div>
+            <div class="rounded-lg border overflow-hidden bg-muted/50">
+                <pre class="p-4 text-xs overflow-x-auto font-mono leading-relaxed">@LocalizationDemoCode.ScopedVsSingleton</pre>
+            </div>
+        </div>
     </DemoSection>
 
     <!-- ── Live key resolver ─────────────────────────────────────────────── -->
@@ -145,6 +302,124 @@
 </div>
 
 @code {
+    // ── Live Language Preview ────────────────────────────────────────────────
+    private record LangOption(string Code, string Flag, string Name);
+
+    private static readonly LangOption[] _languages =
+    [
+        new("en", "🇺🇸", "English"),
+        new("de", "🇩🇪", "Deutsch"),
+        new("fr", "🇫🇷", "Français"),
+        new("es", "🇪🇸", "Español"),
+        new("ja", "🇯🇵", "日本語"),
+    ];
+
+    private static readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> _langTranslations =
+        new Dictionary<string, IReadOnlyDictionary<string, string>>
+        {
+            ["en"] = new Dictionary<string, string>
+            {
+                ["Combobox.Placeholder"]          = "Select an option...",
+                ["Combobox.SearchPlaceholder"]    = "Search...",
+                ["Combobox.EmptyMessage"]         = "No results found.",
+                ["MultiSelect.Placeholder"]       = "Select items...",
+                ["MultiSelect.SearchPlaceholder"] = "Search...",
+                ["MultiSelect.EmptyMessage"]      = "No results found.",
+                ["MultiSelect.SelectAll"]         = "Select All",
+                ["MultiSelect.Clear"]             = "Clear",
+                ["MultiSelect.Close"]             = "Close",
+                ["TagInput.Placeholder"]          = "Add tag…",
+                ["Pagination.Previous"]           = "Previous",
+                ["Pagination.Next"]               = "Next",
+                ["DatePicker.Placeholder"]        = "Pick a date",
+            },
+            ["de"] = new Dictionary<string, string>
+            {
+                ["Combobox.Placeholder"]          = "Option auswählen...",
+                ["Combobox.SearchPlaceholder"]    = "Suchen...",
+                ["Combobox.EmptyMessage"]         = "Keine Ergebnisse gefunden.",
+                ["MultiSelect.Placeholder"]       = "Elemente auswählen...",
+                ["MultiSelect.SearchPlaceholder"] = "Suchen...",
+                ["MultiSelect.EmptyMessage"]      = "Keine Ergebnisse gefunden.",
+                ["MultiSelect.SelectAll"]         = "Alle auswählen",
+                ["MultiSelect.Clear"]             = "Leeren",
+                ["MultiSelect.Close"]             = "Schließen",
+                ["TagInput.Placeholder"]          = "Tag hinzufügen…",
+                ["Pagination.Previous"]           = "Zurück",
+                ["Pagination.Next"]               = "Weiter",
+                ["DatePicker.Placeholder"]        = "Datum auswählen",
+            },
+            ["fr"] = new Dictionary<string, string>
+            {
+                ["Combobox.Placeholder"]          = "Sélectionner...",
+                ["Combobox.SearchPlaceholder"]    = "Rechercher...",
+                ["Combobox.EmptyMessage"]         = "Aucun résultat.",
+                ["MultiSelect.Placeholder"]       = "Sélectionner des éléments...",
+                ["MultiSelect.SearchPlaceholder"] = "Rechercher...",
+                ["MultiSelect.EmptyMessage"]      = "Aucun résultat.",
+                ["MultiSelect.SelectAll"]         = "Tout sélectionner",
+                ["MultiSelect.Clear"]             = "Effacer",
+                ["MultiSelect.Close"]             = "Fermer",
+                ["TagInput.Placeholder"]          = "Ajouter un tag…",
+                ["Pagination.Previous"]           = "Précédent",
+                ["Pagination.Next"]               = "Suivant",
+                ["DatePicker.Placeholder"]        = "Choisir une date",
+            },
+            ["es"] = new Dictionary<string, string>
+            {
+                ["Combobox.Placeholder"]          = "Seleccionar opción...",
+                ["Combobox.SearchPlaceholder"]    = "Buscar...",
+                ["Combobox.EmptyMessage"]         = "Sin resultados.",
+                ["MultiSelect.Placeholder"]       = "Seleccionar elementos...",
+                ["MultiSelect.SearchPlaceholder"] = "Buscar...",
+                ["MultiSelect.EmptyMessage"]      = "Sin resultados.",
+                ["MultiSelect.SelectAll"]         = "Seleccionar todo",
+                ["MultiSelect.Clear"]             = "Limpiar",
+                ["MultiSelect.Close"]             = "Cerrar",
+                ["TagInput.Placeholder"]          = "Agregar etiqueta…",
+                ["Pagination.Previous"]           = "Anterior",
+                ["Pagination.Next"]               = "Siguiente",
+                ["DatePicker.Placeholder"]        = "Seleccionar fecha",
+            },
+            ["ja"] = new Dictionary<string, string>
+            {
+                ["Combobox.Placeholder"]          = "オプションを選択...",
+                ["Combobox.SearchPlaceholder"]    = "検索...",
+                ["Combobox.EmptyMessage"]         = "結果が見つかりません。",
+                ["MultiSelect.Placeholder"]       = "項目を選択...",
+                ["MultiSelect.SearchPlaceholder"] = "検索...",
+                ["MultiSelect.EmptyMessage"]      = "結果が見つかりません。",
+                ["MultiSelect.SelectAll"]         = "すべて選択",
+                ["MultiSelect.Clear"]             = "クリア",
+                ["MultiSelect.Close"]             = "閉じる",
+                ["TagInput.Placeholder"]          = "タグを追加…",
+                ["Pagination.Previous"]           = "前へ",
+                ["Pagination.Next"]               = "次へ",
+                ["DatePicker.Placeholder"]        = "日付を選択",
+            },
+        };
+
+    private string _previewLang = "en";
+    private ILocalizer _previewLocalizer = BuildPreviewLocalizer("en");
+    private IReadOnlyList<string>? _liveTags;
+    private IEnumerable<string>? _liveMultiValues;
+
+    private static ILocalizer BuildPreviewLocalizer(string lang)
+    {
+        var loc = new DefaultLocalizer();
+        if (_langTranslations.TryGetValue(lang, out var keys))
+            foreach (var (key, value) in keys)
+                loc.Set(key, value);
+        return loc;
+    }
+
+    private void OnPreviewLangChanged(string? lang)
+    {
+        _previewLang = lang ?? "en";
+        _previewLocalizer = BuildPreviewLocalizer(_previewLang);
+    }
+
+    // ── Shared ───────────────────────────────────────────────────────────────
     private IReadOnlyList<string>? _defaultTags;
     private string _lookupKey = "Combobox.Placeholder";
     private string? _lookupResult;
