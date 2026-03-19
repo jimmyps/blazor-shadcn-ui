@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using System.Text;
 
 namespace NeoUI.Blazor;
 
@@ -60,33 +59,8 @@ public partial class AvatarFallback : ComponentBase
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Gets the computed CSS classes for the fallback container.
-    /// </summary>
-    /// <remarks>
-    /// Applies styles for:
-    /// - Full width/height to fill the Avatar container
-    /// - Centered content (flexbox)
-    /// - Background and text colors from design system
-    /// - Font weight for initials
-    /// </remarks>
-    private string CssClass
-    {
-        get
-        {
-            var builder = new StringBuilder();
-
-            // Base fallback styles (from shadcn/ui)
-            builder.Append("flex h-full w-full items-center justify-center rounded-full ");
-            builder.Append("bg-muted text-muted-foreground font-medium ");
-
-            // Custom classes (if provided)
-            if (!string.IsNullOrWhiteSpace(Class))
-            {
-                builder.Append(Class);
-            }
-
-            return builder.ToString().Trim();
-        }
-    }
+    private string CssClass => ClassNames.cn(
+        "flex h-full w-full items-center justify-center rounded-full",
+        "bg-muted text-muted-foreground font-medium",
+        Class);
 }

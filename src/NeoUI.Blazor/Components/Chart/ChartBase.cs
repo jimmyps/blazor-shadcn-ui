@@ -338,7 +338,8 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             BackgroundColor = _tooltip.BackgroundColor,
             BorderColor = _tooltip.BorderColor,
             BorderWidth = _tooltip.BorderWidth,
-            TextStyle = textStyle
+            TextStyle = textStyle,
+            AppendToBody = _tooltip.AppendToBody
         };
     }
     

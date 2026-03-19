@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using System.Text;
 
 namespace NeoUI.Blazor;
 
@@ -60,32 +59,9 @@ public partial class AvatarImage : ComponentBase
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Gets the computed CSS classes for the image element.
-    /// </summary>
-    /// <remarks>
-    /// Applies styles for proper sizing, positioning, and rendering
-    /// within the circular avatar container.
-    /// </remarks>
-    private string CssClass
-    {
-        get
-        {
-            var builder = new StringBuilder();
-
-            // Base image styles (from shadcn/ui)
-            // Use absolute positioning to overlay the fallback
-            builder.Append("absolute inset-0 aspect-square h-full w-full object-cover ");
-
-            // Custom classes (if provided)
-            if (!string.IsNullOrWhiteSpace(Class))
-            {
-                builder.Append(Class);
-            }
-
-            return builder.ToString().Trim();
-        }
-    }
+    private string CssClass => ClassNames.cn(
+        "absolute inset-0 aspect-square h-full w-full object-cover",
+        Class);
 
     private bool isLoaded = true;
     private bool hasError = false;

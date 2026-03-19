@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using System.Text;
 
 namespace NeoUI.Blazor;
 
@@ -66,41 +65,14 @@ public partial class Avatar : ComponentBase
     [Parameter]
     public string? Class { get; set; }
 
-    /// <summary>
-    /// Gets the computed CSS classes for the avatar container.
-    /// </summary>
-    /// <remarks>
-    /// Combines:
-    /// - Base avatar styles (rounded-full, overflow-hidden, etc.)
-    /// - Size-specific classes (dimensions, font-size)
-    /// - Custom classes from the Class parameter
-    /// </remarks>
-    private string CssClass
-    {
-        get
+    private string CssClass => ClassNames.cn(
+        "relative flex shrink-0 overflow-hidden rounded-full",
+        Size switch
         {
-            var builder = new StringBuilder();
-
-            // Base avatar styles (from shadcn/ui)
-            builder.Append("relative flex shrink-0 overflow-hidden rounded-full ");
-
-            // Size-specific styles
-            builder.Append(Size switch
-            {
-                AvatarSize.Small => "h-8 w-8 text-xs ",
-                AvatarSize.Default => "h-10 w-10 text-sm ",
-                AvatarSize.Large => "h-12 w-12 text-base ",
-                AvatarSize.ExtraLarge => "h-16 w-16 text-lg ",
-                _ => "h-10 w-10 text-sm "
-            });
-
-            // Custom classes (if provided)
-            if (!string.IsNullOrWhiteSpace(Class))
-            {
-                builder.Append(Class);
-            }
-
-            return builder.ToString().Trim();
-        }
-    }
+            AvatarSize.Small => "h-8 w-8 text-xs",
+            AvatarSize.Large => "h-12 w-12 text-base",
+            AvatarSize.ExtraLarge => "h-16 w-16 text-lg",
+            _ => "h-10 w-10 text-sm"
+        },
+        Class);
 }

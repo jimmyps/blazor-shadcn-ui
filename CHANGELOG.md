@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-19 — `ChartTooltip` `AppendToBody` + ClassNames.cn standardization
+
+> **Internal / code quality + minor API addition to ChartTooltip.** No breaking changes. `NeoUI.Blazor` only.
+
+---
+
+### ✨ Feature — `ChartTooltip`: new `AppendToBody` parameter
+
+Added `AppendToBody` (`bool?`) to `<ChartTooltip>`. When `true`, the tooltip DOM element is appended to `document.body` instead of being nested inside the chart container — preventing tooltip clipping when a chart is placed inside an `overflow:hidden` ancestor. Maps directly to ECharts' `tooltip.appendToBody` option.
+
+---
+
+### 🔧 Refactor — Replace `StringBuilder` CSS class building with `ClassNames.cn`
+
+Six components migrated to the `ClassNames.cn` merge helper: `Avatar`, `AvatarImage`, `AvatarFallback`, `Checkbox`, `Label`, `Separator`. `using System.Text` removed from all six files. Stale `<remarks>` XML doc blocks removed.
+
+---
+
 ## 2026-3-18 — Add DataTable column resizing, column reordering, row context menu, and add Chart color palette for Pie and Funnel
 
 > **Release: `v3.6.3`**  

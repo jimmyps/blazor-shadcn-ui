@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace NeoUI.Blazor;
 
@@ -188,38 +187,14 @@ public partial class Checkbox : ComponentBase
     /// - Focus ring for keyboard navigation
     /// - Custom classes from the Class parameter
     /// </remarks>
-    private string CssClass
-    {
-        get
-        {
-            var builder = new StringBuilder();
-
-            // Base checkbox styles (from shadcn/ui) with transitions
-            builder.Append("peer h-4 w-4 shrink-0 rounded-sm border border-primary ");
-            builder.Append("transition-colors duration-150 ease-in-out ");
-            builder.Append("ring-offset-background focus-visible:outline-none focus-visible:ring-2 ");
-            builder.Append("focus-visible:ring-ring focus-visible:ring-offset-2 ");
-            builder.Append("disabled:cursor-not-allowed disabled:opacity-50 ");
-
-            // Checked or indeterminate state styling
-            if (Checked || Indeterminate)
-            {
-                builder.Append("bg-primary text-primary-foreground ");
-            }
-            else
-            {
-                builder.Append("bg-background ");
-            }
-
-            // Custom classes (if provided)
-            if (!string.IsNullOrWhiteSpace(Class))
-            {
-                builder.Append(Class);
-            }
-
-            return builder.ToString().Trim();
-        }
-    }
+    private string CssClass => ClassNames.cn(
+        "peer h-4 w-4 shrink-0 rounded-sm border border-primary",
+        "transition-colors duration-150 ease-in-out",
+        "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
+        "focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        (Checked || Indeterminate) ? "bg-primary text-primary-foreground" : "bg-background",
+        Class);
 
     /// <summary>
     /// Handles the checked state change and notifies EditContext for form validation.
