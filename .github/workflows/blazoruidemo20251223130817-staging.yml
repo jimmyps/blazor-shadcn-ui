@@ -32,6 +32,12 @@ jobs:
     - name: Build CSS
       run: npm run build:css
       working-directory: demo\NeoUI.Demo.Shared
+    - name: Install NeoUI.Blazor npm packages
+      run: npm install
+      working-directory: src\NeoUI.Blazor
+    - name: Build NeoUI.Blazor CSS
+      run: npm run build:css
+      working-directory: src\NeoUI.Blazor
     - name: Restore
       run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
     - name: Build
