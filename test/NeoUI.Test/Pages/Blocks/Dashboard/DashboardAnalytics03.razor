@@ -1,0 +1,126 @@
+@namespace NeoUI.Test.Pages.Blocks.Dashboard
+
+<div class="@@container w-full bg-muted/20 p-6 min-h-[480px]">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-xl font-semibold">Analytics Overview</h2>
+            <p class="text-sm text-muted-foreground">Track your key metrics at a glance</p>
+        </div>
+        <div class="flex items-center gap-2">
+            <Select @bind-Value="_dateRange" TValue="string" Class="w-44">
+                <SelectTrigger>
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                        <LucideIcon Name="calendar" Size="14" Class="shrink-0" />
+                        <SelectValue />
+                    </div>
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem Value="@("today")"    Text="Today"          TValue="string" />
+                    <SelectItem Value="@("last-7d")"  Text="Last 7 days"    TValue="string" />
+                    <SelectItem Value="@("last-30d")" Text="Last 30 days"   TValue="string" />
+                    <SelectItem Value="@("last-90d")" Text="Last 90 days"   TValue="string" />
+                    <SelectItem Value="@("last-12m")" Text="Last 12 months" TValue="string" />
+                    <SelectItem Value="@("mtd")"      Text="Month to date"  TValue="string" />
+                    <SelectItem Value="@("ytd")"      Text="Year to date"   TValue="string" />
+                </SelectContent>
+            </Select>
+            <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="gap-2">
+                <LucideIcon Name="download" Size="14" />
+                Export
+            </Button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 @@md:grid-cols-3 gap-4 mb-6">
+        <Card>
+            <CardContent Class="pt-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-muted-foreground">Revenue</span>
+                    <div class="size-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <LucideIcon Name="dollar-sign" Size="16" Class="text-primary" />
+                    </div>
+                </div>
+                <div class="text-2xl font-bold">$48,295</div>
+                <div class="flex items-center gap-1 mt-1">
+                    <Badge Variant="BadgeVariant.Default">+12.5%</Badge>
+                    <span class="text-xs text-muted-foreground">vs last month</span>
+                </div>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardContent Class="pt-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-muted-foreground">Users</span>
+                    <div class="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <LucideIcon Name="users" Size="16" Class="text-blue-500" />
+                    </div>
+                </div>
+                <div class="text-2xl font-bold">12,847</div>
+                <div class="flex items-center gap-1 mt-1">
+                    <Badge Variant="BadgeVariant.Default">+8.2%</Badge>
+                    <span class="text-xs text-muted-foreground">vs last month</span>
+                </div>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardContent Class="pt-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-muted-foreground">Conversion</span>
+                    <div class="size-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                        <LucideIcon Name="trending-up" Size="16" Class="text-orange-500" />
+                    </div>
+                </div>
+                <div class="text-2xl font-bold">3.24%</div>
+                <div class="flex items-center gap-1 mt-1">
+                    <Badge Variant="BadgeVariant.Secondary">-0.4%</Badge>
+                    <span class="text-xs text-muted-foreground">vs last month</span>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+
+    <Card>
+        <CardHeader>
+            <CardTitle Class="text-base">Revenue Over Time</CardTitle>
+            <CardDescription>Monthly revenue for the current year</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <ChartContainer Height="160">
+                <BarChart Data="_bars">
+                    <Grid Vertical="false" Stroke="var(--border)" />
+                    <XAxis DataKey="month" Color="var(--border)">
+                        <AxisLabel Color="var(--muted-foreground)" />
+                    </XAxis>
+                    <YAxis Show="false">
+                        <AxisLabel Show="false" />
+                    </YAxis>
+                    <ChartTooltip />
+                    <Legend Show="false" />
+                    <Bar DataKey="revenue" Name="Revenue" Radius="4" Color="var(--chart-1)" />
+                </BarChart>
+            </ChartContainer>
+        </CardContent>
+    </Card>
+</div>
+
+@code {
+    string _dateRange = "last-30d";
+
+    class RevenueBar { public string month { get; set; } = ""; public int revenue { get; set; } }
+
+    readonly List<RevenueBar> _bars =
+    [
+        new() { month = "Jan", revenue = 45 },
+        new() { month = "Feb", revenue = 52 },
+        new() { month = "Mar", revenue = 61 },
+        new() { month = "Apr", revenue = 58 },
+        new() { month = "May", revenue = 70 },
+        new() { month = "Jun", revenue = 65 },
+        new() { month = "Jul", revenue = 78 },
+        new() { month = "Aug", revenue = 82 },
+        new() { month = "Sep", revenue = 74 },
+        new() { month = "Oct", revenue = 88 },
+        new() { month = "Nov", revenue = 92 },
+        new() { month = "Dec", revenue = 85 },
+    ];
+}

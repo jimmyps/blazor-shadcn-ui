@@ -1,0 +1,96 @@
+@namespace NeoUI.Test.Pages.Blocks.Dashboard
+
+<div class="h-[600px] w-full overflow-hidden rounded-lg border">
+    <SidebarProvider CookieKey="sidebar:dashboard-activity-04" HeightClass="h-full">
+        <div class="flex h-full w-full">
+
+            <Sidebar>
+                <SidebarHeader>
+                    <SidebarHeaderContent>
+                        <div class="size-7 rounded-lg bg-foreground flex items-center justify-center shrink-0">
+                            <LucideIcon Name="layers" Size="14" Class="text-background" />
+                        </div>
+                        <SidebarHeaderInfo>
+                            <span class="truncate font-semibold text-sm">Acme</span>
+                        </SidebarHeaderInfo>
+                    </SidebarHeaderContent>
+                </SidebarHeader>
+
+                <SidebarContent>
+                    <SidebarMenu>
+                        @foreach (var item in _navItems)
+                        {
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Tooltip="@item.Label" IsActive="@item.Active">
+                                    <LucideIcon Name="@item.Icon" Size="16" />
+                                    <span>@item.Label</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        }
+                    </SidebarMenu>
+                </SidebarContent>
+
+                <SidebarRail />
+            </Sidebar>
+
+            <SidebarInset>
+                <header class="flex h-14 shrink-0 items-center justify-between border-b px-4">
+                    <div class="flex items-center gap-2">
+                        <SidebarTrigger />
+                        <div>
+                            <h2 class="text-lg font-semibold">Recent Activity</h2>
+                            <p class="text-sm text-muted-foreground">Your team's latest actions</p>
+                        </div>
+                    </div>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small">View all</Button>
+                </header>
+
+                <ScrollArea Class="flex-1">
+                    <div class="space-y-3 p-4">
+                        @foreach (var item in _activities)
+                        {
+                            <div class="flex items-start gap-3 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors">
+                                <div class="size-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 bg-primary/10 text-primary">
+                                    @item.Initials
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm">
+                                        <span class="font-medium">@item.Name</span>
+                                        <span class="text-muted-foreground"> @item.Event</span>
+                                    </p>
+                                    <span class="text-xs text-muted-foreground">@item.Time</span>
+                                </div>
+                                <Badge Variant="@item.BadgeVariant" Class="shrink-0 text-xs">@item.Status</Badge>
+                            </div>
+                        }
+                    </div>
+                </ScrollArea>
+            </SidebarInset>
+
+        </div>
+    </SidebarProvider>
+</div>
+
+@code {
+    record NavItem(string Icon, string Label, bool Active = false);
+    record ActivityItem(string Initials, string Name, string Event, string Time, string Status, BadgeVariant BadgeVariant);
+
+    readonly List<NavItem> _navItems =
+    [
+        new("layout-dashboard", "Dashboard", true),
+        new("activity", "Activity"),
+        new("users", "Team"),
+        new("settings", "Settings"),
+    ];
+
+    readonly List<ActivityItem> _activities =
+    [
+        new("JD", "Jane Doe",  "deployed a new build to production",     "2 min ago",  "Success", BadgeVariant.Default),
+        new("MS", "Mark S.",   "opened pull request #142",               "15 min ago", "Open",    BadgeVariant.Default),
+        new("AK", "Amy K.",    "commented on issue #88",                 "32 min ago", "Comment", BadgeVariant.Secondary),
+        new("RB", "Rob B.",    "merged branch feature/auth into main",   "1 hr ago",   "Merged",  BadgeVariant.Default),
+        new("TL", "Tina L.",   "created milestone v2.1.0",               "2 hr ago",   "Info",    BadgeVariant.Secondary),
+        new("JD", "Jane Doe",  "closed issue #71 as completed",          "3 hr ago",   "Closed",  BadgeVariant.Outline),
+        new("MS", "Mark S.",   "pushed 4 commits to main",               "5 hr ago",   "Push",    BadgeVariant.Default),
+    ];
+}

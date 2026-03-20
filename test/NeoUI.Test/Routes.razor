@@ -1,0 +1,11 @@
+@using NeoUI.Test.Layout
+
+<Router AppAssembly="typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <p>Page not found.</p>
+    </NotFound>
+</Router>

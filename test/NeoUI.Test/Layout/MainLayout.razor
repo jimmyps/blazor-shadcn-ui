@@ -1,0 +1,25 @@
+@namespace NeoUI.Test.Layout
+@inherits LayoutComponentBase
+@using NeoUI.Blazor
+
+<div class="min-h-screen flex flex-col bg-background">
+
+    <header class="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-3 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
+        <div class="flex items-center gap-2">
+            <div class="size-7 rounded-md bg-foreground flex items-center justify-center shrink-0">
+                <LucideIcon Name="layers" Size="14" Class="text-background" />
+            </div>
+            <span class="font-semibold text-sm">NeoUI Test</span>
+        </div>
+        <Separator Orientation="SeparatorOrientation.Vertical" Class="h-4" />
+        <span class="text-xs text-muted-foreground">Dashboard Blocks</span>
+    </header>
+
+    <main class="flex-1 p-6">
+        @Body
+    </main>
+
+</div>
+
+<ContainerPortalHost />
+<OverlayPortalHost />

@@ -1,0 +1,17 @@
+@namespace NeoUI.Test.Layout
+@inherits LayoutComponentBase
+
+<div class="min-h-screen w-full bg-muted flex items-center justify-center">
+
+    <div class="absolute top-4 left-1/2 -translate-x-1/2">
+        <DarkModeToggle />
+    </div>
+
+    <div class="translate-y-[10px]">
+        @Body
+    </div>
+
+</div>
+
+<ContainerPortalHost />
+<OverlayPortalHost />
