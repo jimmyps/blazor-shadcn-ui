@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-20 — DataTable mobile-responsive pagination
+
+> **UI improvement.** Affects `DataTable<TData>` in `NeoUI.Blazor`. No breaking changes.
+
+---
+
+### 📱 Improvement — `DataTable<TData>`: mobile-responsive pagination bar
+
+The DataTable pagination row now adapts gracefully to narrow viewports instead of overflowing or wrapping awkwardly at small screen sizes.
+
+**Three-tier responsive layout:**
+
+| Breakpoint | Visible controls |
+|---|---|
+| `< 640 px` (mobile) | Row count info · Previous / Next |
+| `≥ 640 px` (sm) | + Page-size selector · First / Last |
+| `≥ 1024 px` (lg) | + Page X of Y display |
+
+Responsive visibility is applied via `hidden sm:flex` / `hidden lg:flex` Tailwind classes set directly on each pagination component's `Class` parameter — no extra wrapper `<div>` elements required.
+
+---
+
 ## 2026-3-19 — DI-based ILocalizer localization system
 
 > **Release: `v3.6.4`**  

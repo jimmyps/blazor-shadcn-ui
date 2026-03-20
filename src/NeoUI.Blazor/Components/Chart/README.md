@@ -4,11 +4,11 @@ Blazor shadcn/ui Chart components provide beautiful, themeable data visualizatio
 
 ## Overview
 
-The chart library provides 8 chart types with comprehensive customization through declarative primitives, full MVP+ extensions, and shadcn-consistent styling.
+The chart library provides 12 chart types with comprehensive customization through declarative primitives, full MVP+ extensions, and shadcn-consistent styling.
 
 **Key Features:**
 - ✅ Declarative API (Recharts-inspired)
-- ✅ 8 chart types (Line, Area, Bar, Pie, Scatter, Radar, RadialBar, Composed)
+- ✅ 12 chart types (Line, Area, Bar, Pie, Scatter, Radar, RadialBar, Composed, Candlestick, Funnel, Gauge, Heatmap)
 - ✅ Full MVP+ extensions (labels, animations, gradients, stacking)
 - ✅ ECharts v6. 0. 0 (SVG rendering)
 - ✅ CSS variable theming with OKLCH support
@@ -575,19 +575,12 @@ Charts automatically convert OKLCH colors to hex for ECharts compatibility.
 
 ## Animation
 
-*Coming soon - Animation support is planned for the next release.*
-
-Expected API:
-```razor
-<LineChart Data="@data" 
-           EnableAnimation="true"
-           AnimationDuration="1000"
-           AnimationEasing="AnimationEasing.ElasticOut">
-    <Line DataKey="sales" 
-          AnimationDuration="2000"  <!-- Series-level override -->
-          AnimationEasing="AnimationEasing.BounceOut" />
-</LineChart>
-```
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `EnableAnimation` | `bool` | `true` | Enable/disable chart animations |
+| `AnimationDuration` | `int` | `1500` | Animation duration in milliseconds |
+| `AnimationEasing` | `AnimationEasing` | `CubicInOut` | Easing function for animations |
+| `AnimationDelay` | `int` | `0` | Delay before animation starts (ms) |
 
 ---
 

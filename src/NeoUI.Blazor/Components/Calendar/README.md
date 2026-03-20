@@ -126,6 +126,12 @@ Accessible month/day grid for date selection. Foundation for date pickers and ra
 | `IsDateDisabled` | `Func<DateOnly, bool>?` | `null` | Function to disable specific dates |
 | `Class` | `string?` | `null` | Additional CSS classes |
 | `AdditionalAttributes` | `Dictionary<string, object>?` | `null` | Additional HTML attributes |
+| `RowClass` | `string?` | `null` | CSS class applied to each week row (`<tr>`) |
+| `CaptionLayout` | `CalendarCaptionLayout` | `Label` | Caption style: `Label` (static month/year), `Dropdown` (year/month selects) |
+| `YearRange` | `int` | `20` | Years before/after current year shown in the year dropdown |
+| `RangeStart` | `DateOnly?` | `null` | Start date for range-selection highlighting |
+| `RangeEnd` | `DateOnly?` | `null` | End date for range-selection highlighting |
+| `DisplayedMonthChanged` | `EventCallback<DateOnly>` | — | Fires when the viewed month changes |
 
 ### Keyboard Navigation
 
@@ -149,3 +155,7 @@ The calendar uses proper ARIA attributes:
 - `aria-label` for month/year
 - `aria-selected` on selected date
 - `aria-live="polite"` for month changes
+
+---
+
+> **Localization**: Uses `ILocalizer` for month navigation ARIA labels. Override `Calendar.GoToPreviousMonth`, `Calendar.GoToNextMonth`, and `Calendar.AriaLabel` keys to localize navigation labels.

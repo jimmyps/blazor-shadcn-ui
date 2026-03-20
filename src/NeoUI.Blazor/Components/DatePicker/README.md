@@ -141,11 +141,12 @@ Date selection components with Calendar in Popover pattern.
 | `MaxDate` | `DateOnly?` | `null` | Maximum selectable date |
 | `IsDateDisabled` | `Func<DateOnly, bool>?` | `null` | Function to disable specific dates |
 | `Culture` | `CultureInfo?` | `CurrentCulture` | Culture for date formatting |
-| `CaptionLayout` | `CalendarCaptionLayout` | `Buttons` | Calendar navigation style |
+| `CaptionLayout` | `CalendarCaptionLayout` | `Label` | Calendar navigation style |
 | `ButtonVariant` | `ButtonVariant` | `Outline` | Button style variant |
 | `ButtonSize` | `ButtonSize` | `Default` | Button size |
 | `ShowIcon` | `bool` | `true` | Whether to show calendar icon |
-| `Placeholder` | `string` | `"Pick a date"` | Placeholder text |
+| `ShowDropdownIcon` | `bool` | `false` | Renders a chevron-down icon on the trigger button |
+| `Placeholder` | `string` | `"Pick a date"` | Placeholder text (uses `ILocalizer` key `DatePicker.Placeholder`) |
 | `DateFormat` | `string?` | `null` | Custom date format string |
 | `Disabled` | `bool` | `false` | Whether disabled |
 | `Align` | `PopoverAlign` | `Start` | Popover alignment |
@@ -163,10 +164,11 @@ Date selection components with Calendar in Popover pattern.
 | `MaxDate` | `DateOnly?` | `null` | Maximum selectable date |
 | `IsDateDisabled` | `Func<DateOnly, bool>?` | `null` | Function to disable specific dates |
 | `Culture` | `CultureInfo?` | `CurrentCulture` | Culture for date formatting |
-| `CaptionLayout` | `CalendarCaptionLayout` | `Buttons` | Calendar navigation style |
+| `CaptionLayout` | `CalendarCaptionLayout` | `Label` | Calendar navigation style |
 | `ButtonVariant` | `ButtonVariant` | `Outline` | Button style variant |
 | `ButtonSize` | `ButtonSize` | `Default` | Button size |
 | `ShowIcon` | `bool` | `true` | Whether to show calendar icon |
+| `ShowDropdownIcon` | `bool` | `false` | Renders a chevron-down icon on the trigger button |
 | `Placeholder` | `string` | `"Pick a date range"` | Placeholder text |
 | `DateFormat` | `string?` | `null` | Custom date format string |
 | `Disabled` | `bool` | `false` | Whether disabled |
@@ -189,3 +191,7 @@ Date selection components with Calendar in Popover pattern.
 - [Calendar Component](../Calendar/README.md) - The underlying calendar used by DatePicker
 - [Popover Component](../Popover/README.md) - The popover container
 - [Button Component](../Button/README.md) - The trigger button
+
+---
+
+> **Localization**: Uses `ILocalizer` for placeholder text (`DatePicker.Placeholder`). Override this key to localize the default placeholder.

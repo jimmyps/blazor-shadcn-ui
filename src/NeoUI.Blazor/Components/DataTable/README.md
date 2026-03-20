@@ -202,6 +202,32 @@ Use `PreprocessData` for async transformations (e.g. server fetch after initial 
 | `OnSort` | `EventCallback<(string, SortDirection)>` | — | Fires when the user changes the sort column or direction. |
 | `OnFilter` | `EventCallback<string?>` | — | Fires when the global search value changes. |
 | `PreprocessData` | `Func<IEnumerable<TData>, Task<IEnumerable<TData>>>?` | `null` | Async hook to transform data before filtering and sorting. |
+| `ServerData` | `Func<DataTableState, Task<TableData<TData>>>?` | `null` | Server-side data callback for fully server-driven paging/sorting/filtering. |
+| `Striped` | `bool` | `false` | Zebra-striped rows. |
+| `StripeClass` | `string?` | `null` | Custom CSS class applied to odd rows when `Striped` is true. |
+| `RowContextMenu` | `RenderFragment<TData>?` | `null` | Right-click context menu content; receives the row item as context. |
+| `Resizable` | `bool` | `false` | Allow column resizing by dragging header borders. |
+| `MinColumnWidth` | `int` | `50` | Minimum column width in pixels when resizing. |
+| `OnColumnResize` | `EventCallback<ColumnResizeEventArgs<TData>>` | — | Fires after a column is resized. |
+| `Reorderable` | `bool` | `false` | Allow drag-and-drop column reordering. |
+| `OnColumnReorder` | `EventCallback<ColumnReorderEventArgs<TData>>` | — | Fires after columns are reordered. |
+| `ColumnsVisibility` | `bool` | `false` | Show column visibility toggle button in the toolbar. |
+| `Virtualize` | `bool` | `false` | Enable virtual scrolling for large datasets. |
+| `Height` | `string?` | `null` | Container height (required when `Virtualize` is true, e.g. `"600px"`). |
+| `ItemHeight` | `float` | `40` | Row height in pixels used by the virtual scroll engine. |
+| `VirtualizeOverscanCount` | `int` | `3` | Extra rows rendered outside the visible viewport for smooth scrolling. |
+| `ItemsProvider` | `GridItemsProvider<TData>?` | `null` | Virtualized data provider callback for server-driven virtual scrolling. |
+| `ChildrenProperty` | `string?` | `null` | Property name on data items whose value contains child rows (enables tree mode). |
+| `LoadChildrenAsync` | `Func<TData, Task<IEnumerable<TData>>>?` | `null` | Async callback to lazily load child rows. |
+| `HasChildrenField` | `string?` | `null` | Boolean property name indicating whether an item has children (shows expand arrow). |
+| `ExpandedValues` | `IReadOnlySet<TKey>?` | `null` | Controlled set of expanded row keys (tree mode). |
+| `ExpandedValuesChanged` | `EventCallback<IReadOnlySet<TKey>>` | — | Fires when the set of expanded rows changes (tree mode). |
+| `ValueField` | `Expression<Func<TData, TKey>>?` | `null` | Key field selector used to identify rows in tree mode. |
+| `SyncWidthOnResize` | `bool` | `false` | Re-synchronize column widths when the browser window is resized. |
+| `TableContainerClass` | `string?` | `null` | Extra CSS classes on the scrollable table container `<div>`. |
+| `ColumnSizing` | `TableColumnSizing` | `Auto` | Column width algorithm: `Auto` (content-driven) or `Fixed` (equal distribution). |
+
+> **Localization**: All UI strings (pagination labels, empty/loading states, ARIA attributes) use `ILocalizer` for localization — override via `DefaultLocalizer` keys or a custom `ILocalizer` implementation. See [Localization docs](../../README.md#localization).
 
 ### DataTableColumn\<TData, TValue\>
 

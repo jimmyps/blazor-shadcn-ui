@@ -197,3 +197,12 @@ Add the `ToastProvider` to your `MainLayout.razor`:
 | `ChildContent` | `RenderFragment?` | `null` | The app content |
 | `Position` | `ToastPosition` | `BottomRight` | Viewport position |
 | `MaxToasts` | `int` | `5` | Max visible toasts |
+
+### Toast Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ShowIcon` | `bool` | `true` | Show/hide the variant icon |
+| `PauseOnHover` | `bool` | `true` | Pause auto-dismiss timer on mouse hover |
+| `Size` | `ToastSize` | `Default` | Compact vs Default sizing |
+| `OnHoverChanged` | `Action<bool>?` | `null` | Callback invoked when hover state changes |

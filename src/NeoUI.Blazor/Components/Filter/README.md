@@ -163,3 +163,7 @@ The context is a `FilterCustomContext` with a `Condition` property and a `Notify
 - [Custom Controls](/components/filter/custom) — Star-rating custom control
 - [Nested Groups](/components/filter/nested) — Complex AND/OR FilterGroup composition
 - [State Persistence](/components/filter/persistence) — Persist filters to localStorage
+
+---
+
+> **Localization**: Filter uses `ILocalizer` for the remove-chip aria-label and all 20 operator labels (Equals, Contains, StartsWith, etc.). Override any key under `Filter.*` or `Filter.Operator.*` in your `ILocalizer` implementation.

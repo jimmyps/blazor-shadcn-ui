@@ -715,3 +715,7 @@ See the demo application for more examples:
 ## License
 
 MIT
+
+---
+
+> **Localization**: UI strings (Loading, No Results Found, Initializing) use `ILocalizer`. Override `DataGrid.Loading`, `DataGrid.NoResultsFound`, `DataGrid.InitializingGrid` keys in your `ILocalizer` implementation.

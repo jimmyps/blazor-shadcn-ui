@@ -21,7 +21,7 @@ A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://
   <table align="center">
     <tr>
       <td align="center"><b>⚡ Zero Config</b><br/>Pre-built CSS, no Node.js or build tools required</td>
-      <td align="center"><b>🧩 85+ Components</b><br/>Modern, composable UI components</td>
+      <td align="center"><b>🧩 100+ Components</b><br/>Modern, composable UI components</td>
       <td align="center"><b>🎨 shadcn/ui Themes</b><br/>Drop in any shadcn/ui or tweakcn theme</td>
       <td align="center"><b>🌙 Dark Mode</b><br/>Built-in light &amp; dark with CSS variables</td>
     </tr>
@@ -145,6 +145,29 @@ dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-base
 ### Learn More
 
 - **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines
+
+## Localization
+
+NeoUI ships a built-in `ILocalizer` abstraction — a thin interface that decouples your app from any specific i18n framework.
+
+**Default behaviour** — `DefaultLocalizer` is registered automatically by `AddNeoUIComponents()`. It returns the built-in English strings for every UI key (button labels, ARIA attributes, empty-state messages, etc.). No configuration required.
+
+**Customizing strings** — implement `ILocalizer` and register it *before* calling `AddNeoUIComponents()`:
+
+```csharp
+// Option A — custom DefaultLocalizer keys (simplest)
+builder.Services.AddSingleton<ILocalizer>(sp =>
+    new DefaultLocalizer(keys => {
+        keys["Dialog.Close"] = "Schließen";
+    }));
+builder.Services.AddNeoUIComponents();
+
+// Option B — full IStringLocalizer<T> integration
+builder.Services.AddScoped<ILocalizer, StringLocalizerAdapter<MyResources>>();
+builder.Services.AddNeoUIComponents();
+```
+
+Both options work for Blazor Server, WebAssembly, and Auto mode.
 
 ## 🏗️ Architecture
 
@@ -363,7 +386,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## 📚 Components
 
-NeoUI includes **85+ styled components** with full shadcn/ui design compatibility:
+NeoUI includes **100+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -428,7 +451,8 @@ NeoUI includes **85+ styled components** with full shadcn/ui design compatibilit
 - **Tooltip** - Contextual hover tooltips
 
 ### Data & Content
-- **DataTable** - Powerful tables with sorting, filtering, pagination, and selection
+- **DataTable** - Advanced tables with sorting, filtering, pagination, server-side data, column pinning/resizing/reordering, tree/hierarchical rows, row context menu, and virtualization
+- **Filter** - Inline canvas filter builder with 8 field types, operator chips, LINQ extensions, and preset support
 - **MarkdownEditor** - Rich text editor with toolbar formatting and live preview
 - **RichTextEditor** - WYSIWYG editor with formatting toolbar and HTML output
 
@@ -450,10 +474,14 @@ NeoUI includes **85+ styled components** with full shadcn/ui design compatibilit
 - **Typography** - Semantic text styling
 
 ### Data Visualization
-- **Chart** - Beautiful data visualizations with multiple chart types:
+- **Chart** - Beautiful data visualizations with 12 chart types:
   - **Area Chart** - Stacked and gradient area charts
   - **Bar Chart** - Vertical and horizontal bar charts (grouped/stacked)
+  - **Candlestick Chart** - OHLC financial candlestick charts
   - **Composed Chart** - Mix multiple chart types (line + bar + area)
+  - **Funnel Chart** - Funnel/pipeline visualization
+  - **Gauge Chart** - Circular gauge / speedometer charts
+  - **Heatmap Chart** - Grid-based intensity heatmaps
   - **Line Chart** - Single and multi-series line charts
   - **Pie Chart** - Pie and donut charts with labels
   - **Radar Chart** - Multi-axis radar/spider charts
@@ -545,7 +573,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Version**: 2.4.0
+- **Current Version**: 3.6.4
 - **Target Framework**: .NET 10
 - **Package IDs**: 
   - `NeoUI.Blazor`

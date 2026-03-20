@@ -42,7 +42,7 @@ dotnet add package NeoUI.Blazor.Primitives
 - **Tabs**: Tabbed interface with keyboard navigation
 - **Tooltip**: Brief informational popups with hover/focus triggers
 
-## 🎨 Pre-Styled Components (75+)
+## 🎨 Pre-Styled Components (100+)
 
 Built on top of these primitives, **[NeoUI.Blazor](https://www.nuget.org/packages/NeoUI.Blazor)** provides production-ready components with beautiful shadcn/ui design:
 
@@ -65,7 +65,7 @@ Alert
 Aspect Ratio, Carousel, Collapsible, Resizable, Scroll Area
 
 ### Advanced Components
-Chart (8 types), Grid, Markdown Editor, Motion (20+ animation presets), Rich Text Editor, Toggle, Toggle Group
+Chart (12 types), Grid, Markdown Editor, Motion (20+ animation presets), Rich Text Editor, Toggle, Toggle Group
 
 ### Icon Libraries
 Lucide Icons (1,640+), Heroicons (1,288), Feather Icons (286)
@@ -239,24 +239,7 @@ Select is generic (`TValue`). Supports both value and open state binding.
 
 ### MultiSelect
 
-```razor
-<MultiSelect TItem="string" @bind-SelectedItems="selected" Items="options">
-    <MultiSelectTrigger>
-        <MultiSelectInput Placeholder="Select items..." />
-    </MultiSelectTrigger>
-    <MultiSelectContent>
-        <MultiSelectSelectAll>Select All</MultiSelectSelectAll>
-        @foreach (var item in options)
-        {
-            <MultiSelectItem Value="item">@item</MultiSelectItem>
-        }
-    </MultiSelectContent>
-</MultiSelect>
-```
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `SelectAllState` | `SelectAllState` | `None`, `Indeterminate`, `All` |
+> **Note**: `MultiSelect` is a fully styled component with no separate primitive — use `<MultiSelect>` directly from `NeoUI.Blazor`.
 
 
 ## 🚀 Usage Example
@@ -374,7 +357,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Current Version**: 1.0.14
+- **Current Version**: 3.6.4
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives

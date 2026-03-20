@@ -104,6 +104,29 @@ That's it! No Tailwind installation, no build configuration needed.
 
 > 💡 **Pre-built themes**: NeoUI ships with pre-built themes built on shadcn/ui defaults — ready to use out of the box with no extra setup. See the [Theming](#-theming) section for details on applying and customizing themes.
 
+## Localization
+
+NeoUI ships a built-in `ILocalizer` abstraction — a thin interface that decouples your app from any specific i18n framework.
+
+**Default behaviour** — `DefaultLocalizer` is registered automatically by `AddNeoUIComponents()`. It returns the built-in English strings for every UI key (button labels, ARIA attributes, empty-state messages, etc.). No configuration required.
+
+**Customizing strings** — implement `ILocalizer` and register it *before* calling `AddNeoUIComponents()`:
+
+```csharp
+// Option A — custom DefaultLocalizer keys (simplest)
+builder.Services.AddSingleton<ILocalizer>(sp =>
+    new DefaultLocalizer(keys => {
+        keys["Dialog.Close"] = "Schließen";
+    }));
+builder.Services.AddNeoUIComponents();
+
+// Option B — full IStringLocalizer<T> integration
+builder.Services.AddScoped<ILocalizer, StringLocalizerAdapter<MyResources>>();
+builder.Services.AddNeoUIComponents();
+```
+
+Both options work for Blazor Server, WebAssembly, and Auto mode.
+
 ## ⚡ Project Template
 
 The fastest way to start a new NeoUI app — scaffold a complete Blazor Web App pre-wired with a sidebar layout, theme switcher, dark mode toggle, Spotlight command palette, and Tailwind CSS v4 in seconds:
@@ -150,15 +173,17 @@ Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tail
 - **Tag Input** - Chip/tag input with configurable triggers, async suggestions, and paste splitting
 - **Textarea** - Multi-line text input
 - **Time Picker** - Time selection with hour/minute/period controls
+- **File Upload** - Drag-and-drop and click-to-browse file upload with validation
 
 ### Data Display Components
 - **Avatar** - User profile images with fallbacks
 - **Badge** - Labels for status and categories
 - **Card** - Content container with header/footer
-- **Data Table** - Advanced tables with sorting, filtering, pagination, and server-side data
+- **Data Table** - Advanced tables with sorting, filtering, pagination, server-side data, column pinning/resizing (`Resizable="true"`)/reordering (`Reorderable="true"`), tree/hierarchical rows (`ChildrenProperty`, `LoadChildrenAsync`), row context menu (`RowContextMenu`), virtualization (`Virtualize`, `ItemsProvider`), and striped rows (`Striped="true"`)
 - **Data View** - Switchable list/grid layouts with search, sort, pagination, and selection
 - **Dynamic Form** - Schema-driven form that renders any of 24 input types from a `FormSchema` definition
 - **Empty** - Empty state displays
+- **Filter** - Inline canvas filter builder with 8 field types, operator chips, LINQ extensions, and preset support
 - **Grid** - Advanced data grid with state management
 - **Item** - Flexible list items with media and actions
 - **Kbd** - Keyboard shortcut badges
@@ -225,7 +250,7 @@ Create beautiful, responsive charts with a declarative Recharts-inspired API:
 <LineChart Data="@salesData">
     <XAxis DataKey="Month" />
     <YAxis />
-    <DataGrid />
+    <CartesianGrid />
     <Tooltip />
     <Legend />
     <Line DataKey="Revenue" Fill="var(--chart-1)" />
@@ -259,7 +284,7 @@ Powerful data tables with built-in sorting, filtering, pagination, and selection
            Items="@users"
            Columns="@columns"
            ShowPagination="true"
-           PageSize="10" />
+           InitialPageSize="10" />
 ```
 
 ### Grid Component
@@ -400,7 +425,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Version**: 1.0.15
+- **Current Version**: 3.6.4
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

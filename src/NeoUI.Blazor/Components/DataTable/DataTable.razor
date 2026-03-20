@@ -261,17 +261,17 @@
                         PageSizes="@PageSizes"
                         OnPageChanged="@HandlePageChanged"
                         OnPageSizeChanged="@HandlePageSizeChanged"
-                        Class="flex items-center justify-between px-2 py-4">
+                        Class="flex flex-wrap items-center justify-between gap-y-2 px-2 py-4">
                 <PaginationInfo />
-                <PaginationContent Class="flex items-center gap-6 lg:gap-8">
-                    <PaginationPageSizeSelector />
+                <PaginationContent Class="flex items-center gap-2 sm:gap-4 lg:gap-8">
+                    <PaginationPageSizeSelector Class="hidden sm:flex" />
                     <div class="flex items-center gap-2">
-                        <PaginationPageDisplay />
+                        <PaginationPageDisplay Class="hidden lg:flex" />
                         <div class="flex items-center gap-1">
-                            <PaginationItem><PaginationFirst /></PaginationItem>
+                            <PaginationItem Class="hidden sm:flex"><PaginationFirst /></PaginationItem>
                             <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
                             <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
-                            <PaginationItem><PaginationLast /></PaginationItem>
+                            <PaginationItem Class="hidden sm:flex"><PaginationLast /></PaginationItem>
                         </div>
                     </div>
                 </PaginationContent>
