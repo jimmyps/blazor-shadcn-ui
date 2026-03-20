@@ -107,6 +107,22 @@ jobs:
           echo "📦 Package: $PACKAGE"
           echo "🏷️  Version: $VERSION"
 
+      - name: Setup Node.js (for components package)
+        if: steps.package-info.outputs.package == 'components'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm packages (components package)
+        if: steps.package-info.outputs.package == 'components'
+        run: npm install
+        working-directory: src/NeoUI.Blazor
+
+      - name: Build CSS (components package)
+        if: steps.package-info.outputs.package == 'components'
+        run: npm run build:css
+        working-directory: src/NeoUI.Blazor
+
       - name: Restore dependencies
         run: |
           # For components package, use NuGet package references instead of project references
