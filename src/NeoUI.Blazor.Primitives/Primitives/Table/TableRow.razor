@@ -70,15 +70,14 @@
     private bool NeedsClickIntercept => IsSelectable;
 
     /// <summary>
-    /// Focus ring classes for keyboard navigation visibility.
-    /// Uses focus: instead of focus-visible: because programmatic focus via JS .focus()
-    /// doesn't always trigger focus-visible in browsers.
-    /// Includes relative positioning to ensure ring renders properly on tr elements.
+    /// Suppress the browser's native focus outline — the ring is drawn
+    /// via per-cell inset box-shadows in CSS (components-input.css) so it
+    /// works correctly in all browsers including Safari.
     /// </summary>
-    private const string FocusRingClasses = "relative focus:outline-none focus:ring-2 focus:ring-ring focus:ring-inset focus:z-10";
+    private const string FocusRingClasses = "focus:outline-none";
 
     /// <summary>
-    /// Computed class that includes focus ring when row is keyboard navigable
+    /// Computed class that suppresses the native outline when row is keyboard navigable.
     /// </summary>
     private string ComputedClass => IsKeyboardNavigable ? $"{FocusRingClasses} {Class}" : Class ?? "";
 

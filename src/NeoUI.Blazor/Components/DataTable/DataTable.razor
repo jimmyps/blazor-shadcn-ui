@@ -20,7 +20,8 @@
         <div @ref="_tableContainerRef"
              class="@TableContainerCssClass"
              style="@TableContainerStyle"
-             data-pinned-table="@(HasPinnedColumns ? "true" : null)">
+             data-pinned-table="@(HasPinnedColumns ? "true" : null)"
+             data-keyboard-nav="@(EnableKeyboardNavigation ? "true" : null)">
             @if (IsLoading)
             {
                 @if (LoadingTemplate != null)

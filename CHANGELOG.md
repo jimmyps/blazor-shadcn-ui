@@ -2,7 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-20 — DataTable mobile-responsive pagination
+## 2026-3-20 — DataTable keyboard focus ring Safari fix
+
+> **Bug fix.** Affects `DataTable<TData>` in `NeoUI.Blazor` and `TableRow` in `NeoUI.Blazor.Primitives`. No breaking changes.
+
+---
+
+### 🐛 Fix — `DataTable<TData>`: keyboard focus ring invisible in Safari
+
+Safari does not paint `box-shadow` on `<tr>` elements — the style is computed but never rendered. The previous implementation applied Tailwind's `focus:ring-2 focus:ring-ring focus:ring-inset` directly to the `<tr>` via `TableRow`, which was already the per-cell inset box-shadow approach for pinned tables but not for standard ones.
+
+**Changes:**
+
+- CSS focus ring rules migrated from tr-level `box-shadow` to per-cell inset `box-shadow` on `[role="cell"]` / `[role="columnheader"]` — identical to the already-working pinned-table approach, now applied universally
+- Rules scoped to `[data-keyboard-nav]` on the table container so they only activate inside a `DataTable` with `EnableKeyboardNavigation="true"` and don't bleed into other components that use `role="row"`
+- `data-keyboard-nav="true"` attribute added to the `DataTable` container div (conditional on `EnableKeyboardNavigation`)
+- Stale `focus:ring-2 focus:ring-ring focus:ring-inset focus:z-10 relative` Tailwind classes removed from `TableRow`; only `focus:outline-none` retained as a browser-default suppressor
+
+---
+
+## DataTable mobile-responsive pagination
 
 > **UI improvement.** Affects `DataTable<TData>` in `NeoUI.Blazor`. No breaking changes.
 
