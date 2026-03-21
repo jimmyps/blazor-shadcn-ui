@@ -18,8 +18,9 @@
             <SidebarInset>...</SidebarInset>
         </SidebarProvider>
 
-    The pill is always present in the DOM (when in pill mode, non-mobile) so CSS transitions
+    The pill is always present in the DOM (when in pill mode) so CSS transitions
     can play both on open and on close. Visibility is driven by opacity + translate classes.
+    On mobile the pill renders inside the sheet overlay when the sidebar is closed.
 *@
 
 @if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
