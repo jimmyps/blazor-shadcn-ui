@@ -33,18 +33,16 @@
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Classes applied when the sidebar is open (pill nav hidden).
-    /// Defaults to <c>p-6 lg:p-8</c>.
+    /// Additional classes merged on top of the expanded-state base (<c>p-6 lg:p-8</c>).
     /// </summary>
     [Parameter]
-    public string ExpandedClass { get; set; } = "p-6 lg:p-8";
+    public string? ExpandedClass { get; set; }
 
     /// <summary>
-    /// Classes applied when the sidebar is collapsed and the pill nav is visible.
-    /// Defaults to <c>p-6 lg:p-8 pt-0 lg:pt-0</c>.
+    /// Additional classes merged on top of the collapsed-state base (<c>p-6 lg:p-8 pt-0 lg:pt-0</c>).
     /// </summary>
     [Parameter]
-    public string CollapsedClass { get; set; } = "p-6 lg:p-8 pt-0 lg:pt-0";
+    public string? CollapsedClass { get; set; }
 
     /// <summary>Additional CSS classes always applied to the wrapper.</summary>
     [Parameter]
@@ -54,14 +52,19 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private bool IsPillCollapsed =>
+    private bool IsPillActive =>
         Context?.CollapsedMode == SidebarCollapsedMode.Pill
-        && !Context.IsOpen;
+        && !Context.Open;
 
     private string GetClasses() => ClassNames.cn(
         "shrink-0",
-        "transition-[padding-top] duration-500 ease-in-out",
-        IsPillCollapsed ? CollapsedClass : ExpandedClass,
+        "transition-[padding] duration-500 ease-in-out",
+        // On narrow viewports (< 640px), always use collapsed-state padding regardless of
+        // Blazor state — mirrors the SidebarPillNav max-sm: CSS override approach.
+        // On wider viewports, Blazor state drives the padding transition.
+        IsPillActive
+            ? ClassNames.cn("p-4 lg:p-4 pt-0 lg:pt-0", CollapsedClass)
+            : ClassNames.cn("p-2 lg:p-2 max-sm:pt-0", ExpandedClass),
         Class
     );
 }
