@@ -1,0 +1,47 @@
+@namespace NeoUI.Blazor
+
+@*
+    SidebarPillFade — a sticky gradient bar that clears and softens the top edge of the
+    scroll area when SidebarCollapsedMode.Pill is active.
+
+    Place as the first child of <SidebarInset>. The content sibling must use shrink-0
+    (no overflow-auto / h-full) so that <main> is the sole scroll container and the
+    sticky gradient correctly overlays content as it scrolls:
+
+        <SidebarInset>
+            <SidebarPillFade />
+            <div class="p-6 shrink-0">...</div>
+        </SidebarInset>
+
+    Height transitions h-0 → h-24 in sync with the pill nav (duration-500).
+    The layout height is real (no -mb-24 trick) so the gradient's own height provides
+    the pill-nav clearance and sticky positioning works against <main>'s scroll.
+*@
+
+@if (Context?.CollapsedMode == SidebarCollapsedMode.Pill && !Context.IsMobile)
+{
+    <div class="@GetClasses()" aria-hidden="true"></div>
+}
+
+@code {
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes applied to the fade bar.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string GetClasses() => ClassNames.cn(
+        // Sticky to top of <main> scroll container; real layout height drives the clearance offset
+        "sticky top-0 z-10 w-full shrink-0 pointer-events-none overflow-hidden",
+        // Visual: gradient + subtle blur
+        "backdrop-blur-sm",
+        "bg-gradient-to-b from-background via-background/70 to-transparent",
+        // Animate in/out in sync with the pill nav (duration-500)
+        "transition-[height,opacity] duration-500 ease-in-out",
+        Context?.IsOpen == true ? "h-0 opacity-0" : "h-24 opacity-100",
+        Class
+    );
+}

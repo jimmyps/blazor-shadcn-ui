@@ -69,4 +69,14 @@
     /// </summary>
     [Parameter]
     public bool StaticRendering { get; set; } = false;
+
+    /// <summary>
+    /// Determines what the sidebar collapses into when toggled closed on desktop.
+    /// <list type="bullet">
+    ///   <item><see cref="SidebarCollapsedMode.Icon"/> — icon-only rail (default)</item>
+    ///   <item><see cref="SidebarCollapsedMode.Pill"/> — floating pill nav bar at the top of the viewport</item>
+    /// </list>
+    /// </summary>
+    [Parameter]
+    public SidebarCollapsedMode CollapsedMode { get; set; } = SidebarCollapsedMode.Icon;
 }

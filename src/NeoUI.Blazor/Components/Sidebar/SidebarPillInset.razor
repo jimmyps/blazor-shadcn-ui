@@ -1,0 +1,68 @@
+@namespace NeoUI.Blazor
+
+@*
+    SidebarPillInset — content wrapper for use inside <SidebarInset> when
+    SidebarCollapsedMode.Pill is active.
+
+    Switches between ExpandedClass and CollapsedClass based on sidebar state,
+    and must be paired with <SidebarPillFade /> as the sticky top anchor so that
+    <main> remains the sole scroll container:
+
+        <SidebarInset>
+            <SidebarPillFade />
+            <SidebarPillInset>
+                ...
+            </SidebarPillInset>
+        </SidebarInset>
+
+    Override either state's layout via the dedicated parameters:
+
+        <SidebarPillInset ExpandedClass="p-8" CollapsedClass="p-8 pt-0" />
+*@
+
+<div class="@GetClasses()" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+
+    /// <summary>The content to render.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Classes applied when the sidebar is open (pill nav hidden).
+    /// Defaults to <c>p-6 lg:p-8</c>.
+    /// </summary>
+    [Parameter]
+    public string ExpandedClass { get; set; } = "p-6 lg:p-8";
+
+    /// <summary>
+    /// Classes applied when the sidebar is collapsed and the pill nav is visible.
+    /// Defaults to <c>p-6 lg:p-8 pt-0 lg:pt-0</c>.
+    /// </summary>
+    [Parameter]
+    public string CollapsedClass { get; set; } = "p-6 lg:p-8 pt-0 lg:pt-0";
+
+    /// <summary>Additional CSS classes always applied to the wrapper.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>Additional HTML attributes applied to the wrapper element.</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private bool IsPillCollapsed =>
+        Context?.CollapsedMode == SidebarCollapsedMode.Pill
+        && !Context.IsOpen
+        && !Context.IsMobile;
+
+    private string GetClasses() => ClassNames.cn(
+        "shrink-0",
+        "transition-[padding-top] duration-500 ease-in-out",
+        IsPillCollapsed ? CollapsedClass : ExpandedClass,
+        Class
+    );
+}

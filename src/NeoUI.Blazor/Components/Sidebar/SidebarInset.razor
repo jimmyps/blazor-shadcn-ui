@@ -107,7 +107,19 @@
     {
         // Base classes with independent scrolling
         var baseClasses = "relative flex flex-1 flex-col bg-background focus:outline-none overflow-y-auto";
-        
+
+        // Pill mode: sidebar shrinks to w-0 in the flex row — no margin-left needed on <main>,
+        // the sidebar's own width transition drives the reflow. Only padding-top needs managing
+        // (handled by SidebarPillFade height + SidebarPillInset).
+        if (Context?.CollapsedMode == SidebarCollapsedMode.Pill && !Context.IsMobile)
+        {
+            return ClassNames.cn(
+                baseClasses,
+                "h-screen",
+                Class
+            );
+        }
+
         // Height classes based on variant
         var heightClasses = Context?.Variant switch
         {
