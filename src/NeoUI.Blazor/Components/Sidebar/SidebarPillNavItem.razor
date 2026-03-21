@@ -13,9 +13,26 @@
         <SidebarPillNavItem Label="Analytics" Href="/analytics">
             <LucideIcon Name="bar-chart-3" Size="16" />
         </SidebarPillNavItem>
+
+    AsChild mode — renders child content directly, skipping the built-in button/NavLink wrapper.
+    Use this when you need a custom interactive element (e.g. a DropdownMenu trigger) as a pill item:
+        <SidebarPillNavItem AsChild="true">
+            <DropdownMenu>
+                <DropdownMenuTrigger AsChild="true">
+                    <button class="flex h-9 w-9 items-center justify-center rounded-full ...">
+                        <LucideIcon Name="settings" Size="16" />
+                    </button>
+                </DropdownMenuTrigger>
+                ...
+            </DropdownMenu>
+        </SidebarPillNavItem>
 *@
 
-@if (!string.IsNullOrEmpty(Href))
+@if (AsChild)
+{
+    @ChildContent
+}
+else if (!string.IsNullOrEmpty(Href))
 {
     <NavLink href="@Href"
              Match="@Match"
@@ -42,6 +59,13 @@ else
     /// <summary>The icon to display. Typically a <see cref="LucideIcon"/>.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, renders child content directly without the built-in button or NavLink wrapper.
+    /// Use this to slot in a custom interactive element (e.g. a DropdownMenu) as a pill nav item.
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = false;
 
     /// <summary>Tooltip text and accessible label for the button.</summary>
     [Parameter]
