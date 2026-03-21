@@ -13,9 +13,28 @@
         <SidebarPillNavItem Label="Analytics" Href="/analytics">
             <LucideIcon Name="bar-chart-3" Size="16" />
         </SidebarPillNavItem>
+
+    AsChild mode — renders child content directly, skipping the built-in button/NavLink wrapper.
+    Use this when you need a custom interactive element (e.g. a DropdownMenu trigger) as a pill item.
+    NOTE: When AsChild="true", the parameters Label, Href, Match (non-default), IsActive (when true), Class, ActiveClass,
+    InactiveClass, OnClick, and any extra HTML attributes are all ignored — do not set them.
+        <SidebarPillNavItem AsChild="true">
+            <DropdownMenu>
+                <DropdownMenuTrigger AsChild="true">
+                    <button class="flex h-9 w-9 items-center justify-center rounded-full ...">
+                        <LucideIcon Name="settings" Size="16" />
+                    </button>
+                </DropdownMenuTrigger>
+                ...
+            </DropdownMenu>
+        </SidebarPillNavItem>
 *@
 
-@if (!string.IsNullOrEmpty(Href))
+@if (AsChild)
+{
+    @ChildContent
+}
+else if (!string.IsNullOrEmpty(Href))
 {
     <NavLink href="@Href"
              Match="@Match"
@@ -42,6 +61,19 @@ else
     /// <summary>The icon to display. Typically a <see cref="LucideIcon"/>.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, renders child content directly without the built-in button or NavLink wrapper.
+    /// Use this to slot in a custom interactive element (e.g. a DropdownMenu) as a pill nav item.
+    /// <para>
+    /// When <c>AsChild</c> is <c>true</c>, the following parameters are all ignored and must not be set:
+    /// <see cref="Label"/>, <see cref="Href"/>, <see cref="Match"/>, <see cref="IsActive"/> (when <c>true</c>),
+    /// <see cref="Class"/>, <see cref="ActiveClass"/>, <see cref="InactiveClass"/>, <see cref="OnClick"/>,
+    /// and any unmatched HTML attributes captured via <c>AdditionalAttributes</c>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = false;
 
     /// <summary>Tooltip text and accessible label for the button.</summary>
     [Parameter]
@@ -115,4 +147,25 @@ else
             : "[&.active]:bg-primary [&.active]:text-primary-foreground [&.active]:hover:bg-primary/90",
         Class
     );
+
+    protected override void OnParametersSet()
+    {
+        if (AsChild && (
+            !string.IsNullOrEmpty(Href) ||
+            !string.IsNullOrEmpty(Label) ||
+            IsActive ||
+            Match != NavLinkMatch.Prefix ||
+            !string.IsNullOrEmpty(Class) ||
+            !string.IsNullOrEmpty(ActiveClass) ||
+            !string.IsNullOrEmpty(InactiveClass) ||
+            OnClick.HasDelegate ||
+            (AdditionalAttributes?.Count > 0)))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(SidebarPillNavItem)}: When {nameof(AsChild)} is true, parameters " +
+                $"{nameof(Label)}, {nameof(Href)}, {nameof(Match)}, {nameof(IsActive)}, " +
+                $"{nameof(Class)}, {nameof(ActiveClass)}, {nameof(InactiveClass)}, {nameof(OnClick)}, " +
+                $"and additional HTML attributes are all ignored and must not be set.");
+        }
+    }
 }

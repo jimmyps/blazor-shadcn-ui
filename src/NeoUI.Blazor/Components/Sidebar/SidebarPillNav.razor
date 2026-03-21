@@ -18,11 +18,12 @@
             <SidebarInset>...</SidebarInset>
         </SidebarProvider>
 
-    The pill is always present in the DOM (when in pill mode, non-mobile) so CSS transitions
+    The pill is always present in the DOM (when in pill mode) so CSS transitions
     can play both on open and on close. Visibility is driven by opacity + translate classes.
+    On mobile the pill renders inside the sheet overlay when the sidebar is closed.
 *@
 
-@if (Context?.CollapsedMode == SidebarCollapsedMode.Pill && !Context.IsMobile)
+@if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
 {
     <nav class="@GetClasses()"
          data-sidebar="pill-nav"
@@ -112,6 +113,9 @@
             // Shape & colour
             "flex flex-row items-center gap-1 px-2 py-1.5",
             "rounded-full bg-card/95 backdrop-blur-sm shadow-lg border border-border",
+            // On mobile: fixed width prevents feedback loops when items hide/show;
+            // overflow-hidden clips any items that exceed the container cleanly.
+            "max-sm:w-[calc(100vw-2rem)] max-sm:overflow-hidden",
             // Animate in/out in sync with sidebar (duration-500)
             "transition-all duration-500 ease-in-out",
             isOpen

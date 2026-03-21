@@ -56,8 +56,7 @@
 
     private bool IsPillCollapsed =>
         Context?.CollapsedMode == SidebarCollapsedMode.Pill
-        && !Context.IsOpen
-        && !Context.IsMobile;
+        && !Context.IsOpen;
 
     private string GetClasses() => ClassNames.cn(
         "shrink-0",
