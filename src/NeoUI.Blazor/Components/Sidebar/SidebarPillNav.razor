@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
+@inject ILocalizer Localizer
 
 @*
     SidebarPillNav — the floating pill-shaped navigation bar that slides in from the top
@@ -27,16 +28,16 @@
 {
     <nav class="@GetClasses()"
          data-sidebar="pill-nav"
-         aria-label="Navigation"
+         aria-label="@Localizer["Sidebar.Pill.AriaLabel"]"
          @attributes="AdditionalAttributes">
 
         @* Expand button — restores the full sidebar *@
         <button type="button"
                 class="@GetExpandButtonClasses()"
-                title="Open navigation"
+                title="@Localizer["Sidebar.Pill.ExpandButton"]"
                 @onclick="HandleExpand">
             <LucideIcon Name="@ExpandIcon" Size="16" />
-            <span class="sr-only">Open navigation</span>
+            <span class="sr-only">@Localizer["Sidebar.Pill.ExpandButton"]</span>
         </button>
 
         @* Vertical divider *@
@@ -105,6 +106,12 @@
 
     private string GetClasses()
     {
+        // Visibility is driven by Blazor state (isOpen) for wide viewports.
+        // For narrow viewports (< 640px) we override with max-sm: CSS classes so the
+        // pill is always visible regardless of Blazor state or IsMobile detection.
+        // This also covers desktop browsers resized to a narrow window — it's purely
+        // viewport-width based, not tied to IsMobile at all.
+        // The Sheet overlay (z-50) naturally covers the pill when the drawer is open.
         var isOpen = Context?.IsOpen ?? true;
 
         return ClassNames.cn(
@@ -113,10 +120,10 @@
             // Shape & colour
             "flex flex-row items-center gap-1 px-2 py-1.5",
             "rounded-full bg-card/95 backdrop-blur-sm shadow-lg border border-border",
-            // On mobile: fixed width prevents feedback loops when items hide/show;
-            // overflow-hidden clips any items that exceed the container cleanly.
-            "max-sm:w-[calc(100vw-2rem)] max-sm:overflow-hidden",
-            // Animate in/out in sync with sidebar (duration-500)
+            // On mobile: fixed width prevents feedback loops; always visible (see comment above)
+            "max-sm:max-w-[calc(100vw-2rem)] max-sm:overflow-hidden",
+            "max-sm:opacity-100 max-sm:translate-y-0 max-sm:pointer-events-auto",
+            // Animate in/out in sync with sidebar (duration-500) — desktop only
             "transition-all duration-500 ease-in-out",
             isOpen
                 ? "opacity-0 -translate-y-full pointer-events-none"
