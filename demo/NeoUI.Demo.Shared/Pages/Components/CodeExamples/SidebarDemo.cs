@@ -15,6 +15,26 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("IsActive",      "bool",             "false",         "On SidebarMenuButton: marks the item as the active/current page."),
                 new("Href",          "string?",          "null",          "On SidebarMenuButton: renders as NavLink with the given href."),
                 new("Match",         "NavLinkMatch",     "Prefix",        "On SidebarMenuButton: controls how the href is matched for active state."),
+
+                // Pill mode — SidebarProvider
+                new("CollapsedMode",     "SidebarCollapsedMode", "Expand",        "On SidebarProvider: use Pill to enable the morphing pill nav bar."),
+
+                // Pill mode — SidebarTrigger
+                new("Icon",             "string?",              "null",          "On SidebarTrigger: overrides the default icon. Falls back to panel-top (pill) / panel-left (other)."),
+
+                // Pill mode — SidebarPillNav
+                new("ExpandIcon",        "string",               "panel-left",    "On SidebarPillNav: icon name for the expand/restore sidebar button."),
+                new("ExpandButtonClass", "string?",              "null",          "On SidebarPillNav: extra CSS classes on the expand button."),
+                new("TrailingContent",   "RenderFragment?",      "—",             "On SidebarPillNav: optional trailing items after a divider (requires explicit slot tags when used alongside ChildContent)."),
+
+                // Pill mode — SidebarPillNavItem
+                new("Label",            "string?",              "null",          "On SidebarPillNavItem: tooltip text and aria-label for the icon button."),
+                new("ActiveClass",      "string?",              "null",          "On SidebarPillNavItem: overrides active-state colour classes."),
+                new("InactiveClass",    "string?",              "null",          "On SidebarPillNavItem: overrides inactive-state colour classes."),
+
+                // Pill mode — SidebarPillInset
+                new("ExpandedClass",    "string",               "p-6 lg:p-8",    "On SidebarPillInset: padding classes applied when the sidebar is open."),
+                new("CollapsedClass",   "string",               "p-6 lg:p-8 pt-0", "On SidebarPillInset: padding classes applied when the pill nav is visible."),
             ];
 
         private const string _basicCode = """
@@ -298,6 +318,88 @@ namespace NeoUI.Demo.Shared.Pages.Components
                         </CollapsibleContent>
                     </Collapsible>
                 </SidebarMenuItem>
+                """;
+
+        private const string _pillCode = """
+                <SidebarProvider CollapsedMode="SidebarCollapsedMode.Pill"
+                                 DefaultOpen="false"
+                                 HeightClass="h-full">
+                    <Sidebar Collapsible="true">
+                        <SidebarHeader>
+                            <div class="flex h-12 items-center justify-between px-3">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                        <LucideIcon Name="layers" Size="16" />
+                                    </div>
+                                    <div>
+                                        <p class="truncate text-sm font-semibold">NeoUI App</p>
+                                        <p class="truncate text-xs text-muted-foreground">Workspace</p>
+                                    </div>
+                                </div>
+                                <SidebarTrigger />
+                            </div>
+                        </SidebarHeader>
+                        <SidebarContent>
+                            <SidebarMenu>
+                                @foreach (var (item, i) in _pillItems.Select((x, i) => (x, i)))
+                                {
+                                    <SidebarMenuItem>
+                                        <SidebarMenuButton IsActive="@(_pillActive == i)"
+                                                           OnClick="@(() => _pillActive = i)"
+                                                           Tooltip="@item.Label">
+                                            <LucideIcon Name="@item.Icon" Size="16" />
+                                            <span>@item.Label</span>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                }
+                            </SidebarMenu>
+                        </SidebarContent>
+                    </Sidebar>
+
+                    <SidebarPillNav>
+                        <ChildContent>
+                            @foreach (var (item, i) in _pillItems.Select((x, i) => (x, i)))
+                            {
+                                <SidebarPillNavItem Label="@item.Label"
+                                                    IsActive="@(_pillActive == i)"
+                                                    OnClick="@(() => _pillActive = i)">
+                                    <LucideIcon Name="@item.Icon" Size="16" />
+                                </SidebarPillNavItem>
+                            }
+                        </ChildContent>
+                        <TrailingContent>
+                            <SidebarTrigger />
+                        </TrailingContent>
+                    </SidebarPillNav>
+
+                    <SidebarInset>
+                        <SidebarPillFade />
+                        <SidebarPillInset>
+                            <div class="p-4 space-y-3">
+                                <h2 class="text-xl font-semibold">@_pillItems[_pillActive].Label</h2>
+                                <p class="text-sm text-muted-foreground">
+                                    This is the @_pillItems[_pillActive].Label section.
+                                    Collapse the sidebar to see the pill nav appear above.
+                                </p>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="rounded-lg border bg-muted/40 p-4 text-sm">Metric A</div>
+                                    <div class="rounded-lg border bg-muted/40 p-4 text-sm">Metric B</div>
+                                </div>
+                            </div>
+                        </SidebarPillInset>
+                    </SidebarInset>
+                </SidebarProvider>
+
+                @code {
+                    private int _pillActive = 0;
+                    private readonly (string Icon, string Label)[] _pillItems =
+                    [
+                        ("layout-dashboard", "Dashboard"),
+                        ("bar-chart-3",      "Analytics"),
+                        ("users",            "Team"),
+                        ("settings",         "Settings"),
+                    ];
+                }
                 """;
     }
 }

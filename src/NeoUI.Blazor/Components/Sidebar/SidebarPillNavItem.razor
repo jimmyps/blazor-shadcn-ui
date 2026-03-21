@@ -1,0 +1,118 @@
+@namespace NeoUI.Blazor
+@using Microsoft.AspNetCore.Components.Routing
+
+@*
+    SidebarPillNavItem — an icon-only button for use inside <SidebarPillNav>.
+
+    Button mode (index-based active state):
+        <SidebarPillNavItem Label="Dashboard" IsActive="@(activeItem == 0)" OnClick="@(() => activeItem = 0)">
+            <LucideIcon Name="home" Size="16" />
+        </SidebarPillNavItem>
+
+    NavLink mode (route-based active state):
+        <SidebarPillNavItem Label="Analytics" Href="/analytics">
+            <LucideIcon Name="bar-chart-3" Size="16" />
+        </SidebarPillNavItem>
+*@
+
+@if (!string.IsNullOrEmpty(Href))
+{
+    <NavLink href="@Href"
+             Match="@Match"
+             class="@GetNavLinkClasses()"
+             title="@Label"
+             aria-label="@Label"
+             @attributes="AdditionalAttributes">
+        @ChildContent
+    </NavLink>
+}
+else
+{
+    <button type="button"
+            class="@GetButtonClasses()"
+            title="@Label"
+            aria-label="@Label"
+            @onclick="OnClick"
+            @attributes="AdditionalAttributes">
+        @ChildContent
+    </button>
+}
+
+@code {
+    /// <summary>The icon to display. Typically a <see cref="LucideIcon"/>.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Tooltip text and accessible label for the button.</summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Whether this item is currently active. Applies primary-colour highlight.
+    /// Ignored when <see cref="Href"/> is set (NavLink handles active state automatically).
+    /// </summary>
+    [Parameter]
+    public bool IsActive { get; set; }
+
+    /// <summary>
+    /// When set, renders a NavLink anchor instead of a button.
+    /// Active styling is applied automatically when the route matches.
+    /// </summary>
+    [Parameter]
+    public string? Href { get; set; }
+
+    /// <summary>NavLink match strategy. Defaults to <see cref="NavLinkMatch.Prefix"/>.</summary>
+    [Parameter]
+    public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+
+    /// <summary>Click callback (button mode only).</summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Overrides the active-state colour classes. Defaults to <c>bg-primary text-primary-foreground hover:bg-primary/90</c>.
+    /// </summary>
+    [Parameter]
+    public string? ActiveClass { get; set; }
+
+    /// <summary>
+    /// Overrides the inactive-state colour classes. Defaults to <c>text-foreground hover:bg-accent hover:text-accent-foreground</c>.
+    /// </summary>
+    [Parameter]
+    public string? InactiveClass { get; set; }
+
+    /// <summary>Additional HTML attributes applied to the button or anchor.</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string BaseClasses =>
+        "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 [&>svg]:size-4 [&>svg]:shrink-0";
+
+    private string InactiveClasses =>
+        "text-foreground hover:bg-accent hover:text-accent-foreground";
+
+    private string ActiveClasses =>
+        "bg-primary text-primary-foreground hover:bg-primary/90";
+
+    private string GetButtonClasses() => ClassNames.cn(
+        BaseClasses,
+        IsActive ? (ActiveClass ?? ActiveClasses) : (InactiveClass ?? InactiveClasses),
+        Class
+    );
+
+    // NavLink active state is applied via the built-in "active" CSS class.
+    // We map it to the same primary-colour style with a CSS selector in GetNavLinkClasses.
+    private string GetNavLinkClasses() => ClassNames.cn(
+        BaseClasses,
+        InactiveClass ?? InactiveClasses,
+        // When NavLink adds the "active" class, override with primary colours
+        ActiveClass != null
+            ? $"[&.active]:{ActiveClass.Replace(" ", " [&.active]:")}"
+            : "[&.active]:bg-primary [&.active]:text-primary-foreground [&.active]:hover:bg-primary/90",
+        Class
+    );
+}

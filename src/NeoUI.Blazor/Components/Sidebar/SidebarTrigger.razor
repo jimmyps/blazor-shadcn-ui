@@ -22,7 +22,7 @@
     }
     else
     {
-        <LucideIcon Name="panel-left" Size="16" />
+        <LucideIcon Name="@(Icon ?? (Context?.CollapsedMode == SidebarCollapsedMode.Pill ? "panel-top" : "panel-left"))" Size="16" />
         <span class="sr-only">@Localizer["Sidebar.ToggleSidebar"]</span>
     }
 </button>
@@ -32,6 +32,14 @@
     private SidebarContext? Context { get; set; }
 
     /// <summary>
+    /// Icon name for the default trigger button. Overrides the context-aware default
+    /// (<c>panel-top</c> in pill mode, <c>panel-left</c> otherwise).
+    /// Has no effect when <see cref="ChildContent"/> is set.
+    /// </summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>
     /// Custom content for the trigger button.
     /// If not provided, defaults to a panel-left icon.
     /// </summary>
@@ -39,7 +47,7 @@
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
-    /// Click handler for custom behavior.4
+    /// Click handler for custom behavior.
     /// </summary>
     [Parameter]
     public EventCallback<MouseEventArgs> OnClick { get; set; }

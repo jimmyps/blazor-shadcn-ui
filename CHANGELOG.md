@@ -2,7 +2,121 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-20 — DataTable keyboard focus ring Safari fix
+## 2026-3-21 — Sidebar pill mode: morphing sidebar ↔ floating pill nav
+
+> **Release: `v3.7.0`**  
+> **New feature.** Affects `Sidebar`, `SidebarTrigger`, and five new `SidebarPill*` companion components in `NeoUI.Blazor`. All additions are additive — no breaking changes.
+
+---
+
+### ✨ New Feature — `SidebarCollapsedMode.Pill`
+
+A new `CollapsedMode` value transforms the sidebar into a floating pill navigation bar when collapsed. The sidebar shrinks to `w-0` via a CSS `transition-[width,opacity]`; simultaneously, a `fixed`-positioned pill bar animates down from the top. Both directions share the same `duration-500` transition so the handoff is seamless. Mobile breakpoints are unaffected — the pill nav is desktop-only.
+
+```razor
+<SidebarProvider CollapsedMode="SidebarCollapsedMode.Pill" DefaultOpen="true" HeightClass="h-screen">
+    <Sidebar Collapsible="true">...</Sidebar>
+
+    <SidebarPillNav>
+        <ChildContent>
+            <SidebarPillNavItem Label="Dashboard" IsActive="@(active == 0)" OnClick="@(() => active = 0)">
+                <LucideIcon Name="layout-dashboard" Size="16" />
+            </SidebarPillNavItem>
+        </ChildContent>
+        <TrailingContent>
+            <SidebarPillNavItem Label="Search" OnClick="OpenSearch">
+                <LucideIcon Name="search" Size="16" />
+            </SidebarPillNavItem>
+        </TrailingContent>
+    </SidebarPillNav>
+
+    <SidebarInset>
+        <SidebarPillFade />
+        <SidebarPillInset>
+            ...page content...
+        </SidebarPillInset>
+    </SidebarInset>
+</SidebarProvider>
+```
+
+**Single scroll-container architecture:** `SidebarInset` (`<main>`) is the sole `overflow-y-auto` container. `SidebarPillFade` uses `sticky top-0` inside that context so the gradient overlay correctly tracks scrolling content. `SidebarPillInset` uses `shrink-0` to prevent a secondary scroll context. No negative-margin tricks are needed.
+
+---
+
+### ✨ New Component — `SidebarPillNav`
+
+The floating pill bar. Only rendered when `CollapsedMode="Pill"` and not on mobile. Contains a leading expand button, consumer icon items via `ChildContent`, and an optional `TrailingContent` slot separated by a divider.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ExpandIcon` | `string` | `"panel-left"` | Icon name for the expand/restore sidebar button. |
+| `ExpandButtonClass` | `string?` | `null` | Additional CSS classes on the expand button. |
+| `TrailingContent` | `RenderFragment?` | — | Optional trailing items (e.g. search, settings) after a second divider. Requires explicit `<ChildContent>` / `<TrailingContent>` tags when using both slots. |
+| `Class` | `string?` | `null` | Additional CSS classes on the pill `<nav>` container. |
+
+---
+
+### ✨ New Component — `SidebarPillNavItem`
+
+Icon-only circular button for use inside `<SidebarPillNav>`. Supports button mode (index-based active state) and NavLink mode (route-based active state).
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Label` | `string?` | — | Tooltip text and `aria-label`. |
+| `IsActive` | `bool` | `false` | Active highlight (button mode only). |
+| `Href` | `string?` | — | Renders a `<NavLink>` anchor when set; active state is route-driven. |
+| `Match` | `NavLinkMatch` | `Prefix` | NavLink route-match strategy. |
+| `ActiveClass` | `string?` | `null` | Overrides active-state colour classes (`bg-primary text-primary-foreground …`). |
+| `InactiveClass` | `string?` | `null` | Overrides inactive-state colour classes (`text-foreground hover:bg-accent …`). |
+| `Class` | `string?` | `null` | Additional CSS classes merged on top of all other classes. |
+
+---
+
+### ✨ New Component — `SidebarPillFade`
+
+Sticky gradient bar that slides in at the top of `<SidebarInset>` when the pill nav is visible. Provides pill-nav clearance via real layout height (`h-0 → h-24`) — no negative-margin offset needed — while applying a `backdrop-blur-sm` + `bg-gradient-to-b` depth effect. Animates in sync with the pill nav (`duration-500`). Place as the **first** direct child of `<SidebarInset>`.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Class` | `string?` | `null` | Additional CSS classes on the fade bar. |
+
+---
+
+### ✨ New Component — `SidebarPillInset`
+
+Content wrapper that transitions `padding-top` between two class sets as the pill nav appears and disappears, so the content edge stays flush with the bottom of the fade gradient.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ExpandedClass` | `string` | `"p-6 lg:p-8"` | Classes applied when the sidebar is open (pill nav hidden). |
+| `CollapsedClass` | `string` | `"p-6 lg:p-8 pt-0 lg:pt-0"` | Classes applied when the pill nav is visible. |
+| `Class` | `string?` | `null` | Additional CSS classes always applied. |
+
+---
+
+### ✨ New Component — `SidebarPillSpacer`
+
+Auxiliary height spacer (`h-0 → h-20`, `transition-[height] duration-500`) for use as a lightweight clearance alternative to `<SidebarPillFade>` when no gradient overlay is needed.
+
+---
+
+### 🔧 Enhancement — `SidebarTrigger`: `Icon` parameter
+
+New `Icon` (`string?`) overrides the context-aware default icon without requiring a full `ChildContent` replacement. Falls back to `panel-top` in pill mode and `panel-left` in all other modes when `null`.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Icon` | `string?` | `null` | Overrides the default icon. Context-aware fallback: `panel-top` (pill) / `panel-left` (other). No effect when `ChildContent` is set. |
+
+---
+
+### 📖 Demo — `SidebarDemo`: Pill Mode inline example
+
+A **Pill Mode** section has been added to `/components/sidebar`, inserted between the Inset Variant and Collapsible Icons examples. The demo starts collapsed so the pill nav and gradient fade are immediately visible; clicking the expand icon in the pill restores the full sidebar. Active tab state is tracked via `_pillActive` / `_pillItems`. The **API Reference** props table on the same page has been extended to cover all new `SidebarPill*` parameters and the `SidebarTrigger` `Icon` override.
+
+---
+
+## 2026-3-20
 
 > **Bug fix.** Affects `DataTable<TData>` in `NeoUI.Blazor` and `TableRow` in `NeoUI.Blazor.Primitives`. No breaking changes.
 
