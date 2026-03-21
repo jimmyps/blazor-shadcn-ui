@@ -18,7 +18,7 @@
     the pill-nav clearance and sticky positioning works against <main>'s scroll.
 *@
 
-@if (Context?.CollapsedMode == SidebarCollapsedMode.Pill && !Context.IsMobile)
+@if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
 {
     <div class="@GetClasses()" aria-hidden="true"></div>
 }
