@@ -1,0 +1,160 @@
+@page "/screens/morphing-nav-benchmark"
+@layout NeoUI.Test.Layout.FullScreenLayout
+@namespace NeoUI.Test.Pages.Screens
+
+@* Benchmark: direct raw-HTML/Tailwind port of the v0.dev MorphingNavDashboard.
+   No NeoUI sidebar components — only Button, Card, Progress, and LucideIcon.
+   This is the baseline to visually compare against the NeoUI-native version. *@
+
+<div class="flex h-screen w-full overflow-hidden bg-background">
+
+    @* ── Sidebar ─────────────────────────────────────────────── *@
+    <aside class="@($"fixed left-0 top-0 z-40 h-full bg-sidebar border-r border-sidebar-border transition-all duration-500 ease-in-out {(isCollapsed ? "w-0 opacity-0 overflow-hidden pointer-events-none" : "w-64 opacity-100")}")">
+        <div class="flex h-16 items-center justify-between px-6 border-b border-sidebar-border">
+            <h1 class="text-lg font-semibold text-sidebar-foreground">Dashboard</h1>
+            <Button Variant="ButtonVariant.Ghost"
+                    Size="ButtonSize.Icon"
+                    OnClick="@(() => isCollapsed = true)"
+                    Class="text-sidebar-foreground hover:bg-sidebar-accent">
+                <LucideIcon Name="chevron-left" Class="h-5 w-5" />
+            </Button>
+        </div>
+
+        <nav class="flex flex-col gap-1 p-4">
+            @foreach (var (item, index) in navItems.Select((item, i) => (item, i)))
+            {
+                <button @onclick="@(() => activeItem = index)"
+                        class="@($"flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors {(activeItem == index ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")}")">
+                    <LucideIcon Name="@item.Icon" Class="h-5 w-5" />
+                    <span>@item.Label</span>
+                </button>
+            }
+        </nav>
+    </aside>
+
+    @* ── Floating pill nav (shown when sidebar is collapsed) ─── *@
+    <header class="@($"fixed top-0 left-0 right-0 z-30 flex justify-center transition-all duration-500 ease-in-out {(isCollapsed ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none")}")">
+        <div class="flex items-center gap-2 bg-card/95 backdrop-blur-sm border border-border shadow-lg rounded-full px-2 py-1.5 mt-4">
+            <Button Variant="ButtonVariant.Ghost"
+                    Size="ButtonSize.Icon"
+                    OnClick="@(() => isCollapsed = false)"
+                    Class="h-9 w-9 rounded-full text-foreground hover:bg-accent">
+                <LucideIcon Name="menu" Class="h-4 w-4" />
+            </Button>
+
+            <div class="h-6 w-px bg-border mx-1"></div>
+
+            @foreach (var (item, index) in navItems.Select((item, i) => (item, i)))
+            {
+                <Button Variant="ButtonVariant.Ghost"
+                        Size="ButtonSize.Icon"
+                        OnClick="@(() => activeItem = index)"
+                        Class="@($"h-9 w-9 rounded-full transition-all {(activeItem == index ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-foreground hover:bg-accent")}")">
+                    <LucideIcon Name="@item.Icon" Class="h-4 w-4" />
+                </Button>
+            }
+        </div>
+    </header>
+
+    @* ── Main content ─────────────────────────────────────────── *@
+    <main class="@($"flex-1 transition-all duration-500 ease-in-out {(isCollapsed ? "ml-0 mt-20" : "ml-64 mt-0")} overflow-auto")">
+        <div class="p-6 lg:p-8">
+
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold tracking-tight text-foreground mb-2">@navItems[activeItem].Label</h2>
+                <p class="text-muted-foreground">Welcome to your @navItems[activeItem].Label.ToLower() overview</p>
+            </div>
+
+            @* Metric cards *@
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                @for (int i = 1; i <= 6; i++)
+                {
+                    var n = i;
+                    <Card Class="p-6">
+                        <CardContent Class="p-0">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-2 rounded-lg bg-primary/10">
+                                    <LucideIcon Name="bell" Class="h-5 w-5 text-primary" />
+                                </div>
+                                <span class="text-xs text-muted-foreground">Updated 2h ago</span>
+                            </div>
+                            <h3 class="text-lg font-semibold text-card-foreground mb-2">Metric @n</h3>
+                            <p class="text-2xl font-bold text-card-foreground mb-1">1,234</p>
+                            <p class="text-sm text-muted-foreground">
+                                <span class="text-primary font-medium">+12.5%</span> from last month
+                            </p>
+                        </CardContent>
+                    </Card>
+                }
+            </div>
+
+            @* Bottom row *@
+            <div class="mt-6 grid gap-6 lg:grid-cols-2">
+
+                <Card Class="p-6">
+                    <CardContent Class="p-0">
+                        <h3 class="text-lg font-semibold text-card-foreground mb-4">Recent Activity</h3>
+                        <div class="space-y-4">
+                            @for (int i = 1; i <= 4; i++)
+                            {
+                                var n = i;
+                                <div class="flex items-center gap-4">
+                                    <div class="h-2 w-2 rounded-full bg-primary flex-shrink-0"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-card-foreground">Activity item @n</p>
+                                        <p class="text-xs text-muted-foreground">2 hours ago</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Card Class="p-6">
+                    <CardContent Class="p-0">
+                        <h3 class="text-lg font-semibold text-card-foreground mb-4">Performance</h3>
+                        <div class="space-y-4">
+                            @foreach (var metric in perfMetrics)
+                            {
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between text-sm">
+                                        <span class="text-muted-foreground">@metric.Label</span>
+                                        <span class="font-medium text-card-foreground">@metric.Value%</span>
+                                    </div>
+                                    <Progress Value="@metric.Value" Max="100" Class="h-2" />
+                                </div>
+                            }
+                        </div>
+                    </CardContent>
+                </Card>
+
+            </div>
+        </div>
+    </main>
+
+</div>
+
+@code {
+    bool isCollapsed = false;
+    int activeItem = 0;
+
+    record NavItem(string Icon, string Label);
+    record PerfMetric(string Label, int Value);
+
+    readonly NavItem[] navItems =
+    [
+        new("home",        "Dashboard"),
+        new("bar-chart-3", "Analytics"),
+        new("users",       "Team"),
+        new("file-text",   "Reports"),
+        new("settings",    "Settings"),
+    ];
+
+    readonly PerfMetric[] perfMetrics =
+    [
+        new("System Load",   72),
+        new("Memory Usage",  61),
+        new("Network",       85),
+        new("Storage",       68),
+    ];
+}
