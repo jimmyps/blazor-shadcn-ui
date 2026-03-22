@@ -1,0 +1,28 @@
+@namespace NeoUI.Blazor
+
+@*
+    SidebarPillSpacer — animates a top offset that pushes content below the floating pill nav.
+
+    Place between <SidebarPillFade /> and your content div inside <SidebarInset>.
+    The content div should use flex-1 min-h-0 so the flex column fills the remaining space:
+
+        <SidebarInset>
+            <SidebarPillFade />
+            <SidebarPillSpacer />
+            <div class="p-6 flex-1 min-h-0 overflow-auto">...</div>
+        </SidebarInset>
+
+    Height transitions h-0 → h-20 in sync with the pill nav (duration-500).
+    Has no layout effect when the sidebar is not in pill mode.
+*@
+
+@if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
+{
+    <div class="shrink-0 w-full transition-[height] duration-500 ease-in-out @(Context.IsOpen ? "h-0" : "h-20")"
+         aria-hidden="true"></div>
+}
+
+@code {
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+}

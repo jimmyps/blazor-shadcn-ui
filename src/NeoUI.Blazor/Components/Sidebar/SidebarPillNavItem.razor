@@ -1,0 +1,171 @@
+@namespace NeoUI.Blazor
+@using Microsoft.AspNetCore.Components.Routing
+
+@*
+    SidebarPillNavItem — an icon-only button for use inside <SidebarPillNav>.
+
+    Button mode (index-based active state):
+        <SidebarPillNavItem Label="Dashboard" IsActive="@(activeItem == 0)" OnClick="@(() => activeItem = 0)">
+            <LucideIcon Name="home" Size="16" />
+        </SidebarPillNavItem>
+
+    NavLink mode (route-based active state):
+        <SidebarPillNavItem Label="Analytics" Href="/analytics">
+            <LucideIcon Name="bar-chart-3" Size="16" />
+        </SidebarPillNavItem>
+
+    AsChild mode — renders child content directly, skipping the built-in button/NavLink wrapper.
+    Use this when you need a custom interactive element (e.g. a DropdownMenu trigger) as a pill item.
+    NOTE: When AsChild="true", the parameters Label, Href, Match (non-default), IsActive (when true), Class, ActiveClass,
+    InactiveClass, OnClick, and any extra HTML attributes are all ignored — do not set them.
+        <SidebarPillNavItem AsChild="true">
+            <DropdownMenu>
+                <DropdownMenuTrigger AsChild="true">
+                    <button class="flex h-9 w-9 items-center justify-center rounded-full ...">
+                        <LucideIcon Name="settings" Size="16" />
+                    </button>
+                </DropdownMenuTrigger>
+                ...
+            </DropdownMenu>
+        </SidebarPillNavItem>
+*@
+
+@if (AsChild)
+{
+    @ChildContent
+}
+else if (!string.IsNullOrEmpty(Href))
+{
+    <NavLink href="@Href"
+             Match="@Match"
+             class="@GetNavLinkClasses()"
+             title="@Label"
+             aria-label="@Label"
+             @attributes="AdditionalAttributes">
+        @ChildContent
+    </NavLink>
+}
+else
+{
+    <button type="button"
+            class="@GetButtonClasses()"
+            title="@Label"
+            aria-label="@Label"
+            @onclick="OnClick"
+            @attributes="AdditionalAttributes">
+        @ChildContent
+    </button>
+}
+
+@code {
+    /// <summary>The icon to display. Typically a <see cref="LucideIcon"/>.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// When true, renders child content directly without the built-in button or NavLink wrapper.
+    /// Use this to slot in a custom interactive element (e.g. a DropdownMenu) as a pill nav item.
+    /// <para>
+    /// When <c>AsChild</c> is <c>true</c>, the following parameters are all ignored and must not be set:
+    /// <see cref="Label"/>, <see cref="Href"/>, <see cref="Match"/>, <see cref="IsActive"/> (when <c>true</c>),
+    /// <see cref="Class"/>, <see cref="ActiveClass"/>, <see cref="InactiveClass"/>, <see cref="OnClick"/>,
+    /// and any unmatched HTML attributes captured via <c>AdditionalAttributes</c>.
+    /// </para>
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = false;
+
+    /// <summary>Tooltip text and accessible label for the button.</summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>
+    /// Whether this item is currently active. Applies primary-colour highlight.
+    /// Ignored when <see cref="Href"/> is set (NavLink handles active state automatically).
+    /// </summary>
+    [Parameter]
+    public bool IsActive { get; set; }
+
+    /// <summary>
+    /// When set, renders a NavLink anchor instead of a button.
+    /// Active styling is applied automatically when the route matches.
+    /// </summary>
+    [Parameter]
+    public string? Href { get; set; }
+
+    /// <summary>NavLink match strategy. Defaults to <see cref="NavLinkMatch.Prefix"/>.</summary>
+    [Parameter]
+    public NavLinkMatch Match { get; set; } = NavLinkMatch.Prefix;
+
+    /// <summary>Click callback (button mode only).</summary>
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>Additional CSS classes.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Overrides the active-state colour classes. Defaults to <c>bg-primary text-primary-foreground hover:bg-primary/90</c>.
+    /// </summary>
+    [Parameter]
+    public string? ActiveClass { get; set; }
+
+    /// <summary>
+    /// Overrides the inactive-state colour classes. Defaults to <c>text-foreground hover:bg-accent hover:text-accent-foreground</c>.
+    /// </summary>
+    [Parameter]
+    public string? InactiveClass { get; set; }
+
+    /// <summary>Additional HTML attributes applied to the button or anchor.</summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string BaseClasses =>
+        "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 [&>svg]:size-4 [&>svg]:shrink-0";
+
+    private string InactiveClasses =>
+        "text-foreground hover:bg-accent hover:text-accent-foreground";
+
+    private string ActiveClasses =>
+        "bg-primary text-primary-foreground hover:bg-primary/90";
+
+    private string GetButtonClasses() => ClassNames.cn(
+        BaseClasses,
+        IsActive ? (ActiveClass ?? ActiveClasses) : (InactiveClass ?? InactiveClasses),
+        Class
+    );
+
+    // NavLink active state is applied via the built-in "active" CSS class.
+    // We map it to the same primary-colour style with a CSS selector in GetNavLinkClasses.
+    private string GetNavLinkClasses() => ClassNames.cn(
+        BaseClasses,
+        InactiveClass ?? InactiveClasses,
+        // When NavLink adds the "active" class, override with primary colours
+        ActiveClass != null
+            ? $"[&.active]:{ActiveClass.Replace(" ", " [&.active]:")}"
+            : "[&.active]:bg-primary [&.active]:text-primary-foreground [&.active]:hover:bg-primary/90",
+        Class
+    );
+
+    protected override void OnParametersSet()
+    {
+        if (AsChild && (
+            !string.IsNullOrEmpty(Href) ||
+            !string.IsNullOrEmpty(Label) ||
+            IsActive ||
+            Match != NavLinkMatch.Prefix ||
+            !string.IsNullOrEmpty(Class) ||
+            !string.IsNullOrEmpty(ActiveClass) ||
+            !string.IsNullOrEmpty(InactiveClass) ||
+            OnClick.HasDelegate ||
+            (AdditionalAttributes?.Count > 0)))
+        {
+            throw new InvalidOperationException(
+                $"{nameof(SidebarPillNavItem)}: When {nameof(AsChild)} is true, parameters " +
+                $"{nameof(Label)}, {nameof(Href)}, {nameof(Match)}, {nameof(IsActive)}, " +
+                $"{nameof(Class)}, {nameof(ActiveClass)}, {nameof(InactiveClass)}, {nameof(OnClick)}, " +
+                $"and additional HTML attributes are all ignored and must not be set.");
+        }
+    }
+}

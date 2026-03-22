@@ -107,9 +107,12 @@ public partial class Sidebar : ComponentBase, IDisposable
             : "";
 
         // Width and transition classes
-        var widthClasses = Collapsible
-            ? "w-[var(--sidebar-width)] transition-[width] duration-200 ease-linear data-[state=collapsed]:w-[var(--sidebar-width-icon)]"
-            : "w-[var(--sidebar-width)] transition-[width,opacity] duration-200 ease-linear data-[state=closed]:w-0 data-[state=closed]:opacity-0 overflow-hidden";
+        // Pill mode: fade+shrink to zero on close (sidebar hands off to SidebarPillNav), 500 ms to match pill animation
+        var widthClasses = Context?.CollapsedMode == SidebarCollapsedMode.Pill
+            ? "w-[var(--sidebar-width)] transition-[width,opacity] duration-500 ease-in-out data-[state=closed]:w-0 data-[state=closed]:opacity-0 overflow-hidden"
+            : Collapsible
+                ? "w-[var(--sidebar-width)] transition-[width] duration-200 ease-linear data-[state=collapsed]:w-[var(--sidebar-width-icon)]"
+                : "w-[var(--sidebar-width)] transition-[width,opacity] duration-200 ease-linear data-[state=closed]:w-0 data-[state=closed]:opacity-0 overflow-hidden";
 
         // Variant-specific layout classes with independent scrolling
         var layoutClasses = Context?.Variant switch
@@ -163,8 +166,22 @@ public partial class Sidebar : ComponentBase, IDisposable
 
         if (Context.Open) return "expanded";
 
+        // Pill mode always goes to "closed" — no icon rail, sidebar fully hides and SidebarPillNav takes over
+        if (Context.CollapsedMode == SidebarCollapsedMode.Pill) return "closed";
+
         // When not open: return "collapsed" if Collapsible (shows icons), "closed" if not Collapsible (fully hidden)
         return Collapsible ? "collapsed" : "closed";
+    }
+
+    /// <summary>
+    /// Gets the data-collapsible attribute value. Used by child components for CSS selector hooks.
+    /// </summary>
+    private string GetDataCollapsible()
+    {
+        if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
+            return Context.Open ? "none" : "pill";
+
+        return Collapsible && Context?.Open == false ? "icon" : "none";
     }
 
     /// <inheritdoc/>

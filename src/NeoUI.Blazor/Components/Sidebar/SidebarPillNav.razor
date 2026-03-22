@@ -1,0 +1,134 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+@inject ILocalizer Localizer
+
+@*
+    SidebarPillNav — the floating pill-shaped navigation bar that slides in from the top
+    when SidebarProvider has CollapsedMode="SidebarCollapsedMode.Pill" and the sidebar is closed.
+
+    Place this as a direct child of SidebarProvider, alongside <Sidebar> and <SidebarInset>:
+
+        <SidebarProvider CollapsedMode="SidebarCollapsedMode.Pill">
+            <Sidebar>...</Sidebar>
+            <SidebarPillNav>
+                <SidebarPillNavItem Label="Dashboard" OnClick="..." IsActive="true">
+                    <LucideIcon Name="home" Size="16" />
+                </SidebarPillNavItem>
+                ...
+            </SidebarPillNav>
+            <SidebarInset>...</SidebarInset>
+        </SidebarProvider>
+
+    The pill is always present in the DOM (when in pill mode) so CSS transitions
+    can play both on open and on close. Visibility is driven by opacity + translate classes.
+    On mobile the pill renders inside the sheet overlay when the sidebar is closed.
+*@
+
+@if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
+{
+    <nav class="@GetClasses()"
+         data-sidebar="pill-nav"
+         aria-label="@Localizer["Sidebar.Pill.AriaLabel"]"
+         @attributes="AdditionalAttributes">
+
+        @* Expand button — restores the full sidebar *@
+        <button type="button"
+                class="@GetExpandButtonClasses()"
+                title="@Localizer["Sidebar.Pill.ExpandButton"]"
+                @onclick="HandleExpand">
+            <LucideIcon Name="@ExpandIcon" Size="16" />
+            <span class="sr-only">@Localizer["Sidebar.Pill.ExpandButton"]</span>
+        </button>
+
+        @* Vertical divider *@
+        <div class="h-5 w-px bg-border shrink-0" aria-hidden="true"></div>
+
+        @* Consumer-provided icon nav items (SidebarPillNavItem) *@
+        @ChildContent
+
+        @* Optional trailing items — search, settings, etc. — separated by a divider *@
+        @if (TrailingContent != null)
+        {
+            <div class="h-5 w-px bg-border shrink-0" aria-hidden="true"></div>
+            @TrailingContent
+        }
+
+    </nav>
+}
+
+@code {
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+
+    /// <summary>
+    /// Icon name for the expand button. Defaults to <c>panel-left</c>.
+    /// </summary>
+    [Parameter]
+    public string ExpandIcon { get; set; } = "panel-left";
+
+    /// <summary>
+    /// Additional CSS classes applied to the expand button.
+    /// </summary>
+    [Parameter]
+    public string? ExpandButtonClass { get; set; }
+
+    /// <summary>
+    /// The icon nav items to display inside the pill. Use <see cref="SidebarPillNavItem"/> components.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Optional trailing items rendered after a divider (e.g. search, settings).
+    /// Wrap in explicit &lt;ChildContent&gt; / &lt;TrailingContent&gt; tags when using both.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? TrailingContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes applied to the pill nav container.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the &lt;nav&gt; element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private void HandleExpand() => Context?.ToggleSidebar();
+
+    private string GetExpandButtonClasses() => ClassNames.cn(
+        "flex h-9 w-9 items-center justify-center rounded-full text-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200 [&>svg]:size-4 [&>svg]:shrink-0",
+        ExpandButtonClass
+    );
+
+    private string GetClasses()
+    {
+        // Visibility is driven by Blazor state (isOpen) for wide viewports.
+        // For narrow viewports (< 640px) we override with max-sm: CSS classes so the
+        // pill is always visible regardless of Blazor state or IsMobile detection.
+        // This also covers desktop browsers resized to a narrow window — it's purely
+        // viewport-width based, not tied to IsMobile at all.
+        // The Sheet overlay (z-50) naturally covers the pill when the drawer is open.
+        var isOpen = Context?.IsOpen ?? true;
+
+        return ClassNames.cn(
+            // Position: fixed, centered at top
+            "fixed top-4 left-1/2 -translate-x-1/2 z-50",
+            // Shape & colour
+            "flex flex-row items-center gap-1 px-2 py-1.5",
+            "rounded-full bg-card/95 backdrop-blur-sm shadow-lg border border-border",
+            // On mobile: fixed width prevents feedback loops; always visible (see comment above)
+            "max-sm:max-w-[calc(100vw-2rem)] max-sm:overflow-hidden",
+            "max-sm:opacity-100 max-sm:translate-y-0 max-sm:pointer-events-auto",
+            // Animate in/out in sync with sidebar (duration-500) — desktop only
+            "transition-all duration-500 ease-in-out",
+            isOpen
+                ? "opacity-0 -translate-y-full pointer-events-none"
+                : "opacity-100 translate-y-0",
+            Class
+        );
+    }
+}
