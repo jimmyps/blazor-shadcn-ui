@@ -39,7 +39,7 @@ else if (!string.IsNullOrEmpty(Href))
     <NavLink href="@Href"
              Match="@Match"
              class="@GetNavLinkClasses()"
-             title="@Label"
+             title="@NativeTitle"
              aria-label="@Label"
              @attributes="AdditionalAttributes">
         @ChildContent
@@ -49,7 +49,7 @@ else
 {
     <button type="button"
             class="@GetButtonClasses()"
-            title="@Label"
+            title="@NativeTitle"
             aria-label="@Label"
             @onclick="OnClick"
             @attributes="AdditionalAttributes">
@@ -78,6 +78,13 @@ else
     /// <summary>Tooltip text and accessible label for the button.</summary>
     [Parameter]
     public string? Label { get; set; }
+
+    /// <summary>
+    /// Overrides the native browser tooltip (HTML title attribute). Set to empty string to suppress it,
+    /// e.g. when using a custom Tooltip component. Defaults to <see cref="Label"/> when not set.
+    /// </summary>
+    [Parameter]
+    public string? Title { get; set; }
 
     /// <summary>
     /// Whether this item is currently active. Applies primary-colour highlight.
@@ -120,6 +127,8 @@ else
     /// <summary>Additional HTML attributes applied to the button or anchor.</summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string? NativeTitle => Title ?? Label;
 
     private string BaseClasses =>
         "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 [&>svg]:size-4 [&>svg]:shrink-0";
