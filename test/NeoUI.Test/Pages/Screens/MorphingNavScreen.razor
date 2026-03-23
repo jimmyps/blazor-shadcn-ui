@@ -68,17 +68,28 @@
         <ChildContent>
             @foreach (var (item, index) in navItems.Select((item, i) => (item, i)))
             {
-                <SidebarPillNavItem Label="@item.Label"
-                                    IsActive="@(activeItem == index)"
-                                    OnClick="@(() => activeItem = index)">
-                    <LucideIcon Name="@item.Icon" Size="16" />
-                </SidebarPillNavItem>
+                <Tooltip>
+                    <TooltipTrigger>
+                        <SidebarPillNavItem Label="@item.Label"
+                                            Title=""
+                                            IsActive="@(activeItem == index)"
+                                            OnClick="@(() => activeItem = index)">
+                            <LucideIcon Name="@item.Icon" Size="16" />
+                        </SidebarPillNavItem>
+                    </TooltipTrigger>
+                    <TooltipContent>@item.Label</TooltipContent>
+                </Tooltip>
             }
         </ChildContent>
         <TrailingContent>
-            <SidebarPillNavItem Label="Search" OnClick="OpenCommand">
-                <LucideIcon Name="search" Size="16" />
-            </SidebarPillNavItem>
+            <Tooltip>
+                <TooltipTrigger>
+                    <SidebarPillNavItem Label="Search" Title="" OnClick="OpenCommand">
+                        <LucideIcon Name="search" Size="16" />
+                    </SidebarPillNavItem>
+                </TooltipTrigger>
+                <TooltipContent>Search</TooltipContent>
+            </Tooltip>
         </TrailingContent>
     </SidebarPillNav>
 

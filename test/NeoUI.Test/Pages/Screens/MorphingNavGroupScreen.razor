@@ -1,0 +1,604 @@
+@page "/screens/morphing-nav-groups"
+@layout NeoUI.Test.Layout.FullScreenLayout
+@namespace NeoUI.Test.Pages.Screens
+
+@*
+    Grouped sidebar morphing nav demo.
+    Showcases multiple SidebarGroup sections (Stripe/Vercel-style) and the AsChild pill pattern:
+    — Plain SidebarPillNavItem for single-item sections (Home, Settings)
+    — SidebarPillNavItem AsChild="true" wrapping a DropdownMenu for multi-item groups (Platform, Developers)
+      The pill button morphs its icon to the active group member and highlights in primary color.
+*@
+
+<SidebarProvider CollapsedMode="SidebarCollapsedMode.Pill"
+                 DefaultOpen="true"
+                 HeightClass="h-screen">
+
+    @* ── Full sidebar ─────────────────────────────────────────── *@
+    <Sidebar Collapsible="true">
+
+        <SidebarHeader>
+            <div class="flex h-12 items-center justify-between px-4">
+                <div class="flex items-center gap-2">
+                    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                        <LucideIcon Name="zap" Size="14" />
+                    </div>
+                    <span class="text-sm font-semibold text-sidebar-foreground whitespace-nowrap">Acme Corp</span>
+                </div>
+                <SidebarTrigger />
+            </div>
+        </SidebarHeader>
+
+        <SidebarContent>
+            <ScrollArea Class="flex-1" EnableScrollShadows="true">
+
+                @* Search *@
+                <SidebarGroup>
+                    <button type="button"
+                            class="flex w-full items-center gap-2 rounded-md border border-sidebar-border bg-sidebar-accent/30 px-3 py-1.5 text-sm text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+                            @onclick="OpenCommand">
+                        <LucideIcon Name="search" Size="14" />
+                        <span class="flex-1 text-left">Search...</span>
+                        <kbd class="font-mono text-xs opacity-50">⌘K</kbd>
+                    </button>
+                </SidebarGroup>
+
+                @* Home *@
+                <SidebarGroup>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton IsActive="@(activeSection == "home")"
+                                                   OnClick='@(() => SetSection("home"))'
+                                                   Tooltip="Home">
+                                    <LucideIcon Name="house" Size="16" />
+                                    <span>Home</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+                @* Platform group *@
+                <SidebarGroup>
+                    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            @foreach (var item in platformItems)
+                            {
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton IsActive="@(activeSection == item.Key)"
+                                                       OnClick="@(() => SetSection(item.Key))"
+                                                       Tooltip="@item.Label">
+                                        <LucideIcon Name="@item.Icon" Size="16" />
+                                        <span>@item.Label</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            }
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+                @* Developers group *@
+                <SidebarGroup>
+                    <SidebarGroupLabel>Developers</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            @foreach (var item in devItems)
+                            {
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton IsActive="@(activeSection == item.Key)"
+                                                       OnClick="@(() => SetSection(item.Key))"
+                                                       Tooltip="@item.Label">
+                                        <LucideIcon Name="@item.Icon" Size="16" />
+                                        <span>@item.Label</span>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            }
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarSeparator />
+
+                @* Settings *@
+                <SidebarGroup>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton IsActive="@(activeSection == "settings")"
+                                                   OnClick='@(() => SetSection("settings"))'
+                                                   Tooltip="Settings">
+                                    <LucideIcon Name="settings" Size="16" />
+                                    <span>Settings</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+            </ScrollArea>
+        </SidebarContent>
+
+        <SidebarFooter>
+            <div class="flex items-center gap-3 rounded-md px-3 py-2 cursor-pointer hover:bg-sidebar-accent transition-colors">
+                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-xs font-bold text-violet-600">JD</div>
+                <div class="flex-1 min-w-0">
+                    <p class="truncate text-sm font-medium text-sidebar-foreground">James Doe</p>
+                    <p class="truncate text-xs text-muted-foreground">james@acme.com</p>
+                </div>
+                <LucideIcon Name="chevrons-up-down" Size="14" Class="shrink-0 text-muted-foreground" />
+            </div>
+        </SidebarFooter>
+
+        <SidebarRail />
+    </Sidebar>
+
+    @* ── Pill nav (auto-shows when sidebar collapses) ──────────── *@
+    <SidebarPillNav>
+        <ChildContent>
+
+            @* Home — plain pill item *@
+            <Tooltip>
+                <TooltipTrigger>
+                    <SidebarPillNavItem Label="Home"
+                                        IsActive="@(activeSection == "home")"
+                                        OnClick='@(() => SetSection("home"))'
+                                        Title="">
+                        <LucideIcon Name="house" Size="16" />
+                    </SidebarPillNavItem>
+                </TooltipTrigger>
+                <TooltipContent>Home</TooltipContent>
+            </Tooltip>
+
+            @* Platform group — SplitButton: left navigates to last-chosen, right opens picker *@
+            <Tooltip>
+                <TooltipTrigger>
+                    <SidebarPillNavItem AsChild="true">
+                        <SplitButton Variant="@(IsGroupActive(platformItems) ? ButtonVariant.Default : ButtonVariant.Ghost)"
+                                     Size="ButtonSize.IconSmall"
+                                     PrimaryClass="rounded-l-full [&>span]:me-0 [&>span]:ml-1"
+                                     DropdownClass="rounded-r-full [&>svg]:mr-1"
+                                     OnClick="@(() => SetSection(EffectiveLastPlatform))"
+                                     AriaLabel="@SplitLabel(platformItems, EffectiveLastPlatform)"
+                                     DropdownAriaLabel="Platform options">
+                            <Icon>
+                                <LucideIcon Name="@SplitIcon(platformItems, EffectiveLastPlatform, "layout-grid")" Size="16" />
+                            </Icon>
+                            <DropdownContent>
+                                @foreach (var item in platformItems)
+                                {
+                                    <SplitButtonItem OnClick="@(() => SetSection(item.Key))">
+                                        <LucideIcon Name="@item.Icon" Size="14" Class="mr-2 opacity-70" />
+                                        @item.Label
+                                    </SplitButtonItem>
+                                }
+                            </DropdownContent>
+                        </SplitButton>
+                    </SidebarPillNavItem>
+                </TooltipTrigger>
+                <TooltipContent>Platform › @SplitLabel(platformItems, EffectiveLastPlatform)</TooltipContent>
+            </Tooltip>
+
+            @* Developers group — same split button pattern *@
+            <Tooltip>
+                <TooltipTrigger>
+                    <SidebarPillNavItem AsChild="true">
+                        <SplitButton Variant="@(IsGroupActive(devItems) ? ButtonVariant.Default : ButtonVariant.Ghost)"
+                                     Size="ButtonSize.IconSmall"
+                                     PrimaryClass="rounded-l-full [&>span]:me-0 [&>span]:ml-1"
+                                     DropdownClass="rounded-r-full [&>svg]:mr-1"
+                                     OnClick="@(() => SetSection(EffectiveLastDev))"
+                                     AriaLabel="@SplitLabel(devItems, EffectiveLastDev)"
+                                     DropdownAriaLabel="Developers options">
+                            <Icon>
+                                <LucideIcon Name="@SplitIcon(devItems, EffectiveLastDev, "terminal")" Size="16" />
+                            </Icon>
+                            <DropdownContent>
+                                @foreach (var item in devItems)
+                                {
+                                    <SplitButtonItem OnClick="@(() => SetSection(item.Key))">
+                                        <LucideIcon Name="@item.Icon" Size="14" Class="mr-2 opacity-70" />
+                                        @item.Label
+                                    </SplitButtonItem>
+                                }
+                            </DropdownContent>
+                        </SplitButton>
+                    </SidebarPillNavItem>
+                </TooltipTrigger>
+                <TooltipContent>Developers › @SplitLabel(devItems, EffectiveLastDev)</TooltipContent>
+            </Tooltip>
+
+            @* Settings — plain pill item *@
+            <Tooltip>
+                <TooltipTrigger>
+                    <SidebarPillNavItem Label="Settings"
+                                        IsActive="@(activeSection == "settings")"
+                                        OnClick='@(() => SetSection("settings"))'
+                                        Title="">
+                        <LucideIcon Name="settings" Size="16" />
+                    </SidebarPillNavItem>
+                </TooltipTrigger>
+                <TooltipContent>Settings</TooltipContent>
+            </Tooltip>
+
+        </ChildContent>
+        <TrailingContent>
+            <Tooltip>
+                <TooltipTrigger>
+                    <SidebarPillNavItem Label="Search" OnClick="OpenCommand" Title="">
+                        <LucideIcon Name="search" Size="16" />
+                    </SidebarPillNavItem>
+                </TooltipTrigger>
+                <TooltipContent>Search</TooltipContent>
+            </Tooltip>
+        </TrailingContent>
+    </SidebarPillNav>
+
+    @* ── Main content ─────────────────────────────────────────── *@
+    <SidebarInset>
+
+        <SidebarPillFade />
+
+        <SidebarPillInset>
+            <div class="p-6 pt-2 space-y-6">
+
+                @* Page header *@
+                <div class="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold tracking-tight text-foreground">@ActiveSection.Label</h2>
+                        <p class="mt-1 text-sm text-muted-foreground">@ActiveSection.Description</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button"
+                                class="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-sm font-medium text-card-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors">
+                            <LucideIcon Name="download" Size="14" />
+                            Export
+                        </button>
+                        <button type="button"
+                                class="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
+                            <LucideIcon Name="plus" Size="14" />
+                            @ActiveSection.ActionLabel
+                        </button>
+                    </div>
+                </div>
+
+                @* KPI cards *@
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach (var card in ActiveSection.KpiCards)
+                    {
+                        <Card Class="p-5">
+                            <CardContent Class="p-0">
+                                <div class="mb-3 flex items-start justify-between">
+                                    <div class="@ColorBgClass(card.Color) rounded-lg p-2">
+                                        <LucideIcon Name="@card.Icon" Class="@($"{ColorTextClass(card.Color)} h-4 w-4")" />
+                                    </div>
+                                    <span class="@(card.Positive ? "bg-emerald-500/10 text-emerald-600" : "bg-red-500/10 text-red-500") inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-medium">
+                                        <LucideIcon Name="@(card.Positive ? "arrow-up-right" : "arrow-down-right")" Size="10" />
+                                        @card.Delta
+                                    </span>
+                                </div>
+                                <p class="mb-1 truncate text-xs text-muted-foreground">@card.Label</p>
+                                <p class="text-2xl font-bold tracking-tight text-card-foreground">@card.Value</p>
+                                <p class="mt-1 text-xs text-muted-foreground">vs. last 30 days</p>
+                            </CardContent>
+                        </Card>
+                    }
+                </div>
+
+                @* Section detail table *@
+                <Card Class="p-5">
+                    <CardContent Class="p-0">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-sm font-semibold text-card-foreground">@ActiveSection.TableTitle</h3>
+                            <button type="button" class="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                                View all →
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            @foreach (var row in ActiveSection.TableRows)
+                            {
+                                <div class="flex items-center gap-3 rounded-md border border-border/50 bg-card/50 px-3 py-2.5">
+                                    <div class="@ColorBgClass(row.Color) flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold @ColorTextClass(row.Color)">
+                                        @row.Initials
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="truncate text-sm font-medium text-card-foreground">@row.Name</p>
+                                        <p class="truncate text-xs text-muted-foreground">@row.Meta</p>
+                                    </div>
+                                    <div class="shrink-0">
+                                        <span class="@BadgeClass(row.Status) inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium">
+                                            @row.Status
+                                        </span>
+                                    </div>
+                                    <p class="shrink-0 tabular-nums text-sm font-semibold text-card-foreground">@row.Value</p>
+                                </div>
+                            }
+                        </div>
+                    </CardContent>
+                </Card>
+
+            </div>
+        </SidebarPillInset>
+    </SidebarInset>
+
+    @* ── Command palette ───────────────────────────────────────────── *@
+    <Dialog @bind-Open="_commandOpen">
+        <DialogContent ShowClose="false"
+                       Class="p-0 gap-0 overflow-hidden max-w-md sm:top-[20vh] sm:translate-y-0">
+            <CommandContent OnValueChange="HandleCommand">
+                <CommandInput Placeholder="Search or jump to..."
+                              AutoFocus="true"
+                              Class="border-0 border-b border-border rounded-none focus-visible:ring-0" />
+                <CommandList Class="max-h-72">
+                    <CommandEmpty>
+                        <div class="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+                            <LucideIcon Name="search-x" Size="16" />
+                            No results found.
+                        </div>
+                    </CommandEmpty>
+                    <CommandGroup Heading="Navigate">
+                        @foreach (var sec in allSections)
+                        {
+                            <CommandItem Value="@sec.Label">
+                                <LucideIcon Name="@sec.Icon" Size="16" Class="mr-2" />
+                                @sec.Label
+                            </CommandItem>
+                        }
+                    </CommandGroup>
+                </CommandList>
+            </CommandContent>
+        </DialogContent>
+    </Dialog>
+
+</SidebarProvider>
+
+@code {
+    string activeSection = "home";
+    bool _commandOpen;
+
+    // Last-chosen item per group — persists across navigation, defaults to first item
+    string? _lastPlatformSection;
+    string? _lastDevSection;
+
+    string EffectiveLastPlatform => _lastPlatformSection ?? platformItems[0].Key;
+    string EffectiveLastDev      => _lastDevSection      ?? devItems[0].Key;
+
+    void SetSection(string key)
+    {
+        activeSection = key;
+        if (platformItems.Any(i => i.Key == key)) _lastPlatformSection = key;
+        if (devItems.Any(i => i.Key == key))      _lastDevSection      = key;
+    }
+    void OpenCommand() => _commandOpen = true;
+
+    void HandleCommand(string value)
+    {
+        var match = allSections.FirstOrDefault(s => s.Label == value);
+        if (match is not null)
+        {
+            SetSection(match.Key);
+            _commandOpen = false;
+        }
+    }
+
+    // ── Data types ────────────────────────────────────────────────────────────
+
+    record NavItem(string Key, string Icon, string Label);
+
+    record KpiCard(string Icon, string Color, string Label, string Value, string Delta, bool Positive);
+
+    record TableRow(string Initials, string Color, string Name, string Meta, string Status, string Value);
+
+    record SectionData(
+        string Key,
+        string Icon,
+        string Label,
+        string Description,
+        string ActionLabel,
+        string TableTitle,
+        KpiCard[] KpiCards,
+        TableRow[] TableRows
+    );
+
+    // ── Nav item groups ───────────────────────────────────────────────────────
+
+    readonly NavItem[] platformItems =
+    [
+        new("payments",  "credit-card", "Payments"),
+        new("customers", "users",       "Customers"),
+        new("products",  "package",     "Products"),
+    ];
+
+    readonly NavItem[] devItems =
+    [
+        new("api-keys", "key",       "API Keys"),
+        new("webhooks", "link",      "Webhooks"),
+        new("logs",     "file-text", "Logs"),
+    ];
+
+    // All sections flattened for the command palette
+    SectionData[] allSections => sections.Values.ToArray();
+
+    SectionData ActiveSection => sections.TryGetValue(activeSection, out var s) ? s : sections["home"];
+
+    // ── Section content definitions ───────────────────────────────────────────
+
+    readonly Dictionary<string, SectionData> sections = new()
+    {
+        ["home"] = new("home", "house", "Home", "Your workspace at a glance.", "New Report",
+            "Recent Activity",
+            [
+                new("trending-up",  "blue",    "Total Revenue",  "$284,390",  "+12.5%",  true),
+                new("users",        "violet",  "Active Users",   "14,820",    "+4.8%",   true),
+                new("circle-check", "emerald", "Success Rate",   "99.2%",     "+0.4%",   true),
+                new("timer",        "amber",   "Avg. Response",  "142 ms",    "-8 ms",   true),
+                new("zap",          "sky",     "Events Today",   "82,410",    "+22.1%",  true),
+                new("alert-circle", "rose",    "Open Incidents", "2",         "-1",      true),
+            ],
+            [
+                new("MR", "blue",    "Mike deployed the API gateway",          "3 min ago",    "Live",    "$—"),
+                new("SK", "emerald", "Sarah completed Q1 financial review",    "1 hour ago",   "Done",    "$—"),
+                new("JD", "violet",  "James added 3 new team members",         "2 hours ago",  "Done",    "$—"),
+                new("AL", "amber",   "Amy updated the pricing configuration",  "Yesterday",    "Done",    "$—"),
+            ]),
+
+        ["payments"] = new("payments", "credit-card", "Payments", "Track and manage all transactions.", "New Payment",
+            "Recent Transactions",
+            [
+                new("credit-card",  "blue",    "Volume (30d)",     "$128,450",   "+12.5%",  true),
+                new("arrow-up-right","emerald","Successful",        "98.7%",      "+0.3%",   true),
+                new("alert-triangle","rose",   "Disputes",          "4",          "-2",      true),
+            ],
+            [
+                new("JD", "blue",    "James Doe",         "Visa ····4242 · 2 min ago",   "Paid",    "$2,490.00"),
+                new("SK", "emerald", "Sarah Kim",         "MC ····8765 · 14 min ago",    "Paid",    "$840.00"),
+                new("MR", "violet",  "Mike Rodriguez",   "Amex ····1009 · 1 hour ago",   "Refunded","$330.00"),
+                new("AL", "amber",   "Amy Lin",           "Visa ····3311 · 2 hours ago",  "Paid",    "$5,100.00"),
+                new("TW", "rose",    "Tom Wilson",        "MC ····6674 · Yesterday",      "Dispute", "$715.00"),
+            ]),
+
+        ["customers"] = new("customers", "users", "Customers", "Manage your customer base.", "Add Customer",
+            "Recent Customers",
+            [
+                new("users",       "violet",  "Total Customers",  "8,240",    "+4.8%",   true),
+                new("user-plus",   "emerald", "New (30d)",        "1,093",    "+18.2%",  true),
+                new("user-minus",  "rose",    "Churn Rate",       "2.4%",     "-0.8%",   true),
+            ],
+            [
+                new("JD", "blue",    "James Doe",        "james@acme.com · Pro",       "Active",    "$290/mo"),
+                new("SK", "emerald", "Sarah Kim",        "sarah@startup.io · Growth",  "Active",    "$790/mo"),
+                new("MR", "violet",  "Mike Rodriguez",   "mike@techcorp.com · Starter","Trial",     "$0/mo"),
+                new("AL", "amber",   "Amy Lin",          "amy@finco.com · Enterprise", "Active",    "$2,490/mo"),
+                new("TW", "rose",    "Tom Wilson",       "tom@shop.co · Pro",          "Paused",    "$290/mo"),
+            ]),
+
+        ["products"] = new("products", "package", "Products", "Manage your product catalog and pricing.", "Add Product",
+            "Product Catalog",
+            [
+                new("package",     "sky",     "Active Products",  "24",        "+3",      true),
+                new("tag",         "emerald", "Avg. Price",       "$142",      "+$8",     true),
+                new("shopping-bag","violet",  "Units Sold (30d)", "3,814",     "+9.2%",   true),
+            ],
+            [
+                new("PR", "sky",    "Pro Plan",        "Recurring · Monthly",       "Active",  "$290/mo"),
+                new("GR", "violet", "Growth Plan",     "Recurring · Monthly",       "Active",  "$790/mo"),
+                new("EN", "emerald","Enterprise Plan", "Custom · Annual",           "Active",  "Custom"),
+                new("ST", "amber",  "Starter Pack",    "One-time",                  "Draft",   "$49"),
+                new("AD", "rose",   "Add-on: Analytics","Recurring · Monthly",     "Active",  "$49/mo"),
+            ]),
+
+        ["api-keys"] = new("api-keys", "key", "API Keys", "Manage your API credentials and access tokens.", "Create Key",
+            "Active Keys",
+            [
+                new("key",        "amber",   "Live Keys",      "6",          "—",       true),
+                new("shield",     "emerald", "Test Keys",      "4",          "—",       true),
+                new("activity",   "blue",    "API Calls (24h)","982,401",    "+14.3%",  true),
+            ],
+            [
+                new("LK", "amber",   "sk_live_acme_prod",     "Created Jan 2026 · Full access",     "Live",   "982k calls"),
+                new("LK", "blue",    "sk_live_acme_read",     "Created Feb 2026 · Read only",       "Live",   "44k calls"),
+                new("TK", "emerald", "sk_test_dashboard",     "Created Mar 2026 · Test mode",       "Test",   "8.2k calls"),
+                new("TK", "emerald", "sk_test_ci_runner",     "Created Mar 2026 · CI/CD",           "Test",   "120k calls"),
+                new("RV", "rose",    "sk_live_legacy_2024",   "Last used Jan 2025 · Deprecated",    "Revoked","—"),
+            ]),
+
+        ["webhooks"] = new("webhooks", "link", "Webhooks", "Configure and monitor event endpoints.", "Add Endpoint",
+            "Endpoints",
+            [
+                new("link",        "blue",    "Active Endpoints",  "8",       "+2",      true),
+                new("circle-check","emerald", "Success Rate",      "99.4%",   "+0.1%",   true),
+                new("alert-circle","rose",    "Failed (24h)",      "3",       "+1",      false),
+            ],
+            [
+                new("WH", "blue",    "https://api.acme.com/hooks/stripe",     "payment.* · 482 deliveries",   "Active",  "99.8%"),
+                new("WH", "emerald", "https://api.acme.com/hooks/users",      "customer.* · 214 deliveries",  "Active",  "100%"),
+                new("WH", "violet",  "https://ci.acme.com/hooks/deploy",      "checkout.* · 91 deliveries",   "Active",  "98.9%"),
+                new("WH", "amber",   "https://api.acme.com/hooks/billing",    "invoice.* · 56 deliveries",    "Active",  "100%"),
+                new("WH", "rose",    "https://legacy.acme.com/webhook",       "all · 0 deliveries",           "Failed",  "0%"),
+            ]),
+
+        ["logs"] = new("logs", "file-text", "Logs", "Inspect API requests and system events.", "Export Logs",
+            "Recent Requests",
+            [
+                new("activity",    "blue",    "Requests (24h)", "982,401",  "+14.3%",  true),
+                new("zap",         "emerald", "P99 Latency",    "248 ms",   "-12 ms",  true),
+                new("alert-circle","rose",    "Errors (24h)",   "142",      "+8",      false),
+            ],
+            [
+                new("OK", "emerald", "POST /v1/payments",       "200 · 142 ms · 2 sec ago",      "200",   "142 ms"),
+                new("OK", "emerald", "GET  /v1/customers",      "200 · 88 ms · 5 sec ago",       "200",   "88 ms"),
+                new("ER", "rose",    "POST /v1/subscriptions",  "422 · 310 ms · 12 sec ago",     "422",   "310 ms"),
+                new("OK", "blue",    "GET  /v1/products",       "200 · 64 ms · 18 sec ago",      "200",   "64 ms"),
+                new("ER", "amber",   "DELETE /v1/webhooks/8",   "500 · 1.2 s · 1 min ago",       "500",   "1.2 s"),
+            ]),
+
+        ["settings"] = new("settings", "settings", "Settings", "Manage your account and workspace preferences.", "Save Changes",
+            "Configuration",
+            [
+                new("shield",      "emerald", "Security Score",  "92 / 100",  "+4",      true),
+                new("users",       "blue",    "Team Members",    "12",        "+2",      true),
+                new("credit-card", "violet",  "Current Plan",    "Growth",    "—",       true),
+            ],
+            [
+                new("GE", "blue",    "General",           "Workspace name, timezone, language",   "Saved",   "—"),
+                new("SE", "emerald", "Security",          "2FA enabled · Last login 2 min ago",   "Secure",  "—"),
+                new("BI", "violet",  "Billing",           "Growth plan · Renews Apr 1, 2026",     "Active",  "$790/mo"),
+                new("TE", "amber",   "Team",              "12 members · 3 pending invites",        "Active",  "—"),
+                new("NO", "sky",     "Notifications",     "Email + Slack · 4 channels",           "Active",  "—"),
+            ]),
+    };
+
+    // ── Split button helpers ──────────────────────────────────────────────────
+
+    bool IsGroupActive(NavItem[] items) => items.Any(i => i.Key == activeSection);
+
+    /// Icon for the left segment: active group member's icon, else last-chosen, else fallback.
+    string SplitIcon(NavItem[] items, string lastKey, string fallback) =>
+        items.FirstOrDefault(i => i.Key == activeSection)?.Icon
+        ?? items.FirstOrDefault(i => i.Key == lastKey)?.Icon
+        ?? fallback;
+
+    /// Accessible label for the left segment.
+    string SplitLabel(NavItem[] items, string lastKey) =>
+        items.FirstOrDefault(i => i.Key == activeSection)?.Label
+        ?? items.FirstOrDefault(i => i.Key == lastKey)?.Label
+        ?? items[0].Label;
+
+    // ── Color helpers ─────────────────────────────────────────────────────────
+
+    string ColorBgClass(string c) => c switch
+    {
+        "blue" => "bg-blue-500/10",
+        "violet" => "bg-violet-500/10",
+        "emerald" => "bg-emerald-500/10",
+        "amber" => "bg-amber-500/10",
+        "rose" => "bg-rose-500/10",
+        "sky" => "bg-sky-500/10",
+        _ => "bg-primary/10",
+    };
+
+    string ColorTextClass(string c) => c switch
+    {
+        "blue" => "text-blue-500",
+        "violet" => "text-violet-500",
+        "emerald" => "text-emerald-500",
+        "amber" => "text-amber-500",
+        "rose" => "text-rose-500",
+        "sky" => "text-sky-500",
+        _ => "text-primary",
+    };
+
+    string BadgeClass(string status) => status switch
+    {
+        "Live" or "Active" or "Done" or "Paid" or "Secure" or "200"
+            => "bg-emerald-500/10 text-emerald-600",
+        "Trial" or "Test" or "Draft"
+            => "bg-blue-500/10 text-blue-600",
+        "Paused" or "Revoked" or "Failed" or "Dispute" or "422" or "500"
+            => "bg-rose-500/10 text-rose-600",
+        "Refunded"
+            => "bg-amber-500/10 text-amber-600",
+        _ => "bg-muted text-muted-foreground",
+    };
+}
