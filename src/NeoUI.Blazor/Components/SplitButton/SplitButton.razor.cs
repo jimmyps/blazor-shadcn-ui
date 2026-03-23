@@ -56,6 +56,14 @@ public partial class SplitButton : ComponentBase
     [Parameter]
     public string? AriaLabel { get; set; }
 
+    /// <summary>Gets or sets additional CSS classes for the primary button segment.</summary>
+    [Parameter]
+    public string? PrimaryClass { get; set; }
+
+    /// <summary>Gets or sets additional CSS classes for the dropdown chevron button segment.</summary>
+    [Parameter]
+    public string? DropdownClass { get; set; }
+
     /// <summary>Gets or sets the aria-label for the dropdown toggle button.</summary>
     [Parameter]
     public string? DropdownAriaLabel { get; set; }
@@ -82,19 +90,26 @@ public partial class SplitButton : ComponentBase
         _                         => null
     } : null;
 
-    private static string PrimaryButtonClass => "!rounded-r-none border-r-0 focus-visible:z-10";
+    private string PrimaryButtonClass => ClassNames.cn(
+        "!rounded-r-none border-r-0 focus-visible:z-10",
+        PrimaryClass
+    );
 
     private string DropdownButtonClass => ClassNames.cn(
         "!rounded-l-none !px-2 focus-visible:z-10",
         Variant == ButtonVariant.Outline
             ? "border-l"
-            : "border-l border-l-primary-foreground/20"
+            : "border-l border-l-primary-foreground/20",
+        DropdownClass
     );
 
     private ButtonSize DropdownButtonSize => Size switch
     {
-        ButtonSize.Small => ButtonSize.Small,
-        ButtonSize.Large => ButtonSize.Large,
-        _                => ButtonSize.Default
+        ButtonSize.Small     => ButtonSize.Small,
+        ButtonSize.Large     => ButtonSize.Large,
+        ButtonSize.Icon      => ButtonSize.Icon,
+        ButtonSize.IconSmall => ButtonSize.IconSmall,
+        ButtonSize.IconLarge => ButtonSize.IconLarge,
+        _                    => ButtonSize.Default
     };
 }

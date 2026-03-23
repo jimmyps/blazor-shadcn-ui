@@ -2,7 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-21 — Sidebar pill mode: morphing sidebar ↔ floating pill nav
+## 2026-3-23 — SplitButton enhancements & SidebarPillNav tooltip integration
+
+> **Release: `v3.7.1`**  
+> **Enhancement.** Affects `SplitButton` and `SidebarPillNav` / `SidebarPillNavItem` in `NeoUI.Blazor`. No breaking changes.
+
+---
+
+### 🔧 Enhancement — `SplitButton`: per-segment class overrides & icon centering
+
+Consumers can now tailor the appearance of each button segment independently without needing component-level boolean flags.
+
+**Changes:**
+
+- **`PrimaryClass`** (`string?`) — additional CSS merged onto the left (primary action) segment via `ClassNames.cn`. Use to add rounding, margin tweaks, etc. (e.g. `"rounded-l-full [&>span]:me-0 [&>span]:ml-1"`).
+- **`DropdownClass`** (`string?`) — additional CSS merged onto the right (dropdown chevron) segment (e.g. `"rounded-r-full [&>svg]:mr-1"`).
+- **`DropdownButtonSize`** — fixed: `Icon`, `IconSmall`, and `IconLarge` sizes now map to their correct counterparts instead of falling through to `Default`, which caused the right segment to be taller than the left.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `PrimaryClass` | `string?` | `null` | Extra CSS classes merged onto the primary button segment. |
+| `DropdownClass` | `string?` | `null` | Extra CSS classes merged onto the dropdown chevron button segment. |
+
+---
+
+### 🔧 Enhancement — `SidebarPillNavItem`: `Title` parameter
+
+New `Title` parameter separates the native browser tooltip (`title` attribute) from the accessible label (`aria-label`), which always uses `Label`.
+
+Set `Title=""` to suppress the native tooltip when using a custom `<Tooltip>` component in consumer code.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Title` | `string?` | `Label` | Overrides the HTML `title` attribute. Set to `""` to suppress the native browser tooltip. |
+
+---
+
+### 🔧 Enhancement — `SidebarPillNav`: built-in `TooltipProvider` & expand button tooltip
+
+`SidebarPillNav` now owns a `TooltipProvider` internally, so consumers can use NeoUI `<Tooltip>` components directly inside `ChildContent` and `TrailingContent` without adding a provider themselves.
+
+The leading expand button now uses `<Tooltip>` / `<TooltipContent>` (with the localized `Sidebar.Pill.ExpandButton` string) instead of a native `title` attribute.
+
+---
 
 > **Release: `v3.7.0`**  
 > **New feature.** Affects `Sidebar`, `SidebarTrigger`, and five new `SidebarPill*` companion components in `NeoUI.Blazor`. All additions are additive — no breaking changes.

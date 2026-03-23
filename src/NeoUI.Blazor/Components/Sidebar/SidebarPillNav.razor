@@ -26,19 +26,24 @@
 
 @if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
 {
+    <TooltipProvider>
     <nav class="@GetClasses()"
          data-sidebar="pill-nav"
          aria-label="@Localizer["Sidebar.Pill.AriaLabel"]"
          @attributes="AdditionalAttributes">
 
         @* Expand button — restores the full sidebar *@
-        <button type="button"
-                class="@GetExpandButtonClasses()"
-                title="@Localizer["Sidebar.Pill.ExpandButton"]"
-                @onclick="HandleExpand">
-            <LucideIcon Name="@ExpandIcon" Size="16" />
-            <span class="sr-only">@Localizer["Sidebar.Pill.ExpandButton"]</span>
-        </button>
+        <Tooltip>
+            <TooltipTrigger>
+                <button type="button"
+                        class="@GetExpandButtonClasses()"
+                        @onclick="HandleExpand">
+                    <LucideIcon Name="@ExpandIcon" Size="16" />
+                    <span class="sr-only">@Localizer["Sidebar.Pill.ExpandButton"]</span>
+                </button>
+            </TooltipTrigger>
+            <TooltipContent>@Localizer["Sidebar.Pill.ExpandButton"]</TooltipContent>
+        </Tooltip>
 
         @* Vertical divider *@
         <div class="h-5 w-px bg-border shrink-0" aria-hidden="true"></div>
@@ -54,6 +59,7 @@
         }
 
     </nav>
+    </TooltipProvider>
 }
 
 @code {
