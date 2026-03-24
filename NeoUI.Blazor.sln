@@ -31,6 +31,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0C88DD14-F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeoUI.Test", "test\NeoUI.Test\NeoUI.Test.csproj", "{AF21CD86-5507-4986-B922-740580A272D7}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "NeoUI.React.Playground", "test\NeoUI.React.Playground\", "{531C086D-CD13-5A07-D26E-F0217BD6F92D}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8.1"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_53649"
+		Debug.AspNetCompiler.PhysicalPath = "test\NeoUI.React.Playground\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53649\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_53649"
+		Release.AspNetCompiler.PhysicalPath = "test\NeoUI.React.Playground\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53649\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "53649"
+		SlnRelativePath = "test\NeoUI.React.Playground\"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +194,18 @@ Global
 		{AF21CD86-5507-4986-B922-740580A272D7}.Release|x64.Build.0 = Release|Any CPU
 		{AF21CD86-5507-4986-B922-740580A272D7}.Release|x86.ActiveCfg = Release|Any CPU
 		{AF21CD86-5507-4986-B922-740580A272D7}.Release|x86.Build.0 = Release|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Debug|x64.Build.0 = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Debug|x86.Build.0 = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Release|x64.ActiveCfg = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Release|x64.Build.0 = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Release|x86.ActiveCfg = Debug|Any CPU
+		{531C086D-CD13-5A07-D26E-F0217BD6F92D}.Release|x86.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — shadcn/ui (React)</title>
+
+  <!-- CSS variables (NeoUI theme tokens — same as shadcn) -->
+  <link rel="stylesheet" href="../css/app.css" />
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-sans); background-color: var(--muted); color: var(--foreground); }
+    a { color: inherit; }
+    button { cursor: pointer; font-family: inherit; }
+    input { font-family: inherit; }
+
+    /* ── Layout ── */
+    .page { display: flex; min-height: 100svh; width: 100%; align-items: center; justify-content: center; padding: 1.5rem; }
+
+    /* ── Card ── */
+    .card { border-radius: calc(var(--radius) + 4px); border: 1px solid var(--border); background-color: var(--card); color: var(--card-foreground); box-shadow: 0 1px 3px 0 rgb(0 0 0 / .10), 0 1px 2px -1px rgb(0 0 0 / .10); }
+    .card-header { display: flex; flex-direction: column; gap: .375rem; padding: 1.5rem; }
+    .card-title { font-size: 1.5rem; font-weight: 600; line-height: 1; letter-spacing: -.025em; }
+    .card-description { font-size: .875rem; color: var(--muted-foreground); }
+    .card-content { padding: 0 1.5rem 1.5rem; }
+
+    /* ── Button ── */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; white-space: nowrap; border-radius: calc(var(--radius) - 2px); font-size: .875rem; font-weight: 500; height: 2.25rem; padding: 0 1rem; border: none; transition: background-color .15s, opacity .15s; outline-offset: 2px; }
+    .btn:focus-visible { outline: 2px solid var(--ring); }
+    .btn-default { background-color: var(--primary); color: var(--primary-foreground); }
+    .btn-default:hover { opacity: .9; }
+    .btn-outline { background-color: var(--background); color: var(--foreground); border: 1px solid var(--border); }
+    .btn-outline:hover { background-color: var(--accent); color: var(--accent-foreground); }
+    .btn-full { width: 100%; }
+
+    /* ── Input ── */
+    .input { display: flex; height: 2.25rem; width: 100%; border-radius: calc(var(--radius) - 2px); border: 1px solid var(--input); background: transparent; padding: 0 .75rem; font-size: .875rem; transition: box-shadow .15s; outline: none; color: var(--foreground); }
+    .input::placeholder { color: var(--muted-foreground); }
+    .input:focus-visible { box-shadow: 0 0 0 2px var(--ring); }
+
+    /* ── Label ── */
+    .label { font-size: .875rem; font-weight: 500; line-height: 1; }
+
+    /* ── Form helpers ── */
+    .form-group { display: grid; gap: .5rem; }
+    .form-stack { display: flex; flex-direction: column; gap: 1.5rem; }
+    .form-row { display: flex; align-items: center; }
+    .form-footer { margin-top: 1rem; text-align: center; font-size: .875rem; }
+    .link { text-underline-offset: 4px; }
+    .link:hover { text-decoration: underline; }
+    .link-inline { text-decoration: underline; text-underline-offset: 4px; }
+    .ml-auto { margin-left: auto; }
+
+    /* ── Dialog overlay + content ── */
+    .dialog-overlay { position: fixed; inset: 0; z-index: 50; background: rgb(0 0 0 / .80); }
+    .dialog-content {
+      position: fixed; left: 50%; top: 50%; z-index: 50;
+      transform: translate(-50%, -50%);
+      width: 100%; max-width: 24rem;
+      border-radius: calc(var(--radius) + 4px);
+      border: 1px solid var(--border);
+      background: var(--background);
+      padding: 1.5rem;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+    }
+    .dialog-close { position: absolute; right: 1rem; top: 1rem; background: none; border: none; padding: .25rem; border-radius: calc(var(--radius) - 4px); opacity: .7; transition: opacity .15s; }
+    .dialog-close:hover { opacity: 1; }
+
+    /* ── Re-open button (when dialog is closed) ── */
+    .reopen { display: flex; align-items: center; justify-content: center; min-height: 100svh; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="vendor/react.production.min.js"></script>
+  <script src="vendor/react-dom.production.min.js"></script>
+  <script>
+    const e = React.createElement
+    const { useState } = React
+
+    // ── Card ─────────────────────────────────────────────────────────────────
+    const Card            = ({ children }) => e('div', { className: 'card' }, children)
+    const CardHeader      = ({ children }) => e('div', { className: 'card-header' }, children)
+    const CardTitle       = ({ children }) => e('div', { className: 'card-title' }, children)
+    const CardDescription = ({ children }) => e('div', { className: 'card-description' }, children)
+    const CardContent     = ({ children }) => e('div', { className: 'card-content' }, children)
+
+    // ── Button ────────────────────────────────────────────────────────────────
+    const Button = ({ children, variant = 'default', className = '', ...props }) =>
+      e('button', {
+        className: `btn btn-${variant}${className.includes('w-full') ? ' btn-full' : ''} ${className}`.trim(),
+        ...props
+      }, children)
+
+    // ── Input ─────────────────────────────────────────────────────────────────
+    const Input = ({ ...props }) => e('input', { className: 'input', ...props })
+
+    // ── Label ─────────────────────────────────────────────────────────────────
+    const Label = ({ htmlFor, children }) => e('label', { className: 'label', htmlFor }, children)
+
+    // ── Dialog ────────────────────────────────────────────────────────────────
+    const Dialog = ({ open, onClose, children }) => {
+      if (!open) return null
+      return e(React.Fragment, null,
+        e('div', { className: 'dialog-overlay', onClick: onClose }),
+        e('div', { role: 'dialog', 'aria-modal': 'true', className: 'dialog-content' },
+          e('button', {
+            className: 'dialog-close', onClick: onClose, 'aria-label': 'Close'
+          }, e('svg', { xmlns: 'http://www.w3.org/2000/svg', width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+            e('path', { d: 'M18 6 6 18' }),
+            e('path', { d: 'm6 6 12 12' })
+          )),
+          children
+        )
+      )
+    }
+    const DialogHeader      = ({ children }) => e('div', { style: { display: 'flex', flexDirection: 'column', gap: '.375rem', marginBottom: '1.5rem' } }, children)
+    const DialogTitle       = ({ children }) => e('h2', { style: { fontSize: '1.5rem', fontWeight: 600, lineHeight: 1, letterSpacing: '-.025em' } }, children)
+    const DialogDescription = ({ children }) => e('p', { style: { fontSize: '.875rem', color: 'var(--muted-foreground)' } }, children)
+
+    // ── LoginDialog ───────────────────────────────────────────────────────────
+    function LoginDialog({ open, onClose }) {
+      return e(Dialog, { open, onClose },
+        e(DialogHeader, null,
+          e(DialogTitle, null, 'Login'),
+          e(DialogDescription, null, 'Enter your email below to login to your account')
+        ),
+        e('form', null,
+          e('div', { className: 'form-stack' },
+            e('div', { className: 'form-group' },
+              e(Label, { htmlFor: 'email' }, 'Email'),
+              e(Input, { id: 'email', type: 'email', placeholder: 'm@example.com', required: true })
+            ),
+            e('div', { className: 'form-group' },
+              e('div', { className: 'form-row' },
+                e(Label, { htmlFor: 'password' }, 'Password'),
+                e('a', { href: '#', className: 'link ml-auto', style: { fontSize: '.875rem' } }, 'Forgot your password?')
+              ),
+              e(Input, { id: 'password', type: 'password', required: true })
+            ),
+            e(Button, { type: 'submit', className: 'w-full' }, 'Login'),
+            e(Button, { variant: 'outline', className: 'w-full' }, 'Login with Google')
+          ),
+          e('div', { className: 'form-footer' },
+            "Don't have an account? ",
+            e('a', { href: '#', className: 'link-inline' }, 'Sign up')
+          )
+        )
+      )
+    }
+
+    // ── App ───────────────────────────────────────────────────────────────────
+    function App() {
+      const [open, setOpen] = useState(true)
+      return e('div', { className: 'page' },
+        !open && e(Button, { onClick: () => setOpen(true) }, 'Open Login Dialog'),
+        e(LoginDialog, { open, onClose: () => setOpen(false) })
+      )
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(e(App))
+  </script>
+</body>
+</html>
