@@ -61,6 +61,7 @@ function setupMobileDetection() {
     if (!dotNetRef) return;
 
     const checkMobile = () => {
+        if (!dotNetRef) return;
         const isMobile = window.innerWidth < MOBILE_BREAKPOINT;
         dotNetRef.invokeMethodAsync('OnMobileChange', isMobile);
     };
