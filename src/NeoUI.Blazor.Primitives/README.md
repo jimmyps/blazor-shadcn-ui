@@ -37,6 +37,7 @@ dotnet add package NeoUI.Blazor.Primitives
 - **Radio Group**: Mutually exclusive options with keyboard navigation
 - **Select**: Dropdown selection with groups and virtualization support
 - **Sheet**: Side panels that slide in from viewport edges
+- **Sortable**: Headless drag-and-drop sortable list with pointer, touch, and keyboard support
 - **Switch**: Toggle control for on/off states
 - **Table**: Data table with header, body, rows, cells, and pagination
 - **Tabs**: Tabbed interface with keyboard navigation
@@ -236,6 +237,47 @@ Select is generic (`TValue`). Supports both value and open state binding.
 |-----------|------|---------|--------|
 | `SelectionMode` | `SelectionMode` | `None` | `None`, `Single`, `Multiple` |
 | `SortDirection` | `SortDirection` | `None` | `None`, `Ascending`, `Descending` |
+
+### Sortable
+
+```razor
+<SortablePrimitive TItem="MyItem"
+                   Items="@items"
+                   OnItemsReordered="@(r => items = r)"
+                   GetItemId="@(i => i.Id)">
+    <SortableContentPrimitive class="flex flex-col gap-2">
+        @foreach (var item in items)
+        {
+            <SortableItemPrimitive Value="@item.Id"
+                                   class="flex items-center gap-3 rounded border px-4 py-3">
+                <SortableItemHandlePrimitive class="cursor-grab" />
+                <span>@item.Name</span>
+            </SortableItemPrimitive>
+        }
+    </SortableContentPrimitive>
+    <SortableOverlayPrimitive class="rounded border shadow-lg px-4 py-3" />
+</SortablePrimitive>
+```
+
+| Parameter | Type | Default | Values |
+|-----------|------|---------|--------|
+| `Items` | `IList<TItem>` | required | Source list |
+| `OnItemsReordered` | `EventCallback<IList<TItem>>` | — | Callback with reordered list |
+| `GetItemId` | `Func<TItem, string>` | required | Extracts unique string ID from each item |
+| `Orientation` | `SortableOrientation` | `Vertical` | `Vertical`, `Horizontal`, `Mixed` |
+
+**SortableItemPrimitive**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string` | required | Item ID matching `GetItemId` output |
+| `AsHandle` | `bool` | `false` | Makes the entire item draggable (no separate handle needed) |
+
+**SortableOverlayPrimitive**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `ChildContent` | `RenderFragment<string>?` | `null` | Custom ghost. Context is the active item ID. Defaults to a JS clone of the source element. |
 
 ### MultiSelect
 
