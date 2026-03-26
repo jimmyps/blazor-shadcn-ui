@@ -11,13 +11,13 @@
         </button>
     }
 
-    @if (!string.IsNullOrEmpty(Title))
-    {
-        <h1 class="@TitleCssClass">@Title</h1>
-    }
-    else if (TitleContent is not null)
+    @if (TitleContent is not null)
     {
         <div class="@TitleCssClass">@TitleContent</div>
+    }
+    else if (!string.IsNullOrEmpty(Title))
+    {
+        <h1 class="@TitleCssClass">@Title</h1>
     }
 
     @if (RightContent is not null)

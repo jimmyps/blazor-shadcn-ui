@@ -51,7 +51,7 @@ All new components are authored with BlazorWebView constraints in mind:
   full viewport); `BottomNav` exposes a `Fixed` parameter to opt into `position: fixed`.
 - Safe-area insets via `env(safe-area-inset-bottom, 0px)` for iOS notch/home indicator.
 - No JavaScript interop dependencies in the new components (pure Razor + CSS).
-- Touch-target sizes meet WCAG 2.5.5 (44×44px minimum) by default.
+- Touch-target sizes are designed to align with WCAG 2.5.5 (44×44px minimum), but app layouts should verify and adjust touch targets as needed.
 
 ---
 

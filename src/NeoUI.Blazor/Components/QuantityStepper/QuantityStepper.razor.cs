@@ -31,7 +31,7 @@ namespace NeoUI.Blazor;
 ///                  Min="1"
 ///                  DestructiveAtMin="true"
 ///                  OnDestructiveClick="() => RemoveItem(item)"
-///                  Size="QuantityStepperSize.Sm" /&gt;
+///                  Size="QuantityStepperSize.Small" /&gt;
 /// </code>
 /// </example>
 public partial class QuantityStepper : ComponentBase
@@ -99,8 +99,8 @@ public partial class QuantityStepper : ComponentBase
 
     private (string button, string value, int iconSize) SizeTokens => Size switch
     {
-        QuantityStepperSize.Sm => ("size-7", "w-5 text-sm", 14),
-        QuantityStepperSize.Lg => ("size-11", "w-8 text-lg", 20),
+        QuantityStepperSize.Small => ("size-7", "w-5 text-sm", 14),
+        QuantityStepperSize.Large => ("size-11", "w-8 text-lg", 20),
         _ => ("size-8", "w-6 text-base", 16),
     };
 
@@ -144,7 +144,8 @@ public partial class QuantityStepper : ComponentBase
 
         if (Value > Min)
         {
-            await ValueChanged.InvokeAsync(Value - 1);
+            Value--;
+            await ValueChanged.InvokeAsync(Value);
         }
     }
 
@@ -152,7 +153,8 @@ public partial class QuantityStepper : ComponentBase
     {
         if (!Max.HasValue || Value < Max.Value)
         {
-            await ValueChanged.InvokeAsync(Value + 1);
+            Value++;
+            await ValueChanged.InvokeAsync(Value);
         }
     }
 }

@@ -2,13 +2,13 @@
 
 <div class="@CssClass">
     <div class="flex items-center justify-between">
-        @if (!string.IsNullOrEmpty(Title))
+        @if (TitleContent is not null)
+        {
+            <h2 class="@TitleCssClass">@TitleContent</h2>
+        }
+        else if (!string.IsNullOrEmpty(Title))
         {
             <h2 class="@TitleCssClass">@Title</h2>
-        }
-        else if (TitleContent is not null)
-        {
-            <div class="@TitleCssClass">@TitleContent</div>
         }
 
         @if (OnViewAll.HasDelegate)

@@ -113,9 +113,19 @@ public partial class AppBar : ComponentBase
         Class
     );
 
+    private bool HasBackButton => OnBack.HasDelegate;
+
+    private bool HasRightContent => RightContent is not null;
+
     private string TitleCssClass => ClassNames.cn(
         "flex-1 text-center text-[17px] font-semibold text-foreground truncate",
         // Indent title text to avoid overlap with back/right buttons
-        OnBack.HasDelegate ? "px-10" : "px-2"
+        HasBackButton && HasRightContent
+            ? "px-10"
+            : HasBackButton
+                ? "pl-10 pr-2"
+                : HasRightContent
+                    ? "pl-2 pr-10"
+                    : "px-2"
     );
 }
