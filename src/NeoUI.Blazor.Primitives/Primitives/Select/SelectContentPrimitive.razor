@@ -1,7 +1,9 @@
 @typeparam TValue
 @namespace NeoUI.Blazor.Primitives
+@using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @inject IJSRuntime JS
+@inject ILogger<SelectContentPrimitive<TValue>> Logger
 @implements IAsyncDisposable
 
 @*
@@ -25,6 +27,10 @@
 </FloatingPortal>
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogClickOutsideSetupFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "ClickOutsideSetupFailed"),
+            "Failed to set up click-outside: {ErrorMessage}");
+
     [CascadingParameter]
     private SelectContext<TValue>? _context { get; set; }
 
@@ -194,7 +200,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to set up click-outside: {ex.Message}");
+            LogClickOutsideSetupFailed(Logger, ex.Message, ex);
         }
     }
 

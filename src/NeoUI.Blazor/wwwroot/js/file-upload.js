@@ -58,3 +58,14 @@ export function cleanup(dropZoneId) {
     // Remove event listeners
     dropZone.classList.remove('drag-over');
 }
+
+/**
+ * Resets a file input element so it no longer holds any selected files.
+ * @param {string} inputId - The id of the <input type="file"> element.
+ */
+export function resetFileInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.value = '';
+    }
+}

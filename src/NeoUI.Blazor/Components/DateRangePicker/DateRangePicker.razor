@@ -438,22 +438,12 @@
 
     private string GetFirstCalendarClass()
     {
-        var classes = new List<string> { "border-0 bg-transparent !shadow-none p-0" };
-
-        if (!string.IsNullOrEmpty(CalendarClass))
-            classes.Add(CalendarClass);
-
-        return string.Join(" ", classes);
+        return ClassNames.cn("border-0 bg-transparent !shadow-none p-0", CalendarClass);
     }
 
     private string GetSecondCalendarClass()
     {
-        var classes = new List<string> { "border-0 bg-transparent !shadow-none p-0" };
-
-        if (!string.IsNullOrEmpty(CalendarClass))
-            classes.Add(CalendarClass);
-
-        return string.Join(" ", classes);
+        return ClassNames.cn("border-0 bg-transparent !shadow-none p-0", CalendarClass);
     }
 
     private bool GetStartDateDisabled(DateOnly date)

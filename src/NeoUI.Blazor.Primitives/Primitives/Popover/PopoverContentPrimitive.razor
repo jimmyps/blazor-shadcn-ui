@@ -1,5 +1,7 @@
 @namespace NeoUI.Blazor.Primitives
+@using Microsoft.Extensions.Logging
 @inject IJSRuntime JSRuntime
+@inject ILogger<PopoverContentPrimitive> Logger
 @implements IAsyncDisposable
 
 @*
@@ -23,6 +25,10 @@
 </FloatingPortal>
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogClickOutsideSetupFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "ClickOutsideSetupFailed"),
+            "Failed to set up click-outside: {ErrorMessage}");
+
     [CascadingParameter]
     private PopoverContext Context { get; set; } = null!;
 
@@ -202,7 +208,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to set up click-outside: {ex.Message}");
+            LogClickOutsideSetupFailed(Logger, ex.Message, ex);
         }
     }
 

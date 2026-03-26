@@ -1,6 +1,7 @@
 using NeoUI.Blazor.Services.Grid;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Collections.Specialized;
 
@@ -150,6 +151,33 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
 
     [Inject]
     private ILocalizer Localizer { get; set; } = default!;
+
+    [Inject]
+    private ILogger<DataGrid<TItem>> Logger { get; set; } = default!;
+
+    private static readonly Action<ILogger, string, string, Exception?> LogIdFieldNotFound =
+        LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(1, nameof(LogIdFieldNotFound)),
+            "[Grid] WARNING: IdField '{IdField}' not found on type {TypeName}");
+
+    private static readonly Action<ILogger, string, Exception?> LogSyncSelectionFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, nameof(LogSyncSelectionFailed)),
+            "[Grid] ERROR: Failed to sync selection - {Message}");
+
+    private static readonly Action<ILogger, Exception?> LogNoColumnsRegistered =
+        LoggerMessage.Define(LogLevel.Error, new EventId(3, nameof(LogNoColumnsRegistered)),
+            "[Grid] ERROR: No columns registered");
+
+    private static readonly Action<ILogger, string, Exception?> LogInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(4, nameof(LogInitializationFailed)),
+            "[Grid] ERROR: Initialization failed - {Message}");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogRegisterActionFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(5, nameof(LogRegisterActionFailed)),
+            "[Grid] WARNING: Failed to register action '{Action}' - {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogCouldNotResolveId =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(6, nameof(LogCouldNotResolveId)),
+            "[Grid] WARNING: Could not resolve ID '{Id}' to an item");
 
     /// <summary>
     /// Gets or sets the host component that contains grid action methods.
@@ -547,7 +575,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
                         
                         if (idProperty == null)
                         {
-                            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+                            LogIdFieldNotFound(Logger, IdField, typeof(TItem).Name, null);
                             return (object)string.Empty;
                         }
                         
@@ -563,7 +591,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Grid] ERROR: Failed to sync selection - {ex.Message}");
+            LogSyncSelectionFailed(Logger, ex.Message, ex);
         }
     }
 
@@ -591,7 +619,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         {
             if (_columns.Count == 0)
             {
-                Console.WriteLine("[Grid] ERROR: No columns registered");
+                LogNoColumnsRegistered(Logger, null);
                 return;
             }
 
@@ -623,7 +651,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Grid] ERROR: Initialization failed - {ex.Message}");
+                LogInitializationFailed(Logger, ex.Message, ex);
                 _isInitializing = false;
                 throw;
             }
@@ -716,7 +744,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Grid] WARNING: Failed to register action '{actionName}' - {ex.Message}");
+                LogRegisterActionFailed(Logger, actionName, ex.Message, ex);
             }
         }
     }
@@ -1116,10 +1144,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         
         if (idProperty == null)
         {
-            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+            LogIdFieldNotFound(Logger, IdField, typeof(TItem).Name, null);
             return Enumerable.Empty<TItem>();
         }
-        
+
         // Build lookup dictionary of items by ID
         var itemsById = Items
             .Select(item => new
@@ -1140,7 +1168,7 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             }
             else
             {
-                Console.WriteLine($"[Grid] WARNING: Could not resolve ID '{id}' to an item");
+                LogCouldNotResolveId(Logger, id.ToString() ?? string.Empty, null);
             }
         }
         
@@ -1175,12 +1203,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
             else if (_gridDefinition.BlazorServerSideFetchHandler != null)
             {
                 // BlazorServerSide: JS will trigger initial fetch via setTimeout after grid is ready
-                Console.WriteLine("[Grid] BlazorServerSide mode initialized - awaiting JS-triggered initial fetch");
             }
             else
             {
                 // Enterprise ServerSide / Infinite: datasource callback
-                Console.WriteLine($"[Grid] Server-side row model initialized - awaiting datasource callback");
             }
         }
     }
@@ -1347,10 +1373,10 @@ public partial class DataGrid<TItem> : ComponentBase, IAsyncDisposable
         
         if (idProperty == null)
         {
-            Console.WriteLine($"[Grid] WARNING: IdField '{IdField}' not found on type {typeof(TItem).Name}");
+            LogIdFieldNotFound(Logger, IdField, typeof(TItem).Name, null);
             yield break;
         }
-        
+
         foreach (var item in items)
         {
             var id = idProperty.GetValue(item);

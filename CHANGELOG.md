@@ -2,6 +2,184 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-26 — Infinite scroll for selection components
+
+> **Release: `v3.7.2`**  
+> **New capability.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No breaking API changes.
+
+---
+
+### ✨ Feature — `OnLoadMore`, `IsLoading`, `EndOfListMessage` on `Combobox`, `MultiSelect`, and `SelectContent`
+
+All three selection components now support scroll-based pagination for large datasets loaded in batches.
+
+**Parameters added to `Combobox<TItem>`, `MultiSelect<TItem>`, and `SelectContent<TValue>`:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `OnLoadMore` | `EventCallback` | Invoked when the user scrolls within 80 px of the list bottom. Suppressed while `IsLoading` is `true`. |
+| `IsLoading` | `bool` | Shows a `Spinner` at the bottom of the list while the next page is loading. |
+| `EndOfListMessage` | `string?` | Shown below all items when `IsLoading` is `false` and there are no more pages. Set `null`/empty to hide. |
+
+**Works in both Options-mode and ChildContent-mode.**
+
+**Implementation approach:**
+- `Combobox` — `OnLoadMore`/`IsLoading`/`EndOfListMessage` flow through to `CommandList`, which hosts the scroll container and JS detection.
+- `MultiSelect` — `_listboxScrollRef` (`ElementReference`) added to the listbox div with `@onscroll="HandleListboxScrollAsync"`. Scroll handler lazily imports `element-utils.js`.
+- `SelectContent` — Restructured into outer (border/shadow/animation, `overflow-hidden`) + inner (scrollable `max-h-60 overflow-auto`) div. Scroll handler on the inner div.
+- All three dispose their `IJSObjectReference` to `element-utils.js` in `DisposeAsync`.
+
+**JS utility (`element-utils.js`):**
+Added `isNearBottom(element, threshold = 80)` to `NeoUI.Blazor.Primitives/wwwroot/js/primitives/element-utils.js`. Returns `true` when `scrollTop + clientHeight >= scrollHeight - threshold`.
+
+---
+
+### ✨ Feature — `SearchQueryChanged` on `MultiSelect<TItem>`
+
+`EventCallback<string> SearchQueryChanged` added — enables two-way `@bind-SearchQuery`-style external filtering.
+
+- When `SearchQueryChanged` has a delegate, the internal text filter is **bypassed**; the consumer is responsible for updating `Items` based on the query.
+- The callback fires on every keystroke with the current query string.
+- On dropdown close, the callback is invoked with `string.Empty` so the consumer can reload the default dataset for the next open.
+
+**Related:**
+- `HandleSearchInput` updated to `async Task` to invoke the callback.
+- `Close()` updated to `async Task` (with cascade to `HandleClickOutside`, `HandleEnter`, `HandleEscape`, `HandleSearchKeyDown`).
+- `ShouldRender` now tracks `IsLoading` to re-render when the spinner state changes.
+
+---
+
+### ✨ Feature — `SearchQueryChanged` on `Combobox<TItem>`
+
+`EventCallback<string> SearchQueryChanged` added to `Combobox<TItem>` — mirrors the same API introduced on `MultiSelect<TItem>`.
+
+- When `SearchQueryChanged` has a delegate, the built-in client-side text filter is **bypassed**; the consumer controls `Items` externally.
+- The callback fires on every keystroke with the current query string.
+- On dropdown close, `HandleOpenChanged` invokes `SearchQueryChanged` with `string.Empty` so the consumer can reload the default dataset for the next open.
+- `AllowLoadMoreDuringSearch="@SearchQueryChanged.HasDelegate"` is forwarded from `Combobox` to `CommandList`, enabling `OnLoadMore` to continue firing while a server-side search is active.
+
+---
+
+### 🐛 Fix — `OnLoadMore` suppressed during client-side search
+
+When a consumer wires up `OnLoadMore` without `SearchQueryChanged` (client-side filtering only), the scroll handler now guards against triggering load-more while a search query is active — preventing the list from growing beyond the filtered results.
+
+**Implementation:**
+- `CommandList.razor` — added `bool AllowLoadMoreDuringSearch` parameter (default `false`). `HandleScroll` skips the `OnLoadMore` invocation when a non-empty search filter is present and `AllowLoadMoreDuringSearch` is `false`.
+- `MultiSelect.razor.cs` — `HandleListboxScrollAsync` applies the same guard using the local `_searchQuery` field.
+
+---
+
+### 📄 Demo — Combobox and MultiSelect demo pages updated
+
+**`ComboboxDemo.razor`:**
+- Added **Async Filtering** demo section — simulated server delay, `SearchQueryChanged` callback, `IsLoading` spinner, and end-of-list message.
+- Added **Infinite Scroll** demo section — `OnLoadMore` with simulated paging, status paragraph, and the upstream Take-based pattern throughout.
+- Removed `LoadComboboxPage` / `HandleComboboxSelectionChanged` helpers (superseded by Take pattern).
+
+**`MultiSelectDemo.razor`:**
+- Added **Infinite Scroll** demo section — `OnLoadMore` with Take-based paging and status display.
+- Added **Server-Side Search** demo section — `SearchQueryChanged` + `IsLoading` with simulated delay.
+
+**`ComboboxDemo.cs` / `MultiSelectDemo.cs` (props tables):**
+- `SearchQueryChanged` type corrected to `EventCallback<string>` on both tables.
+- `MultiSelect.Values` type corrected to `IEnumerable<string>?` (no `TValue` generic).
+- `MultiSelect.OnLoadMore` default corrected to `null`.
+
+---
+
+## Structured logging migration
+
+> **Internal refactor + bug fixes + minor enhancement.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No public API breaking changes.
+
+---
+
+### 🔧 Refactor — Replace `Console.WriteLine` / `Console.Error.WriteLine` with structured `ILogger` logging
+
+All diagnostic output across primitives and components has been migrated from raw `Console` writes to the standard .NET structured logging pipeline using the high-performance `LoggerMessage.Define` source-generated delegate pattern (matching the pattern established in `FloatingPortal`).
+
+**Pattern applied:**
+
+- Each file declares `static readonly Action<ILogger, T…, Exception?> LogXxx = LoggerMessage.Define<T…>(…)` delegates with sequential `EventId` values.
+- **Razor component files** receive `@inject ILogger<T> Logger` (or `[Inject] private ILogger<T> Logger` in partial `.cs` files).
+- **Service / non-component classes** receive `ILogger<T>` via constructor injection with a `NullLogger<T>.Instance` fallback where DI registration is open-generic (e.g. `AgDataGridRenderer<TItem>`).
+- **Generic abstract base** (`ChartBase`) uses injected `ILoggerFactory` with a lazy `ILogger` property resolved to the concrete subtype at runtime.
+- Pure trace / diagnostic lines (animation keyframes, stagger delays, render lifecycle steps, etc.) were **removed outright**; catch-block and guard-condition lines were retained as `Warning` or `Error` level.
+
+**Files updated (22 total):**
+
+| File | Notes |
+|---|---|
+| `Primitives/Floating/FloatingPortal.razor` | Reference pattern (pre-existing) |
+| `Primitives/Floating/DialogContent.razor` | |
+| `Primitives/Floating/DropdownMenuContent.razor` | |
+| `Primitives/Floating/PopoverContent.razor` | |
+| `Primitives/Floating/SelectContent.razor` | |
+| `Primitives/Floating/SheetContent.razor` | |
+| `Primitives/Table/Table.razor.cs` | |
+| `Primitives/Services/KeyboardShortcutService.cs` | Constructor injection |
+| `Components/Carousel/Carousel.razor` | |
+| `Components/DrawerContent/DrawerContent.razor` | |
+| `Components/Resizable/ResizableHandle.razor` | |
+| `Components/Toast/Toast.razor` | |
+| `Components/Motion/Motion.razor` | 3 trace-only lines removed |
+| `Components/MultiSelect/MultiSelect.razor.cs` | |
+| `Components/Chart/ChartThemeService.cs` | Constructor injection |
+| `Components/Chart/ChartBase.cs` | `ILoggerFactory` + lazy logger (generic base) |
+| `Components/Grid/DataGrid.razor.cs` | 2 trace-only lines removed |
+| `Components/Command/CommandInput.razor` | |
+| `Components/Input/Input.razor.cs` | |
+| `Components/NumericInput/NumericInput.razor.cs` | |
+| `Components/RichTextEditor/RichTextEditor.razor.cs` | |
+| `Services/Grid/DataGridTemplateRenderer.cs` | Constructor injection; 5 trace-only lines removed |
+| `Services/Grid/AgDataGridRenderer.cs` | Optional constructor param + `NullLogger` fallback; 25 delegates; ~30 trace-only lines removed |
+
+---
+
+### 🔧 Refactor — Remove verbose diagnostic trace logs from `EChartsRenderer`
+
+Removed 9 `Console.WriteLine` trace statements from `EChartsRenderer.cs` that logged every lifecycle step at noise level (module loaded, config serialized, chart ID assigned, options updated, etc.). These carried no error context and produced log spam in both development and production. The class retains no `Console` output; any genuine failures surface as JS interop exceptions.
+
+---
+
+### 🐛 Fix — `NativeSelect<TValue>`: `Convert.ChangeType` crash for nullable value types
+
+`Convert.ChangeType(stringValue, typeof(TValue))` threw `InvalidCastException` when `TValue` was a nullable type (e.g. `int?`, `decimal?`) because the CLR does not accept `typeof(int?)` as a conversion target. The handler now unwraps the underlying type via `Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue)` before converting and then casts the result to `TValue`.
+
+---
+
+### 🐛 Fix — `FilterExtensions`: `Between` operator emitted wrong expression for the lower bound
+
+In `BuildBetweenExpression`, the `FilterOperator.GreaterThan` arm inside the range builder was incorrectly generating `Expression.GreaterThanOrEqual` and the `FilterOperator.LessThan` case was absent entirely, causing the lower-bound half of a `Between` comparison to silently use the wrong operator. The expression tree now correctly emits `Expression.LessThan` for the lower bound and handles the `GreaterThan` bound accurately.
+
+---
+
+### 🐛 Fix — `MultiSelect` (`multiselect.js`): Space key swallowed by keyboard handler when no list item is focused
+
+The Space key handler previously called `e.preventDefault()` unconditionally, consuming the character even when `focusedIndex` was outside the options list — preventing the user from typing a space in the search input. The handler now returns early when no option is focused, allowing the space character to reach the input normally. Also tightened the `setupMultiSelectInput` null-guard to `!(inputElement instanceof HTMLElement)` with a more descriptive error message.
+
+---
+
+### ✨ Enhancement — `FileUpload`: new `ClearFiles()` public API method
+
+Added a public `ClearFiles()` method (accessible via `@ref`) that resets the component to its empty state after a successful form submission without requiring a page reload. Clears `Files`, validation errors, preview URLs, and upload-progress state, and resets the native `<input type="file">` DOM element via a new `resetFileInput(inputId)` JavaScript helper in `file-upload.js`.
+
+```csharp
+<FileUpload @ref="_uploader" ... />
+
+@code {
+    private FileUpload _uploader = null!;
+
+    async Task HandleSubmit()
+    {
+        await SubmitFilesAsync(_uploader.Files);
+        await _uploader.ClearFiles(); // reset after submit
+    }
+}
+```
+
+---
+
 ## 2026-3-23 — SplitButton enhancements & SidebarPillNav tooltip integration
 
 > **Release: `v3.7.1`**  

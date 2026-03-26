@@ -65,7 +65,7 @@ public static class FilterExtensions
             return BuildMultiSelectExpression(member, multiValues);
         }
 
-        Expression? result = condition.Operator switch
+        return condition.Operator switch
         {
             FilterOperator.IsEmpty => IsNullOrEmpty(member, propType),
             FilterOperator.IsNotEmpty => Expression.Not(IsNullOrEmpty(member, propType)),
@@ -73,7 +73,6 @@ public static class FilterExtensions
             FilterOperator.IsFalse => Expression.Equal(member, Expression.Constant(false, propType)),
             _ => BuildComparisonExpression(condition, member, propType, underlyingType)
         };
-        return result;
     }
 
     /// <summary>
@@ -113,6 +112,16 @@ public static class FilterExtensions
             var constant = BuildConstant(converted, underlyingType, propType);
             return condition.Operator switch
             {
+                // Date/DateTime Equals: match the whole day (>= startOfDay && < nextDay) rather than
+                // an exact midnight timestamp so that records with non-midnight times are included.
+                FilterOperator.Equals when underlyingType == typeof(DateTime) || underlyingType == typeof(DateOnly) =>
+                    BuildDateComparisonExpression(condition.Operator, member, converted, underlyingType, propType),
+                FilterOperator.NotEquals when underlyingType == typeof(DateTime) || underlyingType == typeof(DateOnly) =>
+                    BuildDateComparisonExpression(condition.Operator, member, converted, underlyingType, propType),
+                FilterOperator.GreaterThan when underlyingType == typeof(DateTime) || underlyingType == typeof(DateOnly) =>
+                    BuildDateComparisonExpression(condition.Operator, member, converted, underlyingType, propType),
+                FilterOperator.LessThan when underlyingType == typeof(DateTime) || underlyingType == typeof(DateOnly) =>
+                    BuildDateComparisonExpression(condition.Operator, member, converted, underlyingType, propType),
                 FilterOperator.Equals => Expression.Equal(member, constant),
                 FilterOperator.NotEquals => Expression.NotEqual(member, constant),
                 FilterOperator.GreaterThan => Expression.GreaterThan(member, constant),
@@ -143,6 +152,59 @@ public static class FilterExtensions
             };
         }
         catch { return null; /* Type conversion failed for this condition — skip it */ }
+    }
+
+    /// <summary>
+    /// Builds a whole-day comparison expression for date operators so that records with non-midnight
+    /// times are matched correctly when the filter value comes from a date picker (always midnight):
+    /// <list type="bullet">
+    /// <item><c>Equals</c>: <c>member &gt;= startOfDay &amp;&amp; member &lt; nextDay</c></item>
+    /// <item><c>NotEquals</c>: <c>member &lt; startOfDay || member &gt;= nextDay</c></item>
+    /// <item><c>GreaterThan</c>: <c>member &gt;= nextDay</c> (strictly after the selected day)</item>
+    /// <item><c>LessThan</c>: <c>member &lt; startOfDay</c> (strictly before the selected day)</item>
+    /// </list>
+    /// </summary>
+    private static Expression BuildDateComparisonExpression(FilterOperator op, MemberExpression member, object converted, Type underlyingType, Type propType)
+    {
+        (DateTime startOfDay, DateTime nextDay) GetDateRange()
+        {
+            var day = underlyingType == typeof(DateOnly)
+                ? ((DateOnly)converted).ToDateTime(TimeOnly.MinValue)
+                : ((DateTime)converted).Date;
+            return (day, day.AddDays(1));
+        }
+
+        var (start, next) = GetDateRange();
+
+        if (underlyingType == typeof(DateOnly))
+        {
+            // DateOnly comparisons stay as DateOnly constants
+            var startDate = DateOnly.FromDateTime(start);
+            var nextDate = DateOnly.FromDateTime(next);
+            var startConst = BuildConstant(startDate, underlyingType, propType);
+            var nextConst = BuildConstant(nextDate, underlyingType, propType);
+            return op switch
+            {
+                FilterOperator.Equals => Expression.AndAlso(Expression.GreaterThanOrEqual(member, startConst), Expression.LessThan(member, nextConst)),
+                FilterOperator.NotEquals => Expression.OrElse(Expression.LessThan(member, startConst), Expression.GreaterThanOrEqual(member, nextConst)),
+                FilterOperator.GreaterThan => Expression.GreaterThanOrEqual(member, nextConst),
+                FilterOperator.LessThan => Expression.LessThan(member, startConst),
+                _ => Expression.Equal(member, BuildConstant(converted, underlyingType, propType))
+            };
+        }
+        else
+        {
+            var startConst = BuildConstant(start, underlyingType, propType);
+            var nextConst = BuildConstant(next, underlyingType, propType);
+            return op switch
+            {
+                FilterOperator.Equals => Expression.AndAlso(Expression.GreaterThanOrEqual(member, startConst), Expression.LessThan(member, nextConst)),
+                FilterOperator.NotEquals => Expression.OrElse(Expression.LessThan(member, startConst), Expression.GreaterThanOrEqual(member, nextConst)),
+                FilterOperator.GreaterThan => Expression.GreaterThanOrEqual(member, nextConst),
+                FilterOperator.LessThan => Expression.LessThan(member, startConst),
+                _ => Expression.Equal(member, BuildConstant(converted, underlyingType, propType))
+            };
+        }
     }
 
     /// <summary>
