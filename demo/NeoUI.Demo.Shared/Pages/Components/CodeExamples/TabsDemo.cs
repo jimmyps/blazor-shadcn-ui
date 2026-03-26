@@ -41,6 +41,31 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 </Tabs>
                 """;
 
+        private const string _animatedCode =
+                """
+                @* Tip: extract the Class string as a local const to keep things DRY *@
+                <Tabs DefaultValue="overview">
+                    <TabsList>
+                        <TabsTrigger Value="overview"
+                                     Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                            Overview
+                        </TabsTrigger>
+                        <TabsTrigger Value="analytics"
+                                     Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                            Analytics
+                        </TabsTrigger>
+                        <TabsTrigger Value="reports"
+                                     Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                            Reports
+                        </TabsTrigger>
+                        <SelectionIndicator />
+                    </TabsList>
+                    <TabsContent Value="overview">Overview content</TabsContent>
+                    <TabsContent Value="analytics">Analytics content</TabsContent>
+                    <TabsContent Value="reports">Reports content</TabsContent>
+                </Tabs>
+                """;
+
         private const string _controlledCode =
                 """
                 <Tabs @bind-Value="activeTab">

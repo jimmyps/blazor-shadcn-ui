@@ -1,0 +1,76 @@
+@namespace NeoUI.Blazor
+@implements IAsyncDisposable
+@*
+    SelectionIndicator — composable animated selection indicator.
+
+    Drop this as the last child inside any "selection" container to get a spring-animated
+    pill/underline that tracks the active item. Uses Motion One for spring physics and a
+    MutationObserver to detect selection changes automatically.
+
+    Supported containers and their selectors:
+      Tabs               → [data-state=active]   (default)
+      RadioGroup         → [data-state=checked]
+      ToggleGroup single → [aria-checked=true]
+      NavigationMenuLink → [data-active=true]
+      Select (dropdown)  → [data-state=checked]
+      DropdownMenuRadio  → [data-state=checked]
+      Pagination         → [aria-current=page]
+
+    When used with Tabs, also pass to each TabsTrigger:
+      Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+
+    Variants via Class override:
+      Pill (default):    "absolute inset-y-1 rounded-sm bg-background shadow-sm …"
+      Underline:         "absolute inset-x-0 bottom-0 top-auto h-0.5 rounded-full bg-foreground"
+*@
+
+<div @ref="_ref"
+     data-selection-indicator
+     aria-hidden="true"
+     class="@CssClass"
+     style="opacity: 0">
+</div>
+
+@code {
+    private ElementReference _ref;
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// CSS selector used to find the active element within the parent container.
+    /// Defaults to <c>[data-state=active]</c>, which matches Tabs, RadioGroup, Select, etc.
+    /// </summary>
+    [Parameter]
+    public string Selector { get; set; } = "[data-state=active]";
+
+    /// <summary>
+    /// Additional CSS classes appended to the indicator element.
+    /// Use this to switch variants, e.g. underline:
+    /// <c>Class="absolute inset-x-0 bottom-0 top-auto h-0.5 rounded-full bg-foreground"</c>
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "absolute inset-y-1 rounded-sm bg-background shadow-sm pointer-events-none z-0",
+        Class);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/NeoUI.Blazor/js/selection-indicator.js");
+
+        await _module.InvokeVoidAsync("init", _ref, Selector);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null) return;
+        try { await _module.InvokeVoidAsync("dispose", _ref); } catch { }
+        await _module.DisposeAsync();
+    }
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = null!;
+}
