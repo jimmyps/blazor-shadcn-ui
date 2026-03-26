@@ -700,6 +700,27 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public string? BodyRowClass { get; set; }
 
     /// <summary>
+    /// Gets or sets a function that returns the <c>data-sortable-id</c> attribute value for each
+    /// body row. When set, each <c>&lt;tr&gt;</c> receives a <c>data-sortable-id</c> attribute,
+    /// enabling the row to participate in a <see cref="NeoUI.Blazor.Primitives.SortablePrimitive{TItem}"/> drag context.
+    /// Use together with a <see cref="NeoUI.Blazor.Primitives.SortableContentPrimitive"/> that wraps this component.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// &lt;Sortable TItem="Person" Items="@_people" OnItemsReordered="..." GetItemId="@(p => p.Id.ToString())"&gt;
+    ///     &lt;SortableContentPrimitive&gt;
+    ///         &lt;DataTable TData="Person" Data="@_people" GetRowSortableId="@(p => p.Id.ToString())"&gt;
+    ///             ...
+    ///         &lt;/DataTable&gt;
+    ///     &lt;/SortableContentPrimitive&gt;
+    ///     &lt;SortableOverlayPrimitive /&gt;
+    /// &lt;/Sortable&gt;
+    /// </code>
+    /// </example>
+    [Parameter]
+    public Func<TData, string>? GetRowSortableId { get; set; }
+
+    /// <summary>
     /// When true, applies alternating row background colours (zebra striping).
     /// Default is false.
     /// </summary>

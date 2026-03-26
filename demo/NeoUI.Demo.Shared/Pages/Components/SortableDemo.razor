@@ -105,6 +105,99 @@
         </DemoBlock>
     </DemoSection>
 
+    @* ── Composability with DataView — List ─────────────────── *@
+    <DemoSection Title="Composability with DataView — List"
+                 Description="Wrap a DataView in a Sortable root and SortableContentPrimitive. Each SortableItem in the ListTemplate participates in drag-and-drop reordering with zero changes to DataView itself.">
+        <DemoBlock Code="@_dataViewListCode">
+            <div class="max-w-sm">
+                <Sortable TItem="CardItem"
+                          Items="@_dataViewListItems"
+                          OnItemsReordered="@(r => _dataViewListItems = r)"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContentPrimitive class="block">
+                        <DataView Items="@_dataViewListItems" ItemKey="@(i => i.Id)"
+                                  ShowToolbar="false" ShowPagination="false">
+                            <ListTemplate Context="item">
+                                <SortableItem Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                    <SortableItemHandle />
+                                    <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                                    <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
+                                </SortableItem>
+                            </ListTemplate>
+                        </DataView>
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataView — Grid ──────────────────── *@
+    <DemoSection Title="Composability with DataView — Grid"
+                 Description="Provide both ListTemplate and GridTemplate to keep the layout toggle. SortableItem works in both layouts — the same Sortable context covers both renderings.">
+        <DemoBlock Code="@_dataViewGridCode">
+            <Sortable TItem="CardItem"
+                      Items="@_dataViewGridItems"
+                      OnItemsReordered="@(r => _dataViewGridItems = r)"
+                      GetItemId="@(i => i.Id)">
+                <SortableContentPrimitive class="block">
+                    <DataView Items="@_dataViewGridItems" ItemKey="@(i => i.Id)"
+                              ShowToolbar="false" ShowPagination="false">
+                        <ListTemplate Context="item">
+                            <SortableItem Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
+                            </SortableItem>
+                        </ListTemplate>
+                        <GridTemplate Context="item">
+                            <SortableItem Value="@item.Id" AsHandle
+                                          Class="flex-col items-start gap-1 h-28 rounded-lg shadow-sm">
+                                <p class="text-sm font-semibold leading-tight">@item.Name</p>
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-xs mt-auto">@item.Tag</Badge>
+                            </SortableItem>
+                        </GridTemplate>
+                    </DataView>
+                </SortableContentPrimitive>
+                <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataTable ────────────────────────── *@
+    <DemoSection Title="Composability with DataTable"
+                 Description="Set GetRowSortableId on DataTable to add data-sortable-id to each row. Wrap the table in a SortableContentPrimitive and add a drag handle column via CellTemplate.">
+        <DemoBlock Code="@_dataTableCode">
+            <Sortable TItem="TaskItem"
+                      Items="@_tableItems"
+                      OnItemsReordered="@(r => _tableItems = r)"
+                      GetItemId="@(i => i.Id)">
+                <SortableContentPrimitive class="block">
+                    <DataTable TData="TaskItem"
+                               Data="@_tableItems"
+                               GetRowSortableId="@(i => i.Id)"
+                               ShowPagination="false"
+                               ShowToolbar="false">
+                        <Columns>
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
+                                <CellTemplate Context="row">
+                                    <SortableItemHandle Class="mx-auto" />
+                                </CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Name)" Header="Task" />
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Status)" Header="Status">
+                                <CellTemplate Context="row">
+                                    <Badge Variant="@(row.Status == "Done" ? BadgeVariant.Default : BadgeVariant.Secondary)">@row.Status</Badge>
+                                </CellTemplate>
+                            </DataTableColumn>
+                        </Columns>
+                    </DataTable>
+                </SortableContentPrimitive>
+                <SortableOverlayPrimitive class="rounded border bg-card px-4 py-2 shadow-lg opacity-90 text-sm" />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
     @* ── Primitive (unstyled) ────────────────────────────────── *@
     <DemoSection Title="Using the Primitive"
                  Description="For full control over styling, use the headless SortablePrimitive directly. See the Sortable Primitive docs for the complete API.">
@@ -185,5 +278,36 @@
         new("p1", "First item"),
         new("p2", "Second item"),
         new("p3", "Third item"),
+    ];
+
+    private record CardItem(string Id, string Name, string Tag);
+    private record TaskItem(string Id, string Name, string Status);
+
+    private IList<CardItem> _dataViewListItems =
+    [
+        new("dv1", "Design wireframes",  "Design"),
+        new("dv2", "Write unit tests",   "QA"),
+        new("dv3", "Implement API",      "Backend"),
+        new("dv4", "Code review",        "DevOps"),
+        new("dv5", "Deploy to staging",  "Ops"),
+    ];
+
+    private IList<CardItem> _dataViewGridItems =
+    [
+        new("g1", "Dashboard",     "Design"),
+        new("g2", "Auth flow",     "Security"),
+        new("g3", "Notifications", "UX"),
+        new("g4", "Settings",      "Config"),
+        new("g5", "Analytics",     "Data"),
+        new("g6", "Reports",       "Data"),
+    ];
+
+    private IList<TaskItem> _tableItems =
+    [
+        new("t1", "Design wireframes",  "To Do"),
+        new("t2", "Write unit tests",   "In Progress"),
+        new("t3", "Implement API",      "To Do"),
+        new("t4", "Code review",        "In Progress"),
+        new("t5", "Deploy to staging",  "Done"),
     ];
 }

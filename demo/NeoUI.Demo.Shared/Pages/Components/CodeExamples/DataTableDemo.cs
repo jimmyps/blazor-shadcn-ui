@@ -51,6 +51,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("Reorderable", "bool", "false", "Lets users drag column headers to reorder them. Columns animate into place as you drag. Pinned and selection columns are excluded. Per-column Reorderable overrides this."),
                 new("OnColumnReorder", "EventCallback<(string, int)>", "—", "Fires when the user drops a column into a new position. Provides (ColumnId, NewIndex)."),
                 new("RowContextMenu", "RenderFragment<DataTableRowMenuContext<TData>>?", "null", "Template for the context menu shown on row right-click. Receives DataTableRowMenuContext with Item, SelectedItems, and VisibleColumns."),
+                new("GetRowSortableId", "Func&lt;TData, string&gt;?", "null", "When set, adds data-sortable-id to each body &lt;tr&gt; so it participates in a SortablePrimitive drag context. Wrap the table in SortableContentPrimitive and add a handle column."),
             ];
 
         private static readonly IReadOnlyList<DemoPropRow> _dataTableColumnProps =
@@ -402,6 +403,41 @@ namespace NeoUI.Demo.Shared.Pages.Components
                         </ContextMenuItem>
                     </RowContextMenu>
                 </DataTable>
+                """;
+
+        private const string _sortableRowsCode = """
+                @* Set GetRowSortableId to add data-sortable-id to each <tr>.
+                   Wrap in Sortable + SortableContentPrimitive; add a handle column via CellTemplate. *@
+                <Sortable TItem="SortableTask"
+                          Items="@_sortableRows"
+                          OnItemsReordered="@(r => _sortableRows = r)"
+                          GetItemId="@(t => t.Id)">
+                    <SortableContentPrimitive class="block">
+                        <DataTable TData="SortableTask"
+                                   Data="@_sortableRows"
+                                   GetRowSortableId="@(t => t.Id)"
+                                   ShowPagination="false"
+                                   ShowToolbar="false">
+                            <Columns>
+                                <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Id)" Header="" Width="44px">
+                                    <CellTemplate Context="row">
+                                        <SortableItemHandle Class="mx-auto" />
+                                    </CellTemplate>
+                                </DataTableColumn>
+                                <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Name)" Header="Task" Sortable />
+                                <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Assignee)" Header="Assignee" />
+                                <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Status)" Header="Status">
+                                    <CellTemplate Context="row">
+                                        <Badge Variant="@(row.Status == "Done" ? BadgeVariant.Default : BadgeVariant.Secondary)">
+                                            @row.Status
+                                        </Badge>
+                                    </CellTemplate>
+                                </DataTableColumn>
+                            </Columns>
+                        </DataTable>
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="grid grid-cols-4 rounded border bg-card px-3 py-2.5 shadow-lg opacity-90 text-sm" />
+                </Sortable>
                 """;
     }
 }

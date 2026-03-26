@@ -191,6 +191,7 @@
                                 <ItemContent>
                                     @{ var isSelectedVS = _tableState.Selection.IsSelected(item); }
                                     <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVS)" style="@($"height:{ItemHeight}px")"
+                                                  data-sortable-id="@(GetRowSortableId?.Invoke(item))"
                                                   OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(item, e)) : default)">
                                         @RenderRowCells(item, isSelectedVS)
                                     </TableRow>
@@ -213,6 +214,7 @@
                                         Context="item">
                                 @{ var isSelectedVC = _tableState.Selection.IsSelected(item); }
                                 <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelectedVC)" style="@($"height:{ItemHeight}px")"
+                                              data-sortable-id="@(GetRowSortableId?.Invoke(item))"
                                               OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(item, e)) : default)">
                                     @RenderRowCells(item, isSelectedVC)
                                 </TableRow>
@@ -224,6 +226,7 @@
                             {
                                 var isSelected = _tableState.Selection.IsSelected(treeRow.Item);
                                 <TableRow TData="TData" Item="@treeRow.Item" Class="@GetBodyRowClass(isSelected)"
+                                              data-sortable-id="@(GetRowSortableId?.Invoke(treeRow.Item))"
                                               OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(treeRow.Item, e)) : default)">
                                     @RenderTreeRowCells(treeRow, isSelected)
                                 </TableRow>
@@ -235,6 +238,7 @@
                             {
                                 var isSelected = _tableState.Selection.IsSelected(item);
                                 <TableRow TData="TData" Item="@item" Class="@GetBodyRowClass(isSelected)"
+                                              data-sortable-id="@(GetRowSortableId?.Invoke(item))"
                                               OnContextMenu="@(RowContextMenu != null ? EventCallback.Factory.Create<MouseEventArgs>(this, e => HandleRowContextMenu(item, e)) : default)">
                                     @RenderRowCells(item, isSelected)
                                 </TableRow>
