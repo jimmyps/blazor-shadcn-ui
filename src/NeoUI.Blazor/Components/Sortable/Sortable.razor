@@ -1,0 +1,60 @@
+@namespace NeoUI.Blazor
+@typeparam TItem
+@*
+    Styled Sortable component wrapper.
+    Wraps the SortablePrimitive with a thin pass-through for class and attributes.
+*@
+
+<SortablePrimitive TItem="TItem"
+                   Items="@Items"
+                   OnItemsReordered="@OnItemsReordered"
+                   GetItemId="@GetItemId"
+                   Orientation="@Orientation"
+                   class="@Class"
+                   @attributes="AdditionalAttributes">
+    @ChildContent
+</SortablePrimitive>
+
+@code {
+    /// <summary>
+    /// The list of items to sort. Required.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IList<TItem> Items { get; set; } = [];
+
+    /// <summary>
+    /// Callback invoked after a drag operation reorders items.
+    /// </summary>
+    [Parameter]
+    public EventCallback<IList<TItem>> OnItemsReordered { get; set; }
+
+    /// <summary>
+    /// Function that extracts a unique string identifier from each item. Required.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<TItem, string> GetItemId { get; set; } = _ => string.Empty;
+
+    /// <summary>
+    /// Drag axis. Defaults to <see cref="SortableOrientation.Vertical"/>.
+    /// </summary>
+    [Parameter]
+    public SortableOrientation Orientation { get; set; } = SortableOrientation.Vertical;
+
+    /// <summary>
+    /// Child content: SortableContentPrimitive, SortableOverlayPrimitive, etc.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes appended to the root element.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the root element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

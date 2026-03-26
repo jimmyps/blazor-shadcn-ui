@@ -1,0 +1,62 @@
+@namespace NeoUI.Blazor
+@*
+    Styled SortableItemHandle component.
+    Wraps SortableItemHandlePrimitive with cursor-grab, color transitions, and
+    a default grip icon. Passes through custom ChildContent when supplied.
+*@
+
+<SortableItemHandlePrimitive class="@CssClass"
+                              @attributes="AdditionalAttributes">
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        @* Default six-dot grip icon — identical to the primitive default *@
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="16" height="16"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <circle cx="9"  cy="5"  r="1" />
+            <circle cx="9"  cy="12" r="1" />
+            <circle cx="9"  cy="19" r="1" />
+            <circle cx="15" cy="5"  r="1" />
+            <circle cx="15" cy="12" r="1" />
+            <circle cx="15" cy="19" r="1" />
+        </svg>
+    }
+</SortableItemHandlePrimitive>
+
+@code {
+    /// <summary>
+    /// Custom content for the handle. Replaces the default six-dot grip icon when provided.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes appended to the handle element.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the handle element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "cursor-grab active:cursor-grabbing",
+        "text-muted-foreground hover:text-foreground",
+        "transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        Class
+    );
+}

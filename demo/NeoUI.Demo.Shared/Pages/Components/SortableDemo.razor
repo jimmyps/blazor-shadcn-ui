@@ -1,0 +1,189 @@
+@page "/components/sortable"
+
+<PageTitle>Sortable - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Sortable"
+        Description="Drag-and-drop sortable lists with a beautiful default design. Built on top of the headless SortablePrimitive." />
+
+    @* ── Default — handle drag ──────────────────────────────── *@
+    <DemoSection Title="Default"
+                 Description="Vertical list with a styled grip handle. Drag is constrained to the handle.">
+        <DemoBlock Code="@_defaultCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_defaultItems"
+                          OnItemsReordered="@(r => _defaultItems = r)"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContentPrimitive class="flex flex-col gap-2">
+                        @foreach (var item in _defaultItems)
+                        {
+                            <SortableItem Value="@item.Id">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItem>
+                        }
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── AsHandle — whole item draggable ────────────────────── *@
+    <DemoSection Title="Full-Item Drag"
+                 Description="Set AsHandle on SortableItem to make the entire item the drag target.">
+        <DemoBlock Code="@_asHandleCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_asHandleItems"
+                          OnItemsReordered="@(r => _asHandleItems = r)"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContentPrimitive class="flex flex-col gap-2">
+                        @foreach (var item in _asHandleItems)
+                        {
+                            <SortableItem Value="@item.Id" AsHandle>
+                                <span class="flex-1 text-sm font-medium">@item.Name</span>
+                                <span class="text-xs text-muted-foreground">drag me</span>
+                            </SortableItem>
+                        }
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Horizontal ──────────────────────────────────────────── *@
+    <DemoSection Title="Horizontal"
+                 Description="Set Orientation='Horizontal' for column-based reordering.">
+        <DemoBlock Code="@_horizontalCode">
+            <Sortable TItem="DemoItem"
+                      Items="@_horizontalItems"
+                      OnItemsReordered="@(r => _horizontalItems = r)"
+                      GetItemId="@(i => i.Id)"
+                      Orientation="SortableOrientation.Horizontal">
+                <SortableContentPrimitive class="flex flex-row gap-3 flex-wrap">
+                    @foreach (var item in _horizontalItems)
+                    {
+                        <SortableItem Value="@item.Id" AsHandle
+                                      Class="w-24 h-24 justify-center font-medium text-sm">
+                            @item.Name
+                        </SortableItem>
+                    }
+                </SortableContentPrimitive>
+                <SortableOverlayPrimitive class="rounded-lg border bg-card shadow-lg flex items-center justify-center text-sm font-medium" />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom handle icon ──────────────────────────────────── *@
+    <DemoSection Title="Custom Handle Icon"
+                 Description="Provide a render fragment to SortableItemHandle to replace the default grip icon.">
+        <DemoBlock Code="@_customHandleCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_customHandleItems"
+                          OnItemsReordered="@(r => _customHandleItems = r)"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContentPrimitive class="flex flex-col gap-2">
+                        @foreach (var item in _customHandleItems)
+                        {
+                            <SortableItem Value="@item.Id">
+                                <SortableItemHandle>
+                                    <LucideIcon Name="grip-horizontal" Size="16" />
+                                </SortableItemHandle>
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItem>
+                        }
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Primitive (unstyled) ────────────────────────────────── *@
+    <DemoSection Title="Using the Primitive"
+                 Description="For full control over styling, use the headless SortablePrimitive directly. See the Sortable Primitive docs for the complete API.">
+        <DemoBlock Code="@_primitiveCode">
+            <div class="max-w-sm">
+                <SortablePrimitive TItem="DemoItem"
+                                   Items="@_primitiveItems"
+                                   OnItemsReordered="@(r => _primitiveItems = r)"
+                                   GetItemId="@(i => i.Id)">
+                    <SortableContentPrimitive class="flex flex-col gap-2">
+                        @foreach (var item in _primitiveItems)
+                        {
+                            <SortableItemPrimitive Value="@item.Id"
+                                                   class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
+                                <SortableItemHandlePrimitive class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItemPrimitive>
+                        }
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                </SortablePrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────── *@
+    <DemoSection Title="API Reference">
+        <div class="space-y-6">
+            <PropsTable Title="Sortable&lt;TItem&gt;" Rows="@_sortableProps" />
+            <PropsTable Title="SortableItem" Rows="@_itemProps" />
+            <PropsTable Title="SortableItemHandle" Rows="@_handleProps" />
+        </div>
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    private record DemoItem(string Id, string Name);
+
+    private IList<DemoItem> _defaultItems =
+    [
+        new("1", "Task: Design wireframes"),
+        new("2", "Task: Write unit tests"),
+        new("3", "Task: Implement API"),
+        new("4", "Task: Code review"),
+        new("5", "Task: Deploy to staging"),
+    ];
+
+    private IList<DemoItem> _asHandleItems =
+    [
+        new("a", "Alpha"),
+        new("b", "Beta"),
+        new("c", "Gamma"),
+        new("d", "Delta"),
+    ];
+
+    private IList<DemoItem> _horizontalItems =
+    [
+        new("h1", "One"),
+        new("h2", "Two"),
+        new("h3", "Three"),
+        new("h4", "Four"),
+        new("h5", "Five"),
+    ];
+
+    private IList<DemoItem> _customHandleItems =
+    [
+        new("c1", "Backlog"),
+        new("c2", "In Progress"),
+        new("c3", "Review"),
+        new("c4", "Done"),
+    ];
+
+    private IList<DemoItem> _primitiveItems =
+    [
+        new("p1", "First item"),
+        new("p2", "Second item"),
+        new("p3", "Third item"),
+    ];
+}

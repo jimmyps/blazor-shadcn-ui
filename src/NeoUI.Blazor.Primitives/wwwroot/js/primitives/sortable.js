@@ -13,8 +13,11 @@
  *  - dispose(instanceId)
  */
 
-const DRAG_THRESHOLD = 5;   // px movement before a pending-drag becomes a real drag
-const TRANSITION_MS  = 150; // ms for item displacement CSS transitions
+const DRAG_THRESHOLD          = 5;    // px movement before a pending-drag becomes a real drag
+const TRANSITION_MS           = 150;  // ms for item displacement CSS transitions
+const DRAG_PLACEHOLDER_OPACITY = '0.4'; // opacity of the source item during drag
+const DEFAULT_ITEM_HEIGHT     = 60;   // px fallback height used in keyboard drag calculations
+const DEFAULT_ITEM_WIDTH      = 120;  // px fallback width used in keyboard drag calculations
 
 const instances = new Map();
 
@@ -126,7 +129,7 @@ function startDrag(state, orientation) {
     // Style the dragged item as the "source" placeholder
     if (state.activeEl) {
         state.activeEl.setAttribute('data-dragging', 'true');
-        state.activeEl.style.opacity = '0.4';
+        state.activeEl.style.opacity = DRAG_PLACEHOLDER_OPACITY;
     }
 
     // Position and show overlay
@@ -344,7 +347,7 @@ function buildKeyboardHandlers(state, orientation) {
                 }
             }
             state.activeEl.setAttribute('data-dragging', 'true');
-            state.activeEl.style.opacity = '0.4';
+            state.activeEl.style.opacity = DRAG_PLACEHOLDER_OPACITY;
             state.dotNetRef.invokeMethodAsync('OnDragStart', state.activeId).catch(() => {});
             return;
         }
@@ -353,8 +356,8 @@ function buildKeyboardHandlers(state, orientation) {
         if (state.keyboardMode && state.isDragging) {
             const snap       = state.snapshotItems ?? [];
             const activeIdx  = snap.findIndex(s => s.id === state.activeId);
-            const itemHeight = snap[activeIdx]?.rect.height ?? 60;
-            const itemWidth  = snap[activeIdx]?.rect.width  ?? 120;
+            const itemHeight = snap[activeIdx]?.rect.height ?? DEFAULT_ITEM_HEIGHT;
+            const itemWidth  = snap[activeIdx]?.rect.width  ?? DEFAULT_ITEM_WIDTH;
             let moved = false;
 
             if (orientation === 'vertical' || orientation === 'mixed') {
