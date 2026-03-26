@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 using System.Text;
@@ -18,6 +19,13 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    private ILogger<MultiSelect<TItem>> Logger { get; set; } = default!;
+
+    private static readonly Action<ILogger, string, Exception?> LogJsSetupFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, nameof(LogJsSetupFailed)),
+            "MultiSelect JS setup failed: {Message}");
 
     private FieldIdentifier _fieldIdentifier;
     private EditContext? _editContext;
@@ -37,6 +45,9 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     // Cached event handlers to avoid allocations on every render
     private readonly Dictionary<string, Func<Task>> _toggleHandlerCache = new();
     private readonly Dictionary<string, Func<Task>> _removeHandlerCache = new();
+
+    // Persists display text for values across item list changes (e.g. async paging)
+    private readonly Dictionary<string, string> _displayTextCache = new();
 
     // Cached CSS class strings to avoid recomputation on every render
     private string? _cachedTriggerCssClass;
@@ -314,7 +325,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"MultiSelect JS setup failed: {ex.Message}");
+                LogJsSetupFailed(Logger, ex.Message, ex);
             }
         }
         // Cleanup JS when popover closes
@@ -452,10 +463,13 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         if (currentValues.Contains(itemValue))
         {
             currentValues.Remove(itemValue);
+            _displayTextCache.Remove(itemValue);
         }
         else
         {
             currentValues.Add(itemValue);
+            // Cache display text so it survives Items list changes during async filtering
+            _displayTextCache[itemValue] = DisplaySelector(item);
         }
 
         await UpdateValues(currentValues);
@@ -493,7 +507,8 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     private async Task HandleSelectAllToggle()
     {
-        var filteredValues = FilteredItems.Select(ValueSelector).ToList();
+        var filteredItems = FilteredItems.ToList();
+        var filteredValues = filteredItems.Select(ValueSelector).ToList();
         var currentValues = SelectedValues;
 
         // Check if all FILTERED items are selected
@@ -503,13 +518,19 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         {
             // Deselect only the filtered items
             currentValues.RemoveAll(v => filteredValues.Contains(v));
+            foreach (var v in filteredValues)
+            {
+                _displayTextCache.Remove(v);
+            }
         }
         else
         {
             // Select all filtered items (add to existing selection)
-            foreach (var value in filteredValues.Where(v => !currentValues.Contains(v)))
+            foreach (var item in filteredItems.Where(i => !currentValues.Contains(ValueSelector(i))))
             {
-                currentValues.Add(value);
+                var v = ValueSelector(item);
+                currentValues.Add(v);
+                _displayTextCache[v] = DisplaySelector(item);
             }
         }
 
@@ -523,6 +544,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     {
         var currentValues = SelectedValues;
         currentValues.Remove(value);
+        _displayTextCache.Remove(value);
         await UpdateValues(currentValues);
     }
 
@@ -531,6 +553,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     private async Task ClearAll()
     {
+        _displayTextCache.Clear();
         await UpdateValues(new List<string>());
     }
 
@@ -572,11 +595,19 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Gets the display text for a value.
+    /// Checks the current Items list first; falls back to the display text cache so that
+    /// badge labels remain correct even when the item has been paged out of Items.
     /// </summary>
     private string GetDisplayText(string value)
     {
         var item = Items.FirstOrDefault(i => ValueSelector(i) == value);
-        return item != null ? DisplaySelector(item) : value;
+        if (item != null)
+        {
+            var displayText = DisplaySelector(item);
+            _displayTextCache[value] = displayText;
+            return displayText;
+        }
+        return _displayTextCache.TryGetValue(value, out var cached) ? cached : value;
     }
 
     // JSInvokable callbacks for keyboard navigation

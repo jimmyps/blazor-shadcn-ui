@@ -2,6 +2,98 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-26 — Structured logging migration, verbose log cleanup & bug fixes
+
+> **Internal refactor + bug fixes + minor enhancement.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No public API breaking changes.
+
+---
+
+### 🔧 Refactor — Replace `Console.WriteLine` / `Console.Error.WriteLine` with structured `ILogger` logging
+
+All diagnostic output across primitives and components has been migrated from raw `Console` writes to the standard .NET structured logging pipeline using the high-performance `LoggerMessage.Define` source-generated delegate pattern (matching the pattern established in `FloatingPortal`).
+
+**Pattern applied:**
+
+- Each file declares `static readonly Action<ILogger, T…, Exception?> LogXxx = LoggerMessage.Define<T…>(…)` delegates with sequential `EventId` values.
+- **Razor component files** receive `@inject ILogger<T> Logger` (or `[Inject] private ILogger<T> Logger` in partial `.cs` files).
+- **Service / non-component classes** receive `ILogger<T>` via constructor injection with a `NullLogger<T>.Instance` fallback where DI registration is open-generic (e.g. `AgDataGridRenderer<TItem>`).
+- **Generic abstract base** (`ChartBase`) uses injected `ILoggerFactory` with a lazy `ILogger` property resolved to the concrete subtype at runtime.
+- Pure trace / diagnostic lines (animation keyframes, stagger delays, render lifecycle steps, etc.) were **removed outright**; catch-block and guard-condition lines were retained as `Warning` or `Error` level.
+
+**Files updated (22 total):**
+
+| File | Notes |
+|---|---|
+| `Primitives/Floating/FloatingPortal.razor` | Reference pattern (pre-existing) |
+| `Primitives/Floating/DialogContent.razor` | |
+| `Primitives/Floating/DropdownMenuContent.razor` | |
+| `Primitives/Floating/PopoverContent.razor` | |
+| `Primitives/Floating/SelectContent.razor` | |
+| `Primitives/Floating/SheetContent.razor` | |
+| `Primitives/Table/Table.razor.cs` | |
+| `Primitives/Services/KeyboardShortcutService.cs` | Constructor injection |
+| `Components/Carousel/Carousel.razor` | |
+| `Components/DrawerContent/DrawerContent.razor` | |
+| `Components/Resizable/ResizableHandle.razor` | |
+| `Components/Toast/Toast.razor` | |
+| `Components/Motion/Motion.razor` | 3 trace-only lines removed |
+| `Components/MultiSelect/MultiSelect.razor.cs` | |
+| `Components/Chart/ChartThemeService.cs` | Constructor injection |
+| `Components/Chart/ChartBase.cs` | `ILoggerFactory` + lazy logger (generic base) |
+| `Components/Grid/DataGrid.razor.cs` | 2 trace-only lines removed |
+| `Components/Command/CommandInput.razor` | |
+| `Components/Input/Input.razor.cs` | |
+| `Components/NumericInput/NumericInput.razor.cs` | |
+| `Components/RichTextEditor/RichTextEditor.razor.cs` | |
+| `Services/Grid/DataGridTemplateRenderer.cs` | Constructor injection; 5 trace-only lines removed |
+| `Services/Grid/AgDataGridRenderer.cs` | Optional constructor param + `NullLogger` fallback; 25 delegates; ~30 trace-only lines removed |
+
+---
+
+### 🔧 Refactor — Remove verbose diagnostic trace logs from `EChartsRenderer`
+
+Removed 9 `Console.WriteLine` trace statements from `EChartsRenderer.cs` that logged every lifecycle step at noise level (module loaded, config serialized, chart ID assigned, options updated, etc.). These carried no error context and produced log spam in both development and production. The class retains no `Console` output; any genuine failures surface as JS interop exceptions.
+
+---
+
+### 🐛 Fix — `NativeSelect<TValue>`: `Convert.ChangeType` crash for nullable value types
+
+`Convert.ChangeType(stringValue, typeof(TValue))` threw `InvalidCastException` when `TValue` was a nullable type (e.g. `int?`, `decimal?`) because the CLR does not accept `typeof(int?)` as a conversion target. The handler now unwraps the underlying type via `Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue)` before converting and then casts the result to `TValue`.
+
+---
+
+### 🐛 Fix — `FilterExtensions`: `Between` operator emitted wrong expression for the lower bound
+
+In `BuildBetweenExpression`, the `FilterOperator.GreaterThan` arm inside the range builder was incorrectly generating `Expression.GreaterThanOrEqual` and the `FilterOperator.LessThan` case was absent entirely, causing the lower-bound half of a `Between` comparison to silently use the wrong operator. The expression tree now correctly emits `Expression.LessThan` for the lower bound and handles the `GreaterThan` bound accurately.
+
+---
+
+### 🐛 Fix — `MultiSelect` (`multiselect.js`): Space key swallowed by keyboard handler when no list item is focused
+
+The Space key handler previously called `e.preventDefault()` unconditionally, consuming the character even when `focusedIndex` was outside the options list — preventing the user from typing a space in the search input. The handler now returns early when no option is focused, allowing the space character to reach the input normally. Also tightened the `setupMultiSelectInput` null-guard to `!(inputElement instanceof HTMLElement)` with a more descriptive error message.
+
+---
+
+### ✨ Enhancement — `FileUpload`: new `ClearFiles()` public API method
+
+Added a public `ClearFiles()` method (accessible via `@ref`) that resets the component to its empty state after a successful form submission without requiring a page reload. Clears `Files`, validation errors, preview URLs, and upload-progress state, and resets the native `<input type="file">` DOM element via a new `resetFileInput(inputId)` JavaScript helper in `file-upload.js`.
+
+```csharp
+<FileUpload @ref="_uploader" ... />
+
+@code {
+    private FileUpload _uploader = null!;
+
+    async Task HandleSubmit()
+    {
+        await SubmitFilesAsync(_uploader.Files);
+        await _uploader.ClearFiles(); // reset after submit
+    }
+}
+```
+
+---
+
 ## 2026-3-23 — SplitButton enhancements & SidebarPillNav tooltip integration
 
 > **Release: `v3.7.1`**  
