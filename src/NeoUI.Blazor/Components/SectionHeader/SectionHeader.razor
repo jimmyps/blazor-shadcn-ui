@@ -1,0 +1,33 @@
+@namespace NeoUI.Blazor
+
+<div class="@CssClass">
+    <div class="flex items-center justify-between">
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <h2 class="@TitleCssClass">@Title</h2>
+        }
+        else if (TitleContent is not null)
+        {
+            <div class="@TitleCssClass">@TitleContent</div>
+        }
+
+        @if (OnViewAll.HasDelegate)
+        {
+            <button type="button"
+                    class="flex items-center gap-0.5 text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                    aria-label="@ViewAllLabel"
+                    @onclick="OnViewAll">
+                @if (!string.IsNullOrEmpty(ViewAllText))
+                {
+                    <span>@ViewAllText</span>
+                }
+                <LucideIcon Name="chevron-right" Size="18" />
+            </button>
+        }
+    </div>
+
+    @if (ShowSeparator)
+    {
+        <Separator Class="mt-3" />
+    }
+</div>
