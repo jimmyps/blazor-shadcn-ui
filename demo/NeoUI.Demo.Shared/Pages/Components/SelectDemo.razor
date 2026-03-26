@@ -113,6 +113,46 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Infinite Scroll"
+        Description="Load items in batches as the user scrolls to the bottom of the SelectContent dropdown.">
+        <DemoBlock Code="@_infiniteScrollCode">
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Size="16" /></Icon>
+                    <ChildContent>
+                        <AlertDescription>
+                            Open the dropdown and scroll down to trigger <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">OnLoadMore</code> on <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">SelectContent</code>.
+                            A spinner appears during the simulated 600 ms fetch. Once all @_sTotalItems items are loaded,
+                            <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">EndOfListMessage</code> is shown instead of the spinner.
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
+            <ChildContent>
+                <div class="flex items-center gap-4">
+                    <Select @bind-Value="_sPagedValue" TValue="string" Class="w-[280px]">
+                        <SelectTrigger>
+                            <SelectValue Placeholder="Select an option..." />
+                        </SelectTrigger>
+                        <SelectContent OnLoadMore="@HandleSelectLoadMore"
+                                       IsLoading="@_sPagedLoading"
+                                       EndOfListMessage="@SelectEndMessage">
+                            @foreach (var item in _sPagedItems)
+                            {
+                                <SelectItem Value="@item.Value" Text="@item.Label" TValue="string">@item.Label</SelectItem>
+                            }
+                        </SelectContent>
+                    </Select>
+                    @if (!string.IsNullOrEmpty(_sPagedValue))
+                    {
+                        <p class="text-sm">Selected: <strong>@_sPagedValue</strong></p>
+                    }
+                </div>
+            </ChildContent>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_selectProps" />
     </DemoSection>
@@ -139,5 +179,43 @@
         "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti",
         "Dominica", "Dominican Republic", "East Timor", "Ecuador", "Egypt"
     };
+
+    // Infinite Scroll demo
+    private List<SelectNumberedItem> _sPagedItems = new();
+    private bool _sPagedLoading;
+    private int _sPagedPage;
+    private string? _sPagedValue;
+    private const int _sPageSize = 8;
+    private const int _sTotalItems = 40;
+
+    protected override void OnInitialized() => LoadSelectPage();
+
+    private void LoadSelectPage()
+    {
+        var start = _sPagedPage * _sPageSize;
+        var end = Math.Min(start + _sPageSize, _sTotalItems);
+        for (var i = start; i < end; i++)
+            _sPagedItems.Add(new SelectNumberedItem { Value = $"item-{i + 1}", Label = $"Item {i + 1}" });
+        _sPagedPage++;
+    }
+
+    private async Task HandleSelectLoadMore()
+    {
+        if (_sPagedLoading || _sPagedItems.Count >= _sTotalItems) return;
+        _sPagedLoading = true;
+        StateHasChanged();
+        await Task.Delay(600);
+        LoadSelectPage();
+        _sPagedLoading = false;
+    }
+
+    private string? SelectEndMessage =>
+        _sPagedItems.Count >= _sTotalItems ? $"All {_sTotalItems} items loaded" : null;
+
+    public class SelectNumberedItem
+    {
+        public required string Value { get; set; }
+        public required string Label { get; set; }
+    }
 
 }

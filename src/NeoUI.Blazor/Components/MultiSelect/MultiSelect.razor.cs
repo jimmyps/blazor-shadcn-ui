@@ -41,6 +41,10 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     private bool _lastIsOpen;
     private string _lastSearchQuery = string.Empty;
     private bool _lastDisabled;
+    private bool _lastIsLoading;
+
+    private ElementReference _listboxScrollRef;
+    private IJSObjectReference? _elementUtilsModule;
 
     // Cached event handlers to avoid allocations on every render
     private readonly Dictionary<string, Func<Task>> _toggleHandlerCache = new();
@@ -190,6 +194,36 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     public bool AutoClose { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the callback invoked when the search query changes.
+    /// Use for server-side filtering or loading external data. When set, the component
+    /// bypasses its internal text filter and trusts the consumer to control the displayed items.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> SearchQueryChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the user scrolls near the bottom of the dropdown list.
+    /// Use this to load additional items for infinite scroll scenarios.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnLoadMore { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether additional items are currently being loaded.
+    /// When true, a loading spinner is shown at the bottom of the list and
+    /// <see cref="OnLoadMore"/> is suppressed until loading completes.
+    /// </summary>
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a message displayed at the bottom of the list when all items have been loaded.
+    /// Only shown when <see cref="IsLoading"/> is false. Set to <c>null</c> or empty to hide.
+    /// </summary>
+    [Parameter]
+    public string? EndOfListMessage { get; set; }
+
+    /// <summary>
     /// Gets or sets an expression that identifies the bound values.
     /// Used for form validation integration.
     /// </summary>
@@ -238,9 +272,17 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Gets the items that match the current search query.
+    /// When <see cref="SearchQueryChanged"/> has a delegate, bypasses internal filtering
+    /// (the consumer controls the items externally).
     /// </summary>
     private IEnumerable<TItem> GetFilteredItems()
     {
+        // When external filtering is active, trust the consumer's item list
+        if (SearchQueryChanged.HasDelegate)
+        {
+            return Items;
+        }
+
         if (string.IsNullOrWhiteSpace(_searchQuery))
         {
             return Items;
@@ -381,10 +423,16 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Closes the dropdown.
     /// </summary>
-    private void Close()
+    private async Task Close()
     {
         _isOpen = false;
         _searchQuery = string.Empty;
+
+        // Notify consumer so they can reload the default dataset for the next open
+        if (SearchQueryChanged.HasDelegate)
+        {
+            await SearchQueryChanged.InvokeAsync(string.Empty);
+        }
     }
 
     /// <summary>
@@ -401,10 +449,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles click-outside events when AutoClose is enabled.
     /// </summary>
-    private void HandleClickOutside()
-    {
-        Close();
-    }
+    private async Task HandleClickOutside() => await Close();
 
     /// <summary>
     /// Handles the popover content ready event to focus the search input.
@@ -431,23 +476,27 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles search input changes.
     /// </summary>
-    private void HandleSearchInput(ChangeEventArgs args)
+    private async Task HandleSearchInput(ChangeEventArgs args)
     {
         _searchQuery = args.Value?.ToString() ?? string.Empty;
+        if (SearchQueryChanged.HasDelegate)
+        {
+            await SearchQueryChanged.InvokeAsync(_searchQuery);
+        }
     }
 
     /// <summary>
     /// Handles keyboard events on the search input.
     /// </summary>
-    private void HandleSearchKeyDown(KeyboardEventArgs args)
+    private async Task HandleSearchKeyDown(KeyboardEventArgs args)
     {
         switch (args.Key)
         {
             case "Enter":
-                HandleEnter();
+                await HandleEnter();
                 break;
             case "Escape":
-                HandleEscape();
+                await HandleEscape();
                 break;
         }
     }
@@ -611,7 +660,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     }
 
     // JSInvokable callbacks for keyboard navigation
-    
+
     /// <summary>
     /// Called from JavaScript when Space key is pressed on an item.
     /// </summary>
@@ -626,10 +675,10 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// Called from JavaScript when Enter key is pressed to close the dropdown.
     /// </summary>
     [JSInvokable]
-    public void HandleEnter()
+    public async Task HandleEnter()
     {
         // Enter closes the dropdown after item toggle
-        Close();
+        await Close();
         StateHasChanged();
     }
 
@@ -637,22 +686,78 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// Called from JavaScript when Escape key is pressed to close the dropdown.
     /// </summary>
     [JSInvokable]
-    public void HandleEscape()
+    public async Task HandleEscape()
     {
         // Escape closes the dropdown
-        Close();
+        await Close();
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// Handles listbox scroll events for infinite scroll.
+    /// Triggers <see cref="OnLoadMore"/> when the user scrolls near the bottom.
+    /// </summary>
+    private async Task HandleListboxScrollAsync()
+    {
+        if (!OnLoadMore.HasDelegate || IsLoading)
+        {
+            return;
+        }
+
+        // Suppress infinite scroll during active search when using client-side filter.
+        // Allow it through only when SearchQueryChanged is set (server-side filter + paginated results).
+        if (!string.IsNullOrEmpty(_searchQuery) && !SearchQueryChanged.HasDelegate)
+        {
+            return;
+        }
+
+        _elementUtilsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/element-utils.js");
+
+        try
+        {
+            var nearBottom = await _elementUtilsModule.InvokeAsync<bool>("isNearBottom", _listboxScrollRef, 80.0);
+            if (nearBottom)
+            {
+                await OnLoadMore.InvokeAsync();
+            }
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException)
+        {
+            // Expected during circuit disconnect or disposal
+        }
     }
 
     /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         await CleanupJsAsync();
 
         if (_multiSelectModule != null)
         {
-            await _multiSelectModule.DisposeAsync();
+            try
+            {
+                await _multiSelectModule.DisposeAsync();
+            }
+            catch
+            {
+                // Module may already be disposed
+            }
             _multiSelectModule = null;
+        }
+
+        if (_elementUtilsModule != null)
+        {
+            try
+            {
+                await _elementUtilsModule.DisposeAsync();
+            }
+            catch
+            {
+                // Module may already be disposed
+            }
+            _elementUtilsModule = null;
         }
 
         _dotNetRef?.Dispose();
@@ -670,14 +775,16 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         var openChanged = _lastIsOpen != _isOpen;
         var searchChanged = _lastSearchQuery != _searchQuery;
         var disabledChanged = _lastDisabled != Disabled;
+        var loadingChanged = _lastIsLoading != IsLoading;
 
-        if (itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged)
+        if (itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged || loadingChanged)
         {
             _lastItems = Items;
             _lastValues = Values;
             _lastIsOpen = _isOpen;
             _lastSearchQuery = _searchQuery;
             _lastDisabled = Disabled;
+            _lastIsLoading = IsLoading;
             return true;
         }
 

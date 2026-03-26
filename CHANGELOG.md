@@ -2,7 +2,93 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-26 — Structured logging migration, verbose log cleanup & bug fixes
+## 2026-3-26 — Infinite scroll for selection components
+
+> **Release: `v3.7.2`**  
+> **New capability.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No breaking API changes.
+
+---
+
+### ✨ Feature — `OnLoadMore`, `IsLoading`, `EndOfListMessage` on `Combobox`, `MultiSelect`, and `SelectContent`
+
+All three selection components now support scroll-based pagination for large datasets loaded in batches.
+
+**Parameters added to `Combobox<TItem>`, `MultiSelect<TItem>`, and `SelectContent<TValue>`:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `OnLoadMore` | `EventCallback` | Invoked when the user scrolls within 80 px of the list bottom. Suppressed while `IsLoading` is `true`. |
+| `IsLoading` | `bool` | Shows a `Spinner` at the bottom of the list while the next page is loading. |
+| `EndOfListMessage` | `string?` | Shown below all items when `IsLoading` is `false` and there are no more pages. Set `null`/empty to hide. |
+
+**Works in both Options-mode and ChildContent-mode.**
+
+**Implementation approach:**
+- `Combobox` — `OnLoadMore`/`IsLoading`/`EndOfListMessage` flow through to `CommandList`, which hosts the scroll container and JS detection.
+- `MultiSelect` — `_listboxScrollRef` (`ElementReference`) added to the listbox div with `@onscroll="HandleListboxScrollAsync"`. Scroll handler lazily imports `element-utils.js`.
+- `SelectContent` — Restructured into outer (border/shadow/animation, `overflow-hidden`) + inner (scrollable `max-h-60 overflow-auto`) div. Scroll handler on the inner div.
+- All three dispose their `IJSObjectReference` to `element-utils.js` in `DisposeAsync`.
+
+**JS utility (`element-utils.js`):**
+Added `isNearBottom(element, threshold = 80)` to `NeoUI.Blazor.Primitives/wwwroot/js/primitives/element-utils.js`. Returns `true` when `scrollTop + clientHeight >= scrollHeight - threshold`.
+
+---
+
+### ✨ Feature — `SearchQueryChanged` on `MultiSelect<TItem>`
+
+`EventCallback<string> SearchQueryChanged` added — enables two-way `@bind-SearchQuery`-style external filtering.
+
+- When `SearchQueryChanged` has a delegate, the internal text filter is **bypassed**; the consumer is responsible for updating `Items` based on the query.
+- The callback fires on every keystroke with the current query string.
+- On dropdown close, the callback is invoked with `string.Empty` so the consumer can reload the default dataset for the next open.
+
+**Related:**
+- `HandleSearchInput` updated to `async Task` to invoke the callback.
+- `Close()` updated to `async Task` (with cascade to `HandleClickOutside`, `HandleEnter`, `HandleEscape`, `HandleSearchKeyDown`).
+- `ShouldRender` now tracks `IsLoading` to re-render when the spinner state changes.
+
+---
+
+### ✨ Feature — `SearchQueryChanged` on `Combobox<TItem>`
+
+`EventCallback<string> SearchQueryChanged` added to `Combobox<TItem>` — mirrors the same API introduced on `MultiSelect<TItem>`.
+
+- When `SearchQueryChanged` has a delegate, the built-in client-side text filter is **bypassed**; the consumer controls `Items` externally.
+- The callback fires on every keystroke with the current query string.
+- On dropdown close, `HandleOpenChanged` invokes `SearchQueryChanged` with `string.Empty` so the consumer can reload the default dataset for the next open.
+- `AllowLoadMoreDuringSearch="@SearchQueryChanged.HasDelegate"` is forwarded from `Combobox` to `CommandList`, enabling `OnLoadMore` to continue firing while a server-side search is active.
+
+---
+
+### 🐛 Fix — `OnLoadMore` suppressed during client-side search
+
+When a consumer wires up `OnLoadMore` without `SearchQueryChanged` (client-side filtering only), the scroll handler now guards against triggering load-more while a search query is active — preventing the list from growing beyond the filtered results.
+
+**Implementation:**
+- `CommandList.razor` — added `bool AllowLoadMoreDuringSearch` parameter (default `false`). `HandleScroll` skips the `OnLoadMore` invocation when a non-empty search filter is present and `AllowLoadMoreDuringSearch` is `false`.
+- `MultiSelect.razor.cs` — `HandleListboxScrollAsync` applies the same guard using the local `_searchQuery` field.
+
+---
+
+### 📄 Demo — Combobox and MultiSelect demo pages updated
+
+**`ComboboxDemo.razor`:**
+- Added **Async Filtering** demo section — simulated server delay, `SearchQueryChanged` callback, `IsLoading` spinner, and end-of-list message.
+- Added **Infinite Scroll** demo section — `OnLoadMore` with simulated paging, status paragraph, and the upstream Take-based pattern throughout.
+- Removed `LoadComboboxPage` / `HandleComboboxSelectionChanged` helpers (superseded by Take pattern).
+
+**`MultiSelectDemo.razor`:**
+- Added **Infinite Scroll** demo section — `OnLoadMore` with Take-based paging and status display.
+- Added **Server-Side Search** demo section — `SearchQueryChanged` + `IsLoading` with simulated delay.
+
+**`ComboboxDemo.cs` / `MultiSelectDemo.cs` (props tables):**
+- `SearchQueryChanged` type corrected to `EventCallback<string>` on both tables.
+- `MultiSelect.Values` type corrected to `IEnumerable<string>?` (no `TValue` generic).
+- `MultiSelect.OnLoadMore` default corrected to `null`.
+
+---
+
+## Structured logging migration
 
 > **Internal refactor + bug fixes + minor enhancement.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No public API breaking changes.
 

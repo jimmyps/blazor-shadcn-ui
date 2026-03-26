@@ -26,9 +26,9 @@
                 </svg>
             </PopoverTrigger>
             <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
-                <CommandContent>
+                <CommandContent FilterFunction="@GetFilterFunction()" SearchQuery="@_commandSearchQuery" SearchQueryChanged="@HandleInternalSearchQueryChanged">
                     <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@EffectiveSearchPlaceholder" />
-                    <CommandList>
+                    <CommandList OnLoadMore="@OnLoadMore" IsLoading="@IsLoading" EndOfListMessage="@EndOfListMessage" AllowLoadMoreDuringSearch="@SearchQueryChanged.HasDelegate">
                         <CommandEmpty>@EffectiveEmptyMessage</CommandEmpty>
                         <CommandGroup>
                             @foreach (var item in Items)
