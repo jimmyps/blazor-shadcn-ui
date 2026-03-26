@@ -1,0 +1,11 @@
+@namespace NeoUI.Blazor.Primitives
+
+<div data-sortable-id="@Value"
+     data-draggable="true"
+     role="@(AsHandle ? "button" : null)"
+     tabindex="@(AsHandle ? "0" : null)"
+     aria-roledescription="@(AsHandle ? "sortable item" : null)"
+     aria-label="@(AsHandle ? ($"{Value}, drag to reorder") : null)"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>

@@ -512,7 +512,7 @@ NeoUI offers **three icon library packages** to suit different design preference
 
 ## 🔧 Primitives
 
-NeoUI also includes **15 headless primitive components** for building custom UI:
+NeoUI also includes **16 headless primitive components** for building custom UI:
 
 - Accordion Primitive
 - Checkbox Primitive
@@ -525,6 +525,7 @@ NeoUI also includes **15 headless primitive components** for building custom UI:
 - Radio Group Primitive
 - Select Primitive
 - Sheet Primitive
+- Sortable Primitive
 - Switch Primitive
 - Table Primitive
 - Tabs Primitive

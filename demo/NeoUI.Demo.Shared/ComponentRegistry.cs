@@ -378,6 +378,7 @@ public static class ComponentRegistry
             // ── Layout (Primitives) ───────────────────────────────────────
             new("accordion",     "Accordion",     "Headless accordion with keyboard navigation",                       "chevrons-down-up",     P, LY),
             new("collapsible",   "Collapsible",   "Unstyled collapsible content with trigger",                        "chevron-down",         P, LY),
+            new("sortable",      "Sortable",      "Headless drag-and-drop sortable list with pointer and keyboard support", "grip-vertical",   P, LY),
 
             // ── Overlays (Primitives) ─────────────────────────────────────
             new("dialog",        "Dialog",        "Headless modal dialog with focus trap and ARIA",                   "square",               P, OV),
