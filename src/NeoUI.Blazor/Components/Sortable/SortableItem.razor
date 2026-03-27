@@ -1,0 +1,56 @@
+@namespace NeoUI.Blazor
+@*
+    Styled SortableItem component.
+    Wraps SortableItemPrimitive with shadcn/ui-style defaults:
+    rounded border, bg-card shadow, flex row layout, and a
+    data-[dragging=true]:opacity-50 state for the dragged placeholder.
+*@
+
+<SortableItemPrimitive Value="@Value"
+                       AsHandle="@AsHandle"
+                       class="@CssClass"
+                       @attributes="AdditionalAttributes">
+    @ChildContent
+</SortableItemPrimitive>
+
+@code {
+    /// <summary>
+    /// Unique identifier for this item. Must match the value returned by
+    /// <c>GetItemId</c> on the parent <see cref="Sortable{TItem}"/>. Required.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Value { get; set; } = string.Empty;
+
+    /// <summary>
+    /// When <c>true</c> the entire item surface acts as the drag handle.
+    /// When <c>false</c> (default) dragging starts only via a <see cref="SortableItemHandle"/>.
+    /// </summary>
+    [Parameter]
+    public bool AsHandle { get; set; }
+
+    /// <summary>
+    /// Content rendered inside the item.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes appended to the item element.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the item element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm",
+        "transition-shadow",
+        "data-[dragging=true]:opacity-50",
+        AsHandle ? "cursor-grab active:cursor-grabbing select-none" : null,
+        Class
+    );
+}

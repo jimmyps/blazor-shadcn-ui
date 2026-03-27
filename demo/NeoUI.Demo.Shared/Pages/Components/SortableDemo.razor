@@ -1,0 +1,366 @@
+@page "/components/sortable"
+@inject IToastService Toast
+
+<PageTitle>Sortable - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Sortable"
+        Description="Drag-and-drop sortable lists with a beautiful default design. Built on top of the headless SortablePrimitive." />
+
+    @* ── Default — handle drag ──────────────────────────────── *@
+    <DemoSection Title="Default"
+                 Description="Vertical list with a styled grip handle. Drag is constrained to the handle.">
+        <DemoBlock Code="@_defaultCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_defaultItems"
+                          OnItemsReordered="@(r => _defaultItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _defaultItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent>
+                        @foreach (var item in _defaultItems)
+                        {
+                            <SortableItem Value="@item.Id">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItem>
+                        }
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── AsHandle — whole item draggable ────────────────────── *@
+    <DemoSection Title="Full-Item Drag"
+                 Description="Set AsHandle on SortableItem to make the entire item the drag target.">
+        <DemoBlock Code="@_asHandleCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_asHandleItems"
+                          OnItemsReordered="@(r => _asHandleItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _asHandleItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent>
+                        @foreach (var item in _asHandleItems)
+                        {
+                            <SortableItem Value="@item.Id" AsHandle>
+                                <span class="flex-1 text-sm font-medium">@item.Name</span>
+                                <span class="text-xs text-muted-foreground">drag me</span>
+                            </SortableItem>
+                        }
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Horizontal ──────────────────────────────────────────── *@
+    <DemoSection Title="Horizontal"
+                 Description="Set Orientation='Horizontal' for column-based reordering.">
+        <DemoBlock Code="@_horizontalCode">
+            <Sortable TItem="DemoItem"
+                      Items="@_horizontalItems"
+                      OnItemsReordered="@(r => _horizontalItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _horizontalItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
+                      GetItemId="@(i => i.Id)"
+                      Orientation="SortableOrientation.Horizontal">
+                <SortableContent Class="flex-row gap-3 flex-wrap">
+                    @foreach (var item in _horizontalItems)
+                    {
+                        <SortableItem Value="@item.Id" AsHandle
+                                      Class="w-24 h-24 justify-center font-medium text-sm">
+                            @item.Name
+                        </SortableItem>
+                    }
+                </SortableContent>
+                <SortableOverlay />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom handle icon ──────────────────────────────────── *@
+    <DemoSection Title="Custom Handle Icon"
+                 Description="Provide a render fragment to SortableItemHandle to replace the default grip icon.">
+        <DemoBlock Code="@_customHandleCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_customHandleItems"
+                          OnItemsReordered="@(r => _customHandleItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _customHandleItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent>
+                        @foreach (var item in _customHandleItems)
+                        {
+                            <SortableItem Value="@item.Id">
+                                <SortableItemHandle>
+                                    <LucideIcon Name="grip-horizontal" Size="16" />
+                                </SortableItemHandle>
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItem>
+                        }
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataView — List ─────────────────── *@
+    <DemoSection Title="Composability with DataView — List"
+                 Description="Wrap a DataView in a Sortable root and SortableContentPrimitive. Each SortableItem in the ListTemplate participates in drag-and-drop reordering with zero changes to DataView itself.">
+        <DemoBlock Code="@_dataViewListCode">
+            <div class="max-w-sm">
+                <Sortable TItem="CardItem"
+                          Items="@_dataViewListItems"
+                          OnItemsReordered="@(r => _dataViewListItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _dataViewListItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent Class="block">
+                        <DataView Items="@_dataViewListItems" ItemKey="@(i => i.Id)"
+                                  ShowToolbar="false" ShowPagination="false">
+                            <ListTemplate Context="item">
+                                <SortableItem Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                    <SortableItemHandle />
+                                    <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                                    <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
+                                </SortableItem>
+                            </ListTemplate>
+                        </DataView>
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataView — Grid ──────────────────── *@
+    <DemoSection Title="Composability with DataView — Grid"
+                 Description="Provide both ListTemplate and GridTemplate to keep the layout toggle. SortableItem works in both layouts — the same Sortable context covers both renderings.">
+        <DemoBlock Code="@_dataViewGridCode">
+            <Sortable TItem="CardItem"
+                      Items="@_dataViewGridItems"
+                      OnItemsReordered="@(r => _dataViewGridItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _dataViewGridItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
+                      GetItemId="@(i => i.Id)"
+                      Orientation="@(_dataViewGridLayout == DataViewLayout.Grid ? SortableOrientation.Grid : SortableOrientation.Vertical)">
+                <SortableContent Class="block">
+                    <DataView Items="@_dataViewGridItems" ItemKey="@(i => i.Id)"
+                              Layout="DataViewLayout.Grid" ShowPagination="false"
+                              LayoutChanged="@(l => _dataViewGridLayout = l)">
+                        <ListTemplate Context="item">
+                            <SortableItem Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
+                            </SortableItem>
+                        </ListTemplate>
+                        <GridTemplate Context="item">
+                            <SortableItem Value="@item.Id" AsHandle
+                                          Class="flex-col items-start gap-1 h-28 rounded-lg shadow-sm">
+                                <p class="text-sm font-semibold leading-tight">@item.Name</p>
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-xs mt-auto">@item.Tag</Badge>
+                            </SortableItem>
+                        </GridTemplate>
+                    </DataView>
+                </SortableContent>
+                <SortableOverlay />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataTable ────────────────────────── *@
+    <DemoSection Title="Composability with DataTable"
+                 Description="Use AdditionalRowAttributes on DataTable to supply data-sortable-id to each row. Wrap the table in a SortableContent and add a drag handle column via CellTemplate.">
+        <DemoBlock Code="@_dataTableCode">
+            <Sortable TItem="TaskItem"
+                      Items="@_tableItems"
+                      OnItemsReordered="@(r => _tableItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _tableItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
+                      GetItemId="@(i => i.Id)">
+                <SortableContent Class="block">
+                    <DataTable TData="TaskItem"
+                               Data="@_tableItems"
+                               AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
+                               ShowPagination="false"
+                               ShowToolbar="false">
+                        <Columns>
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
+                                <CellTemplate Context="row">
+                                    <SortableItemHandle Class="mx-auto" />
+                                </CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Name)" Header="Task" />
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Status)" Header="Status">
+                                <CellTemplate Context="row">
+                                    <Badge Variant="@(row.Status == "Done" ? BadgeVariant.Default : BadgeVariant.Secondary)">@row.Status</Badge>
+                                </CellTemplate>
+                            </DataTableColumn>
+                        </Columns>
+                    </DataTable>
+                </SortableContent>
+                <SortableOverlay Class="rounded opacity-80" />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Primitive (unstyled) ────────────────────────────────── *@
+    <DemoSection Title="Using the Primitive"
+                 Description="For full control over styling, use the headless SortablePrimitive directly. See the Sortable Primitive docs for the complete API.">
+        <DemoBlock Code="@_primitiveCode">
+            <div class="max-w-sm">
+                <SortablePrimitive TItem="DemoItem"
+                                   Items="@_primitiveItems"
+                                   OnItemsReordered="@(r => _primitiveItems = r)"
+                                   OnDragEnd="@(e => ShowDragEndToast(e, _primitiveItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                                   OnDragCancel="@ShowDragCancelToast"
+                                   GetItemId="@(i => i.Id)">
+                    <SortableContentPrimitive class="flex flex-col gap-2">
+                        @foreach (var item in _primitiveItems)
+                        {
+                            <SortableItemPrimitive Value="@item.Id"
+                                                   class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
+                                <SortableItemHandlePrimitive class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItemPrimitive>
+                        }
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
+                </SortablePrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────── *@
+    <DemoSection Title="Sortable&lt;TItem&gt; API Reference" Description="Parameters for the Sortable component.">
+        <DemoPropsTable Rows="@_sortableProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableContent API Reference" Description="Parameters for the SortableContent component.">
+        <DemoPropsTable Rows="@_contentProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItem API Reference" Description="Parameters for the SortableItem component.">
+        <DemoPropsTable Rows="@_itemProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItemHandle API Reference" Description="Parameters for the SortableItemHandle component.">
+        <DemoPropsTable Rows="@_handleProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableOverlay API Reference" Description="Parameters for the SortableOverlay component.">
+        <DemoPropsTable Rows="@_overlayProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    private record DemoItem(string Id, string Name);
+
+    private IList<DemoItem> _defaultItems =
+    [
+        new("1", "Task: Design wireframes"),
+        new("2", "Task: Write unit tests"),
+        new("3", "Task: Implement API"),
+        new("4", "Task: Code review"),
+        new("5", "Task: Deploy to staging"),
+    ];
+
+    private IList<DemoItem> _asHandleItems =
+    [
+        new("a", "Alpha"),
+        new("b", "Beta"),
+        new("c", "Gamma"),
+        new("d", "Delta"),
+    ];
+
+    private IList<DemoItem> _horizontalItems =
+    [
+        new("h1", "One"),
+        new("h2", "Two"),
+        new("h3", "Three"),
+        new("h4", "Four"),
+        new("h5", "Five"),
+    ];
+
+    private IList<DemoItem> _customHandleItems =
+    [
+        new("c1", "Backlog"),
+        new("c2", "In Progress"),
+        new("c3", "Review"),
+        new("c4", "Done"),
+    ];
+
+    private IList<DemoItem> _primitiveItems =
+    [
+        new("p1", "First item"),
+        new("p2", "Second item"),
+        new("p3", "Third item"),
+    ];
+
+    private record CardItem(string Id, string Name, string Tag);
+    private record TaskItem(string Id, string Name, string Status);
+
+    private IList<CardItem> _dataViewListItems =
+    [
+        new("dv1", "Design wireframes",  "Design"),
+        new("dv2", "Write unit tests",   "QA"),
+        new("dv3", "Implement API",      "Backend"),
+        new("dv4", "Code review",        "DevOps"),
+        new("dv5", "Deploy to staging",  "Ops"),
+    ];
+
+    private IList<CardItem> _dataViewGridItems =
+    [
+        new("g1", "Dashboard",     "Design"),
+        new("g2", "Auth flow",     "Security"),
+        new("g3", "Notifications", "UX"),
+        new("g4", "Settings",      "Config"),
+        new("g5", "Analytics",     "Data"),
+        new("g6", "Reports",       "Data"),
+    ];
+
+    private DataViewLayout _dataViewGridLayout = DataViewLayout.Grid;
+
+    private IList<TaskItem> _tableItems =
+    [
+        new("t1", "Design wireframes",  "To Do"),
+        new("t2", "Write unit tests",   "In Progress"),
+        new("t3", "Implement API",      "To Do"),
+        new("t4", "Code review",        "In Progress"),
+        new("t5", "Deploy to staging",  "Done"),
+    ];
+
+    // ── Toast helpers ────────────────────────────────────────────────
+
+    private void ShowDragEndToast(SortableDragEndArgs args, string? itemName)
+    {
+        if (args.Moved)
+        {
+            var name = string.IsNullOrWhiteSpace(itemName) ? args.ActiveId : $"\"{itemName}\"";
+            Toast.Success(
+                "Item reordered",
+                $"{name} moved from position {args.FromIndex + 1} to {args.ToIndex + 1}.");
+        }
+        else
+        {
+            Toast.Show("No change", "Item was dropped back on its original position.");
+        }
+    }
+
+    private void ShowDragCancelToast() =>
+        Toast.Show("Drag cancelled", "Item returned to its original position.");
+}

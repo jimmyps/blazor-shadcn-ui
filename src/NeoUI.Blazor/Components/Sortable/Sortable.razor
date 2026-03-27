@@ -1,0 +1,81 @@
+@namespace NeoUI.Blazor
+@typeparam TItem
+@*
+    Styled Sortable component wrapper.
+    Wraps the SortablePrimitive with a thin pass-through for class and attributes.
+*@
+
+<SortablePrimitive TItem="TItem"
+                   Items="@Items"
+                   OnItemsReordered="@OnItemsReordered"
+                   OnDragStart="@OnDragStart"
+                   OnDragEnd="@OnDragEnd"
+                   OnDragCancel="@OnDragCancel"
+                   GetItemId="@GetItemId"
+                   Orientation="@Orientation"
+                   class="@Class"
+                   @attributes="AdditionalAttributes">
+    @ChildContent
+</SortablePrimitive>
+
+@code {
+    /// <summary>
+    /// The list of items to sort. Required.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IList<TItem> Items { get; set; } = [];
+
+    /// <summary>
+    /// Callback invoked after a drag operation reorders items.
+    /// </summary>
+    [Parameter]
+    public EventCallback<IList<TItem>> OnItemsReordered { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation starts. Argument is the dragged item's identifier.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnDragStart { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation ends (whether or not the item moved).
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableDragEndArgs> OnDragEnd { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation is cancelled (e.g. Escape key).
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDragCancel { get; set; }
+
+    /// <summary>
+    /// Function that extracts a unique string identifier from each item. Required.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<TItem, string> GetItemId { get; set; } = _ => string.Empty;
+
+    /// <summary>
+    /// Drag axis. Defaults to <see cref="SortableOrientation.Vertical"/>.
+    /// </summary>
+    [Parameter]
+    public SortableOrientation Orientation { get; set; } = SortableOrientation.Vertical;
+
+    /// <summary>
+    /// Child content: SortableContentPrimitive, SortableOverlayPrimitive, etc.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes appended to the root element.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the root element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

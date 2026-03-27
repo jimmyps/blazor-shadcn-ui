@@ -2,6 +2,207 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-27 — Sortable drag-and-drop component
+
+> **Release: `v3.8.0`**  
+> **New feature.** Adds headless `SortablePrimitive` to `NeoUI.Blazor.Primitives` and styled `Sortable` wrapper to `NeoUI.Blazor`. No breaking changes.
+
+---
+
+**Design philosophy — composition over modification**
+
+The Sortable component follows the same shadcn/ui principle that shapes the rest of NeoUI: *composability*. Drag-and-drop is layered *around* existing components rather than baked into them. `DataTable`, `DataView`, and any other list-rendering component remain unchanged — you simply wrap them with `<Sortable>`, set `Class="block"` on `<SortableContent>` so the container doesn't interfere with the inner layout, and drop a `<SortableItemHandle>` into a column `CellTemplate` or list template. No new variants, no feature flags, no re-implementation of the existing component. The handle wires itself to the nearest `SortableItem` through the primitive's context, so the drag behaviour activates exactly where the consumer places it.
+
+This also means `Sortable` composes cleanly with any future component — the primitive only needs a `data-sortable-id` attribute on each item element to track identity, and `SortableContent` to register the droppable region.
+
+---
+
+### ✨ New Component — `SortablePrimitive<TItem>` (headless)
+
+A fully headless drag-and-drop sortable primitive with pointer, touch, and keyboard support. Zero visual opinions — all styling is supplied by the consumer.
+
+```razor
+<SortablePrimitive TItem="MyItem"
+                   Items="@items"
+                   OnItemsReordered="@(r => items = r)"
+                   GetItemId="@(i => i.Id)">
+    <SortableContentPrimitive class="flex flex-col gap-2">
+        @foreach (var item in items)
+        {
+            <SortableItemPrimitive Value="@item.Id"
+                                   class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
+                <SortableItemHandlePrimitive class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" />
+                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+            </SortableItemPrimitive>
+        }
+    </SortableContentPrimitive>
+    <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
+</SortablePrimitive>
+```
+
+**Interaction model:**
+
+- **Pointer/touch:** drag a handle (or the whole item when `AsHandle` is set) to reorder
+- **Keyboard:** focus a handle → `Space`/`Enter` to grab → `↑`/`↓` (or `←`/`→` for horizontal) to move → `Space`/`Enter` to drop, `Escape` to cancel; arrow keys call `preventDefault` during a drag to prevent page scroll
+- **Orientations:** `Vertical`, `Horizontal`, `Grid` (2-D grid reordering), `Mixed`
+
+**Drag overlay architecture:**
+
+`SortableOverlayPrimitive` is a fixed-position frame that JS positions over the cursor. When `ChildContent` is null the JS sensor auto-clones the source element into the overlay (`cloneNode(true)`) — the clone fills `100 × 100 %` and provides its own background/padding from the source styles. When `ChildContent` is provided the consumer renders a fully custom ghost; JS skips cloning to avoid duplicates (enforced via `data-has-child-content`). Visual effects (shadow, opacity, scale, transition) belong on the overlay frame.
+
+**Table row clone fix:** when the dragged element is a `<tr>`, the sensor snapshots each `td`/`th` computed width before cloning and stamps it as an inline `width` on the clone cells — preserving shared table layout geometry outside its parent `<table>`.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Items` | `IList<TItem>` | — | The list of items to sort. Required. |
+| `GetItemId` | `Func<TItem, string>` | — | Extracts a unique string ID from each item. Required. |
+| `Orientation` | `SortableOrientation` | `Vertical` | Drag axis: `Vertical`, `Horizontal`, `Grid`, or `Mixed`. |
+| `OnItemsReordered` | `EventCallback<IList<TItem>>` | — | Fired after a successful drop that changed item order. Receives the new ordered list. |
+| `OnDragStart` | `EventCallback<string>` | — | Fired when a drag begins. Receives the active item ID. |
+| `OnDragEnd` | `EventCallback<SortableDragEndArgs>` | — | Fired when a drag ends. Carries `ActiveId`, `OverId`, `FromIndex`, `ToIndex`, and `Moved`. |
+| `OnDragCancel` | `EventCallback` | — | Fired when a drag is cancelled (Escape or pointer cancel). |
+
+---
+
+### ✨ New Component — `SortableContentPrimitive`
+
+Container that registers itself with the JS sensor as the droppable region. Supply layout classes directly (`class="flex flex-col gap-2"`, `class="block"` for table/DataView wrappers, etc.).
+
+---
+
+### ✨ New Component — `SortableItemPrimitive`
+
+Wrapper for each draggable item. When `AsHandle` is false (default), only a nested `SortableItemHandlePrimitive` initiates a drag; when `AsHandle` is true the entire element is the handle.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `string` | — | Unique identifier matching `GetItemId` output. Required. |
+| `AsHandle` | `bool` | `false` | When true the entire item surface is the drag handle. |
+
+---
+
+### ✨ New Component — `SortableItemHandlePrimitive`
+
+Focusable grip button. Renders a six-dot braille character by default; replace via `ChildContent`. Apply `cursor-grab active:cursor-grabbing` and `focus-visible:outline-2 focus-visible:outline-primary` here.
+
+---
+
+### ✨ New Component — `SortableOverlayPrimitive`
+
+Fixed-position overlay frame shown while dragging. JS sets `data-state="dragging"` on the element after positioning it, enabling Tailwind data-attribute variants (`data-[state=dragging]:scale-[1.05]`) for CSS-driven visual effects — no JS inline transforms needed. When `ChildContent` (a `RenderFragment<string>`, context = active item ID) is provided the consumer controls the ghost entirely.
+
+---
+
+### ✨ New Component — `Sortable<TItem>` (styled)
+
+Pre-styled layer on top of `SortablePrimitive`. Composes `SortableContent`, `SortableItem`, `SortableItemHandle`, and `SortableOverlay` with sensible opinionated defaults so most use-cases need zero extra CSS.
+
+The component is deliberately *open-ended*: its `ChildContent` is not a fixed slot for `SortableItem` children alone — it accepts any markup, including fully-featured NeoUI components like `DataView` or `DataTable`. DnD behaviour is activated purely by the presence of `data-sortable-id` on descendant elements, which means **no existing component needs to be modified or re-wrapped** to gain sortability.
+
+```razor
+<Sortable TItem="MyItem"
+          Items="@items"
+          OnItemsReordered="@(r => items = r)"
+          GetItemId="@(i => i.Id)">
+    <SortableContent>
+        @foreach (var item in items)
+        {
+            <SortableItem Value="@item.Id">
+                <SortableItemHandle />
+                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+            </SortableItem>
+        }
+    </SortableContent>
+    <SortableOverlay />
+</Sortable>
+```
+
+Accepts the same `Items`, `GetItemId`, `Orientation`, `OnItemsReordered`, `OnDragStart`, `OnDragEnd`, and `OnDragCancel` parameters as `SortablePrimitive<TItem>`.
+
+---
+
+### ✨ New Component — `SortableContent`
+
+Styled content container. Defaults to `flex flex-col gap-2`. Override with `Class="flex-row gap-3"` for horizontal, or `Class="block"` when wrapping a `DataView` / `DataTable`.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Class` | `string?` | `flex flex-col gap-2` | CSS classes merged with the default layout. |
+
+---
+
+### ✨ New Component — `SortableItem`
+
+Styled item wrapper with `flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm` defaults, placeholder opacity while dragging, and focus ring. Accepts `AsHandle` and `Class` overrides.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `string` | — | Unique identifier matching `GetItemId` output. Required. |
+| `AsHandle` | `bool` | `false` | When true the entire item surface is the drag handle. |
+| `Class` | `string?` | `null` | Additional CSS classes merged with defaults. |
+
+---
+
+### ✨ New Component — `SortableItemHandle`
+
+Styled grip handle button. Renders a six-dot grip icon; replace via `ChildContent`. `Class` merges additional styles.
+
+---
+
+### ✨ New Component — `SortableOverlay`
+
+Styled overlay frame. Defaults: `rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]`. These defaults give a floating card appearance and an animated scale-up on drag start — all driven by CSS with no JS inline styles. Override shadow, opacity, scale, or easing via `Class`; provide a `ChildContent` (context = active item ID) for a fully custom ghost.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Class` | `string?` | *(see above)* | Merged with the default overlay classes. |
+| `ChildContent` | `RenderFragment<string>?` | `null` | Custom ghost. Context is the active item ID. When null the sensor auto-clones the dragged element. |
+
+---
+
+### 🔧 Enhancement — `DataTable<TData>`: `AdditionalRowAttributes` parameter
+
+This is a minimal, non-invasive hook that unlocks full composability with `Sortable` and can be used in any use cases that require additional attributes on each row. The only change to `DataTable` is the addition of `AdditionalRowAttributes` (`Func<TData, Dictionary<string, object>?>?`), which lets callers stamp any HTML attributes — `data-*`, `aria-*`, or otherwise — onto each rendered `<tr>`. The common use case is supplying `data-sortable-id` for Sortable row reorder, but the API is intentionally general-purpose. Everything else — column definitions, sorting, selection, toolbar, pagination — works exactly as before.
+
+The drag handle is placed inside any `CellTemplate` in the normal Columns API. There is no new `SortableColumn` type, no `Draggable` flag on the table, and no modified render path. The handle simply finds its nearest `SortableItem` context through the primitive's DOM-registration, and the drag engine does the rest.
+
+```razor
+<Sortable TItem="TaskItem" Items="@items" OnItemsReordered="@(r => items = r)" GetItemId="@(i => i.Id)">
+    <SortableContent Class="block">
+        <DataTable TData="TaskItem" Data="@items"
+                   AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
+                   ShowPagination="false" ShowToolbar="false">
+            <Columns>
+                <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
+                    <CellTemplate Context="row">
+                        <SortableItemHandle Class="mx-auto" />
+                    </CellTemplate>
+                </DataTableColumn>
+                ...
+            </Columns>
+        </DataTable>
+    </SortableContent>
+    <SortableOverlay Class="rounded" />
+</Sortable>
+```
+
+The same composability pattern applies to `DataView` with no `DataView` changes at all — place `<SortableItem>` directly inside `<ListTemplate>` or `<GridTemplate>` and it works.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `AdditionalRowAttributes` | `Func<TData, Dictionary<string, object>?>?` | `null` | Callback supplying extra HTML attributes for each body `<tr>`. Use it to attach `data-sortable-id` for Sortable row reorder, or any `data-*`/`aria-*` attributes your consumers need. |
+
+---
+
+### 📖 Demo — `SortableDemo` & `SortablePrimitiveDemo`
+
+**`/components/sortable`** — styled component demos covering: default vertical list, full-item drag, horizontal chips, custom handle icon, `DataView` list/grid composability, `DataTable` integration, and primitive escape hatch.  
+**`/primitives/sortable`** — headless primitive demos covering: vertical with handle, full-item drag, horizontal, custom overlay content (custom ghost rendering), and keyboard navigation.
+
+Both pages include a complete **API Reference** section.
+
+---
+
 ## 2026-3-26 — Infinite scroll for selection components
 
 > **Release: `v3.7.2`**  
