@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using System.Text.Encodings.Web;
 
 namespace NeoUI.Blazor.Services.Grid;
@@ -10,15 +11,34 @@ namespace NeoUI.Blazor.Services.Grid;
 /// </summary>
 public class DataGridTemplateRenderer : IDataGridDataGridTemplateRenderer
 {
+    private static readonly Action<ILogger, Exception?> LogTemplateNull =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(1, nameof(LogTemplateNull)),
+            "[DataGridTemplateRenderer] Template is null");
+
+    private static readonly Action<ILogger, Exception?> LogContextNull =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(2, nameof(LogContextNull)),
+            "[DataGridTemplateRenderer] Context is null");
+
+    private static readonly Action<ILogger, Exception?> LogHtmlEmpty =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(3, nameof(LogHtmlEmpty)),
+            "[DataGridTemplateRenderer] WARNING: Rendered HTML is empty!");
+
+    private static readonly Action<ILogger, string, Exception?> LogRenderFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(4, nameof(LogRenderFailed)),
+            "[DataGridTemplateRenderer] Error during rendering: {Message}");
+
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<DataGridTemplateRenderer> _logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DataGridTemplateRenderer"/> class.
     /// </summary>
     /// <param name="serviceProvider">Service provider for resolving dependencies.</param>
-    public DataGridTemplateRenderer(IServiceProvider serviceProvider)
+    /// <param name="logger">The logger instance.</param>
+    public DataGridTemplateRenderer(IServiceProvider serviceProvider, ILogger<DataGridTemplateRenderer> logger)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     /// <inheritdoc/>
@@ -26,17 +46,15 @@ public class DataGridTemplateRenderer : IDataGridDataGridTemplateRenderer
     {
         if (template == null)
         {
-            Console.WriteLine("[DataGridTemplateRenderer] Template is null");
+            LogTemplateNull(_logger, null);
             return string.Empty;
         }
 
         if (context == null)
         {
-            Console.WriteLine("[DataGridTemplateRenderer] Context is null");
+            LogContextNull(_logger, null);
             return string.Empty;
         }
-
-        Console.WriteLine($"[DataGridTemplateRenderer] Rendering template for context type: {context.GetType().Name}");
 
         await using var htmlRenderer = new HtmlRenderer(_serviceProvider, NullLoggerFactory.Instance);
 
@@ -53,26 +71,16 @@ public class DataGridTemplateRenderer : IDataGridDataGridTemplateRenderer
                     }));
 
                 var htmlString = output.ToHtmlString();
-                Console.WriteLine($"[DataGridTemplateRenderer] Rendered HTML length: {htmlString.Length}");
-                if (htmlString.Length > 0 && htmlString.Length < 500)
+                if (htmlString.Length == 0)
                 {
-                    Console.WriteLine($"[DataGridTemplateRenderer] Rendered HTML: {htmlString}");
+                    LogHtmlEmpty(_logger, null);
                 }
-                else if (htmlString.Length >= 500)
-                {
-                    Console.WriteLine($"[DataGridTemplateRenderer] Rendered HTML (truncated): {htmlString.Substring(0, 500)}...");
-                }
-                else
-                {
-                    Console.WriteLine("[DataGridTemplateRenderer] WARNING: Rendered HTML is empty!");
-                }
-                
+
                 return htmlString;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[DataGridTemplateRenderer] Error during rendering: {ex.Message}");
-                Console.WriteLine($"[DataGridTemplateRenderer] Stack trace: {ex.StackTrace}");
+                LogRenderFailed(_logger, ex.Message, ex);
                 throw;
             }
         });

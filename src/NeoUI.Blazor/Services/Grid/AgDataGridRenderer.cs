@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Text.Json;
 
@@ -12,7 +13,108 @@ namespace NeoUI.Blazor.Services.Grid;
 /// <typeparam name="TItem">The type of items in the grid.</typeparam>
 public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRendererCapabilities
 {
+    private static readonly Action<ILogger, string, Exception?> LogCreateGridFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogCreateGridFailed)),
+            "[AgDataGridRenderer] Failed to create grid: {Message}");
+
+    private static readonly Action<ILogger, Exception?> LogGridInstanceNullData =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(2, nameof(LogGridInstanceNullData)),
+            "[AgDataGridRenderer] DataGrid instance is null, cannot set data");
+
+    private static readonly Action<ILogger, Exception?> LogGridInstanceNullTransaction =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(3, nameof(LogGridInstanceNullTransaction)),
+            "[AgDataGridRenderer] DataGrid instance is null, cannot apply transaction");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogFormatFieldFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(4, nameof(LogFormatFieldFailed)),
+            "[AgDataGridRenderer] Failed to format field '{Field}' with format '{Format}': {Message}");
+
+    private static readonly Action<ILogger, Exception?> LogGridInstanceNullTheme =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(5, nameof(LogGridInstanceNullTheme)),
+            "[AgDataGridRenderer] Cannot update theme - grid instance is null");
+
+    private static readonly Action<ILogger, Exception?> LogGridInstanceNullCache =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(6, nameof(LogGridInstanceNullCache)),
+            "[AgDataGridRenderer] Cannot refresh server-side cache - grid instance is null");
+
+    private static readonly Action<ILogger, Exception?> LogGridInstanceNullFetch =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(7, nameof(LogGridInstanceNullFetch)),
+            "[AgDataGridRenderer] Cannot trigger BlazorServerSide fetch - grid instance is null");
+
+    private static readonly Action<ILogger, Exception?> LogGridInstanceNullPage =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(8, nameof(LogGridInstanceNullPage)),
+            "[AgDataGridRenderer] Cannot set Blazor page - grid instance is null");
+
+    private static readonly Action<ILogger, string, Exception?> LogBlazorServerSideFetchFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(9, nameof(LogBlazorServerSideFetchFailed)),
+            "[AgDataGridRenderer] BlazorServerSide fetch failed: {Message}");
+
+    private static readonly Action<ILogger, Exception?> LogNoServerDataRequestHandler =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(10, nameof(LogNoServerDataRequestHandler)),
+            "[AgDataGridRenderer] No ServerDataRequestHandler configured for server-side row model");
+
+    private static readonly Action<ILogger, string, Exception?> LogServerDataRequestFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(11, nameof(LogServerDataRequestFailed)),
+            "[AgDataGridRenderer] Server data request failed: {Message}");
+
+    private static readonly Action<ILogger, Exception?> LogResolveItemsByIdsNotProvided =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(12, nameof(LogResolveItemsByIdsNotProvided)),
+            "[AgDataGridRenderer] WARNING: ResolveItemsByIds callback not provided. Returning deserialized items (this may break .Remove() operations).");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogIdFieldNotFound =
+        LoggerMessage.Define<string, string>(LogLevel.Warning, new EventId(13, nameof(LogIdFieldNotFound)),
+            "[AgDataGridRenderer] WARNING: IdField '{IdField}' not found on type '{TypeName}'. Returning deserialized items (this may break .Remove() operations).");
+
+    private static readonly Action<ILogger, Exception?> LogNoValidIds =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(14, nameof(LogNoValidIds)),
+            "[AgDataGridRenderer] WARNING: No valid IDs found in deserialized items");
+
+    private static readonly Action<ILogger, string, Exception?> LogErrorResolvingItems =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(15, nameof(LogErrorResolvingItems)),
+            "[AgDataGridRenderer] ERROR resolving items to original instances: {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogTemplateRendererNull =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(16, nameof(LogTemplateRendererNull)),
+            "[AgDataGridRenderer] Template renderer is null for column '{TemplateId}'");
+
+    private static readonly Action<ILogger, string, Exception?> LogTemplateNotFound =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(17, nameof(LogTemplateNotFound)),
+            "[AgDataGridRenderer] No template found for column '{TemplateId}'");
+
+    private static readonly Action<ILogger, string, Exception?> LogDeserializationReturnedNull =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(18, nameof(LogDeserializationReturnedNull)),
+            "[AgDataGridRenderer] Deserialization returned null for column '{TemplateId}'");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogTemplateRenderingFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Error, new EventId(19, nameof(LogTemplateRenderingFailed)),
+            "[AgDataGridRenderer] Template rendering failed for column '{TemplateId}': {Message}");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogHeaderTemplateRenderingFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Error, new EventId(20, nameof(LogHeaderTemplateRenderingFailed)),
+            "[AgDataGridRenderer] Header template rendering failed for column '{TemplateId}': {Message}");
+
+    private static readonly Action<ILogger, Exception?> LogNoMetadataForAction =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(21, nameof(LogNoMetadataForAction)),
+            "[AgDataGridRenderer] No metadata available for action handling");
+
+    private static readonly Action<ILogger, string, Exception?> LogNoHandlerForAction =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(22, nameof(LogNoHandlerForAction)),
+            "[AgDataGridRenderer] No handler registered for action '{Action}'");
+
+    private static readonly Action<ILogger, string, Exception?> LogFailedToDeserializeAction =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(23, nameof(LogFailedToDeserializeAction)),
+            "[AgDataGridRenderer] Failed to deserialize data for action '{Action}'");
+
+    private static readonly Action<ILogger, string, Exception?> LogHandlerInvalidType =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(24, nameof(LogHandlerInvalidType)),
+            "[AgDataGridRenderer] Handler for '{Action}' is not a valid type");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogActionHandlerFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Error, new EventId(25, nameof(LogActionHandlerFailed)),
+            "[AgDataGridRenderer] Action handler failed for '{Action}': {Message}");
+
     private readonly IJSRuntime _jsRuntime;
+    private readonly ILogger<AgDataGridRenderer<TItem>> _logger;
     private readonly IDataGridDataGridTemplateRenderer? _templateRenderer;
     private IJSObjectReference? _jsModule;
     private IJSObjectReference? _gridInstance;
@@ -27,20 +129,19 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     /// </summary>
     /// <param name="jsRuntime">The JavaScript runtime for interop.</param>
     /// <param name="templateRenderer">Optional template renderer for cell templates.</param>
-    public AgDataGridRenderer(IJSRuntime jsRuntime, IDataGridDataGridTemplateRenderer? templateRenderer = null)
+    /// <param name="logger">The logger instance.</param>
+    public AgDataGridRenderer(IJSRuntime jsRuntime, IDataGridDataGridTemplateRenderer? templateRenderer = null, ILogger<AgDataGridRenderer<TItem>>? logger = null)
     {
         _jsRuntime = jsRuntime;
         _templateRenderer = templateRenderer;
+        _logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<AgDataGridRenderer<TItem>>.Instance;
     }
 
     /// <inheritdoc/>
     public async Task InitializeAsync(ElementReference element, DataGridDefinition<TItem> definition)
     {
-        Console.WriteLine("[AgDataGridRenderer] InitializeAsync called");
-        
         _jsModule = await _jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor/js/grid/aggrid-renderer.js");
-        Console.WriteLine("[AgDataGridRenderer] JS module imported");
 
         _dotNetRef = DotNetObjectReference.Create(this);
         _currentDefinition = definition;
@@ -49,25 +150,20 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         // Store cell templates for later rendering
         _templates.Clear();
         _headerTemplates.Clear();
-        Console.WriteLine($"[AgDataGridRenderer] Storing templates for {definition.Columns.Count} columns:");
         foreach (var column in definition.Columns)
         {
             if (column.CellTemplate != null)
             {
                 _templates[column.Id] = column.CellTemplate;
-                Console.WriteLine($"[AgDataGridRenderer]   - Stored CELL template for column ID: '{column.Id}'");
             }
             if (column.HeaderTemplate != null)
             {
                 _headerTemplates[column.Id] = column.HeaderTemplate;
-                Console.WriteLine($"[AgDataGridRenderer]   - Stored HEADER template for column ID: '{column.Id}'");
             }
         }
-        Console.WriteLine($"[AgDataGridRenderer] Total templates stored: {_templates.Count} cell, {_headerTemplates.Count} header");
 
         var config = BuildAgGridConfig(definition);
-        Console.WriteLine($"[AgDataGridRenderer] Config built with {definition.Columns.Count} columns");
-        
+
         // Verify element is valid before passing to JS
         // The ElementReference should be serialized properly by Blazor's JS interop
         try
@@ -75,19 +171,16 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             // AG DataGrid will be auto-loaded from CDN by the JavaScript module
             _gridInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
                 "createGrid", element, config, _dotNetRef);
-            Console.WriteLine("[AgDataGridRenderer] DataGrid instance created successfully");
-            
+
             // ✅ Apply initial state if provided
             if (definition.State != null)
             {
-                Console.WriteLine("[AgDataGridRenderer] Applying initial state");
                 await UpdateStateAsync(definition.State);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgDataGridRenderer] Failed to create grid: {ex.Message}");
-            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
+            LogCreateGridFailed(_logger, ex.Message, ex);
             throw;
         }
     }
@@ -95,30 +188,15 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     /// <inheritdoc/>
     public async Task UpdateDataAsync(IEnumerable<TItem> data)
     {
-        Console.WriteLine($"[AgDataGridRenderer] UpdateDataAsync called with {data?.Count() ?? 0} items");
-        
         if (_gridInstance != null)
         {
-            // Convert to list and enhance with formatted values
             var dataList = data?.ToList() ?? new List<TItem>();
-            Console.WriteLine($"[AgDataGridRenderer] Setting row data: {dataList.Count} rows");
-            
-            // Enhance data with formatted properties based on column definitions
             var enhancedData = EnhanceDataWithFormatting(dataList);
-            
-            if (enhancedData.Any())
-            {
-                // Log first item to verify data structure
-                var firstItem = enhancedData.First();
-                // Console.WriteLine($"[AgDataGridRenderer] First item keys: {string.Join(", ", ((IDictionary<string, object?>)firstItem).Keys)}");
-            }
-            
             await _gridInstance.InvokeVoidAsync("setRowData", enhancedData);
-            Console.WriteLine("[AgDataGridRenderer] Row data set successfully");
         }
         else
         {
-            Console.WriteLine("[AgDataGridRenderer] DataGrid instance is null, cannot set data");
+            LogGridInstanceNullData(_logger, null);
         }
     }
     
@@ -127,28 +205,23 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] DataGrid instance is null, cannot apply transaction");
+            LogGridInstanceNullTransaction(_logger, null);
             return;
         }
-        
+
         if (!transaction.HasChanges)
         {
-            Console.WriteLine("[AgDataGridRenderer] Transaction has no changes, skipping");
             return;
         }
-        
-        Console.WriteLine($"[AgDataGridRenderer] Applying transaction: +{transaction.Add?.Count ?? 0} -{transaction.Remove?.Count ?? 0} ~{transaction.Update?.Count ?? 0}");
-        
-        // Enhance data with formatting before sending to AG DataGrid
+
         var transactionData = new
         {
             add = transaction.Add != null ? EnhanceDataWithFormatting(transaction.Add) : null,
             remove = transaction.Remove != null ? EnhanceDataWithFormatting(transaction.Remove) : null,
             update = transaction.Update != null ? EnhanceDataWithFormatting(transaction.Update) : null
         };
-        
+
         await _gridInstance.InvokeVoidAsync("applyTransaction", transactionData);
-        Console.WriteLine("[AgDataGridRenderer] Transaction applied successfully");
     }
 
     /// <summary>
@@ -207,7 +280,7 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[AgDataGridRenderer] Failed to format field '{column.Field}' with format '{column.DataFormatString}': {ex.Message}");
+                        LogFormatFieldFailed(_logger, column.Field!, column.DataFormatString!, ex);
                     }
                 }
             }
@@ -266,20 +339,17 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] Cannot update theme - grid instance is null");
+            LogGridInstanceNullTheme(_logger, null);
             return;
         }
-        
-        Console.WriteLine($"[AgDataGridRenderer] Updating theme to {theme}");
-        
+
         var themeUpdate = new
         {
             theme = theme.ToString(),
             themeParams = themeParams ?? new Dictionary<string, object>()
         };
-        
+
         await _gridInstance.InvokeVoidAsync("setGridOptions", themeUpdate);
-        Console.WriteLine("[AgDataGridRenderer] Theme update completed");
     }
 
     /// <summary>
@@ -290,13 +360,11 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] Cannot refresh server-side cache - grid instance is null");
+            LogGridInstanceNullCache(_logger, null);
             return;
         }
-        
-        Console.WriteLine("[AgDataGridRenderer] Refreshing server-side cache");
+
         await _gridInstance.InvokeVoidAsync("refreshServerSideStore");
-        Console.WriteLine("[AgDataGridRenderer] Server-side cache refresh completed");
     }
 
     /// <summary>
@@ -307,13 +375,11 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] Cannot trigger BlazorServerSide fetch - grid instance is null");
+            LogGridInstanceNullFetch(_logger, null);
             return;
         }
 
-        Console.WriteLine("[AgDataGridRenderer] Triggering BlazorServerSide fetch");
         await _gridInstance.InvokeVoidAsync("triggerBlazorServerSideFetch");
-        Console.WriteLine("[AgDataGridRenderer] BlazorServerSide fetch triggered");
     }
 
     /// <inheritdoc/>
@@ -321,13 +387,11 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     {
         if (_gridInstance == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] Cannot set Blazor page - grid instance is null");
+            LogGridInstanceNullPage(_logger, null);
             return;
         }
 
-        Console.WriteLine($"[AgDataGridRenderer] Setting Blazor page: {page}, pageSize: {pageSize}");
         await _gridInstance.InvokeVoidAsync("setBlazorPage", page, pageSize);
-        Console.WriteLine("[AgDataGridRenderer] Blazor page set successfully");
     }
 
     /// <inheritdoc/>
@@ -398,7 +462,7 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgDataGridRenderer] BlazorServerSide fetch failed: {ex.Message}");
+            LogBlazorServerSideFetchFailed(_logger, ex.Message, ex);
             return new { items = Array.Empty<object>(), totalCount = 0, pageNumber = state.PageNumber, pageSize = state.PageSize };
         }
     }
@@ -414,15 +478,14 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     {
         if (_currentDefinition?.ServerDataRequestHandler == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] No ServerDataRequestHandler configured for server-side row model");
-            // Return empty response
+            LogNoServerDataRequestHandler(_logger, null);
             return new
             {
                 items = Array.Empty<object>(),
                 totalCount = 0
             };
         }
-        
+
         try
         {
             // Deserialize JS request to DataGridDataRequest
@@ -430,23 +493,21 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
                 requestJson.GetRawText(),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
-            
+
             if (request == null)
             {
                 throw new InvalidOperationException("Failed to deserialize DataGridDataRequest");
             }
-            
-            Console.WriteLine($"[AgDataGridRenderer] Server data request: StartIndex={request.StartIndex}, Count={request.Count}");
-            
+
             // Call the developer's callback
             var response = await _currentDefinition.ServerDataRequestHandler(request);
-            
+
             // Response should be DataGridDataResponse<TItem>
             return response;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgDataGridRenderer] Server data request failed: {ex.Message}");
+            LogServerDataRequestFailed(_logger, ex.Message, ex);
             throw;
         }
     }
@@ -512,23 +573,21 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         // Check if the DataGrid provided a callback to resolve items by IDs
         if (_currentDefinition?.ResolveItemsByIds == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] WARNING: ResolveItemsByIds callback not provided. " +
-                            "Returning deserialized items (this may break .Remove() operations).");
+            LogResolveItemsByIdsNotProvided(_logger, null);
             return deserializedItems;
         }
-        
+
         // Get the IdField property name (defaults to "Id")
         var idField = _currentDefinition.IdField ?? "Id";
         var itemType = typeof(TItem);
         var idProperty = itemType.GetProperty(idField);
-        
+
         if (idProperty == null)
         {
-            Console.WriteLine($"[AgDataGridRenderer] WARNING: IdField '{idField}' not found on type '{itemType.Name}'. " +
-                            "Returning deserialized items (this may break .Remove() operations).");
+            LogIdFieldNotFound(_logger, idField, itemType.Name, null);
             return deserializedItems;
         }
-        
+
         try
         {
             // Extract IDs from deserialized items
@@ -536,13 +595,13 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
                 .Select(item => idProperty.GetValue(item))
                 .Where(id => id != null)
                 .ToList();
-            
+
             if (ids.Count == 0)
             {
-                Console.WriteLine("[AgDataGridRenderer] WARNING: No valid IDs found in deserialized items");
+                LogNoValidIds(_logger, null);
                 return deserializedItems;
             }
-            
+
             // ✅ Use the callback to resolve IDs back to original instances
             var originalItems = _currentDefinition.ResolveItemsByIds(ids!).ToList();
 
@@ -550,17 +609,14 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             // Deserialized instances are structurally equivalent (records support value equality).
             if (originalItems.Count == 0 && deserializedItems.Count > 0)
             {
-                Console.WriteLine($"[AgDataGridRenderer] Resolution found 0 originals — using deserialized instances (BlazorServerSide mode)");
                 return deserializedItems;
             }
 
-            Console.WriteLine($"[AgDataGridRenderer] Resolved {originalItems.Count}/{deserializedItems.Count} items to original instances");
             return originalItems;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgDataGridRenderer] ERROR resolving items to original instances: {ex.Message}");
-            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
+            LogErrorResolvingItems(_logger, ex.Message, ex);
             return deserializedItems;  // Fallback
         }
     }
@@ -578,15 +634,14 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         // Check if template renderer is available
         if (_templateRenderer == null)
         {
-            Console.WriteLine($"[AgDataGridRenderer] Template renderer is null for column '{templateId}'");
+            LogTemplateRendererNull(_logger, templateId, null);
             return null; // Fall back to field-based rendering
         }
 
         // Check if template exists for this column
         if (!_templates.TryGetValue(templateId, out var template))
         {
-            Console.WriteLine($"[AgDataGridRenderer] No template found for column '{templateId}'");
-            Console.WriteLine($"[AgDataGridRenderer] Available template IDs: {string.Join(", ", _templates.Keys.Select(k => $"'{k}'"))}");
+            LogTemplateNotFound(_logger, templateId, null);
             return null; // Fall back to field-based rendering
         }
 
@@ -598,29 +653,24 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true
             };
-            
+
             var rawJson = data.GetRawText();
-            Console.WriteLine($"[AgDataGridRenderer] Deserializing data for template '{templateId}': {rawJson}");
-            
+
             // Deserialize JSON to typed item
             var item = JsonSerializer.Deserialize<TItem>(rawJson, jsonOptions);
             if (item == null)
             {
-                Console.WriteLine($"[AgDataGridRenderer] Deserialization returned null for column '{templateId}'");
+                LogDeserializationReturnedNull(_logger, templateId, null);
                 return null;
             }
-            
-            Console.WriteLine($"[AgDataGridRenderer] Successfully deserialized item of type {item.GetType().Name}");
-            
+
             // Render template to HTML string
             var html = await _templateRenderer.RenderToStringAsync(template, item);
-            Console.WriteLine($"[AgDataGridRenderer] Template rendered successfully for column '{templateId}', HTML length: {html?.Length ?? 0}");
             return html;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgDataGridRenderer] Template rendering failed for column '{templateId}': {ex.Message}");
-            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
+            LogTemplateRenderingFailed(_logger, templateId, ex.Message, ex);
             return null; // Fall back to field-based rendering
         }
     }
@@ -654,7 +704,7 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgDataGridRenderer] Header template rendering failed for column '{templateId}': {ex.Message}");
+            LogHeaderTemplateRenderingFailed(_logger, templateId, ex.Message, ex);
             return null; // Fall back to headerName
         }
     }
@@ -667,11 +717,9 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
     [JSInvokable]
     public async Task HandleCellAction(string action, JsonElement data)
     {
-        Console.WriteLine($"[AgDataGridRenderer] HandleCellAction called: action='{action}'");
-        
         if (_currentDefinition?.Metadata == null)
         {
-            Console.WriteLine("[AgDataGridRenderer] No metadata available for action handling");
+            LogNoMetadataForAction(_logger, null);
             return;
         }
 
@@ -679,7 +727,7 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
         var actionKey = $"CellAction_{action}";
         if (!_currentDefinition.Metadata.TryGetValue(actionKey, out var handler))
         {
-            Console.WriteLine($"[AgDataGridRenderer] No handler registered for action '{action}'");
+            LogNoHandlerForAction(_logger, action, null);
             return;
         }
 
@@ -691,16 +739,14 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true
             };
-            
+
             var item = JsonSerializer.Deserialize<TItem>(data.GetRawText(), jsonOptions);
             if (item == null)
             {
-                Console.WriteLine($"[AgDataGridRenderer] Failed to deserialize data for action '{action}'");
+                LogFailedToDeserializeAction(_logger, action, null);
                 return;
             }
 
-            Console.WriteLine($"[AgDataGridRenderer] Invoking action handler for '{action}'");
-            
             // Invoke the action handler
             if (handler is Func<TItem, Task> asyncFunc)
             {
@@ -712,13 +758,12 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
             }
             else
             {
-                Console.WriteLine($"[AgDataGridRenderer] Handler for '{action}' is not a valid type");
+                LogHandlerInvalidType(_logger, action, null);
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AgDataGridRenderer] Action handler failed for '{action}': {ex.Message}");
-            Console.WriteLine($"[AgDataGridRenderer] Stack trace: {ex.StackTrace}");
+            LogActionHandlerFailed(_logger, action, ex.Message, ex);
         }
     }
 
@@ -775,12 +820,6 @@ public class AgDataGridRenderer<TItem> : IDataGridRenderer<TItem>, IDataGridRend
                 __fieldType = col.FieldType?.Name
             };
         }).ToArray();
-
-        Console.WriteLine($"[AgDataGridRenderer] Column defs built:");
-        foreach (var col in columnDefs)
-        {
-            Console.WriteLine($"  - colId: '{col.colId}', field: '{col.field ?? "(none)"}', headerName: '{col.headerName}', filter: '{col.filter ?? "(none)"}', fieldType: '{col.__fieldType ?? "(none)"}'");
-        }
 
         return new
         {
