@@ -181,7 +181,7 @@
 
     @* ── Composability with DataTable ────────────────────────── *@
     <DemoSection Title="Composability with DataTable"
-                 Description="Use AdditionalRowAttributes on DataTable to supply data-sortable-id to each row. Wrap the table in a SortableContentPrimitive and add a drag handle column via CellTemplate.">
+                 Description="Use AdditionalRowAttributes on DataTable to supply data-sortable-id to each row. Wrap the table in a SortableContent and add a drag handle column via CellTemplate.">
         <DemoBlock Code="@_dataTableCode">
             <Sortable TItem="TaskItem"
                       Items="@_tableItems"
@@ -210,7 +210,7 @@
                         </Columns>
                     </DataTable>
                 </SortableContent>
-                <SortableOverlay Class="rounded" />
+                <SortableOverlay Class="rounded opacity-80" />
             </Sortable>
         </DemoBlock>
     </DemoSection>

@@ -197,7 +197,11 @@ function setupCloneInOverlay(overlay, sourceEl) {
 
     // Table rows lose column widths when detached from their parent table.
     // Snapshot each cell's computed width and stamp it on the clone's cells.
+    // Also copy the row's resolved font-size so children without an explicit
+    // font-size class (e.g. a bare SortableItemHandle button) inherit the
+    // correct value rather than falling back to the browser default (16px).
     if (sourceEl.tagName === 'TR') {
+        clone.style.fontSize = window.getComputedStyle(sourceEl).fontSize;
         const sourceCells = sourceEl.querySelectorAll('td, th');
         const cloneCells  = clone.querySelectorAll('td, th');
         sourceCells.forEach((cell, i) => {

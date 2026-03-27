@@ -160,16 +160,18 @@ Styled overlay frame. Defaults: `rounded-lg shadow-lg opacity-90 transition-tran
 
 ---
 
-### 🔧 Enhancement — `DataTable<TData>`: `GetRowSortableId` parameter
+### 🔧 Enhancement — `DataTable<TData>`: `AdditionalRowAttributes` parameter
 
-This is a minimal, non-invasive hook that unlocks full composability with `Sortable`. The only change to `DataTable` is the addition of `GetRowSortableId` (`Func<TData, string>?`), which stamps `data-sortable-id` on each rendered `<tr>` so the Sortable primitive can identify rows as draggable items. Everything else — column definitions, sorting, selection, toolbar, pagination — works exactly as before.
+This is a minimal, non-invasive hook that unlocks full composability with `Sortable` and can be used in any use cases that require additional attributes on each row. The only change to `DataTable` is the addition of `AdditionalRowAttributes` (`Func<TData, Dictionary<string, object>?>?`), which lets callers stamp any HTML attributes — `data-*`, `aria-*`, or otherwise — onto each rendered `<tr>`. The common use case is supplying `data-sortable-id` for Sortable row reorder, but the API is intentionally general-purpose. Everything else — column definitions, sorting, selection, toolbar, pagination — works exactly as before.
 
 The drag handle is placed inside any `CellTemplate` in the normal Columns API. There is no new `SortableColumn` type, no `Draggable` flag on the table, and no modified render path. The handle simply finds its nearest `SortableItem` context through the primitive's DOM-registration, and the drag engine does the rest.
 
 ```razor
 <Sortable TItem="TaskItem" Items="@items" OnItemsReordered="@(r => items = r)" GetItemId="@(i => i.Id)">
     <SortableContent Class="block">
-        <DataTable TData="TaskItem" Data="@items" GetRowSortableId="@(i => i.Id)" ShowPagination="false" ShowToolbar="false">
+        <DataTable TData="TaskItem" Data="@items"
+                   AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
+                   ShowPagination="false" ShowToolbar="false">
             <Columns>
                 <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
                     <CellTemplate Context="row">
@@ -188,7 +190,7 @@ The same composability pattern applies to `DataView` with no `DataView` changes 
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `GetRowSortableId` | `Func<TData, string>?` | `null` | When set, stamps `data-sortable-id` on each `<tr>`. |
+| `AdditionalRowAttributes` | `Func<TData, Dictionary<string, object>?>?` | `null` | Callback supplying extra HTML attributes for each body `<tr>`. Use it to attach `data-sortable-id` for Sortable row reorder, or any `data-*`/`aria-*` attributes your consumers need. |
 
 ---
 
