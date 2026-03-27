@@ -6,11 +6,11 @@ namespace NeoUI.Blazor;
 public enum QuantityStepperSize
 {
     /// <summary>Small — compact size for cart rows and list items (buttons: 28px).</summary>
-    Sm,
+    Small,
 
     /// <summary>Default — standard size for product detail pages (buttons: 32px).</summary>
     Default,
 
     /// <summary>Large — prominent size for hero product sections (buttons: 44px).</summary>
-    Lg,
+    Large,
 }

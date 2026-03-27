@@ -94,9 +94,11 @@ public partial class NotificationBadge : ComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private bool IsVisible => Count > 0 || ShowZero;
+    private int DisplayableCount => Math.Max(0, Count);
 
-    private string DisplayCount => Count > Max ? $"{Max}+" : Count.ToString();
+    private bool IsVisible => DisplayableCount > 0 || ShowZero;
+
+    private string DisplayCount => DisplayableCount > Max ? $"{Max}+" : DisplayableCount.ToString();
 
     private string AriaLabel => Dot
         ? "Has notifications"

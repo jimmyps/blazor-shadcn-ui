@@ -3,7 +3,7 @@
 <button
     type="button"
     class="@CssClass"
-    aria-label="@Label"
+    aria-label="@(!string.IsNullOrEmpty(Label) ? Label : null)"
     aria-current="@(IsActive ? "page" : null)"
     @onclick="HandleClick">
     <span class="relative inline-flex">
