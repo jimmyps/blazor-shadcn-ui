@@ -285,6 +285,11 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     private string? _lastBodyRowClass;
 
     /// <summary>
+    /// Cached AdditionalRowAttributes reference for ShouldRender optimization.
+    /// </summary>
+    private Func<TData, Dictionary<string, object>?>? _lastAdditionalRowAttributes;
+
+    /// <summary>
     /// Cached Striped value for ShouldRender optimization.
     /// </summary>
     private bool _lastStriped;
@@ -700,25 +705,24 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public string? BodyRowClass { get; set; }
 
     /// <summary>
-    /// Gets or sets a function that returns the <c>data-sortable-id</c> attribute value for each
-    /// body row. When set, each <c>&lt;tr&gt;</c> receives a <c>data-sortable-id</c> attribute,
-    /// enabling the row to participate in a <see cref="NeoUI.Blazor.Primitives.SortablePrimitive{TItem}"/> drag context.
-    /// Use together with a <see cref="NeoUI.Blazor.Primitives.SortableContentPrimitive"/> that wraps this component.
+    /// Gets or sets a callback that supplies additional HTML attributes for each body &lt;tr&gt; element.
+    /// The function receives the row's data item and returns a dictionary of attribute name/value pairs,
+    /// or null/empty to add no extra attributes.
     /// </summary>
+    /// <remarks>
+    /// Common use cases include adding <c>data-sortable-id</c> to enable drag-and-drop row reordering
+    /// via <see cref="NeoUI.Blazor.Primitives.SortablePrimitive{TItem}"/>, or supplying arbitrary
+    /// <c>data-*</c>, <c>aria-*</c>, or other HTML attributes per row.
+    /// Note: the consumer's lambda allocates a new dictionary per row per render cycle.
+    /// For high row-count tables keep the allocation lightweight, or cache the dictionaries by key.
+    /// </remarks>
     /// <example>
     /// <code>
-    /// &lt;Sortable TItem="Person" Items="@_people" OnItemsReordered="..." GetItemId="@(p => p.Id.ToString())"&gt;
-    ///     &lt;SortableContentPrimitive&gt;
-    ///         &lt;DataTable TData="Person" Data="@_people" GetRowSortableId="@(p => p.Id.ToString())"&gt;
-    ///             ...
-    ///         &lt;/DataTable&gt;
-    ///     &lt;/SortableContentPrimitive&gt;
-    ///     &lt;SortableOverlayPrimitive /&gt;
-    /// &lt;/Sortable&gt;
+    /// AdditionalRowAttributes="@(item => new Dictionary&lt;string, object&gt; { [&quot;data-sortable-id&quot;] = item.Id })"
     /// </code>
     /// </example>
     [Parameter]
-    public Func<TData, string>? GetRowSortableId { get; set; }
+    public Func<TData, Dictionary<string, object>?>? AdditionalRowAttributes { get; set; }
 
     /// <summary>
     /// When true, applies alternating row background colours (zebra striping).
@@ -875,6 +879,12 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
         CellBorder ? "divide-x divide-border" : null,
         BodyRowClass
     );
+
+    /// <summary>
+    /// Returns the additional HTML attributes for a body row, or null when none are set.
+    /// </summary>
+    private IReadOnlyDictionary<string, object>? GetAdditionalRowAttributes(TData item) =>
+        AdditionalRowAttributes?.Invoke(item);
 
     /// <summary>
     /// Initializes the component and sets up default pagination and selection state.
@@ -1781,6 +1791,7 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             || _lastHeaderClass != HeaderClass
             || _lastHeaderRowClass != HeaderRowClass
             || _lastBodyRowClass != BodyRowClass
+            || !ReferenceEquals(_lastAdditionalRowAttributes, AdditionalRowAttributes)
             || _lastStriped != Striped
             || _lastStripeClass != StripeClass
             || _lastCellBorder != CellBorder
@@ -1809,6 +1820,7 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             _lastHeaderClass = HeaderClass;
             _lastHeaderRowClass = HeaderRowClass;
             _lastBodyRowClass = BodyRowClass;
+            _lastAdditionalRowAttributes = AdditionalRowAttributes;
             _lastStriped = Striped;
             _lastStripeClass = StripeClass;
             _lastCellBorder = CellBorder;

@@ -492,7 +492,7 @@
 
     <DemoSection
         Title="Sortable Row Reorder"
-        Description="Set GetRowSortableId to add data-sortable-id to each table row. Wrap the DataTable in a Sortable root and SortableContentPrimitive, then add a drag handle column via CellTemplate.">
+        Description="Use AdditionalRowAttributes to attach data-sortable-id to each table row. Wrap the DataTable in a Sortable root and SortableContentPrimitive, then add a drag handle column via CellTemplate.">
         <DemoBlock Code="@_sortableRowsCode">
             <Sortable TItem="SortableTask"
                       Items="@_sortableRows"
@@ -501,7 +501,7 @@
                 <SortableContentPrimitive class="block">
                     <DataTable TData="SortableTask"
                                Data="@_sortableRows"
-                               GetRowSortableId="@(t => t.Id)"
+                               AdditionalRowAttributes="@(t => new Dictionary<string, object> { ["data-sortable-id"] = t.Id })"
                                ShowPagination="false"
                                ShowToolbar="false">
                         <Columns>

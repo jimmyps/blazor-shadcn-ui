@@ -166,7 +166,7 @@
 
     @* ── Composability with DataTable ────────────────────────── *@
     <DemoSection Title="Composability with DataTable"
-                 Description="Set GetRowSortableId on DataTable to add data-sortable-id to each row. Wrap the table in a SortableContentPrimitive and add a drag handle column via CellTemplate.">
+                 Description="Use AdditionalRowAttributes on DataTable to supply data-sortable-id to each row. Wrap the table in a SortableContentPrimitive and add a drag handle column via CellTemplate.">
         <DemoBlock Code="@_dataTableCode">
             <Sortable TItem="TaskItem"
                       Items="@_tableItems"
@@ -175,7 +175,7 @@
                 <SortableContentPrimitive class="block">
                     <DataTable TData="TaskItem"
                                Data="@_tableItems"
-                               GetRowSortableId="@(i => i.Id)"
+                               AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
                                ShowPagination="false"
                                ShowToolbar="false">
                         <Columns>
