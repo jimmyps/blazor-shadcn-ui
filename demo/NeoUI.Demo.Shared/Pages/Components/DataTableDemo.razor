@@ -398,6 +398,42 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Sortable Row Reorder"
+        Description="Use AdditionalRowAttributes to attach data-sortable-id to each table row. Wrap the DataTable in a Sortable root and SortableContent, then add a drag handle column via CellTemplate.">
+        <DemoBlock Code="@_sortableRowsCode">
+            <Sortable TItem="SortableTask"
+                      Items="@_sortableRows"
+                      OnItemsReordered="@(r => _sortableRows = r)"
+                      GetItemId="@(t => t.Id)">
+                <SortableContent Class="block">
+                    <DataTable TData="SortableTask"
+                               Data="@_sortableRows"
+                               AdditionalRowAttributes="@(t => new Dictionary<string, object> { ["data-sortable-id"] = t.Id })"
+                               ShowPagination="false"
+                               ShowToolbar="false">
+                        <Columns>
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Id)" Header="" Width="44px">
+                                <CellTemplate Context="row">
+                                    <SortableItemHandle Class="mx-auto" />
+                                </CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Name)" Header="Task" Sortable />
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Assignee)" Header="Assignee" />
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Status)" Header="Status">
+                                <CellTemplate Context="row">
+                                    <Badge Variant="@(row.Status == "Done" ? BadgeVariant.Default : row.Status == "In Progress" ? BadgeVariant.Secondary : BadgeVariant.Outline)">
+                                        @row.Status
+                                    </Badge>
+                                </CellTemplate>
+                            </DataTableColumn>
+                        </Columns>
+                    </DataTable>
+                </SortableContent>
+                <SortableOverlay Class="rounded opacity-80" />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
 
     <DemoSection
         Title="Global Search &amp; Column Visibility"
@@ -714,6 +750,19 @@
                 new("5260", "Depreciation Expense",     "Expense", "Depreciation",              "Periodic allocation of fixed asset cost",      "USD", "Operating", "Debit", "$14,100.00",  "Active", "admin",  "Mar 10, 2026", []),
             ]),
         ]),
+    ];
+
+    // ── Sortable Row Reorder demo ─────────────────────────────────────────────
+    private record SortableTask(string Id, string Name, string Assignee, string Status);
+
+    private IList<SortableTask> _sortableRows =
+    [
+        new("st1", "Design wireframes",    "Alice",  "Done"),
+        new("st2", "Write unit tests",     "Bob",    "In Progress"),
+        new("st3", "Implement API",        "Carol",  "To Do"),
+        new("st4", "Code review",          "David",  "In Progress"),
+        new("st5", "Deploy to staging",    "Eva",    "To Do"),
+        new("st6", "Update documentation", "Frank",  "To Do"),
     ];
 
 }

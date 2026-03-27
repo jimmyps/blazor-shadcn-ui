@@ -141,6 +141,26 @@
 
     <div class="space-y-4">
         <h2 class="text-2xl font-semibold">What's New</h2>
+        <a href="/components/sortable" class="flex items-start gap-4 p-5 border rounded-lg hover:border-primary hover:bg-accent transition-colors no-underline group">
+            <div class="mt-0.5 flex-shrink-0 size-9 rounded-full bg-primary/10 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+                    <circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle>
+                    <circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle>
+                </svg>
+            </div>
+            <div class="space-y-1 min-w-0">
+                <div class="flex items-center gap-2">
+                    <h3 class="font-semibold group-hover:text-primary">Sortable</h3>
+                    <span class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">New</span>
+                </div>
+                <p class="text-sm text-muted-foreground">
+                    Drag-and-drop reordering with pointer, touch, and full keyboard support. Composes directly with
+                    <code class="bg-muted px-1 rounded">DataTable</code> and
+                    <code class="bg-muted px-1 rounded">DataView</code> — no modifications to those components required.
+                    Drop a <code class="bg-muted px-1 rounded">SortableItemHandle</code> into any column template and it just works.
+                </p>
+            </div>
+        </a>
         <a href="/components/filter" class="flex items-start gap-4 p-5 border rounded-lg hover:border-primary hover:bg-accent transition-colors no-underline group">
             <div class="mt-0.5 flex-shrink-0 size-9 rounded-full bg-primary/10 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
@@ -150,7 +170,6 @@
             <div class="space-y-1 min-w-0">
                 <div class="flex items-center gap-2">
                     <h3 class="font-semibold group-hover:text-primary">FilterBuilder</h3>
-                    <span class="text-xs font-medium px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">New</span>
                 </div>
                 <p class="text-sm text-muted-foreground">
                     A dynamic, inline filter canvas — no modals, no Apply button. Conditions appear as interactive chip rows

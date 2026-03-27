@@ -6,7 +6,7 @@ This directory contains technical documentation, architectural decisions, implem
 
 **NEW:** Comprehensive mobile support documentation
 
-- **[Mobile Responsive Analysis](MOBILE_RESPONSIVE_ANALYSIS.md)** - Complete analysis of mobile support across all 95+ components, including findings, recommendations, and testing results
+- **[Mobile Responsive Analysis](MOBILE_RESPONSIVE_ANALYSIS.md)** - Complete analysis of mobile support across all 125+ components, including findings, recommendations, and testing results
 - **[Mobile Best Practices](MOBILE_BEST_PRACTICES.md)** - Practical guide for building mobile-responsive applications with NeoUI components, with code examples and patterns
 - **[Mobile Checklist](MOBILE_CHECKLIST.md)** - Development and testing checklist for ensuring mobile responsiveness
 
