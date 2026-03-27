@@ -35,11 +35,14 @@
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     // Defaults own the properties that are meaningful on the overlay frame:
-    //   rounded-lg                          → shapes the shadow
+    //   rounded-lg                          → shapes the shadow / border-radius of the ghost
     //   shadow-lg                           → the "lifted" drop shadow
-    //   opacity-90                          → slight transparency gives the ghost a "lifted" feel
-    //   transition-transform duration-150   → animates scale in/out as data-state changes
+    //   opacity-70                          → slight transparency gives the ghost a "lifted" feel
+    //   transition-[box-shadow] duration-300 → smoothly animates shadow in/out as state changes
     //   data-[state=dragging]:scale-[1.05]  → scale applied via Tailwind when JS sets data-state="dragging"
+    //
+    //   Note: if you also want the scale change to animate, merge transition-transform into the Class:
+    //   Class="transition-[box-shadow,transform]"
     private string CssClass => ClassNames.cn(
         "rounded-lg shadow-lg opacity-70 transition-[box-shadow] duration-300 data-[state=dragging]:scale-[1.05]",
         Class

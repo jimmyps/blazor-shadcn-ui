@@ -1,4 +1,5 @@
 @namespace NeoUI.Blazor
+@inject ILocalizer Localizer
 @*
     Styled SortableItemHandle component.
     Wraps SortableItemHandlePrimitive with cursor-grab, color transitions, and
@@ -6,6 +7,7 @@
 *@
 
 <SortableItemHandlePrimitive class="@CssClass"
+                              AriaLabel="@EffectiveAriaLabel"
                               @attributes="AdditionalAttributes">
     @if (ChildContent is not null)
     {
@@ -41,6 +43,13 @@
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// Accessible label for the drag handle button.
+    /// When not set, defaults to the <c>Sortable.DragHandle</c> localization key.
+    /// </summary>
+    [Parameter]
+    public string? AriaLabel { get; set; }
+
+    /// <summary>
     /// Additional CSS classes appended to the handle element.
     /// </summary>
     [Parameter]
@@ -51,6 +60,8 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string EffectiveAriaLabel => AriaLabel ?? Localizer["Sortable.DragHandle"];
 
     private string CssClass => ClassNames.cn(
         "cursor-grab active:cursor-grabbing",

@@ -18,6 +18,14 @@ namespace NeoUI.Blazor.Primitives;
 /// </remarks>
 public partial class SortableItemHandlePrimitive : ComponentBase
 {
+    /// <summary>Gets or sets the accessible label for the handle button. Defaults to <c>"Drag handle"</c>.</summary>
+    /// <remarks>
+    /// Override this to provide a localized string. When using the styled <c>SortableItemHandle</c>
+    /// wrapper from <c>NeoUI.Blazor</c>, this is automatically populated from <c>ILocalizer</c>.
+    /// </remarks>
+    [Parameter]
+    public string AriaLabel { get; set; } = "Drag handle";
+
     /// <summary>Gets or sets optional custom content for the handle (replaces the default grip icon).</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
