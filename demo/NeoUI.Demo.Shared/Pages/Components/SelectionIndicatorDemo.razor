@@ -1,0 +1,145 @@
+@page "/components/selection-indicator"
+
+<PageTitle>Selection Indicator - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Selection Indicator"
+        Description="A composable, spring-animated indicator that slides between the active item in any selection container — Tabs, ToggleGroup, navigation links, or your own custom markup." />
+
+    @* ── Tabs ──────────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Tabs"
+        Description="Drop SelectionIndicator as the last child of TabsList. Pass Class to each TabsTrigger to clear its individual active background so the indicator shows through.">
+        <DemoBlock Code="@_tabsCode">
+            <Tabs DefaultValue="overview">
+                <TabsList>
+                    <TabsTrigger Value="overview"
+                                 Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                        Overview
+                    </TabsTrigger>
+                    <TabsTrigger Value="analytics"
+                                 Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                        Analytics
+                    </TabsTrigger>
+                    <TabsTrigger Value="reports"
+                                 Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                        Reports
+                    </TabsTrigger>
+                    <TabsTrigger Value="settings"
+                                 Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                        Settings
+                    </TabsTrigger>
+                    <SelectionIndicator />
+                </TabsList>
+                <TabsContent Value="overview">
+                    <div class="rounded-lg border bg-card p-6 text-sm text-muted-foreground">Overview content</div>
+                </TabsContent>
+                <TabsContent Value="analytics">
+                    <div class="rounded-lg border bg-card p-6 text-sm text-muted-foreground">Analytics content</div>
+                </TabsContent>
+                <TabsContent Value="reports">
+                    <div class="rounded-lg border bg-card p-6 text-sm text-muted-foreground">Reports content</div>
+                </TabsContent>
+                <TabsContent Value="settings">
+                    <div class="rounded-lg border bg-card p-6 text-sm text-muted-foreground">Settings content</div>
+                </TabsContent>
+            </Tabs>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Segmented Control (ToggleGroup) ───────────────────────────────────── *@
+    <DemoSection
+        Title="Segmented Control"
+        Description="A ToggleGroup in Single mode styled as a segmented control. Use Selector=""[aria-checked=true]"" — ToggleGroupItem marks selection via aria-checked rather than data-state.">
+        <DemoBlock Code="@_segmentedCode">
+            <div class="space-y-4">
+                <ToggleGroup Type="ToggleGroupType.Single"
+                             @bind-Value="@_alignment"
+                             Class="bg-muted p-1 rounded-md gap-0">
+                    <ToggleGroupItem Value="left"   Class="relative z-10 bg-transparent"><LucideIcon Name="align-left"    Class="h-4 w-4" /></ToggleGroupItem>
+                    <ToggleGroupItem Value="center" Class="relative z-10 bg-transparent"><LucideIcon Name="align-center"  Class="h-4 w-4" /></ToggleGroupItem>
+                    <ToggleGroupItem Value="right"  Class="relative z-10 bg-transparent"><LucideIcon Name="align-right"   Class="h-4 w-4" /></ToggleGroupItem>
+                    <ToggleGroupItem Value="justify" Class="relative z-10 bg-transparent"><LucideIcon Name="align-justify" Class="h-4 w-4" /></ToggleGroupItem>
+                    <SelectionIndicator Selector="[aria-checked=true]" />
+                </ToggleGroup>
+                <p class="text-sm text-muted-foreground">Alignment: <strong>@(_alignment ?? "none")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Navigation Underline ──────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Navigation Underline"
+        Description="Use the Class parameter to override the default pill appearance. Here Class replaces the vertical inset and background with a thin bottom border that acts as an underline.">
+        <DemoBlock Code="@_navCode">
+            <div class="space-y-4">
+                <div class="inline-flex items-stretch border-b border-border">
+                    @foreach (var item in _navItems)
+                    {
+                        <button class="@NavLinkClass(item)"
+                                data-active="@(_activeNav == item ? "true" : null)"
+                                @onclick="@(() => _activeNav = item)">
+                            @item
+                        </button>
+                    }
+                    <SelectionIndicator
+                        Selector="[data-active=true]"
+                        Class="bottom-0 top-auto h-0.5 rounded-none bg-foreground" />
+                </div>
+                <p class="text-sm text-muted-foreground">Active: <strong>@_activeNav</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom Container ──────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Custom Container"
+        Description="SelectionIndicator works with any markup — not just NeoUI components. Set data-active=""true"" on whichever element should be active and add the indicator as a sibling. No context or event wiring needed.">
+        <DemoBlock Code="@_customCode">
+            <div class="space-y-4">
+                <div class="inline-flex bg-muted rounded-lg p-1">
+                    @foreach (var period in _periods)
+                    {
+                        <button class="@PeriodClass(period)"
+                                data-active="@(_period == period ? "true" : null)"
+                                @onclick="@(() => _period = period)">
+                            @period
+                        </button>
+                    }
+                    <SelectionIndicator Selector="[data-active=true]" />
+                </div>
+                <p class="text-sm text-muted-foreground">Period: <strong>@_period</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ─────────────────────────────────────────────────────── *@
+    <DemoSection Title="API Reference" Description="SelectionIndicator parameters.">
+        <DemoPropsTable Rows="_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string? _alignment = "center";
+    private string  _activeNav  = "Overview";
+    private string  _period     = "1M";
+
+    private static readonly string[] _navItems = ["Overview", "Changelog", "Examples", "API"];
+    private static readonly string[] _periods  = ["1D", "7D", "1M", "3M", "1Y", "All"];
+
+    private string NavLinkClass(string item) => ClassNames.cn(
+        "relative z-10 px-4 py-2 text-sm font-medium transition-colors",
+        _activeNav == item
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground");
+
+    private string PeriodClass(string p) => ClassNames.cn(
+        "relative z-10 px-3 py-1 text-xs font-medium rounded-md transition-colors",
+        _period == p
+            ? "text-foreground"
+            : "text-muted-foreground hover:text-foreground");
+}
