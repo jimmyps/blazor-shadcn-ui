@@ -8,6 +8,9 @@
 <SortablePrimitive TItem="TItem"
                    Items="@Items"
                    OnItemsReordered="@OnItemsReordered"
+                   OnDragStart="@OnDragStart"
+                   OnDragEnd="@OnDragEnd"
+                   OnDragCancel="@OnDragCancel"
                    GetItemId="@GetItemId"
                    Orientation="@Orientation"
                    class="@Class"
@@ -27,6 +30,24 @@
     /// </summary>
     [Parameter]
     public EventCallback<IList<TItem>> OnItemsReordered { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation starts. Argument is the dragged item's identifier.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnDragStart { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation ends (whether or not the item moved).
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableDragEndArgs> OnDragEnd { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation is cancelled (e.g. Escape key).
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDragCancel { get; set; }
 
     /// <summary>
     /// Function that extracts a unique string identifier from each item. Required.

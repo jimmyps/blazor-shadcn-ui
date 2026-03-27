@@ -18,6 +18,13 @@ public enum SortableOrientation
     Horizontal,
 
     /// <summary>
+    /// Items are arranged in a CSS grid or wrapping flex layout (mixed axes).
+    /// Each item shifts to exactly the snapshot position of the adjacent slot,
+    /// so displacement correctly follows the 2D grid geometry.
+    /// </summary>
+    Grid,
+
+    /// <summary>
     /// Items are arranged in a grid or wrapping flow (mixed axes).
     /// Only the drag overlay moves; items do not shift during drag.
     /// </summary>

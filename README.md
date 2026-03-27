@@ -21,7 +21,7 @@ A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://
   <table align="center">
     <tr>
       <td align="center"><b>⚡ Zero Config</b><br/>Pre-built CSS, no Node.js or build tools required</td>
-      <td align="center"><b>🧩 100+ Components</b><br/>Modern, composable UI components</td>
+      <td align="center"><b>🧩 125+ Components</b><br/>Modern, composable UI components</td>
       <td align="center"><b>🎨 shadcn/ui Themes</b><br/>Drop in any shadcn/ui or tweakcn theme</td>
       <td align="center"><b>🌙 Dark Mode</b><br/>Built-in light &amp; dark with CSS variables</td>
     </tr>
@@ -386,7 +386,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## 📚 Components
 
-NeoUI includes **100+ styled components** with full shadcn/ui design compatibility:
+NeoUI includes **125+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -430,6 +430,7 @@ NeoUI includes **100+ styled components** with full shadcn/ui design compatibili
 - **Pagination** - Page navigation with Previous/Next/Ellipsis support
 - **Resizable** - Split layouts with draggable handles
 - **Scroll Area** - Custom scrollbars for styled scroll regions
+- **Sortable** - Drag-and-drop reordering with pointer, touch, and keyboard support. Composes with `DataTable`, `DataView`, and any list component without modifying them — place a `SortableItemHandle` in any column template and it works
 - **Item** - Flexible list items with media, content, and actions
 - **Separator** - Visual dividers
 - **Sidebar** - Responsive sidebar with collapsible icon mode, variants (default, floating, inset), and mobile sheet integration

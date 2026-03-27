@@ -1,4 +1,5 @@
 @page "/components/sortable"
+@inject IToastService Toast
 
 <PageTitle>Sortable - NeoUI</PageTitle>
 
@@ -16,8 +17,10 @@
                 <Sortable TItem="DemoItem"
                           Items="@_defaultItems"
                           OnItemsReordered="@(r => _defaultItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _defaultItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
                           GetItemId="@(i => i.Id)">
-                    <SortableContentPrimitive class="flex flex-col gap-2">
+                    <SortableContent>
                         @foreach (var item in _defaultItems)
                         {
                             <SortableItem Value="@item.Id">
@@ -25,8 +28,8 @@
                                 <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
                             </SortableItem>
                         }
-                    </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                    </SortableContent>
+                    <SortableOverlay />
                 </Sortable>
             </div>
         </DemoBlock>
@@ -40,8 +43,10 @@
                 <Sortable TItem="DemoItem"
                           Items="@_asHandleItems"
                           OnItemsReordered="@(r => _asHandleItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _asHandleItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
                           GetItemId="@(i => i.Id)">
-                    <SortableContentPrimitive class="flex flex-col gap-2">
+                    <SortableContent>
                         @foreach (var item in _asHandleItems)
                         {
                             <SortableItem Value="@item.Id" AsHandle>
@@ -49,8 +54,8 @@
                                 <span class="text-xs text-muted-foreground">drag me</span>
                             </SortableItem>
                         }
-                    </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                    </SortableContent>
+                    <SortableOverlay />
                 </Sortable>
             </div>
         </DemoBlock>
@@ -63,9 +68,11 @@
             <Sortable TItem="DemoItem"
                       Items="@_horizontalItems"
                       OnItemsReordered="@(r => _horizontalItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _horizontalItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
                       GetItemId="@(i => i.Id)"
                       Orientation="SortableOrientation.Horizontal">
-                <SortableContentPrimitive class="flex flex-row gap-3 flex-wrap">
+                <SortableContent Class="flex-row gap-3 flex-wrap">
                     @foreach (var item in _horizontalItems)
                     {
                         <SortableItem Value="@item.Id" AsHandle
@@ -73,8 +80,8 @@
                             @item.Name
                         </SortableItem>
                     }
-                </SortableContentPrimitive>
-                <SortableOverlayPrimitive class="rounded-lg border bg-card shadow-lg flex items-center justify-center text-sm font-medium" />
+                </SortableContent>
+                <SortableOverlay />
             </Sortable>
         </DemoBlock>
     </DemoSection>
@@ -87,8 +94,10 @@
                 <Sortable TItem="DemoItem"
                           Items="@_customHandleItems"
                           OnItemsReordered="@(r => _customHandleItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _customHandleItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
                           GetItemId="@(i => i.Id)">
-                    <SortableContentPrimitive class="flex flex-col gap-2">
+                    <SortableContent>
                         @foreach (var item in _customHandleItems)
                         {
                             <SortableItem Value="@item.Id">
@@ -98,8 +107,8 @@
                                 <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
                             </SortableItem>
                         }
-                    </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                    </SortableContent>
+                    <SortableOverlay />
                 </Sortable>
             </div>
         </DemoBlock>
@@ -113,8 +122,10 @@
                 <Sortable TItem="CardItem"
                           Items="@_dataViewListItems"
                           OnItemsReordered="@(r => _dataViewListItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _dataViewListItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
                           GetItemId="@(i => i.Id)">
-                    <SortableContentPrimitive class="block">
+                    <SortableContent Class="block">
                         <DataView Items="@_dataViewListItems" ItemKey="@(i => i.Id)"
                                   ShowToolbar="false" ShowPagination="false">
                             <ListTemplate Context="item">
@@ -125,8 +136,8 @@
                                 </SortableItem>
                             </ListTemplate>
                         </DataView>
-                    </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                    </SortableContent>
+                    <SortableOverlay />
                 </Sortable>
             </div>
         </DemoBlock>
@@ -139,10 +150,14 @@
             <Sortable TItem="CardItem"
                       Items="@_dataViewGridItems"
                       OnItemsReordered="@(r => _dataViewGridItems = r)"
-                      GetItemId="@(i => i.Id)">
-                <SortableContentPrimitive class="block">
+                      OnDragEnd="@(e => ShowDragEndToast(e, _dataViewGridItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
+                      GetItemId="@(i => i.Id)"
+                      Orientation="@(_dataViewGridLayout == DataViewLayout.Grid ? SortableOrientation.Grid : SortableOrientation.Vertical)">
+                <SortableContent Class="block">
                     <DataView Items="@_dataViewGridItems" ItemKey="@(i => i.Id)"
-                              ShowToolbar="false" ShowPagination="false">
+                              Layout="DataViewLayout.Grid" ShowPagination="false"
+                              LayoutChanged="@(l => _dataViewGridLayout = l)">
                         <ListTemplate Context="item">
                             <SortableItem Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
                                 <SortableItemHandle />
@@ -158,8 +173,8 @@
                             </SortableItem>
                         </GridTemplate>
                     </DataView>
-                </SortableContentPrimitive>
-                <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                </SortableContent>
+                <SortableOverlay />
             </Sortable>
         </DemoBlock>
     </DemoSection>
@@ -171,8 +186,10 @@
             <Sortable TItem="TaskItem"
                       Items="@_tableItems"
                       OnItemsReordered="@(r => _tableItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _tableItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
                       GetItemId="@(i => i.Id)">
-                <SortableContentPrimitive class="block">
+                <SortableContent Class="block">
                     <DataTable TData="TaskItem"
                                Data="@_tableItems"
                                GetRowSortableId="@(i => i.Id)"
@@ -192,8 +209,8 @@
                             </DataTableColumn>
                         </Columns>
                     </DataTable>
-                </SortableContentPrimitive>
-                <SortableOverlayPrimitive class="rounded border bg-card px-4 py-2 shadow-lg opacity-90 text-sm" />
+                </SortableContent>
+                <SortableOverlay Class="rounded" />
             </Sortable>
         </DemoBlock>
     </DemoSection>
@@ -206,6 +223,8 @@
                 <SortablePrimitive TItem="DemoItem"
                                    Items="@_primitiveItems"
                                    OnItemsReordered="@(r => _primitiveItems = r)"
+                                   OnDragEnd="@(e => ShowDragEndToast(e, _primitiveItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                                   OnDragCancel="@ShowDragCancelToast"
                                    GetItemId="@(i => i.Id)">
                     <SortableContentPrimitive class="flex flex-col gap-2">
                         @foreach (var item in _primitiveItems)
@@ -217,19 +236,31 @@
                             </SortableItemPrimitive>
                         }
                     </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                    <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
                 </SortablePrimitive>
             </div>
         </DemoBlock>
     </DemoSection>
 
     @* ── API Reference ───────────────────────────────────────── *@
-    <DemoSection Title="API Reference">
-        <div class="space-y-6">
-            <PropsTable Title="Sortable&lt;TItem&gt;" Rows="@_sortableProps" />
-            <PropsTable Title="SortableItem" Rows="@_itemProps" />
-            <PropsTable Title="SortableItemHandle" Rows="@_handleProps" />
-        </div>
+    <DemoSection Title="Sortable&lt;TItem&gt; API Reference" Description="Parameters for the Sortable component.">
+        <DemoPropsTable Rows="@_sortableProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableContent API Reference" Description="Parameters for the SortableContent component.">
+        <DemoPropsTable Rows="@_contentProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItem API Reference" Description="Parameters for the SortableItem component.">
+        <DemoPropsTable Rows="@_itemProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItemHandle API Reference" Description="Parameters for the SortableItemHandle component.">
+        <DemoPropsTable Rows="@_handleProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableOverlay API Reference" Description="Parameters for the SortableOverlay component.">
+        <DemoPropsTable Rows="@_overlayProps" />
     </DemoSection>
 
     <DemoPageNav />
@@ -302,6 +333,8 @@
         new("g6", "Reports",       "Data"),
     ];
 
+    private DataViewLayout _dataViewGridLayout = DataViewLayout.Grid;
+
     private IList<TaskItem> _tableItems =
     [
         new("t1", "Design wireframes",  "To Do"),
@@ -310,4 +343,24 @@
         new("t4", "Code review",        "In Progress"),
         new("t5", "Deploy to staging",  "Done"),
     ];
+
+    // ── Toast helpers ────────────────────────────────────────────────
+
+    private void ShowDragEndToast(SortableDragEndArgs args, string? itemName)
+    {
+        if (args.Moved)
+        {
+            var name = string.IsNullOrWhiteSpace(itemName) ? args.ActiveId : $"\"{itemName}\"";
+            Toast.Success(
+                "Item reordered",
+                $"{name} moved from position {args.FromIndex + 1} to {args.ToIndex + 1}.");
+        }
+        else
+        {
+            Toast.Show("No change", "Item was dropped back on its original position.");
+        }
+    }
+
+    private void ShowDragCancelToast() =>
+        Toast.Show("Drag cancelled", "Item returned to its original position.");
 }

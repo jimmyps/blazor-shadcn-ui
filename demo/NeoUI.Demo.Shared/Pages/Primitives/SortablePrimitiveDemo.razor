@@ -27,7 +27,7 @@
                             </SortableItemPrimitive>
                         }
                     </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                    <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
                 </SortablePrimitive>
             </div>
         </DemoBlock>
@@ -52,7 +52,7 @@
                             </SortableItemPrimitive>
                         }
                     </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="rounded-lg border bg-primary/10 px-4 py-3 shadow-lg" />
+                    <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
                 </SortablePrimitive>
             </div>
         </DemoBlock>
@@ -76,7 +76,7 @@
                         </SortableItemPrimitive>
                     }
                 </SortableContentPrimitive>
-                <SortableOverlayPrimitive class="rounded-lg border bg-primary/10 shadow-lg flex items-center justify-center text-sm font-medium" />
+                <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
             </SortablePrimitive>
         </DemoBlock>
     </DemoSection>
@@ -145,7 +145,7 @@
                                 </SortableItemPrimitive>
                             }
                         </SortableContentPrimitive>
-                        <SortableOverlayPrimitive class="rounded-lg border bg-card px-4 py-3 shadow-lg" />
+                        <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
                     </SortablePrimitive>
                 </div>
             </div>
@@ -153,14 +153,24 @@
     </DemoSection>
 
     @* ── API Reference ────────────────────────────────────────── *@
-    <DemoSection Title="API Reference">
-        <div class="space-y-6">
-            <PropsTable Title="SortablePrimitive&lt;TItem&gt;" Rows="@_sortableProps" />
-            <PropsTable Title="SortableContentPrimitive" Rows="@_contentProps" />
-            <PropsTable Title="SortableItemPrimitive" Rows="@_itemProps" />
-            <PropsTable Title="SortableItemHandlePrimitive" Rows="@_handleProps" />
-            <PropsTable Title="SortableOverlayPrimitive" Rows="@_overlayProps" />
-        </div>
+    <DemoSection Title="SortablePrimitive&lt;TItem&gt; API Reference" Description="Parameters for the SortablePrimitive component.">
+        <DemoPropsTable Rows="@_sortableProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableContentPrimitive API Reference" Description="Parameters for the SortableContentPrimitive component.">
+        <DemoPropsTable Rows="@_contentProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItemPrimitive API Reference" Description="Parameters for the SortableItemPrimitive component.">
+        <DemoPropsTable Rows="@_itemProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItemHandlePrimitive API Reference" Description="Parameters for the SortableItemHandlePrimitive component.">
+        <DemoPropsTable Rows="@_handleProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableOverlayPrimitive API Reference" Description="Parameters for the SortableOverlayPrimitive component.">
+        <DemoPropsTable Rows="@_overlayProps" />
     </DemoSection>
 
     <DemoPageNav />

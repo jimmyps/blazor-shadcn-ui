@@ -75,6 +75,25 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     public EventCallback<IList<TItem>> OnItemsReordered { get; set; }
 
     /// <summary>
+    /// Gets or sets the callback invoked when a drag operation starts.
+    /// The argument is the dragged item's identifier.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnDragStart { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when a drag operation ends (whether or not the item moved).
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableDragEndArgs> OnDragEnd { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked when a drag operation is cancelled (e.g. Escape key).
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDragCancel { get; set; }
+
+    /// <summary>
     /// Gets or sets a function that extracts a unique string identifier from an item.
     /// </summary>
     [Parameter, EditorRequired]
@@ -128,7 +147,12 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     private Task HandleDragStartAsync(string activeId)
     {
         _context.ActiveId = activeId;
-        return InvokeAsync(StateHasChanged);
+        return InvokeAsync(async () =>
+        {
+            if (OnDragStart.HasDelegate)
+                await OnDragStart.InvokeAsync(activeId);
+            StateHasChanged();
+        });
     }
 
     /// <summary>Invoked by JS when a drag operation ends with a valid drop target.</summary>
@@ -136,27 +160,36 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     {
         _context.ActiveId = null;
 
-        if (activeId != overId && Items.Count > 0)
+        var fromIndex = Items.ToList().FindIndex(i => GetItemId(i) == activeId);
+        var toIndex   = Items.ToList().FindIndex(i => GetItemId(i) == overId);
+        var moved     = activeId != overId && fromIndex >= 0 && toIndex >= 0 && fromIndex != toIndex;
+
+        await InvokeAsync(async () =>
         {
-            var reordered = Reorder(Items, activeId, overId);
-            await InvokeAsync(async () =>
+            if (moved)
             {
+                var reordered = Reorder(Items, activeId, overId);
                 if (OnItemsReordered.HasDelegate)
                     await OnItemsReordered.InvokeAsync(reordered);
-                StateHasChanged();
-            });
-        }
-        else
-        {
-            await InvokeAsync(StateHasChanged);
-        }
+            }
+
+            if (OnDragEnd.HasDelegate)
+                await OnDragEnd.InvokeAsync(new SortableDragEndArgs(activeId, overId, fromIndex, toIndex, moved));
+
+            StateHasChanged();
+        });
     }
 
     /// <summary>Invoked by JS when a drag operation is cancelled.</summary>
     private Task HandleDragCancelAsync()
     {
         _context.ActiveId = null;
-        return InvokeAsync(StateHasChanged);
+        return InvokeAsync(async () =>
+        {
+            if (OnDragCancel.HasDelegate)
+                await OnDragCancel.InvokeAsync();
+            StateHasChanged();
+        });
     }
 
     // ── Helpers ───────────────────────────────────────────────────────
