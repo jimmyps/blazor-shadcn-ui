@@ -412,7 +412,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
                           Items="@_sortableRows"
                           OnItemsReordered="@(r => _sortableRows = r)"
                           GetItemId="@(t => t.Id)">
-                    <SortableContentPrimitive class="block">
+                    <SortableContent Class="block">
                         <DataTable TData="SortableTask"
                                    Data="@_sortableRows"
                                    AdditionalRowAttributes="@(t => new Dictionary<string, object> { ["data-sortable-id"] = t.Id })"
@@ -435,8 +435,8 @@ namespace NeoUI.Demo.Shared.Pages.Components
                                 </DataTableColumn>
                             </Columns>
                         </DataTable>
-                    </SortableContentPrimitive>
-                    <SortableOverlayPrimitive class="grid grid-cols-4 rounded border bg-card px-3 py-2.5 shadow-lg opacity-90 text-sm" />
+                    </SortableContent>
+                    <SortableOverlay Class="rounded opacity-80" />
                 </Sortable>
                 """;
     }

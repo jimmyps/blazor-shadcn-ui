@@ -398,6 +398,42 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Sortable Row Reorder"
+        Description="Use AdditionalRowAttributes to attach data-sortable-id to each table row. Wrap the DataTable in a Sortable root and SortableContent, then add a drag handle column via CellTemplate.">
+        <DemoBlock Code="@_sortableRowsCode">
+            <Sortable TItem="SortableTask"
+                      Items="@_sortableRows"
+                      OnItemsReordered="@(r => _sortableRows = r)"
+                      GetItemId="@(t => t.Id)">
+                <SortableContent Class="block">
+                    <DataTable TData="SortableTask"
+                               Data="@_sortableRows"
+                               AdditionalRowAttributes="@(t => new Dictionary<string, object> { ["data-sortable-id"] = t.Id })"
+                               ShowPagination="false"
+                               ShowToolbar="false">
+                        <Columns>
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Id)" Header="" Width="44px">
+                                <CellTemplate Context="row">
+                                    <SortableItemHandle Class="mx-auto" />
+                                </CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Name)" Header="Task" Sortable />
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Assignee)" Header="Assignee" />
+                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Status)" Header="Status">
+                                <CellTemplate Context="row">
+                                    <Badge Variant="@(row.Status == "Done" ? BadgeVariant.Default : row.Status == "In Progress" ? BadgeVariant.Secondary : BadgeVariant.Outline)">
+                                        @row.Status
+                                    </Badge>
+                                </CellTemplate>
+                            </DataTableColumn>
+                        </Columns>
+                    </DataTable>
+                </SortableContent>
+                <SortableOverlay Class="rounded opacity-80" />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
 
     <DemoSection
         Title="Global Search &amp; Column Visibility"
@@ -487,43 +523,6 @@
                     <DataTableColumn TData="Person" TValue="string" Property="@(p => p.Role)" Header="Role" />
                 </Columns>
             </DataTable>
-        </DemoBlock>
-    </DemoSection>
-
-    <DemoSection
-        Title="Sortable Row Reorder"
-        Description="Use AdditionalRowAttributes to attach data-sortable-id to each table row. Wrap the DataTable in a Sortable root and SortableContentPrimitive, then add a drag handle column via CellTemplate.">
-        <DemoBlock Code="@_sortableRowsCode">
-            <Sortable TItem="SortableTask"
-                      Items="@_sortableRows"
-                      OnItemsReordered="@(r => _sortableRows = r)"
-                      GetItemId="@(t => t.Id)">
-                <SortableContentPrimitive class="block">
-                    <DataTable TData="SortableTask"
-                               Data="@_sortableRows"
-                               AdditionalRowAttributes="@(t => new Dictionary<string, object> { ["data-sortable-id"] = t.Id })"
-                               ShowPagination="false"
-                               ShowToolbar="false">
-                        <Columns>
-                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Id)" Header="" Width="44px">
-                                <CellTemplate Context="row">
-                                    <SortableItemHandle Class="mx-auto" />
-                                </CellTemplate>
-                            </DataTableColumn>
-                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Name)" Header="Task" Sortable />
-                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Assignee)" Header="Assignee" />
-                            <DataTableColumn TData="SortableTask" TValue="string" Property="@(t => t.Status)" Header="Status">
-                                <CellTemplate Context="row">
-                                    <Badge Variant="@(row.Status == "Done" ? BadgeVariant.Default : row.Status == "In Progress" ? BadgeVariant.Secondary : BadgeVariant.Outline)">
-                                        @row.Status
-                                    </Badge>
-                                </CellTemplate>
-                            </DataTableColumn>
-                        </Columns>
-                    </DataTable>
-                </SortableContentPrimitive>
-                <SortableOverlayPrimitive class="grid grid-cols-4 rounded border bg-card px-3 py-2.5 shadow-lg opacity-90 text-sm" />
-            </Sortable>
         </DemoBlock>
     </DemoSection>
 

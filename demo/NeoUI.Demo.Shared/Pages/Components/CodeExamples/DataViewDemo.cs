@@ -360,13 +360,13 @@ partial class DataViewDemo
 
         public const string SortableList =
             """
-            @* Wrap DataView in Sortable + SortableContentPrimitive.
+            @* Wrap DataView in Sortable + SortableContent.
                SortableItem renders inside the ListTemplate — DataView itself is unchanged. *@
             <Sortable TItem="ProductRow"
                       Items="@_sortableProducts"
                       OnItemsReordered="@(r => _sortableProducts = r)"
                       GetItemId="@(p => p.Id.ToString())">
-                <SortableContentPrimitive class="block">
+                <SortableContent Class="block">
                     <DataView Items="@_sortableProducts" ItemKey="@(p => p.Id)"
                               ShowToolbar="false" ShowPagination="false">
                         <ListTemplate Context="p">
@@ -383,8 +383,8 @@ partial class DataViewDemo
                             </SortableItem>
                         </ListTemplate>
                     </DataView>
-                </SortableContentPrimitive>
-                <SortableOverlayPrimitive class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-lg opacity-90" />
+                </SortableContent>
+                <SortableOverlay />
             </Sortable>
             """;
     }
