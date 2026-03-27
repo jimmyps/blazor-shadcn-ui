@@ -139,8 +139,8 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private const string _dataTableCode =
             """
-            @* GetRowSortableId adds data-sortable-id to each <tr>.
-               A CellTemplate in the first column renders the drag handle. *@
+            @* AdditionalRowAttributes attaches arbitrary HTML attributes to each body <tr>.
+               Here we supply data-sortable-id to enable drag-and-drop row reordering. *@
             <Sortable TItem="TaskItem"
                       Items="@items"
                       OnItemsReordered="@(r => items = r)"
@@ -148,7 +148,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 <SortableContent Class="block">
                     <DataTable TData="TaskItem"
                                Data="@items"
-                               GetRowSortableId="@(i => i.Id)"
+                               AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
                                ShowPagination="false"
                                ShowToolbar="false">
                         <Columns>
