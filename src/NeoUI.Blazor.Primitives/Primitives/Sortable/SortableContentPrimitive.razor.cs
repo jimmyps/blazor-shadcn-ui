@@ -39,6 +39,8 @@ public partial class SortableContentPrimitive : ComponentBase, IAsyncDisposable
             _jsModule = await JS.InvokeAsync<IJSObjectReference>(
                 "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/sortable.js");
 
+            Context.JsModule = _jsModule;
+
             await _jsModule.InvokeVoidAsync(
                 "init",
                 _containerRef,

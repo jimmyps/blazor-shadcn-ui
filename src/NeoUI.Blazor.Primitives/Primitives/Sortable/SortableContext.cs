@@ -1,3 +1,5 @@
+using Microsoft.JSInterop;
+
 namespace NeoUI.Blazor.Primitives;
 
 /// <summary>
@@ -31,6 +33,12 @@ public sealed class SortableContext
     /// Set by <see cref="SortablePrimitive{TItem}"/>; consumed by <see cref="SortableContentPrimitive"/>.
     /// </summary>
     internal object? DotNetRef { get; set; }
+
+    /// <summary>
+    /// The JS module reference, set by <see cref="SortableContentPrimitive"/> after init.
+    /// Used by <see cref="SortablePrimitive{TItem}"/> for post-render JS calls.
+    /// </summary>
+    internal IJSObjectReference? JsModule { get; set; }
 
     /// <summary>
     /// Callback invoked by <see cref="SortablePrimitive{TItem}"/> so child components can trigger

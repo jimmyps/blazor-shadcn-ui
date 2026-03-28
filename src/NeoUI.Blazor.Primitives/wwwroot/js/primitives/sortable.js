@@ -296,26 +296,78 @@ function moveDrag(state, x, y, orientation) {
 }
 
 /**
- * Ends a drag: calls OnDragEnd(activeId, overId) and resets all visual state.
+ * Freezes the container's current visual state as a fixed-position clone,
+ * then hides the real container. This lets Blazor re-render underneath
+ * without any visible flash. Call snapshot.remove() once Blazor has settled.
+ */
+function freezeSnapshot(container) {
+    const rect  = container.getBoundingClientRect();
+    const clone = container.cloneNode(true);
+    clone.style.cssText = `
+        position: fixed;
+        top: ${rect.top}px;
+        left: ${rect.left}px;
+        width: ${rect.width}px;
+        height: ${rect.height}px;
+        z-index: 9999;
+        pointer-events: none;
+        margin: 0;
+        overflow: hidden;
+    `;
+    document.body.appendChild(clone);
+    container.style.visibility = 'hidden';
+    return {
+        remove() {
+            clone.remove();
+            container.style.visibility = '';
+        }
+    };
+}
+
+/**
+ * Ends a drag: positions the active item at the overlay's location via
+ * transform (no DOM order change), snapshots the correct settled visual state,
+ * then resets everything under the snapshot while Blazor re-renders.
+ *
+ * Why transforms-only (no DOM mutation):
+ *  - commitDomOrder confuses Blazor's internal component-tree tracking
+ *  - The displaced items already have the correct visual positions
+ *  - We only need to move the active item to match the overlay
+ *  - Snapshot covers the Blazor re-render gap; removed once DOM is patched
  */
 function endDrag(state, x, y) {
     if (!state.isDragging) { resetDrag(state); return; }
-    // Use overlay centre + snapshot positions (same as applyItemTransforms)
-    // so the final committed position matches the last visual state.
     state.currentX = x;
     state.currentY = y;
-    const overId = computeOverId(state) ?? state.activeId;
+    const overId   = computeOverId(state) ?? state.activeId;
+    const activeId = state.activeId; // save before resetDrag nulls it
+    const moved    = overId !== activeId;
 
-    // Hide all items instantly so the Blazor re-render (10-20ms on Server) is
-    // invisible. C# will call restoreItems() from OnAfterRenderAsync to fade back in.
-    getItems(state.containerEl).forEach(item => {
-        item.style.transition = 'none';
-        item.style.opacity    = '0';
-    });
-    state.itemsFaded = true;
+    let snapshot = null;
+    if (moved && state.activeEl) {
+        const overlay     = getOverlay(state.instanceId);
+        const overlayRect = overlay?.getBoundingClientRect();
+        const activeRect  = state.activeEl.getBoundingClientRect();
 
-    state.dotNetRef.invokeMethodAsync('OnDragEnd', state.activeId, overId).catch(() => {});
+        if (overlayRect) {
+            state.activeEl.style.opacity    = '1';
+            state.activeEl.removeAttribute('data-dragging');
+        }
+
+        // Hide overlay before snapshotting so it doesn't float above the clone.
+        if (overlay) overlay.style.display = 'none';
+
+        // Snapshot: container now shows active item at new position + displaced
+        // items = the correct settled visual state, with zero DOM manipulation.
+        snapshot = freezeSnapshot(state.containerEl);
+    }
+
+    // Clean up all drag state under the snapshot (invisible to the user).
     resetDrag(state);
+
+    state.dotNetRef.invokeMethodAsync('OnDragEnd', activeId, overId)
+        .then(() => { snapshot?.remove(); })
+        .catch(() => { snapshot?.remove(); });
 }
 
 /**
@@ -604,31 +656,7 @@ export function init(containerEl, dotNetRef, instanceId, orientation) {
 
     state.handlers = { ...pointer, ...keyboard };
     state.overlayCloned = false;
-    state.itemsFaded    = false;
     instances.set(instanceId, state);
-}
-
-/**
- * Fades all sortable items back in after a Blazor re-render.
- * Called by C# from OnAfterRenderAsync once the DOM has been patched.
- * Queries items fresh so we target the post-render DOM, not stale references.
- *
- * @param {string} instanceId - The instance identifier passed to init()
- */
-export function restoreItems(instanceId) {
-    const state = instances.get(instanceId);
-    if (!state?.itemsFaded || !state.containerEl) return;
-    state.itemsFaded = false;
-    getItems(state.containerEl).forEach(item => {
-        item.style.transition = 'opacity 150ms ease';
-        item.style.opacity    = '1';
-    });
-    setTimeout(() => {
-        getItems(state.containerEl).forEach(item => {
-            item.style.transition = '';
-            item.style.opacity    = '';
-        });
-    }, 200);
 }
 
 /**
