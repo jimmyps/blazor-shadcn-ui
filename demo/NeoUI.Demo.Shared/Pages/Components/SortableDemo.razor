@@ -181,18 +181,19 @@
 
     @* ── Composability with DataTable ────────────────────────── *@
     <DemoSection Title="Composability with DataTable"
-                 Description="Use AdditionalRowAttributes on DataTable to supply data-sortable-id to each row. Wrap the table in a SortableContent and add a drag handle column via CellTemplate.">
+                 Description="Add Context to Sortable to receive a typed SortableScope. Pass s.RowAttributes directly to any grid, table, or list — no knowledge of internal attribute names needed.">
         <DemoBlock Code="@_dataTableCode">
             <Sortable TItem="TaskItem"
                       Items="@_tableItems"
                       OnItemsReordered="@(r => _tableItems = r)"
                       OnDragEnd="@(e => ShowDragEndToast(e, _tableItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
                       OnDragCancel="@ShowDragCancelToast"
-                      GetItemId="@(i => i.Id)">
+                      GetItemId="@(i => i.Id)"
+                      Context="s">
                 <SortableContent Class="block">
                     <DataTable TData="TaskItem"
                                Data="@_tableItems"
-                               AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
+                               AdditionalRowAttributes="@s.RowAttributes"
                                ShowPagination="false"
                                ShowToolbar="false">
                         <Columns>

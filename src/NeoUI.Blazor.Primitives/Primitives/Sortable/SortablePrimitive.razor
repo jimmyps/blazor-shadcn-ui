@@ -3,6 +3,6 @@
 
 <CascadingValue Value="@_context" IsFixed="true">
     <div @attributes="AdditionalAttributes">
-        @ChildContent
+        @ChildContent?(_scope)
     </div>
 </CascadingValue>
