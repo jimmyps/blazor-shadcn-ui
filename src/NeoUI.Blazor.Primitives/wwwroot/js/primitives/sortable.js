@@ -305,6 +305,15 @@ function endDrag(state, x, y) {
     state.currentX = x;
     state.currentY = y;
     const overId = computeOverId(state) ?? state.activeId;
+
+    // Hide all items instantly so the Blazor re-render (10-20ms on Server) is
+    // invisible. C# will call restoreItems() from OnAfterRenderAsync to fade back in.
+    getItems(state.containerEl).forEach(item => {
+        item.style.transition = 'none';
+        item.style.opacity    = '0';
+    });
+    state.itemsFaded = true;
+
     state.dotNetRef.invokeMethodAsync('OnDragEnd', state.activeId, overId).catch(() => {});
     resetDrag(state);
 }
@@ -595,7 +604,31 @@ export function init(containerEl, dotNetRef, instanceId, orientation) {
 
     state.handlers = { ...pointer, ...keyboard };
     state.overlayCloned = false;
+    state.itemsFaded    = false;
     instances.set(instanceId, state);
+}
+
+/**
+ * Fades all sortable items back in after a Blazor re-render.
+ * Called by C# from OnAfterRenderAsync once the DOM has been patched.
+ * Queries items fresh so we target the post-render DOM, not stale references.
+ *
+ * @param {string} instanceId - The instance identifier passed to init()
+ */
+export function restoreItems(instanceId) {
+    const state = instances.get(instanceId);
+    if (!state?.itemsFaded || !state.containerEl) return;
+    state.itemsFaded = false;
+    getItems(state.containerEl).forEach(item => {
+        item.style.transition = 'opacity 150ms ease';
+        item.style.opacity    = '1';
+    });
+    setTimeout(() => {
+        getItems(state.containerEl).forEach(item => {
+            item.style.transition = '';
+            item.style.opacity    = '';
+        });
+    }, 200);
 }
 
 /**

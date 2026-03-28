@@ -59,6 +59,9 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     private DotNetObjectReference<SortableJsCallbackTarget>? _dotNetRef;
     private SortableScope<TItem> _scope = default!;
     private bool _disposed;
+    private bool _pendingRestoreItems;
+
+    [Inject] private IJSRuntime JS { get; set; } = default!;
 
     // ── Parameters ────────────────────────────────────────────────────
 
@@ -182,6 +185,7 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
             if (OnDragEnd.HasDelegate)
                 await OnDragEnd.InvokeAsync(new SortableDragEndArgs(activeId, overId, fromIndex, toIndex, moved));
 
+            _pendingRestoreItems = true;
             StateHasChanged();
         });
     }
@@ -199,6 +203,16 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     }
 
     // ── Helpers ───────────────────────────────────────────────────────
+
+    /// <inheritdoc />
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_pendingRestoreItems)
+        {
+            _pendingRestoreItems = false;
+            await JS.InvokeVoidAsync("neoui.sortable.restoreItems", _instanceId);
+        }
+    }
 
     private IList<TItem> Reorder(IList<TItem> source, string activeId, string overId)
     {
