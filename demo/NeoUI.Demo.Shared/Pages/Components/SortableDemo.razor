@@ -23,7 +23,7 @@
                     <SortableContent>
                         @foreach (var item in _defaultItems)
                         {
-                            <SortableItem Value="@item.Id">
+                            <SortableItem @key="@item.Id" Value="@item.Id">
                                 <SortableItemHandle />
                                 <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
                             </SortableItem>
@@ -75,7 +75,7 @@
                 <SortableContent Class="flex-row gap-3 flex-wrap">
                     @foreach (var item in _horizontalItems)
                     {
-                        <SortableItem Value="@item.Id" AsHandle
+                        <SortableItem @key="@item.Id" Value="@item.Id" AsHandle
                                       Class="w-24 h-24 justify-center font-medium text-sm">
                             @item.Name
                         </SortableItem>
@@ -100,7 +100,7 @@
                     <SortableContent>
                         @foreach (var item in _customHandleItems)
                         {
-                            <SortableItem Value="@item.Id">
+                            <SortableItem @key="@item.Id" Value="@item.Id">
                                 <SortableItemHandle>
                                     <LucideIcon Name="grip-horizontal" Size="16" />
                                 </SortableItemHandle>
@@ -129,7 +129,7 @@
                         <DataView Items="@_dataViewListItems" ItemKey="@(i => i.Id)"
                                   ShowToolbar="false" ShowPagination="false">
                             <ListTemplate Context="item">
-                                <SortableItem Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                <SortableItem @key="@item.Id" Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
                                     <SortableItemHandle />
                                     <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
                                     <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
@@ -159,14 +159,14 @@
                               Layout="DataViewLayout.Grid" ShowPagination="false"
                               LayoutChanged="@(l => _dataViewGridLayout = l)">
                         <ListTemplate Context="item">
-                            <SortableItem Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                            <SortableItem @key="@item.Id" Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
                                 <SortableItemHandle />
                                 <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
                                 <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
                             </SortableItem>
                         </ListTemplate>
                         <GridTemplate Context="item">
-                            <SortableItem Value="@item.Id" AsHandle
+                            <SortableItem @key="@item.Id" Value="@item.Id" AsHandle
                                           Class="flex-col items-start gap-1 h-28 rounded-lg shadow-sm">
                                 <p class="text-sm font-semibold leading-tight">@item.Name</p>
                                 <Badge Variant="BadgeVariant.Secondary" Class="text-xs mt-auto">@item.Tag</Badge>
@@ -181,18 +181,20 @@
 
     @* ── Composability with DataTable ────────────────────────── *@
     <DemoSection Title="Composability with DataTable"
-                 Description="Use AdditionalRowAttributes on DataTable to supply data-sortable-id to each row. Wrap the table in a SortableContent and add a drag handle column via CellTemplate.">
+                 Description="Add Context to Sortable to receive a typed SortableScope. Pass s.RowAttributes directly to any grid, table, or list — no knowledge of internal attribute names needed.">
         <DemoBlock Code="@_dataTableCode">
             <Sortable TItem="TaskItem"
                       Items="@_tableItems"
                       OnItemsReordered="@(r => _tableItems = r)"
                       OnDragEnd="@(e => ShowDragEndToast(e, _tableItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
                       OnDragCancel="@ShowDragCancelToast"
-                      GetItemId="@(i => i.Id)">
+                      GetItemId="@(i => i.Id)"
+                      Context="s">
                 <SortableContent Class="block">
                     <DataTable TData="TaskItem"
                                Data="@_tableItems"
-                               AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
+                               AdditionalRowAttributes="@s.RowAttributes"
+                               BodyRowClass="hover:bg-transparent"
                                ShowPagination="false"
                                ShowToolbar="false">
                         <Columns>
@@ -229,7 +231,7 @@
                     <SortableContentPrimitive class="flex flex-col gap-2">
                         @foreach (var item in _primitiveItems)
                         {
-                            <SortableItemPrimitive Value="@item.Id"
+                            <SortableItemPrimitive @key="@item.Id" Value="@item.Id"
                                                    class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
                                 <SortableItemHandlePrimitive class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" />
                                 <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
@@ -281,10 +283,10 @@
 
     private IList<DemoItem> _asHandleItems =
     [
-        new("a", "Alpha"),
-        new("b", "Beta"),
-        new("c", "Gamma"),
-        new("d", "Delta"),
+        new("1a", "Alpha"),
+        new("2a", "Beta"),
+        new("3a", "Gamma"),
+        new("4a", "Delta"),
     ];
 
     private IList<DemoItem> _horizontalItems =

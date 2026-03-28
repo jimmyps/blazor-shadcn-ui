@@ -139,16 +139,17 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private const string _dataTableCode =
             """
-            @* AdditionalRowAttributes attaches arbitrary HTML attributes to each body <tr>.
-               Here we supply data-sortable-id to enable drag-and-drop row reordering. *@
+            @* Add Context="s" to receive a typed SortableScope<TItem>.
+               Pass s.RowAttributes to any grid, table, or list — no internal attribute names needed. *@
             <Sortable TItem="TaskItem"
                       Items="@items"
                       OnItemsReordered="@(r => items = r)"
-                      GetItemId="@(i => i.Id)">
+                      GetItemId="@(i => i.Id)"
+                      Context="s">
                 <SortableContent Class="block">
                     <DataTable TData="TaskItem"
                                Data="@items"
-                               AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
+                               AdditionalRowAttributes="@s.RowAttributes"
                                ShowPagination="false"
                                ShowToolbar="false">
                         <Columns>

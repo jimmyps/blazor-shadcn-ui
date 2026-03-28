@@ -57,6 +57,7 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     private readonly SortableContext _context = new();
     private readonly string _instanceId = Guid.NewGuid().ToString("N")[..8];
     private DotNetObjectReference<SortableJsCallbackTarget>? _dotNetRef;
+    private SortableScope<TItem> _scope = default!;
     private bool _disposed;
 
     // ── Parameters ────────────────────────────────────────────────────
@@ -107,9 +108,11 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
 
     /// <summary>
     /// Gets or sets the child content rendered inside this component.
+    /// When a <c>Context</c> parameter is supplied the child fragment receives a
+    /// <see cref="SortableScope{TItem}"/> with helpers such as <see cref="SortableScope{TItem}.RowAttributes"/>.
     /// </summary>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    public RenderFragment<SortableScope<TItem>>? ChildContent { get; set; }
 
     /// <summary>
     /// Gets or sets additional HTML attributes applied to the root wrapper element.
@@ -133,12 +136,15 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
         _context.Orientation = Orientation;
         _context.DotNetRef = _dotNetRef;
         _context.NotifyStateChanged = () => InvokeAsync(StateHasChanged);
+
+        _scope = new SortableScope<TItem>(GetItemId, _context);
     }
 
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
         _context.Orientation = Orientation;
+        _scope = new SortableScope<TItem>(GetItemId, _context);
     }
 
     // ── JS Callbacks ─────────────────────────────────────────────────

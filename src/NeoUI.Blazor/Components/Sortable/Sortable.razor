@@ -13,10 +13,9 @@
                    OnDragCancel="@OnDragCancel"
                    GetItemId="@GetItemId"
                    Orientation="@Orientation"
+                   ChildContent="@ChildContent"
                    class="@Class"
-                   @attributes="AdditionalAttributes">
-    @ChildContent
-</SortablePrimitive>
+                   @attributes="AdditionalAttributes" />
 
 @code {
     /// <summary>
@@ -63,9 +62,11 @@
 
     /// <summary>
     /// Child content: SortableContentPrimitive, SortableOverlayPrimitive, etc.
+    /// Add <c>Context="s"</c> to receive a <see cref="SortableScope{TItem}"/> with helpers
+    /// such as <c>s.RowAttributes</c> for wiring any grid, table, or list component.
     /// </summary>
     [Parameter]
-    public RenderFragment? ChildContent { get; set; }
+    public RenderFragment<SortableScope<TItem>>? ChildContent { get; set; }
 
     /// <summary>
     /// Additional CSS classes appended to the root element.
