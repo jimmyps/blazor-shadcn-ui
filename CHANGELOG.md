@@ -2,55 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-28 — Sortable composability: `SortableScope<TItem>`
-
-> **Release: `v3.8.1`**  
-> **Enhancement.** Adds `SortableScope<TItem>` and a typed `ChildContent` context to `Sortable` and `SortablePrimitive`. No breaking changes — existing consumers require no updates.
-
----
-
-**The problem it solves**
-
-Wiring `Sortable` with `DataTable` (or any grid/list) previously required consumers to know about `data-sortable-id` — an internal JS contract — and duplicate the `GetItemId` delegate:
-
-```razor
-@* Before: consumer must know the internal attribute name *@
-<Sortable TItem="TaskItem" Items="@_items" GetItemId="@(i => i.Id)">
-    <SortableContent Class="block">
-        <DataTable AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })" ...>
-```
-
-Now, add `Context="s"` to `<Sortable>` (or `<SortablePrimitive>`) and use `s.RowAttributes` — works with any downstream component, forever:
-
-```razor
-@* After: composable, no internal details exposed *@
-<Sortable TItem="TaskItem" Items="@_items" GetItemId="@(i => i.Id)" Context="s">
-    <SortableContent Class="block">
-        <DataTable AdditionalRowAttributes="@s.RowAttributes" ...>
-        @* or any other grid/list/table component *@
-        <MyCustomGrid RowAttrs="@s.RowAttributes" ...>
-```
-
-Existing consumers that don't use `Context=` compile and behave identically.
-
----
-
-### ✨ New — `SortableScope<TItem>`
-
-Typed context object exposed via the `Context` parameter on `<Sortable>` and `<SortablePrimitive>`. Follows the standard Blazor composability pattern (e.g. `EditForm Context="ctx"`, `QuickGrid Context="item"`).
-
-| Member | Type | Description |
-|--------|------|-------------|
-| `RowAttributes` | `Func<TItem, Dictionary<string, object>>` | Pre-built delegate that stamps `data-sortable-id` on each row/item. Pass directly to `AdditionalRowAttributes` or any equivalent parameter on any grid, list, or table component. |
-| `ActiveId` | `string?` | Identifier of the item currently being dragged, or `null` when idle. |
-| `IsDragging` | `bool` | `true` while a drag operation is in progress. |
-| `IsItemDragging(TItem)` | `bool` | Returns `true` when the given item is the one being dragged. |
-
-### 🔧 Enhancement — `SortablePrimitive<TItem>` / `Sortable<TItem>`
-
-`ChildContent` changed from `RenderFragment?` to `RenderFragment<SortableScope<TItem>>?`. Fully backward compatible — consumers without `Context=` are unaffected.
-
-
+## 2026-3-28 — Sortable drag-and-drop component
 
 > **Release: `v3.8.0`**  
 > **New feature.** Adds headless `SortablePrimitive` to `NeoUI.Blazor.Primitives` and styled `Sortable` wrapper to `NeoUI.Blazor`. No breaking changes.
@@ -98,7 +50,9 @@ A fully headless drag-and-drop sortable primitive with pointer, touch, and keybo
 
 `SortableOverlayPrimitive` is a fixed-position frame that JS positions over the cursor. When `ChildContent` is null the JS sensor auto-clones the source element into the overlay (`cloneNode(true)`) — the clone fills `100 × 100 %` and provides its own background/padding from the source styles. When `ChildContent` is provided the consumer renders a fully custom ghost; JS skips cloning to avoid duplicates (enforced via `data-has-child-content`). Visual effects (shadow, opacity, scale, transition) belong on the overlay frame.
 
-**Table row clone fix:** when the dragged element is a `<tr>`, the sensor snapshots each `td`/`th` computed width before cloning and stamps it as an inline `width` on the clone cells — preserving shared table layout geometry outside its parent `<table>`.
+**Table row overlay:** when the dragged element is a `<tr>`, the sensor snapshots each `td`/`th` computed width before cloning and stamps it as an inline `width` on the clone cells — preserving shared table layout geometry outside its parent `<table>`. 
+
+**Drop UX on Blazor Server:** on drag-end the sensor freezes a fixed-position snapshot of the container (showing items already at their settled positions via CSS transforms), hides the real container, then removes the snapshot once the `invokeMethodAsync` promise resolves — ensuring Blazor's SignalR re-render occurs invisibly with zero flash or positional glitching.
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
@@ -205,6 +159,41 @@ Styled overlay frame. Defaults: `rounded-lg shadow-lg opacity-90 transition-tran
 |---|---|---|---|
 | `Class` | `string?` | *(see above)* | Merged with the default overlay classes. |
 | `ChildContent` | `RenderFragment<string>?` | `null` | Custom ghost. Context is the active item ID. When null the sensor auto-clones the dragged element. |
+
+---
+
+> **Enhancement.** Adds `SortableScope<TItem>` and a typed `ChildContent` context to `Sortable` and `SortablePrimitive`. No breaking changes — existing consumers require no updates.
+
+---
+
+Simply add `Context="s"` to `<Sortable>` (or `<SortablePrimitive>`) and use `s.RowAttributes` — works with any downstream component, forever:
+
+```razor
+<Sortable TItem="TaskItem" Items="@_items" GetItemId="@(i => i.Id)" Context="s">
+    <SortableContent Class="block">
+        <DataTable AdditionalRowAttributes="@s.RowAttributes" ...>
+        @* or any other grid/list/table component *@
+        <MyCustomGrid RowAttrs="@s.RowAttributes" ...>
+```
+
+Existing consumers that don't use `Context=` compile and behave identically.
+
+---
+
+### ✨ New — `SortableScope<TItem>`
+
+Typed context object exposed via the `Context` parameter on `<Sortable>` and `<SortablePrimitive>`. Follows the standard Blazor composability pattern (e.g. `EditForm Context="ctx"`, `QuickGrid Context="item"`).
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `RowAttributes` | `Func<TItem, Dictionary<string, object>>` | Pre-built delegate that stamps `data-sortable-id` on each row/item. Pass directly to `AdditionalRowAttributes` or any equivalent parameter on any grid, list, or table component. |
+| `ActiveId` | `string?` | Identifier of the item currently being dragged, or `null` when idle. |
+| `IsDragging` | `bool` | `true` while a drag operation is in progress. |
+| `IsItemDragging(TItem)` | `bool` | Returns `true` when the given item is the one being dragged. |
+
+### 🔧 Enhancement — `SortablePrimitive<TItem>` / `Sortable<TItem>`
+
+`ChildContent` changed from `RenderFragment?` to `RenderFragment<SortableScope<TItem>>?`. Fully backward compatible — consumers without `Context=` are unaffected.
 
 ---
 
