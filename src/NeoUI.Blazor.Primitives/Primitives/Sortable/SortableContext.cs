@@ -24,6 +24,12 @@ public sealed class SortableContext
     public SortableOrientation Orientation { get; set; } = SortableOrientation.Vertical;
 
     /// <summary>
+    /// Gets or sets the group name for cross-list drag-and-drop.
+    /// Instances with the same group name can exchange items.
+    /// </summary>
+    public string? Group { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique instance identifier used to scope JS interop.
     /// </summary>
     internal string InstanceId { get; set; } = string.Empty;

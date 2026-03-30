@@ -2,6 +2,112 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-30 — Sortable cross-list drag-and-drop
+
+> **Release: `v3.8.2`**  
+> **Enhancement.** Adds cross-list (multi-container) drag-and-drop to `Sortable` and `SortablePrimitive`. No breaking changes — single-list consumers are completely unaffected.
+
+---
+
+Multiple `Sortable` instances sharing the same `Group` name form a drag group. Items can be dragged freely between any containers in the group. Each container fires its own transfer events; the consumer is fully responsible for mutating its state — the component never auto-commits a transfer.
+
+```razor
+<Sortable TItem="KanbanItem" Items="@col.Items" Group="kanban"
+          GetItemId="@(i => i.Id)"
+          OnItemsReordered="@(r => col.Items = r)"
+          OnItemTransferredOut="@(args => RemoveFromCol(args, col))"
+          OnItemTransferredIn="@(args => InsertIntoCol(args, col))">
+    <SortableContent Class="flex flex-col gap-2 min-h-[80px] rounded-lg border border-dashed p-2
+                            transition-colors data-[state=over]:border-primary/60 data-[state=over]:bg-primary/5">
+        @foreach (var item in col.Items)
+        {
+            <SortableItem @key="@item.Id" Value="@item.Id">
+                <SortableItemHandle />
+                <span class="flex-1 text-sm">@item.Name</span>
+            </SortableItem>
+        }
+    </SortableContent>
+    <SortableOverlay />
+</Sortable>
+```
+
+> **`@key` is required** on `SortableItem` (and on `SortableItemPrimitive`) when items can be transferred between lists. Without it Blazor re-renders by index and the wrong rows update. Always add `@key="@item.Id"` (or equivalent unique key).
+
+---
+
+### 🔧 Enhancement — `Sortable<TItem>` / `SortablePrimitive<TItem>`: cross-list parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Group` | `string?` | `null` | Shared group name. All `Sortable` instances with the same `Group` accept drops from each other. Leave `null` for single-list behaviour. |
+| `OnItemTransferredIn` | `EventCallback<SortableTransferArgs>` | — | Fired on the **target** instance when an item is dropped from a peer container. Consumer inserts the item into its own list at `args.Index`. |
+| `OnItemTransferredOut` | `EventCallback<SortableTransferArgs>` | — | Fired on the **source** instance after the target has accepted. Consumer removes the item identified by `args.ActiveId` from its own list. |
+| `OnCanDrop` | `Func<SortableDragQueryArgs, bool>?` | `null` | Optional guard evaluated at drop time (not during hover — no JS round-trip). Return `false` to reject the drop; `OnItemTransferredIn` and `OnItemTransferredOut` are not fired. |
+
+---
+
+### ✨ New — `SortableTransferArgs`
+
+Payload for `OnItemTransferredIn` and `OnItemTransferredOut`.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ActiveId` | `string` | Identity of the item being transferred. |
+| `OverId` | `string` | Identity of the item the dragged item was dropped over (`__neo_empty__` for an empty container, `__neo_append__` when dropped in the trailing padding zone). |
+| `Index` | `int` | Resolved insertion index in the target list (on `TransferredIn`) or original index in the source list (on `TransferredOut`). |
+| `SourceInstanceId` | `string` | Internal instance ID of the source container. |
+| `TargetInstanceId` | `string` | Internal instance ID of the target container. |
+
+---
+
+### ✨ New — `SortableDragQueryArgs`
+
+Payload for the `OnCanDrop` guard.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ActiveId` | `string` | Identity of the item being dragged. |
+| `SourceInstanceId` | `string` | Internal instance ID of the source container. |
+| `TargetInstanceId` | `string` | Internal instance ID of the target container. |
+
+---
+
+### ✨ UX — Container `data-state="over"` feedback
+
+When the dragged overlay enters a peer container, that container receives `data-state="over"`. The attribute is removed when the overlay leaves. Consumers can use Tailwind arbitrary-variant classes to style the hover state:
+
+```html
+<SortableContent Class="... transition-colors
+                         data-[state=over]:ring-2 data-[state=over]:ring-primary/40
+                         data-[state=over]:bg-primary/5">
+```
+
+The attribute is cleared on `resetDrag` (drop or cancel) so containers always return to their resting state.
+
+---
+
+### ✨ UX — Bottom drop zone expansion
+
+On drag start, JS adds `paddingBottom` equal to the active item's height to every peer container. This creates an invisible drop zone below the last item so users can easily place items at the end of a non-empty list. The padding is restored to its original value when the drag ends or is cancelled.
+
+---
+
+### ✨ UX — Scrollable descendant unclipping
+
+When a peer container hosts a scrolling component (e.g. a `DataTable` with a `max-height` scroll wrapper), JS temporarily sets `overflow: visible` and `max-height: none` on all scrollable descendants of the container for the duration of the drag. This makes every row reachable as a drop target regardless of scroll position. Original styles are fully restored on drag end or cancel.
+
+---
+
+### 📖 Demo — Kanban Board
+
+New demo at **`/components/sortable`** under *Kanban Board*. Three columns (To Do / In Progress / Done) share `Group="kanban-demo"`. Items drag freely between columns. Each column shows a *"Drop an item here"* placeholder when empty.
+
+### 📖 Demo — Cross-List Transfer (Table ↔ Table)
+
+New demo at **`/components/sortable`** under *Cross-List Transfer — Table ↔ Table*. Two `DataTable<CardItem>` instances share `Group="cross-demo"`. A toast notification confirms each successful transfer.
+
+---
+
 ## 2026-3-28 — Sortable drag-and-drop component
 
 > **Release: `v3.8.0`**  

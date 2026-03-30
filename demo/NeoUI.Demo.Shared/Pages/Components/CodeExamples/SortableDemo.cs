@@ -192,18 +192,105 @@ namespace NeoUI.Demo.Shared.Pages.Components
             </SortablePrimitive>
             """;
 
-        // ── Props tables ──────────────────────────────────────────────────────
+        private const string _kanbanCode =
+            """
+            @* Each column is a Sortable with the same Group name *@
+            @foreach (var col in columns)
+            {
+                <Sortable TItem="MyItem"
+                          Items="@col.Items"
+                          Group="kanban"
+                          GetItemId="@(i => i.Id)"
+                          OnItemsReordered="@(r => col.Items = r)"
+                          OnItemTransferredOut="@(args => col.Items = col.Items.Where(i => i.Id != args.ActiveId).ToList())"
+                          OnItemTransferredIn="@(args => HandleTransferIn(args, col))">
+                    <SortableContent Class="flex flex-col gap-2 min-h-[80px] rounded-lg border border-dashed p-2">
+                        @foreach (var item in col.Items)
+                        {
+                            <SortableItem @key="@item.Id" Value="@item.Id">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm select-none">@item.Name</span>
+                            </SortableItem>
+                        }
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            }
+
+            @code {
+                // OnItemTransferredIn fires on the TARGET before the source removes the item.
+                // Look up the item while it's still in the source list, then insert into target.
+                private void HandleTransferIn(SortableTransferArgs args, Column col)
+                {
+                    var item = allColumns.SelectMany(c => c.Items).FirstOrDefault(i => i.Id == args.ActiveId);
+                    if (item is null) return;
+                    var list = col.Items.ToList();
+                    list.Insert(Math.Clamp(args.Index, 0, list.Count), item);
+                    col.Items = list;
+                }
+            }
+            """;
+
+        private const string _crossListCode =
+            """
+            @* DataView side *@
+            <Sortable TItem="MyItem" Items="@_left" Group="transfer"
+                      GetItemId="@(i => i.Id)"
+                      OnItemsReordered="@(r => _left = r)"
+                      OnItemTransferredOut="@(args => _left = _left.Where(i => i.Id != args.ActiveId).ToList())"
+                      OnItemTransferredIn="@(args => HandleLeftIn(args))">
+                <SortableContent Class="block">
+                    <DataView Items="@_left" ItemKey="@(i => i.Id)" ShowToolbar="false" ShowPagination="false">
+                        <ListTemplate Context="item">
+                            <SortableItem @key="@item.Id" Value="@item.Id">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm select-none">@item.Name</span>
+                            </SortableItem>
+                        </ListTemplate>
+                    </DataView>
+                </SortableContent>
+                <SortableOverlay />
+            </Sortable>
+
+            @* DataTable side — Context="s" injects data-sortable-id on each row *@
+            <Sortable TItem="MyItem" Items="@_right" Group="transfer"
+                      GetItemId="@(i => i.Id)"
+                      OnItemsReordered="@(r => _right = r)"
+                      OnItemTransferredOut="@(args => _right = _right.Where(i => i.Id != args.ActiveId).ToList())"
+                      OnItemTransferredIn="@(args => HandleRightIn(args))"
+                      Context="s">
+                <SortableContent Class="block">
+                    <DataTable TData="MyItem" Data="@_right"
+                               AdditionalRowAttributes="@s.RowAttributes"
+                               BodyRowClass="hover:bg-transparent"
+                               ShowPagination="false" ShowToolbar="false">
+                        <Columns>
+                            <DataTableColumn ... Header="" Width="40px">
+                                <CellTemplate Context="row"><SortableItemHandle Class="mx-auto" /></CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn Property="@(i => i.Name)" Header="Name" />
+                        </Columns>
+                    </DataTable>
+                </SortableContent>
+                <SortableOverlay Class="rounded opacity-80" />
+            </Sortable>
+            """;
+
 
         private static readonly IReadOnlyList<DemoPropRow> _sortableProps =
         [
-            new("Items",            "IList&lt;TItem&gt;",                       null,       "The list of items to sort. Required."),
-            new("GetItemId",        "Func&lt;TItem, string&gt;",                null,       "Extracts a unique string ID from each item. Required."),
-            new("Orientation",      "SortableOrientation",                       "Vertical", "Drag axis: <code>Vertical</code>, <code>Horizontal</code>, <code>Grid</code>, or <code>Mixed</code>."),
-            new("OnItemsReordered", "EventCallback&lt;IList&lt;TItem&gt;&gt;",  null,       "Fired after a successful drop that changed the item order. Receives the new ordered list."),
-            new("OnDragStart",      "EventCallback&lt;string&gt;",              null,       "Fired when a drag begins. Receives the active item ID."),
-            new("OnDragEnd",        "EventCallback&lt;SortableDragEndArgs&gt;", null,       "Fired when a drag ends. Carries ActiveId, OverId, FromIndex, ToIndex, and Moved."),
-            new("OnDragCancel",     "EventCallback",                             null,       "Fired when a drag is cancelled via Escape or pointer cancel."),
-            new("Class",            "string?",                                   null,       "Additional CSS classes on the root element."),
+            new("Items",                 "IList<TItem>",                           null,       "The list of items to sort. Required."),
+            new("GetItemId",             "Func<TItem, string>",                    null,       "Extracts a unique string ID from each item. Required."),
+            new("Orientation",           "SortableOrientation",                    "Vertical", "Drag axis: <code>Vertical</code>, <code>Horizontal</code>, <code>Grid</code>, or <code>Mixed</code>."),
+            new("Group",                 "string?",                                null,       "Group name for cross-list DnD. Instances with the same group can exchange items."),
+            new("OnItemsReordered",      "EventCallback<IList<TItem>>",            null,       "Fired after a successful same-list reorder. Receives the new ordered list."),
+            new("OnItemTransferredOut",  "EventCallback<SortableTransferArgs>",    null,       "Fired on the source instance when an item is transferred out. Consumer should remove the item."),
+            new("OnItemTransferredIn",   "EventCallback<SortableTransferArgs>",    null,       "Fired on the target instance when an item is transferred in. Consumer should insert the item at <code>args.Index</code>."),
+            new("OnCanDrop",             "Func<SortableDragQueryArgs, bool>?",     null,       "Optional drop-time guard on the target instance. Return <code>false</code> to reject the transfer."),
+            new("OnDragStart",           "EventCallback<string>",                  null,       "Fired when a drag begins. Receives the active item ID."),
+            new("OnDragEnd",             "EventCallback<SortableDragEndArgs>",     null,       "Fired when a same-list drag ends. Carries ActiveId, OverId, FromIndex, ToIndex, and Moved."),
+            new("OnDragCancel",          "EventCallback",                          null,       "Fired when a drag is cancelled via Escape or pointer cancel."),
+            new("Class",                 "string?",                                null,       "Additional CSS classes on the root element."),
         ];
 
         private static readonly IReadOnlyList<DemoPropRow> _contentProps =
@@ -228,8 +315,8 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private static readonly IReadOnlyList<DemoPropRow> _overlayProps =
         [
-            new("Class",        "string?",                        null, "CSS classes merged with defaults (<code>rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]</code>). Override shadow, opacity, scale, or easing."),
-            new("ChildContent", "RenderFragment&lt;string&gt;?",  null, "Custom ghost content. Context is the active item ID. When null the JS sensor auto-clones the dragged element."),
+            new("Class",        "string?",              null, "CSS classes merged with defaults (<code>rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]</code>). Override shadow, opacity, scale, or easing."),
+            new("ChildContent", "RenderFragment<string>?", null, "Custom ghost content. Context is the active item ID. When null the JS sensor auto-clones the dragged element."),
         ];
     }
 }

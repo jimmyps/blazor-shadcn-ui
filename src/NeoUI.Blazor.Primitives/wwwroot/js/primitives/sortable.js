@@ -20,6 +20,7 @@ const DEFAULT_ITEM_HEIGHT     = 60;   // px fallback height used in keyboard dra
 const DEFAULT_ITEM_WIDTH      = 120;  // px fallback width used in keyboard drag calculations
 
 const instances = new Map();
+const groups     = new Map(); // groupName → Set<instanceId>
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -36,6 +37,18 @@ function getItemById(container, id) {
 /** Returns the overlay element for this sortable instance. */
 function getOverlay(instanceId) {
     return document.querySelector(`[data-sortable-overlay-for="${instanceId}"]`);
+}
+
+/** Returns the instanceIds of all other instances in the same group. */
+function getGroupPeers(state) {
+    if (!state.group) return [];
+    const group = groups.get(state.group);
+    if (!group) return [];
+    const peers = [];
+    for (const id of group) {
+        if (id !== state.instanceId) peers.push(id);
+    }
+    return peers;
 }
 
 /**
@@ -71,6 +84,7 @@ function closestCenter(container, activeId, x, y) {
  *    affected by CSS transforms). If the active item's own snapshot centre is closest, the
  *    ghost is back over its original slot — returns activeId (overIdx === activeIdx → no reorder).
  *    This fixes the "space won't open when hovering back to original position" issue.
+ *  - For cross-list groups: also scans peer containers. Sets state.overInstanceId as a side-effect.
  */
 function computeOverId(state) {
     if (!state.snapshotItems) return null;
@@ -81,8 +95,9 @@ function computeOverId(state) {
     const cx = overlayLeft + state.overlayWidth  / 2;
     const cy = overlayTop  + state.overlayHeight / 2;
 
-    let minDist = Infinity;
-    let overId  = null;
+    let minDist        = Infinity;
+    let overId         = null;
+    let overInstanceId = state.instanceId;
 
     for (const snap of state.snapshotItems) {
         // Include the active item — if its snapshot centre is the nearest,
@@ -90,9 +105,98 @@ function computeOverId(state) {
         const snapCx = snap.rect.left + snap.rect.width  / 2;
         const snapCy = snap.rect.top  + snap.rect.height / 2;
         const dist   = Math.hypot(cx - snapCx, cy - snapCy);
-        if (dist < minDist) { minDist = dist; overId = snap.id; }
+        if (dist < minDist) { minDist = dist; overId = snap.id; overInstanceId = state.instanceId; }
     }
+
+    // Scan peer containers in the same group
+    if (state.groupSnapshots) {
+        for (const [instanceId, snaps] of state.groupSnapshots) {
+            // Empty container: treat the container rect as a virtual drop target
+            const peerState = instances.get(instanceId);
+            if (snaps.length === 0 && peerState) {
+                const rect = peerState.containerEl.getBoundingClientRect();
+                if (cx >= rect.left && cx <= rect.right && cy >= rect.top && cy <= rect.bottom) {
+                    // Pointer is inside an empty peer container — use centre distance to container
+                    const dist = Math.hypot(cx - (rect.left + rect.width / 2), cy - (rect.top + rect.height / 2));
+                    if (dist < minDist) {
+                        minDist = dist;
+                        overId = '__neo_empty__';
+                        overInstanceId = instanceId;
+                    }
+                }
+                continue;
+            }
+            for (const snap of snaps) {
+                const snapCx = snap.rect.left + snap.rect.width  / 2;
+                const snapCy = snap.rect.top  + snap.rect.height / 2;
+                const dist   = Math.hypot(cx - snapCx, cy - snapCy);
+                if (dist < minDist) { minDist = dist; overId = snap.id; overInstanceId = instanceId; }
+            }
+        }
+    }
+
+    state.overInstanceId = overInstanceId;
+
+    // When the overlay centre is below the last item's bottom edge in a peer container
+    // (i.e. it's in the padded drop zone), treat the drop as "append at end".
+    if (overInstanceId !== state.instanceId && overId !== '__neo_empty__') {
+        const peerSnaps = state.groupSnapshots?.get(overInstanceId);
+        if (peerSnaps && peerSnaps.length > 0) {
+            const lastSnap = peerSnaps[peerSnaps.length - 1];
+            if (cy > lastSnap.rect.bottom) {
+                overId = '__neo_append__';
+            }
+        }
+    }
+
     return overId;
+}
+
+/**
+ * Cross-container displacement: source items close the gap, target items open a gap.
+ * Called when the active item is hovering over a different group container.
+ */
+function applyItemTransformsCross(state, activeIdx, overId) {
+    const activeSnap    = state.snapshotItems[activeIdx];
+    const overInstanceId = state.overInstanceId;
+    const targetSnaps   = state.groupSnapshots?.get(overInstanceId) ?? [];
+    const overIdxInTarget = overId === '__neo_empty__'  ? 0
+                          : overId === '__neo_append__' ? targetSnaps.length
+                          : targetSnaps.findIndex(s => s.id === overId);
+    const targetOrientation = instances.get(overInstanceId)?.orientation ?? 'vertical';
+
+    // Source container: items close the gap left by the active placeholder.
+    for (let i = 0; i < state.snapshotItems.length; i++) {
+        const snap = state.snapshotItems[i];
+        if (snap.id === state.activeId) {
+            snap.el.style.transition = '';
+            snap.el.style.transform  = '';
+            continue;
+        }
+        let tx = 0, ty = 0;
+        if (state.orientation === 'vertical' || state.orientation === 'mixed') {
+            if (i > activeIdx) ty = -activeSnap.rect.height;
+        } else if (state.orientation === 'horizontal') {
+            if (i > activeIdx) tx = -activeSnap.rect.width;
+        }
+        snap.el.style.transition = `transform ${TRANSITION_MS}ms ease`;
+        snap.el.style.transform  = (tx !== 0 || ty !== 0) ? `translate(${tx}px,${ty}px)` : '';
+    }
+
+    // Target container: open a gap at the drop position.
+    for (let i = 0; i < targetSnaps.length; i++) {
+        const snap = targetSnaps[i];
+        let tx = 0, ty = 0;
+        if (overIdxInTarget >= 0 && i >= overIdxInTarget) {
+            if (targetOrientation === 'vertical' || targetOrientation === 'mixed') {
+                ty = activeSnap.rect.height;
+            } else if (targetOrientation === 'horizontal') {
+                tx = activeSnap.rect.width;
+            }
+        }
+        snap.el.style.transition = `transform ${TRANSITION_MS}ms ease`;
+        snap.el.style.transform  = (tx !== 0 || ty !== 0) ? `translate(${tx}px,${ty}px)` : '';
+    }
 }
 
 /**
@@ -106,10 +210,19 @@ function applyItemTransforms(state, orientation) {
     if (!state.isDragging || !state.snapshotItems) return;
 
     const activeIdx  = state.snapshotItems.findIndex(s => s.id === state.activeId);
-    const overId     = computeOverId(state);
-    const overIdx    = state.snapshotItems.findIndex(s => s.id === overId);
+    const overId     = computeOverId(state); // also sets state.overInstanceId
+    const isCross    = state.overInstanceId && state.overInstanceId !== state.instanceId;
 
-    if (activeIdx < 0 || overIdx < 0) return;
+    if (activeIdx < 0) return;
+
+    if (isCross) {
+        applyItemTransformsCross(state, activeIdx, overId);
+        return;
+    }
+
+    // ── Same-container reorder (existing logic) ───────────────────────────────
+    const overIdx = state.snapshotItems.findIndex(s => s.id === overId);
+    if (overIdx < 0) return;
 
     // Ghost is back over the original slot — clear all transforms (no reorder preview)
     if (overIdx === activeIdx) {
@@ -214,12 +327,69 @@ function setupCloneInOverlay(overlay, sourceEl) {
     overlay.appendChild(clone);
 }
 
-/** Resets all item transforms to their natural positions. */
+/**
+ * Updates `data-state` on peer containers to reflect which one the overlay is hovering over.
+ * Only touches the DOM when the hovered container changes, to avoid thrashing on every move.
+ */
+function updateGroupContainerStates(state) {
+    if (!state.groupSnapshots || state.groupSnapshots.size === 0) return;
+
+    const newOverId = (state.overInstanceId && state.overInstanceId !== state.instanceId)
+        ? state.overInstanceId
+        : null;
+
+    if (state.overContainerInstanceId === newOverId) return; // nothing changed
+
+    for (const peerId of state.groupSnapshots.keys()) {
+        const peerState = instances.get(peerId);
+        if (!peerState) continue;
+        if (peerId === newOverId) {
+            peerState.containerEl.setAttribute('data-state', 'over');
+        } else {
+            peerState.containerEl.removeAttribute('data-state');
+        }
+    }
+    state.overContainerInstanceId = newOverId;
+}
+
+/**
+ * Finds scrollable elements that are DESCENDANTS of containerEl (e.g. a DataTable's
+ * inner scroll wrapper). We do NOT walk up the DOM — that would capture page-level
+ * scroll containers and break the layout.
+ */
+function findScrollableDescendants(containerEl) {
+    const result = [];
+    const candidates = containerEl.querySelectorAll('*');
+    for (const el of candidates) {
+        const cs = window.getComputedStyle(el);
+        const oy = cs.overflowY;
+        const ox = cs.overflowX;
+        if (oy === 'auto' || oy === 'scroll' || ox === 'auto' || ox === 'scroll') {
+            result.push({
+                target:    el,
+                overflowY: el.style.overflowY,
+                overflowX: el.style.overflowX,
+                maxHeight: el.style.maxHeight,
+            });
+        }
+    }
+    return result;
+}
+
+/** Resets all item transforms to their natural positions (own + peer containers). */
 function resetItemTransforms(state) {
     if (!state.snapshotItems) return;
     for (const snap of state.snapshotItems) {
         snap.el.style.transition = '';
         snap.el.style.transform  = '';
+    }
+    if (state.groupSnapshots) {
+        for (const [, snaps] of state.groupSnapshots) {
+            for (const snap of snaps) {
+                snap.el.style.transition = '';
+                snap.el.style.transform  = '';
+            }
+        }
     }
 }
 
@@ -239,6 +409,32 @@ function startDrag(state, orientation) {
         id:   el.getAttribute('data-sortable-id'),
         rect: el.getBoundingClientRect(),
     }));
+
+    // Snapshot peer containers so cross-container collision can use stable rects,
+    // then expand each peer's bottom padding so the end of the list is an easy drop target,
+    // and temporarily remove overflow clipping so all rows are reachable as drop targets.
+    state.groupSnapshots = new Map();
+    state.peerScrollableAncestors = new Map();
+    for (const peerId of getGroupPeers(state)) {
+        const peerState = instances.get(peerId);
+        if (!peerState) continue;
+        state.groupSnapshots.set(peerId, getItems(peerState.containerEl).map(el => ({
+            el,
+            id:   el.getAttribute('data-sortable-id'),
+            rect: el.getBoundingClientRect(),
+        })));
+        // Expand the peer container so users can easily drop at the end of the list
+        const activeHeight = state.activeEl ? state.activeEl.getBoundingClientRect().height : DEFAULT_ITEM_HEIGHT;
+        peerState.containerEl.style.paddingBottom = activeHeight + 'px';
+        // Remove overflow clipping on scrollable ancestors so all rows are visible/droppable
+        const ancestors = findScrollableDescendants(peerState.containerEl);
+        ancestors.forEach(a => {
+            a.target.style.overflowY = 'visible';
+            a.target.style.overflowX = 'visible';
+            a.target.style.maxHeight = 'none';
+        });
+        state.peerScrollableAncestors.set(peerId, ancestors);
+    }
 
     // Style the dragged item as the "source" placeholder
     if (state.activeEl) {
@@ -293,6 +489,7 @@ function moveDrag(state, x, y, orientation) {
     }
 
     applyItemTransforms(state, orientation);
+    updateGroupContainerStates(state);
 }
 
 /**
@@ -329,45 +526,64 @@ function freezeSnapshot(container) {
  * transform (no DOM order change), snapshots the correct settled visual state,
  * then resets everything under the snapshot while Blazor re-renders.
  *
- * Why transforms-only (no DOM mutation):
- *  - commitDomOrder confuses Blazor's internal component-tree tracking
- *  - The displaced items already have the correct visual positions
- *  - We only need to move the active item to match the overlay
- *  - Snapshot covers the Blazor re-render gap; removed once DOM is patched
+ * For cross-list drops: asks the target instance (OnTransferIn) first.
+ * If accepted, notifies the source (OnTransferOut). Both containers are
+ * snapshotted so their Blazor re-renders are seamless.
  */
 function endDrag(state, x, y) {
     if (!state.isDragging) { resetDrag(state); return; }
     state.currentX = x;
     state.currentY = y;
-    const overId   = computeOverId(state) ?? state.activeId;
-    const activeId = state.activeId; // save before resetDrag nulls it
-    const moved    = overId !== activeId;
+    const overId           = computeOverId(state) ?? state.activeId;
+    const activeId         = state.activeId; // save before resetDrag nulls it
+    const sourceInstanceId = state.instanceId;
+    const targetInstanceId = state.overInstanceId ?? state.instanceId;
+    const isCross          = sourceInstanceId !== targetInstanceId;
+    const moved            = overId !== activeId || isCross;
 
     let snapshot = null;
     if (moved && state.activeEl) {
-        const overlay     = getOverlay(state.instanceId);
-        const overlayRect = overlay?.getBoundingClientRect();
-        const activeRect  = state.activeEl.getBoundingClientRect();
+        const overlay = getOverlay(state.instanceId);
 
-        if (overlayRect) {
-            state.activeEl.style.opacity    = '1';
-            state.activeEl.removeAttribute('data-dragging');
-        }
+        state.activeEl.style.opacity    = '1';
+        state.activeEl.removeAttribute('data-dragging');
 
         // Hide overlay before snapshotting so it doesn't float above the clone.
         if (overlay) overlay.style.display = 'none';
 
-        // Snapshot: container now shows active item at new position + displaced
-        // items = the correct settled visual state, with zero DOM manipulation.
-        snapshot = freezeSnapshot(state.containerEl);
+        if (isCross) {
+            // Snapshot both containers so both Blazor re-renders are seamless
+            const targetState  = instances.get(targetInstanceId);
+            const snapSource   = freezeSnapshot(state.containerEl);
+            const snapTarget   = targetState ? freezeSnapshot(targetState.containerEl) : null;
+            snapshot = { remove() { snapSource.remove(); snapTarget?.remove(); } };
+        } else {
+            snapshot = freezeSnapshot(state.containerEl);
+        }
     }
 
     // Clean up all drag state under the snapshot (invisible to the user).
     resetDrag(state);
 
-    state.dotNetRef.invokeMethodAsync('OnDragEnd', activeId, overId)
-        .then(() => { snapshot?.remove(); })
-        .catch(() => { snapshot?.remove(); });
+    if (isCross && moved) {
+        const targetState = instances.get(targetInstanceId);
+        if (!targetState) { snapshot?.remove(); return; }
+
+        // Ask target if it will accept the drop. If yes, notify source to transfer out.
+        targetState.dotNetRef.invokeMethodAsync('OnTransferIn', activeId, overId, sourceInstanceId, targetInstanceId)
+            .then(accepted => {
+                if (accepted) {
+                    return state.dotNetRef.invokeMethodAsync('OnTransferOut', activeId, overId, sourceInstanceId, targetInstanceId);
+                }
+                // Rejected: snapshot.remove() is handled by the final .then/.catch
+            })
+            .then(() => { snapshot?.remove(); })
+            .catch(() => { snapshot?.remove(); });
+    } else {
+        state.dotNetRef.invokeMethodAsync('OnDragEnd', activeId, overId)
+            .then(() => { snapshot?.remove(); })
+            .catch(() => { snapshot?.remove(); });
+    }
 }
 
 /**
@@ -395,6 +611,26 @@ function resetDrag(state) {
 
     resetItemTransforms(state);
 
+    // Restore peer container padding, overflow, and clear hover state applied during drag
+    if (state.groupSnapshots) {
+        for (const peerId of state.groupSnapshots.keys()) {
+            const peerState = instances.get(peerId);
+            if (peerState) {
+                peerState.containerEl.style.paddingBottom = '';
+                peerState.containerEl.removeAttribute('data-state');
+            }
+        }
+    }
+    if (state.peerScrollableAncestors) {
+        for (const ancestors of state.peerScrollableAncestors.values()) {
+            ancestors.forEach(a => {
+                a.target.style.overflowY = a.overflowY;
+                a.target.style.overflowX = a.overflowX;
+                a.target.style.maxHeight = a.maxHeight;
+            });
+        }
+    }
+
     const overlay = getOverlay(state.instanceId);
     if (overlay) {
         overlay.style.display = 'none';
@@ -415,6 +651,10 @@ function resetDrag(state) {
     state.activeEl      = null;
     state.pointerId     = null;
     state.snapshotItems = null;
+    state.groupSnapshots = null;
+    state.peerScrollableAncestors = null;
+    state.overInstanceId = null;
+    state.overContainerInstanceId = null;
     state.overlayCloned = false;
 }
 
@@ -622,8 +862,9 @@ function buildKeyboardHandlers(state, orientation) {
  * @param {DotNetObjectReference} dotNetRef    - C# callback target
  * @param {string}                instanceId   - Unique instance identifier
  * @param {string}                orientation  - 'vertical' | 'horizontal' | 'mixed'
+ * @param {string|null}           group        - Group name for cross-list DnD (optional)
  */
-export function init(containerEl, dotNetRef, instanceId, orientation) {
+export function init(containerEl, dotNetRef, instanceId, orientation, group) {
     if (!containerEl || !dotNetRef) return;
 
     const state = {
@@ -638,12 +879,24 @@ export function init(containerEl, dotNetRef, instanceId, orientation) {
         overlayWidth:  0, overlayHeight: 0,
         pointerId:     null,
         snapshotItems: null,
+        groupSnapshots: null,
+        peerScrollableAncestors: null,
+        overInstanceId: null,
+        overContainerInstanceId: null,
         detachDocListeners: null,
         containerEl,
         dotNetRef,
         instanceId,
+        orientation,
+        group:         group ?? null,
         handlers:      null,
     };
+
+    // Register in group registry so peers can discover this instance
+    if (group) {
+        if (!groups.has(group)) groups.set(group, new Set());
+        groups.get(group).add(instanceId);
+    }
 
     const pointer  = buildPointerHandlers(state, orientation);
     const keyboard = buildKeyboardHandlers(state, orientation);
@@ -667,6 +920,11 @@ export function init(containerEl, dotNetRef, instanceId, orientation) {
 export function dispose(instanceId) {
     const state = instances.get(instanceId);
     if (!state) return;
+
+    // Unregister from group so peers no longer see this instance
+    if (state.group) {
+        groups.get(state.group)?.delete(instanceId);
+    }
 
     resetDrag(state);
 
