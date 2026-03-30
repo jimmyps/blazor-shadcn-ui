@@ -716,6 +716,32 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
+    /// Programmatically clears all selected files, validation errors, and resets the native file input.
+    /// Capture a reference with <c>@ref</c> and call this after a successful form submit.
+    /// </summary>
+    public async Task ClearFiles()
+    {
+        Files = new List<IBrowserFile>();
+        _validationError = null;
+        _previewUrls.Clear();
+        _uploadProgress.Clear();
+
+        if (_module != null && !string.IsNullOrEmpty(Id))
+        {
+            try
+            {
+                await _module.InvokeVoidAsync("resetFileInput", Id);
+            }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException)
+            {
+                // Expected during circuit disconnect or disposal
+            }
+        }
+
+        await NotifyFilesChanged();
+    }
+
+    /// <summary>
     /// Detaches the validation state changed event listener from the previous EditContext.
     /// </summary>
     private void DetachValidationStateChangedListener()

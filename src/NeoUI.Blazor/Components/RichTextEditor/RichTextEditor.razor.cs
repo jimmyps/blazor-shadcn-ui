@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Ganss.Xss;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace NeoUI.Blazor;
@@ -10,6 +11,13 @@ namespace NeoUI.Blazor;
 /// </summary>
 public partial class RichTextEditor : ComponentBase, IAsyncDisposable
 {
+    private static readonly Action<ILogger, string, Exception?> LogJsInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogJsInitializationFailed)),
+            "Failed to initialize RichTextEditor JS: {Message}");
+
+    [Inject]
+    private ILogger<RichTextEditor> Logger { get; set; } = default!;
+
     // === Private Fields ===
     private ElementReference _editorRef;
     private IJSObjectReference? _jsModule;
@@ -251,7 +259,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"Failed to initialize RichTextEditor JS: {ex.Message}");
+            LogJsInitializationFailed(Logger, ex.Message, ex);
         }
     }
 

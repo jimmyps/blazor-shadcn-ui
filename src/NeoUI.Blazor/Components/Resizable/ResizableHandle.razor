@@ -1,5 +1,7 @@
 @namespace NeoUI.Blazor
+@using Microsoft.Extensions.Logging
 @inject IJSRuntime JSRuntime
+@inject ILogger<ResizableHandle> Logger
 @implements IAsyncDisposable
 
 @* ResizableHandle - draggable handle between panels *@
@@ -24,6 +26,10 @@
 </div>
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "ResizableHandleInitializationFailed"),
+            "Failed to initialize resizable handle: {ErrorMessage}");
+
     [CascadingParameter]
     private ResizablePanelGroup? Group { get; set; }
 
@@ -92,7 +98,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to initialize resizable handle: {ex.Message}");
+            LogInitializationFailed(Logger, ex.Message, ex);
         }
     }
 

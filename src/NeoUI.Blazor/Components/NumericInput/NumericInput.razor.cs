@@ -2,6 +2,7 @@ using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -47,6 +48,10 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
 {
+    private static readonly Action<ILogger, string, Exception?> LogJsInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogJsInitializationFailed)),
+            "Error initializing numeric input JS: {Message}");
+
     /// <summary>
     /// JavaScript module for input event handling and value updates.
     /// </summary>
@@ -82,6 +87,9 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    private ILogger<NumericInput<TValue>> Logger { get; set; } = default!;
 
     /// <summary>
     /// Gets the cascaded EditContext from an EditForm.
@@ -740,7 +748,7 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
             }
             catch (JSException ex)
             {
-                Console.Error.WriteLine($"Error initializing numeric input JS: {ex.Message}");
+                LogJsInitializationFailed(Logger, ex.Message, ex);
             }
         }
     }

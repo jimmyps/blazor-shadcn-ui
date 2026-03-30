@@ -27,6 +27,7 @@ public partial class DataView<TItem> : ComponentBase
     // ── Internal state ──────────────────────────────────────────────────
 
     private DataViewLayout             _layout;
+    private bool                       _layoutInitialized;
     private readonly HashSet<object>   _selectedKeys    = new();
     private readonly KeyboardNavigator _navigator       = new();
     private readonly string            _instanceId      = Guid.NewGuid().ToString("N")[..8];
@@ -95,6 +96,9 @@ public partial class DataView<TItem> : ComponentBase
 
     /// <summary>Initial layout mode (List or Grid).</summary>
     [Parameter] public DataViewLayout Layout { get; set; } = DataViewLayout.List;
+
+    /// <summary>Raised when the user switches between List and Grid views via the toolbar toggle.</summary>
+    [Parameter] public EventCallback<DataViewLayout> LayoutChanged { get; set; }
 
     /// <summary>Initial items per page. 0 (default) shows all items and hides the pagination bar.</summary>
     [Parameter] public int PageSize { get; set; } = 0;
@@ -297,6 +301,7 @@ public partial class DataView<TItem> : ComponentBase
     {
         if (_layout == layout) return;
         _layout = layout;
+        if (LayoutChanged.HasDelegate) LayoutChanged.InvokeAsync(layout);
         StateHasChanged();
     }
 
@@ -529,7 +534,7 @@ public partial class DataView<TItem> : ComponentBase
 
     protected override void OnParametersSet()
     {
-        if (_layout == default) _layout = Layout;
+        if (!_layoutInitialized) { _layout = Layout; _layoutInitialized = true; }
 
         if (!_paginationInit && PageSize > 0)
         {

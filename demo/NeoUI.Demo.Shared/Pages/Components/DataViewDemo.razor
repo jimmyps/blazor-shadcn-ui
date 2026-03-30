@@ -401,7 +401,39 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection Title="Toolbar with Custom Actions" Description="ToolbarActions renders on the right of the toolbar — after search/sort, before the layout toggle. Ideal for Export and Add buttons.">
+    <DemoSection Title="Sortable Items"
+                 Description="Compose DataView with Sortable for drag-and-drop reordering. Wrap the DataView in a Sortable root and SortableContent, then render SortableItem inside the ListTemplate or GridTemplate. See the Sortable docs for the full composability API.">
+        <DemoBlock Code="@DataViewDemoCode.SortableList">
+            <div class="max-w-sm">
+                <Sortable TItem="ProductRow"
+                          Items="@_sortableProducts"
+                          OnItemsReordered="@(r => _sortableProducts = r)"
+                          GetItemId="@(p => p.Id.ToString())">
+                    <SortableContent Class="block">
+                        <DataView Items="@_sortableProducts" ItemKey="@(p => p.Id)"
+                                  ShowToolbar="false" ShowPagination="false">
+                            <ListTemplate Context="p">
+                                <SortableItem Value="@p.Id.ToString()" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                    <SortableItemHandle />
+                                    <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                                        <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium truncate">@p.Name</p>
+                                        <p class="text-xs text-muted-foreground">@p.Category</p>
+                                    </div>
+                                    <span class="text-sm font-semibold tabular-nums">$@p.Price.ToString("F2")</span>
+                                </SortableItem>
+                            </ListTemplate>
+                        </DataView>
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Toolbar with Custom Actions"Description="ToolbarActions renders on the right of the toolbar — after search/sort, before the layout toggle. Ideal for Export and Add buttons.">
         <DemoBlock Code="@DataViewDemoCode.ToolbarActions">
             <DataView Items="@_products" PageSize="6" ItemKey="@(p => p.Id)">
                 <Fields>
@@ -485,7 +517,7 @@
         </DemoBlock>
     </DemoSection>
 
-    <DemoSection Title="API Reference" Description="DataView component parameters.">
+    <DemoSection Title="API Reference"Description="DataView component parameters.">
         <DemoPropsTable Rows="@_props" />
     </DemoSection>
 
@@ -521,4 +553,13 @@
     private ProductRow?                _singleSelected;
     private IReadOnlyList<ProductRow>? _multiSelected;
     private ProductRow?                _checkVariantSelected;
+
+    private IList<ProductRow> _sortableProducts =
+    [
+        new(1,  "Mechanical Keyboard", "Peripherals", 149.99m, true, "keyboard"),
+        new(2,  "4K Monitor",          "Displays",    399.00m, true, "monitor"),
+        new(3,  "Wireless Mouse",      "Peripherals", 59.99m,  true, "mouse-pointer"),
+        new(4,  "USB-C Hub",           "Accessories", 49.00m,  true, "usb"),
+        new(5,  "Webcam HD",           "Peripherals", 89.00m,  false,"video"),
+    ];
 }

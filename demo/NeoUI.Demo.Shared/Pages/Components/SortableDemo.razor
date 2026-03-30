@@ -1,0 +1,558 @@
+@page "/components/sortable"
+@inject IToastService Toast
+
+<PageTitle>Sortable - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Sortable"
+        Description="Drag-and-drop sortable lists with a beautiful default design. Built on top of the headless SortablePrimitive." />
+
+    @* ── Default — handle drag ──────────────────────────────── *@
+    <DemoSection Title="Default"
+                 Description="Vertical list with a styled grip handle. Drag is constrained to the handle.">
+        <DemoBlock Code="@_defaultCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_defaultItems"
+                          OnItemsReordered="@(r => _defaultItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _defaultItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent>
+                        @foreach (var item in _defaultItems)
+                        {
+                            <SortableItem @key="@item.Id" Value="@item.Id">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItem>
+                        }
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── AsHandle — whole item draggable ────────────────────── *@
+    <DemoSection Title="Full-Item Drag"
+                 Description="Set AsHandle on SortableItem to make the entire item the drag target.">
+        <DemoBlock Code="@_asHandleCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_asHandleItems"
+                          OnItemsReordered="@(r => _asHandleItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _asHandleItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent>
+                        @foreach (var item in _asHandleItems)
+                        {
+                            <SortableItem Value="@item.Id" AsHandle>
+                                <span class="flex-1 text-sm font-medium">@item.Name</span>
+                                <span class="text-xs text-muted-foreground">drag me</span>
+                            </SortableItem>
+                        }
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Horizontal ──────────────────────────────────────────── *@
+    <DemoSection Title="Horizontal"
+                 Description="Set Orientation='Horizontal' for column-based reordering.">
+        <DemoBlock Code="@_horizontalCode">
+            <Sortable TItem="DemoItem"
+                      Items="@_horizontalItems"
+                      OnItemsReordered="@(r => _horizontalItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _horizontalItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
+                      GetItemId="@(i => i.Id)"
+                      Orientation="SortableOrientation.Horizontal">
+                <SortableContent Class="flex-row gap-3 flex-wrap">
+                    @foreach (var item in _horizontalItems)
+                    {
+                        <SortableItem @key="@item.Id" Value="@item.Id" AsHandle
+                                      Class="w-24 h-24 justify-center font-medium text-sm">
+                            @item.Name
+                        </SortableItem>
+                    }
+                </SortableContent>
+                <SortableOverlay />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom handle icon ──────────────────────────────────── *@
+    <DemoSection Title="Custom Handle Icon"
+                 Description="Provide a render fragment to SortableItemHandle to replace the default grip icon.">
+        <DemoBlock Code="@_customHandleCode">
+            <div class="max-w-sm">
+                <Sortable TItem="DemoItem"
+                          Items="@_customHandleItems"
+                          OnItemsReordered="@(r => _customHandleItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _customHandleItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent>
+                        @foreach (var item in _customHandleItems)
+                        {
+                            <SortableItem @key="@item.Id" Value="@item.Id">
+                                <SortableItemHandle>
+                                    <LucideIcon Name="grip-horizontal" Size="16" />
+                                </SortableItemHandle>
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItem>
+                        }
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataView — List ─────────────────── *@
+    <DemoSection Title="Composability with DataView — List"
+                 Description="Wrap a DataView in a Sortable root and SortableContentPrimitive. Each SortableItem in the ListTemplate participates in drag-and-drop reordering with zero changes to DataView itself.">
+        <DemoBlock Code="@_dataViewListCode">
+            <div class="max-w-sm">
+                <Sortable TItem="CardItem"
+                          Items="@_dataViewListItems"
+                          OnItemsReordered="@(r => _dataViewListItems = r)"
+                          OnDragEnd="@(e => ShowDragEndToast(e, _dataViewListItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                          OnDragCancel="@ShowDragCancelToast"
+                          GetItemId="@(i => i.Id)">
+                    <SortableContent Class="block">
+                        <DataView Items="@_dataViewListItems" ItemKey="@(i => i.Id)"
+                                  ShowToolbar="false" ShowPagination="false">
+                            <ListTemplate Context="item">
+                                <SortableItem @key="@item.Id" Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                    <SortableItemHandle />
+                                    <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                                    <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
+                                </SortableItem>
+                            </ListTemplate>
+                        </DataView>
+                    </SortableContent>
+                    <SortableOverlay />
+                </Sortable>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataView — Grid ──────────────────── *@
+    <DemoSection Title="Composability with DataView — Grid"
+                 Description="Provide both ListTemplate and GridTemplate to keep the layout toggle. SortableItem works in both layouts — the same Sortable context covers both renderings.">
+        <DemoBlock Code="@_dataViewGridCode">
+            <Sortable TItem="CardItem"
+                      Items="@_dataViewGridItems"
+                      OnItemsReordered="@(r => _dataViewGridItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _dataViewGridItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
+                      GetItemId="@(i => i.Id)"
+                      Orientation="@(_dataViewGridLayout == DataViewLayout.Grid ? SortableOrientation.Grid : SortableOrientation.Vertical)">
+                <SortableContent Class="block">
+                    <DataView Items="@_dataViewGridItems" ItemKey="@(i => i.Id)"
+                              Layout="DataViewLayout.Grid" ShowPagination="false"
+                              LayoutChanged="@(l => _dataViewGridLayout = l)">
+                        <ListTemplate Context="item">
+                            <SortableItem @key="@item.Id" Value="@item.Id" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                <SortableItemHandle />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-xs">@item.Tag</Badge>
+                            </SortableItem>
+                        </ListTemplate>
+                        <GridTemplate Context="item">
+                            <SortableItem @key="@item.Id" Value="@item.Id" AsHandle
+                                          Class="flex-col items-start gap-1 h-28 rounded-lg shadow-sm">
+                                <p class="text-sm font-semibold leading-tight">@item.Name</p>
+                                <Badge Variant="BadgeVariant.Secondary" Class="text-xs mt-auto">@item.Tag</Badge>
+                            </SortableItem>
+                        </GridTemplate>
+                    </DataView>
+                </SortableContent>
+                <SortableOverlay />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Composability with DataTable ────────────────────────── *@
+    <DemoSection Title="Composability with DataTable"
+                 Description="Add Context to Sortable to receive a typed SortableScope. Pass s.RowAttributes directly to any grid, table, or list — no knowledge of internal attribute names needed.">
+        <DemoBlock Code="@_dataTableCode">
+            <Sortable TItem="TaskItem"
+                      Items="@_tableItems"
+                      OnItemsReordered="@(r => _tableItems = r)"
+                      OnDragEnd="@(e => ShowDragEndToast(e, _tableItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                      OnDragCancel="@ShowDragCancelToast"
+                      GetItemId="@(i => i.Id)"
+                      Context="s">
+                <SortableContent Class="block">
+                    <DataTable TData="TaskItem"
+                               Data="@_tableItems"
+                               AdditionalRowAttributes="@s.RowAttributes"
+                               BodyRowClass="hover:bg-transparent"
+                               ShowPagination="false"
+                               ShowToolbar="false">
+                        <Columns>
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
+                                <CellTemplate Context="row">
+                                    <SortableItemHandle Class="mx-auto" />
+                                </CellTemplate>
+                            </DataTableColumn>
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Name)" Header="Task" />
+                            <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Status)" Header="Status">
+                                <CellTemplate Context="row">
+                                    <Badge Variant="@(row.Status == "Done" ? BadgeVariant.Default : BadgeVariant.Secondary)">@row.Status</Badge>
+                                </CellTemplate>
+                            </DataTableColumn>
+                        </Columns>
+                    </DataTable>
+                </SortableContent>
+                <SortableOverlay Class="rounded opacity-80" />
+            </Sortable>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Kanban Board (cross-list) ───────────────────────────── *@
+    <DemoSection Title="Kanban Board"
+                 Description="Items drag freely between columns using the Group parameter. OnItemTransferredOut removes the item from its source list; OnItemTransferredIn inserts it into the target.">
+        <DemoBlock Code="@_kanbanCode">
+            <div class="grid grid-cols-3 gap-4">
+                @foreach (var col in _kanbanCols)
+                {
+                    <div class="flex flex-col gap-2">
+                        <h4 class="text-sm font-semibold text-muted-foreground px-1">@col.Title <span class="text-xs font-normal">(@col.Items.Count)</span></h4>
+                        <Sortable TItem="DemoItem"
+                                  Items="@col.Items"
+                                  Group="kanban-demo"
+                                  GetItemId="@(i => i.Id)"
+                                  OnItemsReordered="@(r => { col.Items = r; })"
+                                  OnItemTransferredOut="@(args => HandleKanbanOut(args, col))"
+                                  OnItemTransferredIn="@(args => HandleKanbanIn(args, col))">
+                            <SortableContent Class="flex flex-col gap-2 min-h-[80px] rounded-lg border border-dashed p-2 transition-colors data-[state=over]:border-primary/60 data-[state=over]:bg-primary/5">
+                                @if (col.Items.Count == 0)
+                                {
+                                    <div class="flex flex-1 items-center justify-center py-4 text-xs text-muted-foreground select-none pointer-events-none">
+                                        Drop an item here
+                                    </div>
+                                }
+                                @foreach (var item in col.Items)
+                                {
+                                    <SortableItem @key="@item.Id" Value="@item.Id">
+                                        <SortableItemHandle />
+                                        <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                                    </SortableItem>
+                                }
+                            </SortableContent>
+                            <SortableOverlay />
+                        </Sortable>
+                    </div>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Cross-List: DataTable ↔ DataTable ───────────────────── *@
+    <DemoSection Title="Cross-List Transfer — Table ↔ Table"
+                 Description="Items transfer between two DataTables sharing the same Group. Consumer handles transfer-in and transfer-out; the component fires events with the resolved index.">
+        <DemoBlock Code="@_crossListCode">
+            <div class="grid grid-cols-2 gap-6">
+
+                @* Left Table *@
+                <div class="flex flex-col gap-2">
+                    <h4 class="text-sm font-semibold text-muted-foreground">Table A</h4>
+                    <Sortable TItem="CardItem"
+                              Items="@_crossListLeft"
+                              Group="cross-demo"
+                              GetItemId="@(i => i.Id)"
+                              OnItemsReordered="@(r => _crossListLeft = r)"
+                              OnItemTransferredOut="@(args => { _crossListLeft = _crossListLeft.Where(i => i.Id != args.ActiveId).ToList(); })"
+                              OnItemTransferredIn="@(args => HandleCrossLeftIn(args))"
+                              Context="sl">
+                        <SortableContent Class="block min-h-[60px] rounded-lg transition-colors data-[state=over]:bg-primary/5 data-[state=over]:ring-2 data-[state=over]:ring-primary/40">
+                            <DataTable TData="CardItem"
+                                       Data="@_crossListLeft"
+                                       AdditionalRowAttributes="@sl.RowAttributes"
+                                       BodyRowClass="hover:bg-transparent"
+                                       ShowPagination="false"
+                                       ShowToolbar="false">
+                                <Columns>
+                                    <DataTableColumn TData="CardItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
+                                        <CellTemplate Context="row">
+                                            <SortableItemHandle Class="mx-auto" />
+                                        </CellTemplate>
+                                    </DataTableColumn>
+                                    <DataTableColumn TData="CardItem" TValue="string" Property="@(i => i.Name)" Header="Name" />
+                                    <DataTableColumn TData="CardItem" TValue="string" Property="@(i => i.Tag)" Header="Tag">
+                                        <CellTemplate Context="row">
+                                            <Badge Variant="BadgeVariant.Secondary">@row.Tag</Badge>
+                                        </CellTemplate>
+                                    </DataTableColumn>
+                                </Columns>
+                            </DataTable>
+                        </SortableContent>
+                        <SortableOverlay Class="rounded opacity-80" />
+                    </Sortable>
+                </div>
+
+                @* Right Table *@
+                <div class="flex flex-col gap-2">
+                    <h4 class="text-sm font-semibold text-muted-foreground">Table B</h4>
+                    <Sortable TItem="CardItem"
+                              Items="@_crossListRight"
+                              Group="cross-demo"
+                              GetItemId="@(i => i.Id)"
+                              OnItemsReordered="@(r => _crossListRight = r)"
+                              OnItemTransferredOut="@(args => { _crossListRight = _crossListRight.Where(i => i.Id != args.ActiveId).ToList(); })"
+                              OnItemTransferredIn="@(args => HandleCrossRightIn(args))"
+                              Context="sr">
+                        <SortableContent Class="block min-h-[60px] rounded-lg transition-colors data-[state=over]:bg-primary/5 data-[state=over]:ring-2 data-[state=over]:ring-primary/40">
+                            <DataTable TData="CardItem"
+                                       Data="@_crossListRight"
+                                       AdditionalRowAttributes="@sr.RowAttributes"
+                                       BodyRowClass="hover:bg-transparent"
+                                       ShowPagination="false"
+                                       ShowToolbar="false">
+                                <Columns>
+                                    <DataTableColumn TData="CardItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
+                                        <CellTemplate Context="row">
+                                            <SortableItemHandle Class="mx-auto" />
+                                        </CellTemplate>
+                                    </DataTableColumn>
+                                    <DataTableColumn TData="CardItem" TValue="string" Property="@(i => i.Name)" Header="Name" />
+                                    <DataTableColumn TData="CardItem" TValue="string" Property="@(i => i.Tag)" Header="Tag">
+                                        <CellTemplate Context="row">
+                                            <Badge Variant="BadgeVariant.Secondary">@row.Tag</Badge>
+                                        </CellTemplate>
+                                    </DataTableColumn>
+                                </Columns>
+                            </DataTable>
+                        </SortableContent>
+                        <SortableOverlay Class="rounded opacity-80" />
+                    </Sortable>
+                </div>
+
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Primitive (unstyled) ────────────────────────────────── *@
+    <DemoSection Title="Using the Primitive"
+                 Description="For full control over styling, use the headless SortablePrimitive directly. See the Sortable Primitive docs for the complete API.">
+        <DemoBlock Code="@_primitiveCode">
+            <div class="max-w-sm">
+                <SortablePrimitive TItem="DemoItem"
+                                   Items="@_primitiveItems"
+                                   OnItemsReordered="@(r => _primitiveItems = r)"
+                                   OnDragEnd="@(e => ShowDragEndToast(e, _primitiveItems.ElementAtOrDefault(e.Moved ? e.ToIndex : e.FromIndex)?.Name))"
+                                   OnDragCancel="@ShowDragCancelToast"
+                                   GetItemId="@(i => i.Id)">
+                    <SortableContentPrimitive class="flex flex-col gap-2">
+                        @foreach (var item in _primitiveItems)
+                        {
+                            <SortableItemPrimitive @key="@item.Id" Value="@item.Id"
+                                                   class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
+                                <SortableItemHandlePrimitive class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" />
+                                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+                            </SortableItemPrimitive>
+                        }
+                    </SortableContentPrimitive>
+                    <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
+                </SortablePrimitive>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────── *@
+    <DemoSection Title="Sortable&lt;TItem&gt; API Reference" Description="Parameters for the Sortable component.">
+        <DemoPropsTable Rows="@_sortableProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableContent API Reference" Description="Parameters for the SortableContent component.">
+        <DemoPropsTable Rows="@_contentProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItem API Reference" Description="Parameters for the SortableItem component.">
+        <DemoPropsTable Rows="@_itemProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableItemHandle API Reference" Description="Parameters for the SortableItemHandle component.">
+        <DemoPropsTable Rows="@_handleProps" />
+    </DemoSection>
+
+    <DemoSection Title="SortableOverlay API Reference" Description="Parameters for the SortableOverlay component.">
+        <DemoPropsTable Rows="@_overlayProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    private record DemoItem(string Id, string Name);
+
+    private IList<DemoItem> _defaultItems =
+    [
+        new("1", "Task: Design wireframes"),
+        new("2", "Task: Write unit tests"),
+        new("3", "Task: Implement API"),
+        new("4", "Task: Code review"),
+        new("5", "Task: Deploy to staging"),
+    ];
+
+    private IList<DemoItem> _asHandleItems =
+    [
+        new("1a", "Alpha"),
+        new("2a", "Beta"),
+        new("3a", "Gamma"),
+        new("4a", "Delta"),
+    ];
+
+    private IList<DemoItem> _horizontalItems =
+    [
+        new("h1", "One"),
+        new("h2", "Two"),
+        new("h3", "Three"),
+        new("h4", "Four"),
+        new("h5", "Five"),
+    ];
+
+    private IList<DemoItem> _customHandleItems =
+    [
+        new("c1", "Backlog"),
+        new("c2", "In Progress"),
+        new("c3", "Review"),
+        new("c4", "Done"),
+    ];
+
+    private IList<DemoItem> _primitiveItems =
+    [
+        new("p1", "First item"),
+        new("p2", "Second item"),
+        new("p3", "Third item"),
+    ];
+
+    private record CardItem(string Id, string Name, string Tag);
+    private record TaskItem(string Id, string Name, string Status);
+
+    private IList<CardItem> _dataViewListItems =
+    [
+        new("dv1", "Design wireframes",  "Design"),
+        new("dv2", "Write unit tests",   "QA"),
+        new("dv3", "Implement API",      "Backend"),
+        new("dv4", "Code review",        "DevOps"),
+        new("dv5", "Deploy to staging",  "Ops"),
+    ];
+
+    private IList<CardItem> _dataViewGridItems =
+    [
+        new("g1", "Dashboard",     "Design"),
+        new("g2", "Auth flow",     "Security"),
+        new("g3", "Notifications", "UX"),
+        new("g4", "Settings",      "Config"),
+        new("g5", "Analytics",     "Data"),
+        new("g6", "Reports",       "Data"),
+    ];
+
+    private IList<CardItem> _crossListLeft =
+    [
+        new("cl1", "Design wireframes", "Design"),
+        new("cl2", "Write unit tests",  "QA"),
+        new("cl3", "Implement API",     "Backend"),
+    ];
+
+    private IList<CardItem> _crossListRight =
+    [
+        new("cl4", "Code review", "DevOps"),
+        new("cl5", "Deploy",      "Ops"),
+    ];
+
+    private class KanbanColumn
+    {
+        public string Id    { get; init; } = "";
+        public string Title { get; init; } = "";
+        public IList<DemoItem> Items { get; set; } = [];
+    }
+
+    private readonly List<KanbanColumn> _kanbanCols =
+    [
+        new() { Id = "todo",     Title = "To Do",       Items = new List<DemoItem> { new("k1", "Design mockup"), new("k2", "Write specs"), new("k3", "Plan sprint") } },
+        new() { Id = "progress", Title = "In Progress",  Items = new List<DemoItem> { new("k4", "Implement auth"), new("k5", "API integration") } },
+        new() { Id = "done",     Title = "Done",          Items = new List<DemoItem> { new("k6", "Setup CI/CD") } },
+    ];
+
+    private DemoItem? FindKanbanItem(string id) =>
+        _kanbanCols.SelectMany(c => c.Items).FirstOrDefault(i => i.Id == id);
+
+    private void HandleKanbanIn(SortableTransferArgs args, KanbanColumn col)
+    {
+        var item = FindKanbanItem(args.ActiveId);
+        if (item is null) return;
+        var list = col.Items.ToList();
+        list.Insert(Math.Clamp(args.Index, 0, list.Count), item);
+        col.Items = list;
+    }
+
+    private void HandleKanbanOut(SortableTransferArgs args, KanbanColumn col)
+    {
+        col.Items = col.Items.Where(i => i.Id != args.ActiveId).ToList();
+    }
+
+    private CardItem? FindCrossItem(string id) =>
+        _crossListLeft.Concat(_crossListRight).FirstOrDefault(i => i.Id == id);
+
+    private void HandleCrossLeftIn(SortableTransferArgs args)
+    {
+        var item = FindCrossItem(args.ActiveId);
+        if (item is null) return;
+        var list = _crossListLeft.ToList();
+        list.Insert(Math.Clamp(args.Index, 0, list.Count), item);
+        _crossListLeft = list;
+        Toast.Success("Item transferred", $"\"{item.Name}\" moved to Table A.");
+    }
+
+    private void HandleCrossRightIn(SortableTransferArgs args)
+    {
+        var item = FindCrossItem(args.ActiveId);
+        if (item is null) return;
+        var list = _crossListRight.ToList();
+        list.Insert(Math.Clamp(args.Index, 0, list.Count), item);
+        _crossListRight = list;
+        Toast.Success("Item transferred", $"\"{item.Name}\" moved to Table B.");
+    }
+
+    private DataViewLayout _dataViewGridLayout = DataViewLayout.Grid;
+
+    private IList<TaskItem> _tableItems =
+    [
+        new("t1", "Design wireframes",  "To Do"),
+        new("t2", "Write unit tests",   "In Progress"),
+        new("t3", "Implement API",      "To Do"),
+        new("t4", "Code review",        "In Progress"),
+        new("t5", "Deploy to staging",  "Done"),
+    ];
+
+    // ── Toast helpers ────────────────────────────────────────────────
+
+    private void ShowDragEndToast(SortableDragEndArgs args, string? itemName)
+    {
+        if (args.Moved)
+        {
+            var name = string.IsNullOrWhiteSpace(itemName) ? args.ActiveId : $"\"{itemName}\"";
+            Toast.Success(
+                "Item reordered",
+                $"{name} moved from position {args.FromIndex + 1} to {args.ToIndex + 1}.");
+        }
+        else
+        {
+            Toast.Show("No change", "Item was dropped back on its original position.");
+        }
+    }
+
+    private void ShowDragCancelToast() =>
+        Toast.Show("Drag cancelled", "Item returned to its original position.");
+}

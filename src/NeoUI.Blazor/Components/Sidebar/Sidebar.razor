@@ -21,8 +21,8 @@
         <aside class="@GetDesktopClasses()" 
                @attributes="AdditionalAttributes" 
                data-sidebar="sidebar"
-               data-state="@GetDataState()" 
-               data-collapsible="@(Collapsible ? (!Context.Open ? "icon" : "none") : "none")" 
+               data-state="@GetDataState()"
+               data-collapsible="@GetDataCollapsible()"
                data-variant="@Context.Variant.ToString().ToLowerInvariant()" 
                data-side="@Context.Side.ToString().ToLowerInvariant()">
             @ChildContent

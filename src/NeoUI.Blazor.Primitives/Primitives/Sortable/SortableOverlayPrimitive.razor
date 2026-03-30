@@ -1,0 +1,13 @@
+@namespace NeoUI.Blazor.Primitives
+
+@* Overlay / ghost element — positioned and shown/hidden entirely by sortable.js *@
+<div data-sortable-overlay-for="@Context?.InstanceId"
+     data-state="@(Context?.IsDragging == true ? "dragging" : "idle")"
+     data-has-child-content="@(ChildContent is not null ? "true" : null)"
+     style="display:none;position:fixed;pointer-events:none;z-index:9999;"
+     @attributes="AdditionalAttributes">
+    @if (ChildContent is not null && Context?.ActiveId is not null)
+    {
+        @ChildContent(Context.ActiveId)
+    }
+</div>

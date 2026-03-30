@@ -26,21 +26,9 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string GetClassNames()
-    {
-        var classes = new List<string>
-        {
-            "text-lg",
-            "font-semibold",
-            "leading-none",
-            "tracking-tight"
-        };
-
-        if (!string.IsNullOrWhiteSpace(Class))
-        {
-            classes.Add(Class);
-        }
-
-        return string.Join(" ", classes);
-    }
+    private string GetClassNames() =>
+        ClassNames.cn(
+            "text-lg font-semibold leading-none tracking-tight",
+            Class
+        );
 }
