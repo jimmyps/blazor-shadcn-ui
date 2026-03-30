@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
 
 @*
     SidebarPillNavItem — an icon-only button for use inside <SidebarPillNav>.
@@ -41,6 +42,7 @@ else if (!string.IsNullOrEmpty(Href))
              class="@GetNavLinkClasses()"
              title="@NativeTitle"
              aria-label="@Label"
+             data-active="@(IsNavLinkActive() ? "true" : "false")"
              @attributes="AdditionalAttributes">
         @ChildContent
     </NavLink>
@@ -51,6 +53,7 @@ else
             class="@GetButtonClasses()"
             title="@NativeTitle"
             aria-label="@Label"
+            data-active="@(IsActive ? "true" : "false")"
             @onclick="OnClick"
             @attributes="AdditionalAttributes">
         @ChildContent
@@ -128,6 +131,9 @@ else
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+
     private string? NativeTitle => Title ?? Label;
 
     private string BaseClasses =>
@@ -156,6 +162,16 @@ else
             : "[&.active]:bg-primary [&.active]:text-primary-foreground [&.active]:hover:bg-primary/90",
         Class
     );
+
+    private bool IsNavLinkActive()
+    {
+        if (string.IsNullOrEmpty(Href)) return false;
+        var currentPath = Context?.CurrentPath ?? new Uri(NavigationManager.Uri).AbsolutePath;
+        var hrefPath = NavigationManager.ToAbsoluteUri(Href).AbsolutePath;
+        return Match == NavLinkMatch.All
+            ? string.Equals(currentPath, hrefPath, StringComparison.OrdinalIgnoreCase)
+            : currentPath.StartsWith(hrefPath, StringComparison.OrdinalIgnoreCase);
+    }
 
     protected override void OnParametersSet()
     {
