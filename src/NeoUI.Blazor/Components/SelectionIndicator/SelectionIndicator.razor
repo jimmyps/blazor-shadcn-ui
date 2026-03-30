@@ -43,15 +43,25 @@
     public string Selector { get; set; } = "[data-state=active]";
 
     /// <summary>
+    /// When <c>true</c>, the indicator also slides to whichever item the pointer is currently
+    /// hovering over, then snaps back to the selected item on mouse leave.
+    /// Useful in menus or lists where you want a visual hover highlight.
+    /// </summary>
+    [Parameter]
+    public bool Hover { get; set; }
+
+    /// <summary>
     /// Additional CSS classes appended to the indicator element.
     /// Use this to switch variants, e.g. underline:
-    /// <c>Class="absolute inset-x-0 bottom-0 top-auto h-0.5 rounded-full bg-foreground"</c>
+    /// <c>Class="[--si-height:2px] rounded-none bg-foreground"</c>
+    /// (--si-height pins the indicator to the bottom of each item at the given fixed height)
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
     private string CssClass => ClassNames.cn(
-        "absolute inset-y-1 rounded-sm bg-background shadow-sm pointer-events-none z-0",
+        "absolute rounded-sm bg-background shadow-sm pointer-events-none z-0",
+        "[--si-duration:350ms] [--si-easing:cubic-bezier(0.34,1.26,0.64,1)]",
         Class);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -61,7 +71,7 @@
         _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor/js/selection-indicator.js");
 
-        await _module.InvokeVoidAsync("init", _ref, Selector);
+        await _module.InvokeVoidAsync("init", _ref, Selector, Hover);
     }
 
     public async ValueTask DisposeAsync()
