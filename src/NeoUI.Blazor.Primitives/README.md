@@ -37,7 +37,7 @@ dotnet add package NeoUI.Blazor.Primitives
 - **Radio Group**: Mutually exclusive options with keyboard navigation
 - **Select**: Dropdown selection with groups and virtualization support
 - **Sheet**: Side panels that slide in from viewport edges
-- **Sortable**: Headless drag-and-drop sortable list with pointer, touch, and keyboard support
+- **Sortable**: Headless drag-and-drop sortable list with pointer, touch, and keyboard support. Supports cross-list transfer between grouped containers.
 - **Switch**: Toggle control for on/off states
 - **Table**: Data table with header, body, rows, cells, and pagination
 - **Tabs**: Tabbed interface with keyboard navigation
@@ -248,7 +248,7 @@ Select is generic (`TValue`). Supports both value and open state binding.
     <SortableContentPrimitive class="flex flex-col gap-2">
         @foreach (var item in items)
         {
-            <SortableItemPrimitive Value="@item.Id"
+            <SortableItemPrimitive @key="@item.Id" Value="@item.Id"
                                    class="flex items-center gap-3 rounded border px-4 py-3">
                 <SortableItemHandlePrimitive class="cursor-grab" />
                 <span>@item.Name</span>
@@ -259,21 +259,51 @@ Select is generic (`TValue`). Supports both value and open state binding.
 </SortablePrimitive>
 ```
 
-| Parameter | Type | Default | Values |
-|-----------|------|---------|--------|
-| `Items` | `IList<TItem>` | required | Source list |
-| `OnItemsReordered` | `EventCallback<IList<TItem>>` | — | Callback with reordered list |
-| `GetItemId` | `Func<TItem, string>` | required | Extracts unique string ID from each item |
-| `Orientation` | `SortableOrientation` | `Vertical` | `Vertical`, `Horizontal`, `Mixed` |
+**Cross-list transfer** — share a `Group` name across multiple `SortablePrimitive` instances. Consumer handles all state mutations via transfer events.
 
-**SortableItemPrimitive**
+```razor
+<SortablePrimitive TItem="MyItem" Items="@colA" Group="board"
+                   GetItemId="@(i => i.Id)"
+                   OnItemsReordered="@(r => colA = r)"
+                   OnItemTransferredOut="@(a => colA = colA.Where(i => i.Id != a.ActiveId).ToList())"
+                   OnItemTransferredIn="@(a => { var item = FindItem(a.ActiveId); colA.Insert(a.Index, item); })">
+    ...
+</SortablePrimitive>
+```
+
+**`SortablePrimitive<TItem>` parameters**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `Value` | `string` | required | Item ID matching `GetItemId` output |
+| `Items` | `IList<TItem>` | required | Source list |
+| `GetItemId` | `Func<TItem, string>` | required | Extracts unique string ID from each item |
+| `Orientation` | `SortableOrientation` | `Vertical` | `Vertical`, `Horizontal`, `Grid`, `Mixed` |
+| `Group` | `string?` | `null` | Shared group name for cross-list DnD. Instances with the same group accept drops from each other. |
+| `OnItemsReordered` | `EventCallback<IList<TItem>>` | — | Fired after a same-list reorder. Receives the reordered list. |
+| `OnItemTransferredIn` | `EventCallback<SortableTransferArgs>` | — | Fired on the **target** when an item arrives from a peer. Consumer inserts the item at `args.Index`. |
+| `OnItemTransferredOut` | `EventCallback<SortableTransferArgs>` | — | Fired on the **source** after the target accepts. Consumer removes `args.ActiveId` from its list. |
+| `OnCanDrop` | `Func<SortableDragQueryArgs, bool>?` | `null` | Drop-time guard. Return `false` to reject; transfer events are not fired. |
+| `OnDragStart` | `EventCallback<string>` | — | Fired when a drag begins. Receives the active item ID. |
+| `OnDragEnd` | `EventCallback<SortableDragEndArgs>` | — | Fired when a same-list drag ends. |
+| `OnDragCancel` | `EventCallback` | — | Fired on Escape or pointer cancel. |
+
+**`SortableScope<TItem>`** — exposed via `Context="s"` on `<SortablePrimitive>` or `<Sortable>`.
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `RowAttributes` | `Func<TItem, Dictionary<string, object>>` | Stamps `data-sortable-id` on each row. Pass to `AdditionalRowAttributes` on any table or grid. |
+| `ActiveId` | `string?` | ID of the item currently being dragged, or `null`. |
+| `IsDragging` | `bool` | `true` while a drag is in progress. |
+| `IsItemDragging(TItem)` | `bool` | `true` when the given item is the active drag item. |
+
+**`SortableItemPrimitive` parameters**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Value` | `string` | required | Item ID matching `GetItemId` output. Add `@key="@item.Id"` on the element — required for cross-list. |
 | `AsHandle` | `bool` | `false` | Makes the entire item draggable (no separate handle needed) |
 
-**SortableOverlayPrimitive**
+**`SortableOverlayPrimitive` parameters**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -399,7 +429,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Current Version**: 3.6.4
+- **Current Version**: 3.8.2
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives

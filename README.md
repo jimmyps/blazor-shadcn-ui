@@ -430,7 +430,7 @@ NeoUI includes **125+ styled components** with full shadcn/ui design compatibili
 - **Pagination** - Page navigation with Previous/Next/Ellipsis support
 - **Resizable** - Split layouts with draggable handles
 - **Scroll Area** - Custom scrollbars for styled scroll regions
-- **Sortable** - Drag-and-drop reordering with pointer, touch, and keyboard support. Composes with `DataTable`, `DataView`, and any list component without modifying them — place a `SortableItemHandle` in any column template and it works
+- **Sortable** - Drag-and-drop reordering with pointer, touch, and keyboard support. Composes with `DataTable`, `DataView`, and any list component without modifying them — place a `SortableItemHandle` in any column template and it works. Supports **cross-list transfer** between multiple lists sharing a `Group` name, with consumer-controlled transfer events (`OnItemTransferredIn`, `OnItemTransferredOut`, `OnCanDrop`). Use `Context="s"` to get a `SortableScope<TItem>` for passing `data-sortable-id` to any table or grid via `s.RowAttributes`.
 - **Item** - Flexible list items with media, content, and actions
 - **Separator** - Visual dividers
 - **Sidebar** - Responsive sidebar with collapsible icon mode, variants (default, floating, inset), and mobile sheet integration
@@ -575,7 +575,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Version**: 3.6.4
+- **Current Version**: 3.8.2
 - **Target Framework**: .NET 10
 - **Package IDs**: 
   - `NeoUI.Blazor`
