@@ -3,9 +3,9 @@
 @*
     SelectionIndicator — composable animated selection indicator.
 
-    Drop this as the last child inside any "selection" container to get a spring-animated
-    pill/underline that tracks the active item. Uses Motion One for spring physics and a
-    MutationObserver to detect selection changes automatically.
+    Drop this as the last child inside any "selection" container to get an animated
+    pill/underline that tracks the active item. Uses CSS transitions (configurable via
+    CSS custom properties) and a MutationObserver to detect selection changes automatically.
 
     Supported containers and their selectors:
       Tabs               → [data-state=active]   (default)

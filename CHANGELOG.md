@@ -2,10 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-3-30 — SelectionIndicator component + cross-list Sortable DnD
+## 2026-3-30 — SelectionIndicator component + ToggleGroupItem aria-checked fix
 
-> **Release: `v3.8.3`**  
-> **Library change.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. All changes are additive — no breaking changes.
+> **Release: `v3.8.2`**  
+> **Library change.** Affects `NeoUI.Blazor`. All changes are additive — no breaking changes.
 
 ---
 

@@ -21,6 +21,19 @@
 const instanceMap = new WeakMap();
 
 /**
+ * Parses a CSS time value ("260ms", "0.26s", "260") to milliseconds.
+ * @param {string} value
+ * @returns {number}
+ */
+function parseDurationMs(value) {
+    const num = parseFloat(value);
+    if (isNaN(num)) return 0;
+    // "s" suffix but NOT "ms" suffix → seconds
+    const trimmed = value.trim();
+    return (trimmed.endsWith('s') && !trimmed.endsWith('ms')) ? num * 1000 : num;
+}
+
+/**
  * Measures an element and updates the indicator's inline position.
  * @param {HTMLElement} indicator
  * @param {HTMLElement} container
@@ -37,9 +50,14 @@ function applyPosition(indicator, container, activeEl, instant, transition, fixe
 
     let top, height;
     if (fixedHeight) {
-        // Pin to the bottom of the active element with a fixed height (e.g. underline)
+        // Pin to the bottom of the active element at a fixed height.
+        // Measure the height in px via layout (supports any CSS unit: px, rem, em…)
+        const prevHeight = indicator.style.height;
+        indicator.style.height = fixedHeight;
+        const pixelHeight = indicator.getBoundingClientRect().height || parseFloat(fixedHeight) || 0;
+        indicator.style.height = prevHeight;
         height = fixedHeight;
-        top    = `${ar.bottom - parseFloat(fixedHeight) - cr.top}px`;
+        top    = `${ar.bottom - pixelHeight - cr.top}px`;
     } else {
         top    = `${ar.top - cr.top}px`;
         height = `${ar.height}px`;
@@ -83,10 +101,11 @@ export function init(indicator, selector, hoverEnabled) {
     if (pos === 'static') container.style.position = 'relative';
 
     // Read animation config from CSS custom properties (defaults set on the component element)
-    const cs       = getComputedStyle(indicator);
-    const duration  = parseInt(cs.getPropertyValue('--si-duration')) || 260;
-    const easing    = cs.getPropertyValue('--si-easing').trim()      || 'cubic-bezier(0.34,1.56,0.64,1)';
-    const fixedHeight = cs.getPropertyValue('--si-height').trim();   // e.g. "2px" or ""
+    const cs        = getComputedStyle(indicator);
+    const durRaw    = cs.getPropertyValue('--si-duration').trim();  // e.g. "260ms" or "0.26s"
+    const duration  = parseDurationMs(durRaw) || 260;
+    const easing    = cs.getPropertyValue('--si-easing').trim()     || 'cubic-bezier(0.34,1.56,0.64,1)';
+    const fixedHeight = cs.getPropertyValue('--si-height').trim();  // px only, e.g. "2px"
 
     const transition = [
         `left ${duration}ms ${easing}`,
