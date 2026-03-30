@@ -227,6 +227,7 @@ Supports `Server`, `WebAssembly`, and `Auto` (default) interactivity modes. Tail
 - **Collapsible** - Expandable content area
 - **Resizable** - Split layouts with draggable handles
 - **Scroll Area** - Custom scrollbars
+- **Selection Indicator** - Spring-animated indicator that slides between the active item in any selection container. Drop it as the last child of `TabsList`, `ToggleGroup`, `DropdownMenuRadioGroup`, a pagination row, or any custom markup — it reacts to attribute changes via `MutationObserver`. Supports hover preview, CSS custom properties (`--si-duration`, `--si-easing`, `--si-height`), and `data-[si-hover]:` Tailwind variants for distinct hover vs selected styles.
 - **Sortable** - Drag-and-drop reordering with pointer, touch, and keyboard support. Composes with `DataTable`, `DataView`, and any list component. Supports cross-list transfer between grouped containers via `Group`, `OnItemTransferredIn`, `OnItemTransferredOut`, and `OnCanDrop`. Use `Context="s"` for `SortableScope<TItem>` and `s.RowAttributes`.
 
 ### Advanced Components

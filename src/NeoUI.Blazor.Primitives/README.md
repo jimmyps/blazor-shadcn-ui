@@ -54,7 +54,7 @@ Button, Button Group, Checkbox, Combobox, Date Picker, Field, Input, Input Group
 Avatar, Badge, Card, Data Table, Empty, Grid, Item, Kbd, Progress, Separator, Skeleton, Spinner, Typography
 
 ### Navigation Components
-Accordion, Breadcrumb, Command, Context Menu, Dropdown Menu, Menubar, Navigation Menu, Pagination, Sidebar, Tabs
+Accordion, Breadcrumb, Command, Context Menu, Dropdown Menu, Menubar, Navigation Menu, Pagination, Selection Indicator, Sidebar, Tabs
 
 ### Overlay Components
 Alert Dialog, Dialog, Hover Card, Popover, Sheet, Toast, Tooltip
@@ -63,7 +63,7 @@ Alert Dialog, Dialog, Hover Card, Popover, Sheet, Toast, Tooltip
 Alert
 
 ### Layout & Display Components
-Aspect Ratio, Carousel, Collapsible, Resizable, Scroll Area
+Aspect Ratio, Carousel, Collapsible, Resizable, Scroll Area, Selection Indicator, Sortable
 
 ### Advanced Components
 Chart (12 types), Grid, Markdown Editor, Motion (20+ animation presets), Rich Text Editor, Toggle, Toggle Group
