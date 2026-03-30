@@ -158,6 +158,48 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Animated Selection"
+        Description="Add a SelectionIndicator as the last child of TabsList to get a spring-animated pill that slides between tabs. Pass Class to each TabsTrigger to clear its own active background so the indicator shows through.">
+        <DemoBlock Code="@_animatedCode">
+            <Tabs DefaultValue="overview">
+                <TabsList>
+                    <TabsTrigger Value="overview"
+                                 Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                        Overview
+                    </TabsTrigger>
+                    <TabsTrigger Value="analytics"
+                                 Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                        Analytics
+                    </TabsTrigger>
+                    <TabsTrigger Value="reports"
+                                 Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                        Reports
+                    </TabsTrigger>
+                    <SelectionIndicator />
+                </TabsList>
+                <TabsContent Value="overview">
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                        <h3 class="text-lg font-semibold mb-2">Overview</h3>
+                        <p class="text-sm text-muted-foreground">View a summary of your account activity.</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="analytics">
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                        <h3 class="text-lg font-semibold mb-2">Analytics</h3>
+                        <p class="text-sm text-muted-foreground">Detailed metrics about your usage.</p>
+                    </div>
+                </TabsContent>
+                <TabsContent Value="reports">
+                    <div class="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
+                        <h3 class="text-lg font-semibold mb-2">Reports</h3>
+                        <p class="text-sm text-muted-foreground">Generate and download reports.</p>
+                    </div>
+                </TabsContent>
+            </Tabs>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_tabsProps" />
     </DemoSection>

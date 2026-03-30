@@ -357,8 +357,9 @@ public static class ComponentRegistry
             new("chart/scatter",    "Scatter Chart",    "Scatter plots for correlation and distribution data",                           "scatter-chart",         C, CH, IsSubPage: true),
 
             // ── Animation ─────────────────────────────────────────────────
-            new("carousel",         "Carousel",         "Slideshow component with touch gestures and animations",                        "images",                C, AN),
-            new("motion",           "Motion",           "Declarative animation system with 20+ presets",                                 "zap",                   C, AN),
+            new("carousel",            "Carousel",            "Slideshow component with touch gestures and animations",                                 "images",          C, AN),
+            new("motion",              "Motion",              "Declarative animation system with 20+ presets",                                          "zap",             C, AN),
+            new("selection-indicator", "Selection Indicator", "Composable spring-animated indicator that slides between active items in any container", "move-horizontal", C, AN),
         };
 
         var primitives = new List<ComponentRegistryEntry>
