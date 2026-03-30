@@ -2,6 +2,121 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-30 — SelectionIndicator component + ToggleGroupItem aria-checked fix
+
+> **Release: `v3.8.2`**  
+> **Library change.** Affects `NeoUI.Blazor`. All changes are additive — no breaking changes.
+
+---
+
+### ✨ New Component — `SelectionIndicator`
+
+A composable, spring-animated indicator that slides between the active item in any selection container. Drop it as the last child of any container that marks its active child via a CSS attribute — no event wiring or Blazor state required.
+
+**How it works:**
+
+`SelectionIndicator` uses a `MutationObserver` to watch for attribute changes on its siblings. When the active item changes, JS reads the new item's bounding rect and animates the indicator's `left`, `top`, `width`, and `height` inline styles via CSS `transition`. The indicator tracks both axes, so it works for horizontal navigation (Tabs, ToggleGroup) and vertical lists (DropdownMenu radio groups) equally.
+
+**Works with any selection container — not just NeoUI components.**
+
+`SelectionIndicator` reacts to attribute changes, so it works with every component that marks its active child via a DOM attribute. This includes all NeoUI selection-based components (`Tabs`, `ToggleGroup`, `RadioGroup`, `Select`, `DropdownMenuRadioGroup`, `Pagination`, `NavigationMenu`, etc.) as well as fully custom HTML markup — as long as you can set an attribute on the active element, the indicator follows.
+
+Common selectors for NeoUI components:
+
+| Container | Selector |
+|---|---|
+| `Tabs` | `[data-state=active]` (default — no config needed) |
+| `ToggleGroup` single | `[aria-checked=true]` |
+| `RadioGroup` / `Select` / `DropdownMenuRadioGroup` | `[data-state=checked]` |
+| `Pagination` | `[aria-current=page]` |
+| `NavigationMenuLink` | `[data-active=true]` |
+| Plain HTML / custom markup | any attribute, e.g. `[data-active=true]` |
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Selector` | `string` | `[data-state=active]` | CSS selector used to find the active element within the parent container. |
+| `Hover` | `bool` | `false` | When `true`, the indicator also slides to the hovered item and snaps back on mouse leave. JS sets `data-si-hover` on the indicator during hover — use `data-[si-hover]:` Tailwind variants to style the hover state differently from the selected state. |
+| `Class` | `string?` | — | Additional CSS classes. Use `--si-height` for a fixed-height underline variant (JS pins the indicator to the bottom of each item). Use `--si-duration` / `--si-easing` to customise the animation. |
+
+**CSS custom properties (set on the indicator element):**
+
+| Property | Default | Description |
+|---|---|---|
+| `--si-duration` | `350ms` | Transition duration. |
+| `--si-easing` | `cubic-bezier(0.34, 1.26, 0.64, 1)` | Easing — the default produces a gentle spring overshoot. |
+| `--si-height` | — | Fixed height override. When set, the indicator is pinned to the bottom of the active element at this height (e.g. `2px` for an underline). |
+
+**Usage patterns:**
+
+```razor
+@* 1. Tabs — pill indicator (default appearance, no Selector needed) *@
+<TabsList>
+    <TabsTrigger Value="a" Class="relative z-1 data-[state=active]:bg-transparent data-[state=active]:shadow-none">A</TabsTrigger>
+    <TabsTrigger Value="b" Class="relative z-1 data-[state=active]:bg-transparent data-[state=active]:shadow-none">B</TabsTrigger>
+    <SelectionIndicator />
+</TabsList>
+
+@* 2. Navigation underline — fixed-height indicator pinned to the bottom of each item *@
+<div class="inline-flex border-b border-border">
+    <button class="relative z-1 px-4 py-2" data-active="true">Overview</button>
+    <button class="relative z-1 px-4 py-2">API</button>
+    <SelectionIndicator Selector="[data-active=true]"
+                        Class="rounded-none bg-foreground [--si-height:2px]" />
+</div>
+
+@* 3. DropdownMenu radio — vertical sliding with hover preview *@
+<DropdownMenuRadioGroup @bind-Value="@_view">
+    <DropdownMenuRadioItem Value="list" CloseOnSelect="false" Class="relative z-1 hover:bg-transparent">List</DropdownMenuRadioItem>
+    <DropdownMenuRadioItem Value="grid" CloseOnSelect="false" Class="relative z-1 hover:bg-transparent">Grid</DropdownMenuRadioItem>
+    <SelectionIndicator Selector="[data-state=checked]"
+                        Hover="true"
+                        Class="inset-x-1 bg-accent data-[si-hover]:bg-accent/50 rounded-sm shadow-none" />
+</DropdownMenuRadioGroup>
+
+@* 4. Fully custom container — any markup, any attribute *@
+<div class="inline-flex bg-muted rounded-lg p-1">
+    @foreach (var period in _periods)
+    {
+        <button class="relative z-1 px-3 py-1 text-xs font-medium rounded-md"
+                data-active="@(_period == period ? "true" : null)"
+                @onclick="@(() => _period = period)">
+            @period
+        </button>
+    }
+    <SelectionIndicator Selector="[data-active=true]" />
+</div>
+```
+
+> **Tip:** Items must be `relative z-1` to appear above the indicator (`z-0`). The container needs `position: relative` — JS sets this automatically if missing.
+
+---
+
+### 📖 Demo — `/components/selection-indicator`
+
+| Section | What it shows |
+|---|---|
+| **Tabs** | Default pill indicator inside `TabsList`. Custom bounce easing via `--si-duration` / `--si-easing` CSS custom properties. |
+| **Segmented Control** | `ToggleGroup` in Single mode as a segmented control. Uses `Selector="[aria-checked=true]"` — `ToggleGroupItem` signals selection via `aria-checked`, not `data-state`. |
+| **DropdownMenu Radio** | Vertical sliding indicator inside `DropdownMenuRadioGroup`. `Hover="true"` makes the indicator preview items on mouse-over; `data-[si-hover]:bg-accent/50` applies a lighter tint during hover vs the solid selected state. |
+| **Pagination** | Pill indicator tracking the active page via `Selector="[aria-current=page]"`. |
+| **Navigation Underline** | Thin 2 px underline via `[--si-height:2px]` — JS pins the indicator to the bottom of each item at the fixed height. Uses custom plain `<button>` elements with `data-active="true"`. |
+| **Custom Container** | Fully custom HTML period-selector. No NeoUI components involved — any element with the right attribute works. |
+| **API Reference** | Parameter table for `Selector`, `Hover`, and `Class`. |
+
+---
+
+### ✨ Improvement — `SelectionIndicator`: pure CSS transitions, no external dependencies
+
+The initial implementation used a Motion One CDN import for spring animation. This has been replaced with pure CSS `transition` using `cubic-bezier(0.34, 1.56, 0.64, 1)` — a spring-like easing with gentle overshoot, no external dependency. The CDN import was fragile: a top-level `import` inside a JS module causes the entire `import()` call to reject if the CDN is unavailable, crashing the Blazor circuit.
+
+---
+
+### 🐛 Fix — `ToggleGroupItem`: `aria-checked` rendered in Pascal case
+
+`aria-checked="@IsSelected"` (C# `bool`) rendered `"True"` / `"False"` (Pascal case). CSS attribute selectors are case-sensitive, so `[aria-checked=true]` never matched, making `SelectionIndicator` non-functional with `ToggleGroup`. Fixed by rendering `@(IsSelected ? "true" : "false")`.
+
 ## 2026-3-30 — Sortable cross-list drag-and-drop
 
 > **Release: `v3.8.2`**  
@@ -680,7 +795,7 @@ A **Pill Mode** section has been added to `/components/sidebar`, inserted betwee
 
 ---
 
-## 2026-3-20
+## 2026-3-20 — DataTable keyboard focus ring Safari fix
 
 > **Bug fix.** Affects `DataTable<TData>` in `NeoUI.Blazor` and `TableRow` in `NeoUI.Blazor.Primitives`. No breaking changes.
 
