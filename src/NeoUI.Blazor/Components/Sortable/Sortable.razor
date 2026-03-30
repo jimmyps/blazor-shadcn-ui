@@ -11,8 +11,12 @@
                    OnDragStart="@OnDragStart"
                    OnDragEnd="@OnDragEnd"
                    OnDragCancel="@OnDragCancel"
+                   OnItemTransferredOut="@OnItemTransferredOut"
+                   OnItemTransferredIn="@OnItemTransferredIn"
+                   OnCanDrop="@OnCanDrop"
                    GetItemId="@GetItemId"
                    Orientation="@Orientation"
+                   Group="@Group"
                    ChildContent="@ChildContent"
                    class="@Class"
                    @attributes="AdditionalAttributes" />
@@ -59,6 +63,34 @@
     /// </summary>
     [Parameter]
     public SortableOrientation Orientation { get; set; } = SortableOrientation.Vertical;
+
+    /// <summary>
+    /// Group name for cross-list drag-and-drop.
+    /// Instances with the same group name can exchange items.
+    /// </summary>
+    [Parameter]
+    public string? Group { get; set; }
+
+    /// <summary>
+    /// Callback invoked on the source instance when an item is transferred out to another list.
+    /// The consumer should remove the item from its collection.
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableTransferArgs> OnItemTransferredOut { get; set; }
+
+    /// <summary>
+    /// Callback invoked on the target instance when an item is transferred in from another list.
+    /// The consumer should insert the item into its collection.
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableTransferArgs> OnItemTransferredIn { get; set; }
+
+    /// <summary>
+    /// Optional synchronous predicate evaluated on the target instance at drop time.
+    /// Return <c>false</c> to reject the transfer. Defaults to accepting all transfers.
+    /// </summary>
+    [Parameter]
+    public Func<SortableDragQueryArgs, bool>? OnCanDrop { get; set; }
 
     /// <summary>
     /// Child content: SortableContentPrimitive, SortableOverlayPrimitive, etc.

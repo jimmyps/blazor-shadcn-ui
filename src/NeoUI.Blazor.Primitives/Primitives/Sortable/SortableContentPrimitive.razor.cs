@@ -46,7 +46,8 @@ public partial class SortableContentPrimitive : ComponentBase, IAsyncDisposable
                 _containerRef,
                 Context.DotNetRef,
                 Context.InstanceId,
-                Context.Orientation.ToString().ToLowerInvariant());
+                Context.Orientation.ToString().ToLowerInvariant(),
+                Context.Group);
         }
     }
 

@@ -69,6 +69,14 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     public IList<TItem> Items { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets the group name for cross-list drag-and-drop.
+    /// Instances with the same group name can exchange items via
+    /// <see cref="OnItemTransferredOut"/> and <see cref="OnItemTransferredIn"/>.
+    /// </summary>
+    [Parameter]
+    public string? Group { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback invoked after a drag operation reorders items.
     /// The argument is the new ordered list.
     /// </summary>
@@ -93,6 +101,28 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     [Parameter]
     public EventCallback OnDragCancel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked on the source instance when an item is dragged out
+    /// to another instance in the same group. The consumer should remove the item from its list.
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableTransferArgs> OnItemTransferredOut { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked on the target instance when an item is dropped in
+    /// from another instance in the same group. The consumer should insert the item into its list.
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableTransferArgs> OnItemTransferredIn { get; set; }
+
+    /// <summary>
+    /// Gets or sets an optional synchronous predicate evaluated on the target instance at drop time.
+    /// Return <c>false</c> to reject the transfer — no events will fire and the item stays in the source.
+    /// When <c>null</c> (default) all transfers are accepted.
+    /// </summary>
+    [Parameter]
+    public Func<SortableDragQueryArgs, bool>? OnCanDrop { get; set; }
 
     /// <summary>
     /// Gets or sets a function that extracts a unique string identifier from an item.
@@ -126,14 +156,17 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         var target = new SortableJsCallbackTarget(
-            onDragStart: HandleDragStartAsync,
-            onDragEnd: HandleDragEndAsync,
-            onDragCancel: HandleDragCancelAsync);
+            onDragStart:   HandleDragStartAsync,
+            onDragEnd:     HandleDragEndAsync,
+            onDragCancel:  HandleDragCancelAsync,
+            onTransferIn:  HandleTransferInAsync,
+            onTransferOut: HandleTransferOutAsync);
 
         _dotNetRef = DotNetObjectReference.Create(target);
 
         _context.InstanceId = _instanceId;
         _context.Orientation = Orientation;
+        _context.Group = Group;
         _context.DotNetRef = _dotNetRef;
         _context.NotifyStateChanged = () => InvokeAsync(StateHasChanged);
 
@@ -144,6 +177,7 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
     protected override void OnParametersSet()
     {
         _context.Orientation = Orientation;
+        _context.Group = Group;
         _scope = new SortableScope<TItem>(GetItemId, _context);
     }
 
@@ -194,6 +228,54 @@ public partial class SortablePrimitive<TItem> : ComponentBase, IAsyncDisposable
         {
             if (OnDragCancel.HasDelegate)
                 await OnDragCancel.InvokeAsync();
+            StateHasChanged();
+        });
+    }
+
+    /// <summary>
+    /// Invoked by JS on the TARGET instance during a cross-list drop.
+    /// Checks <see cref="OnCanDrop"/> and fires <see cref="OnItemTransferredIn"/> if accepted.
+    /// Returns <c>true</c> to confirm the transfer; <c>false</c> to reject it.
+    /// </summary>
+    private async Task<bool> HandleTransferInAsync(
+        string activeId, string overId, string sourceInstanceId, string targetInstanceId)
+    {
+        var accepted = false;
+        await InvokeAsync(async () =>
+        {
+            var queryArgs = new SortableDragQueryArgs(activeId, sourceInstanceId, targetInstanceId);
+            if (OnCanDrop is not null && !OnCanDrop(queryArgs))
+            {
+                StateHasChanged();
+                return;
+            }
+
+            var toIndex = Items.ToList().FindIndex(i => GetItemId(i) == overId);
+            if (toIndex < 0) toIndex = Items.Count; // append at end (empty container or sentinel)
+
+            var args = new SortableTransferArgs(activeId, overId, toIndex, sourceInstanceId, targetInstanceId);
+            if (OnItemTransferredIn.HasDelegate)
+                await OnItemTransferredIn.InvokeAsync(args);
+
+            accepted = true;
+            StateHasChanged();
+        });
+        return accepted;
+    }
+
+    /// <summary>
+    /// Invoked by JS on the SOURCE instance after the target has accepted the transfer.
+    /// Fires <see cref="OnItemTransferredOut"/> so the consumer can remove the item.
+    /// </summary>
+    private Task HandleTransferOutAsync(
+        string activeId, string overId, string sourceInstanceId, string targetInstanceId)
+    {
+        return InvokeAsync(async () =>
+        {
+            var fromIndex = Items.ToList().FindIndex(i => GetItemId(i) == activeId);
+            var args = new SortableTransferArgs(activeId, overId, fromIndex, sourceInstanceId, targetInstanceId);
+            if (OnItemTransferredOut.HasDelegate)
+                await OnItemTransferredOut.InvokeAsync(args);
             StateHasChanged();
         });
     }
