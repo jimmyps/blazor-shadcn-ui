@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace NeoUI.Blazor.Charts;
@@ -7,7 +8,20 @@ namespace NeoUI.Blazor.Charts;
 /// </summary>
 public class ChartThemeService : IAsyncDisposable
 {
+    private static readonly Action<ILogger, string, Exception?> LogApplyThemeToRendererFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogApplyThemeToRendererFailed)),
+            "ChartThemeService: Failed to apply theme to renderer - {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogApplyThemeFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, nameof(LogApplyThemeFailed)),
+            "ChartThemeService: Failed to apply theme - {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogModuleLoadFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(3, nameof(LogModuleLoadFailed)),
+            "ChartThemeService: Failed to load module - {Message}");
+
     private readonly IJSRuntime _jsRuntime;
+    private readonly ILogger<ChartThemeService> _logger;
     private readonly List<IChartRenderer> _renderers = new();
     private IJSObjectReference? _moduleRef;
     private bool _disposed;
@@ -16,9 +30,11 @@ public class ChartThemeService : IAsyncDisposable
     /// Initializes a new instance of the <see cref="ChartThemeService"/> class.
     /// </summary>
     /// <param name="jsRuntime">The JavaScript runtime for interop calls.</param>
-    public ChartThemeService(IJSRuntime jsRuntime)
+    /// <param name="logger">The logger instance.</param>
+    public ChartThemeService(IJSRuntime jsRuntime, ILogger<ChartThemeService> logger)
     {
         _jsRuntime = jsRuntime;
+        _logger = logger;
     }
     
     /// <summary>
@@ -70,17 +86,16 @@ public class ChartThemeService : IAsyncDisposable
                     // Note: ApplyThemeAsync requires a chartId, but we don't track them here
                     // This is a limitation - theme changes would need to be handled per-chart
                     // For now, this method is a placeholder for future enhancement
-                    Console.WriteLine("ChartThemeService: Theme changed - charts will use new theme on next render");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"ChartThemeService: Failed to apply theme to renderer - {ex.Message}");
+                    LogApplyThemeToRendererFailed(_logger, ex.Message, ex);
                 }
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"ChartThemeService: Failed to apply theme - {ex.Message}");
+            LogApplyThemeFailed(_logger, ex.Message, ex);
         }
     }
     
@@ -140,7 +155,7 @@ public class ChartThemeService : IAsyncDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ChartThemeService: Failed to load module - {ex.Message}");
+                LogModuleLoadFailed(_logger, ex.Message, ex);
             }
         }
     }

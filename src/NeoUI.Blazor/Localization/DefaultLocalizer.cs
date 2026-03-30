@@ -186,6 +186,11 @@ public class DefaultLocalizer : ILocalizer
 
         // ── Sidebar ──────────────────────────────────────────────────────────
         ["Sidebar.ToggleSidebar"] = "Toggle Sidebar",
+        ["Sidebar.Pill.AriaLabel"] = "Navigation",
+        ["Sidebar.Pill.ExpandButton"] = "Open navigation",
+
+        // ── Sortable ─────────────────────────────────────────────────────────
+        ["Sortable.DragHandle"] = "Drag handle",
 
         // ── ThemeSwitcher ────────────────────────────────────────────────────
         ["ThemeSwitcher.ChangeTheme"] = "Change theme",

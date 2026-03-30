@@ -517,6 +517,93 @@
         </DemoBlock>
     </DemoSection>
 
+    <!-- Pill Mode Example -->
+    <DemoSection Title="Pill Mode" Description="Collapses the sidebar into a floating pill navigation bar. The gradient fade reserves scroll clearance, and SidebarPillInset handles the content padding transition.">
+        <DemoBlock Code="@_pillCode">
+            <ChildContent>
+                <div class="h-[500px] w-full border rounded-lg overflow-hidden bg-background [transform:translateZ(0)]">
+                    <SidebarProvider CollapsedMode="SidebarCollapsedMode.Pill" DefaultOpen="false" HeightClass="h-full">
+                        <Sidebar Collapsible="true">
+                            <SidebarHeader>
+                                <div class="flex h-12 items-center justify-between px-3">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                            <LucideIcon Name="layers" Size="16" />
+                                        </div>
+                                        <div>
+                                            <p class="truncate text-sm font-semibold">NeoUI App</p>
+                                            <p class="truncate text-xs text-muted-foreground">Workspace</p>
+                                        </div>
+                                    </div>
+                                    <SidebarTrigger />
+                                </div>
+                            </SidebarHeader>
+                            <SidebarContent>
+                                <SidebarMenu>
+                                    @foreach (var (item, i) in _pillItems.Select((x, i) => (x, i)))
+                                    {
+                                        <SidebarMenuItem>
+                                            <SidebarMenuButton IsActive="@(_pillActive == i)"
+                                                               OnClick="@(() => _pillActive = i)"
+                                                               Tooltip="@item.Label">
+                                                <LucideIcon Name="@item.Icon" Size="16" />
+                                                <span>@item.Label</span>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    }
+                                </SidebarMenu>
+                            </SidebarContent>
+                        </Sidebar>
+
+                        <SidebarPillNav>
+                            <ChildContent>
+                                @foreach (var (item, i) in _pillItems.Select((x, i) => (x, i)))
+                                {
+                                    <SidebarPillNavItem Label="@item.Label"
+                                                        IsActive="@(_pillActive == i)"
+                                                        OnClick="@(() => _pillActive = i)">
+                                        <LucideIcon Name="@item.Icon" Size="16" />
+                                    </SidebarPillNavItem>
+                                }
+                            </ChildContent>
+                            <TrailingContent>
+                                <SidebarPillNavItem Label="Search">
+                                    <LucideIcon Name="search" Size="16" />
+                                </SidebarPillNavItem>
+                            </TrailingContent>
+                        </SidebarPillNav>
+
+                        <SidebarInset>
+                            <SidebarPillFade />
+                            <SidebarPillInset>
+                                <div class="p-4 pt-2 space-y-3">
+                                    <h2 class="text-xl font-semibold">@_pillItems[_pillActive].Label</h2>
+                                    <p class="text-sm text-muted-foreground">This is the @_pillItems[_pillActive].Label section. Collapse the sidebar to see the pill nav appear above.</p>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="rounded-lg border bg-muted/40 p-4 text-sm">Metric A</div>
+                                        <div class="rounded-lg border bg-muted/40 p-4 text-sm">Metric B</div>
+                                    </div>
+                                </div>
+                            </SidebarPillInset>
+                        </SidebarInset>
+                    </SidebarProvider>
+                </div>
+            </ChildContent>
+            <AdditionalContent>
+                <Alert>
+                    <Icon><LucideIcon Name="sparkles" Class="h-4 w-4" /></Icon>
+                    <ChildContent>
+                        <AlertTitle>New in v3.7.0</AlertTitle>
+                        <AlertDescription>
+                            Pill mode introduces five new components: <code>SidebarPillNav</code>, <code>SidebarPillNavItem</code>,
+                            <code>SidebarPillFade</code>, <code>SidebarPillInset</code>, and <code>SidebarPillSpacer</code>.
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
+        </DemoBlock>
+    </DemoSection>
+
     <!-- Collapsible to Icons Example -->
     <DemoSection Title="Collapsible to Icons" Description="Sidebar that collapses to show only icons with tooltips.">
         <DemoBlock Code="@_collapsibleIconsCode">
@@ -1214,6 +1301,15 @@
 @code {
     private bool isBasicCollapsible = true;
     private string selectedVersion = "v1.0.1";
+
+    private int _pillActive = 0;
+    private readonly (string Icon, string Label)[] _pillItems =
+    [
+        ("layout-dashboard", "Dashboard"),
+        ("bar-chart-3",      "Analytics"),
+        ("users",            "Team"),
+        ("settings",         "Settings"),
+    ];
 
     private string GetRandomIcon(int index)
     {

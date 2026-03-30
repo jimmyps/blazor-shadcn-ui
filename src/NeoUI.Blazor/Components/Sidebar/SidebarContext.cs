@@ -1,6 +1,23 @@
 namespace NeoUI.Blazor;
 
 /// <summary>
+/// Determines what happens when the sidebar is toggled closed on desktop.
+/// </summary>
+public enum SidebarCollapsedMode
+{
+    /// <summary>
+    /// Collapses to an icon-only rail (default). The sidebar stays in the layout at reduced width.
+    /// </summary>
+    Icon,
+
+    /// <summary>
+    /// Morphs the sidebar into a floating pill-shaped nav bar centered at the top of the viewport.
+    /// The sidebar slides out, the pill slides in; <see cref="SidebarInset"/> shifts its top margin accordingly.
+    /// </summary>
+    Pill,
+}
+
+/// <summary>
 /// Represents the variant style of the sidebar.
 /// </summary>
 public enum SidebarVariant
@@ -68,6 +85,11 @@ public class SidebarState
     public SidebarSide Side { get; set; } = SidebarSide.Left;
 
     /// <summary>
+    /// What the sidebar collapses into when toggled closed on desktop.
+    /// </summary>
+    public SidebarCollapsedMode CollapsedMode { get; set; } = SidebarCollapsedMode.Icon;
+
+    /// <summary>
     /// Whether menu items should automatically detect their active state based on current URL.
     /// </summary>
     public bool AutoDetectActive { get; set; } = false;
@@ -121,6 +143,11 @@ public class SidebarContext
     /// Gets which side the sidebar appears on.
     /// </summary>
     public SidebarSide Side => _state.Side;
+
+    /// <summary>
+    /// Gets what the sidebar collapses into when toggled closed on desktop.
+    /// </summary>
+    public SidebarCollapsedMode CollapsedMode => _state.CollapsedMode;
 
     /// <summary>
     /// Gets whether menu items should automatically detect their active state based on current URL.
@@ -221,6 +248,18 @@ public class SidebarContext
     }
 
     /// <summary>
+    /// Sets the collapsed mode for the sidebar.
+    /// </summary>
+    public void SetCollapsedMode(SidebarCollapsedMode mode)
+    {
+        if (_state.CollapsedMode != mode)
+        {
+            _state.CollapsedMode = mode;
+            OnStateChanged();
+        }
+    }
+
+    /// <summary>
     /// Sets whether menu items should automatically detect their active state.
     /// </summary>
     public void SetAutoDetectActive(bool autoDetectActive)
@@ -248,7 +287,7 @@ public class SidebarContext
     /// <summary>
     /// Initializes the state from values (typically from cookies or defaults).
     /// </summary>
-    public void Initialize(bool? open = null, SidebarVariant? variant = null, SidebarSide? side = null, bool? autoDetectActive = null, string? currentPath = null, bool? staticRendering = null)
+    public void Initialize(bool? open = null, SidebarVariant? variant = null, SidebarSide? side = null, bool? autoDetectActive = null, string? currentPath = null, bool? staticRendering = null, SidebarCollapsedMode? collapsedMode = null)
     {
         bool changed = false;
 
@@ -285,6 +324,12 @@ public class SidebarContext
         if (staticRendering.HasValue && StaticRendering != staticRendering.Value)
         {
             StaticRendering = staticRendering.Value;
+            changed = true;
+        }
+
+        if (collapsedMode.HasValue && _state.CollapsedMode != collapsedMode.Value)
+        {
+            _state.CollapsedMode = collapsedMode.Value;
             changed = true;
         }
 

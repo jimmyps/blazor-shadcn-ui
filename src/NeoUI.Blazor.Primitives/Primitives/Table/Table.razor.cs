@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 
 namespace NeoUI.Blazor.Primitives;
 
@@ -9,6 +10,29 @@ namespace NeoUI.Blazor.Primitives;
 /// <typeparam name="TData">The type of data items in the table.</typeparam>
 public partial class Table<TData> : ComponentBase, IDisposable where TData : class
 {
+    private static readonly Action<ILogger, string, Exception?> LogSortChangeFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogSortChangeFailed)),
+            "Error in OnSortChange: {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogPageChangeFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, nameof(LogPageChangeFailed)),
+            "Error in OnPageChange: {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogPageSizeChangeFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(3, nameof(LogPageSizeChangeFailed)),
+            "Error in OnPageSizeChange: {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogRowSelectFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(4, nameof(LogRowSelectFailed)),
+            "Error in OnRowSelect: {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogSelectionChangeFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(5, nameof(LogSelectionChangeFailed)),
+            "Error in OnSelectionChange: {Message}");
+
+    [Inject]
+    private ILogger<Table<TData>> Logger { get; set; } = default!;
+
     private TableContext<TData> _context = null!;
     private TableState<TData> _internalState = new();
     private IEnumerable<TData> _processedData = Array.Empty<TData>();
@@ -183,7 +207,7 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Error in OnSortChange: {ex.Message}");
+                    LogSortChangeFailed(Logger, ex.Message, ex);
                 }
             });
             _pendingTasks.Add(task);
@@ -202,7 +226,7 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Error in OnPageChange: {ex.Message}");
+                    LogPageChangeFailed(Logger, ex.Message, ex);
                 }
             });
             _pendingTasks.Add(task);
@@ -221,7 +245,7 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Error in OnPageSizeChange: {ex.Message}");
+                    LogPageSizeChangeFailed(Logger, ex.Message, ex);
                 }
             });
             _pendingTasks.Add(task);
@@ -238,7 +262,7 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Error in OnRowSelect: {ex.Message}");
+                    LogRowSelectFailed(Logger, ex.Message, ex);
                 }
             });
             _pendingTasks.Add(task);
@@ -257,7 +281,7 @@ public partial class Table<TData> : ComponentBase, IDisposable where TData : cla
                 }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"Error in OnSelectionChange: {ex.Message}");
+                    LogSelectionChangeFailed(Logger, ex.Message, ex);
                 }
             });
             _pendingTasks.Add(task);

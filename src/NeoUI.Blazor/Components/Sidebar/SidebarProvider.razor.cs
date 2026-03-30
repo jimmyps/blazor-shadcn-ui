@@ -73,7 +73,7 @@ public partial class SidebarProvider : ComponentBase
         }
         
         // Initialize context immediately for SSR - enables expand/collapse to work during prerendering
-        Context.Initialize(open: initialOpen, variant: Variant, side: Side, staticRendering: StaticRendering);
+        Context.Initialize(open: initialOpen, variant: Variant, side: Side, staticRendering: StaticRendering, collapsedMode: CollapsedMode);
         
         // Register a callback to persist the state during prerendering
         _persistingSubscription = PersistentState.RegisterOnPersisting(PersistState);
@@ -95,6 +95,7 @@ public partial class SidebarProvider : ComponentBase
         // Update context when parameters change
         Context.SetVariant(Variant);
         Context.SetSide(Side);
+        Context.SetCollapsedMode(CollapsedMode);
     }
 
     /// <inheritdoc/>

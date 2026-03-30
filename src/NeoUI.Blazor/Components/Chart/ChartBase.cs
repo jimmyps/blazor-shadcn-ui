@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Text.Json;
 
@@ -10,10 +11,30 @@ namespace NeoUI.Blazor.Charts;
 /// <typeparam name="TData">The type of data items in the chart.</typeparam>
 public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
 {
+    private static readonly Action<ILogger, string, Exception?> LogInitializeFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogInitializeFailed)),
+            "[Chart] Failed to initialize: {Message}");
+
+    private static readonly Action<ILogger, string, Exception?> LogRefreshFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(2, nameof(LogRefreshFailed)),
+            "[Chart] Failed to refresh: {Message}");
+
+    private static readonly Action<ILogger, string, string, Exception?> LogDisposalFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Error, new EventId(3, nameof(LogDisposalFailed)),
+            "{ChartType}: Error during disposal: {Message}");
+
     /// <summary>
     /// Gets or sets the injected JavaScript runtime for interop.
     /// </summary>
     [Inject] protected IJSRuntime JSRuntime { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the logger factory for creating typed loggers.
+    /// </summary>
+    [Inject] protected ILoggerFactory LoggerFactory { get; set; } = default!;
+
+    private ILogger? _logger;
+    private ILogger Logger => _logger ??= LoggerFactory.CreateLogger(GetType());
     
     /// <summary>
     /// Gets or sets the data to display in the chart.
@@ -163,60 +184,42 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
     {
         try
         {
-            Console.WriteLine($"[{GetType().Name}] InitializeChartAsync called");
-            Console.WriteLine($"[{GetType().Name}] Data count: {Data?.Count() ?? 0}");
-            
             _renderer = ChartRendererFactory.CreateRenderer(ChartEngine.ECharts, JSRuntime);
-            Console.WriteLine($"[{GetType().Name}] Renderer created");
-            
+
             var option = BuildEChartsOption();
-            Console.WriteLine($"[{GetType().Name}] EChartsOption built:");
-            Console.WriteLine($"[{GetType().Name}]   Series count: {option.Series?.Count ?? 0}");
-            Console.WriteLine($"[{GetType().Name}]   XAxis data count: {option.XAxis?.Data?.Count ?? 0}");
-            Console.WriteLine($"[{GetType().Name}]   YAxis configured: {option.YAxis != null}");
-            
+
             var config = new ChartConfig
             {
                 Type = GetChartType(),
                 Data = option,
                 Options = new { }
             };
-            
-            Console.WriteLine($"[{GetType().Name}] Calling renderer.InitializeAsync");
+
             _chartId = await _renderer.InitializeAsync(_canvasRef, config);
-            Console.WriteLine($"[{GetType().Name}] Chart initialized with ID: {_chartId}");
             _isInitialized = true;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[{GetType().Name}] Failed to initialize chart: {ex.Message}");
-            Console.WriteLine($"[{GetType().Name}] Stack trace: {ex.StackTrace}");
+            LogInitializeFailed(Logger, ex.Message, ex);
         }
     }
-    
+
     /// <summary>
     /// Refreshes the chart with current data and primitives.
     /// </summary>
     public async Task RefreshAsync()
     {
         if (!_isInitialized || _renderer == null || string.IsNullOrEmpty(_chartId))
-        {
-            Console.WriteLine($"[{GetType().Name}] RefreshAsync skipped - not initialized");
             return;
-        }
-        
+
         try
         {
-            Console.WriteLine($"[{GetType().Name}] RefreshAsync called");
             var option = BuildEChartsOption();
-            Console.WriteLine($"[{GetType().Name}] EChartsOption rebuilt, series count: {option.Series?.Count ?? 0}");
             await _renderer.UpdateOptionsAsync(_chartId, option);
-            Console.WriteLine($"[{GetType().Name}] Chart refreshed successfully");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[{GetType().Name}] Failed to refresh chart: {ex.Message}");
-            Console.WriteLine($"[{GetType().Name}] Stack trace: {ex.StackTrace}");
+            LogRefreshFailed(Logger, ex.Message, ex);
         }
     }
     
@@ -788,7 +791,7 @@ public abstract class ChartBase<TData> : ComponentBase, IAsyncDisposable
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{GetType().Name}: Error during disposal: {ex.Message}");
+                LogDisposalFailed(Logger, GetType().Name, ex.Message, ex);
             }
         }
         
