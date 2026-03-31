@@ -1,0 +1,28 @@
+@namespace NeoUI.Blazor
+
+<div class="@CssClass" role="group" aria-label="@AriaLabel">
+    <button type="button"
+            class="@DecrementCssClass"
+            aria-label="@(IsAtMin && DestructiveAtMin ? DestructiveLabel : DecrementLabel)"
+            disabled="@(Disabled || (!DestructiveAtMin && Value <= Min))"
+            @onclick="HandleDecrement">
+        @if (IsAtMin && DestructiveAtMin)
+        {
+            <LucideIcon Name="trash-2" Size="@IconSize" />
+        }
+        else
+        {
+            <LucideIcon Name="minus" Size="@IconSize" />
+        }
+    </button>
+
+    <span class="@ValueCssClass" aria-live="polite" aria-atomic="true">@Value</span>
+
+    <button type="button"
+            class="@IncrementCssClass"
+            aria-label="@IncrementLabel"
+            disabled="@(Disabled || (Max.HasValue && Value >= Max.Value))"
+            @onclick="HandleIncrement">
+        <LucideIcon Name="plus" Size="@IconSize" />
+    </button>
+</div>
