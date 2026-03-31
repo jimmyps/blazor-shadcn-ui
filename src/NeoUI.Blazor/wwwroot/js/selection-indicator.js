@@ -45,7 +45,10 @@ function parseDurationMs(value) {
 function applyPosition(indicator, container, activeEl, instant, transition, fixedHeight) {
     const cr = container.getBoundingClientRect();
     const ar = activeEl.getBoundingClientRect();
-    const left   = `${ar.left - cr.left}px`;
+    // Add scroll offset so the absolute position is correct inside scrollable containers
+    const scrollLeft = container.scrollLeft || 0;
+    const scrollTop  = container.scrollTop  || 0;
+    const left   = `${ar.left - cr.left + scrollLeft}px`;
     const width  = `${ar.width}px`;
 
     let top, height;
@@ -57,9 +60,9 @@ function applyPosition(indicator, container, activeEl, instant, transition, fixe
         const pixelHeight = indicator.getBoundingClientRect().height || parseFloat(fixedHeight) || 0;
         indicator.style.height = prevHeight;
         height = fixedHeight;
-        top    = `${ar.bottom - pixelHeight - cr.top}px`;
+        top    = `${ar.bottom - pixelHeight - cr.top + scrollTop}px`;
     } else {
-        top    = `${ar.top - cr.top}px`;
+        top    = `${ar.top - cr.top + scrollTop}px`;
         height = `${ar.height}px`;
     }
 
@@ -73,11 +76,27 @@ function applyPosition(indicator, container, activeEl, instant, transition, fixe
 }
 
 /**
+ * Returns false if any ancestor of el (up to but not including container)
+ * has data-state="closed", meaning the element is inside a collapsed section.
+ * @param {HTMLElement} el
+ * @param {HTMLElement} container
+ * @returns {boolean}
+ */
+function isAncestorOpen(el, container) {
+    let node = el.parentElement;
+    while (node && node !== container) {
+        if (node.dataset.state === 'closed') return false;
+        node = node.parentElement;
+    }
+    return true;
+}
+
+/**
  * Resolves the active element and repositions the indicator, or hides it.
  */
 function positionIndicator(indicator, container, selector, instant, transition, fixedHeight) {
     const activeEl = container.querySelector(selector);
-    if (!activeEl) {
+    if (!activeEl || !isAncestorOpen(activeEl, container)) {
         indicator.style.opacity = '0';
         return;
     }
@@ -88,11 +107,15 @@ function positionIndicator(indicator, container, selector, instant, transition, 
  * Initialises the indicator: positions it immediately, then sets up a
  * MutationObserver to re-position whenever a relevant attribute changes.
  *
- * @param {HTMLElement} indicator - The indicator div rendered by SelectionIndicator.razor
- * @param {string}  selector     - CSS selector for the active item
- * @param {boolean} hoverEnabled - When true, the indicator also follows mouse hover
+ * @param {HTMLElement} indicator   - The indicator div rendered by SelectionIndicator.razor
+ * @param {string}  selector        - CSS selector for the active item
+ * @param {boolean} hoverEnabled    - When true, the indicator also follows mouse hover
+ * @param {string|null} hoverTarget - Optional CSS selector used to resolve the hover target.
+ *                                    When set, uses e.target.closest(hoverTarget) instead of
+ *                                    walking up to the direct child of the container.
+ *                                    Useful for nested menus where items exist at varying depths.
  */
-export function init(indicator, selector, hoverEnabled) {
+export function init(indicator, selector, hoverEnabled, hoverTarget) {
     const container = indicator.parentElement;
     if (!container) return;
 
@@ -118,6 +141,13 @@ export function init(indicator, selector, hoverEnabled) {
     // Snap to correct position immediately (no animation on first render)
     positionIndicator(indicator, container, selector, true, transition, fixedHeight);
 
+    // If there was no initial active element, applyPosition(instant: true) was never called,
+    // so indicator.style.transition was never initialized. Ensure it's set now so that
+    // the first hover or selection change animates correctly instead of jumping instantly.
+    if (!indicator.style.transition) {
+        requestAnimationFrame(() => { indicator.style.transition = transition; });
+    }
+
     // Watch for attribute changes that signal a new active item
     const observer = new MutationObserver(() =>
         positionIndicator(indicator, container, selector, false, transition, fixedHeight));
@@ -131,9 +161,16 @@ export function init(indicator, selector, hoverEnabled) {
     const hoverHandlers = [];
     if (hoverEnabled) {
         const onMouseOver = (e) => {
-            // Walk up from event target to find a direct child of the container
-            let el = e.target;
-            while (el && el.parentElement !== container) el = el.parentElement;
+            let el;
+            if (hoverTarget) {
+                // Find the closest ancestor (or self) matching hoverTarget within the container
+                el = e.target.closest(hoverTarget);
+                if (!el || el === container || !container.contains(el)) return;
+            } else {
+                // Default: walk up from event target to find a direct child of the container
+                el = e.target;
+                while (el && el.parentElement !== container) el = el.parentElement;
+            }
             if (!el || el === indicator) return;
             indicator.dataset.siHover = '';
             applyPosition(indicator, container, el, false, transition, fixedHeight);
