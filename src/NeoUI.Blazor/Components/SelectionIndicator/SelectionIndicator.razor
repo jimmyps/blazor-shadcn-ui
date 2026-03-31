@@ -51,6 +51,16 @@
     public bool Hover { get; set; }
 
     /// <summary>
+    /// Optional CSS selector used to resolve the hover target element.
+    /// When set, the indicator uses <c>e.target.closest(HoverTarget)</c> on mouse-over
+    /// instead of walking up to the direct child of the container.
+    /// Use this for nested menus where selectable items exist at varying depths —
+    /// e.g. <c>HoverTarget="[data-active]"</c> targets any element carrying the active attribute.
+    /// </summary>
+    [Parameter]
+    public string? HoverTarget { get; set; }
+
+    /// <summary>
     /// Additional CSS classes appended to the indicator element.
     /// Use this to switch variants, e.g. underline:
     /// <c>Class="[--si-height:2px] rounded-none bg-foreground"</c>
@@ -71,7 +81,7 @@
         _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor/js/selection-indicator.js");
 
-        await _module.InvokeVoidAsync("init", _ref, Selector, Hover);
+        await _module.InvokeVoidAsync("init", _ref, Selector, Hover, HoverTarget);
     }
 
     public async ValueTask DisposeAsync()
