@@ -1,0 +1,99 @@
+@page "/components/bottom-nav"
+
+<PageTitle>BottomNav - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="BottomNav"
+        Description="Mobile bottom navigation bar for primary app navigation. Place 2–5 BottomNavItem children inside — each shows an icon, optional label, and optional notification badge." />
+
+    @* ── Basic ──────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Basic"
+        Description="BottomNav with Fixed=false scoped to a container. In a real app use the default Fixed=true to pin to the viewport bottom.">
+        <DemoBlock Code="@_basicCode">
+            <div class="w-full max-w-sm border rounded-xl overflow-hidden relative" style="height: 220px;">
+                <div class="p-4 text-sm text-muted-foreground">
+                    Active: <strong>@_tab</strong>
+                </div>
+                <BottomNav @bind-ActiveTab="@_tab" Fixed="false">
+                    <BottomNavItem Value="home"    Icon="house"    Label="Home" />
+                    <BottomNavItem Value="search"  Icon="search"   Label="Search" />
+                    <BottomNavItem Value="inbox"   Icon="inbox"    Label="Inbox" />
+                    <BottomNavItem Value="profile" Icon="user"     Label="Profile" />
+                </BottomNav>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── With Badge Counts ───────────────────────────────────────────────── *@
+    <DemoSection
+        Title="With Notification Badges"
+        Description="BadgeCount on a BottomNavItem shows a count chip. MaxBadgeCount defaults to 99 — anything above shows 99+.">
+        <DemoBlock Code="@_badgeCode">
+            <div class="w-full max-w-sm border rounded-xl overflow-hidden relative" style="height: 220px;">
+                <div class="p-4 text-sm text-muted-foreground">
+                    Active: <strong>@_tabBadge</strong>
+                </div>
+                <BottomNav @bind-ActiveTab="@_tabBadge" Fixed="false">
+                    <BottomNavItem Value="home"     Icon="house"    Label="Home" />
+                    <BottomNavItem Value="messages" Icon="message-circle" Label="Messages" BadgeCount="5" />
+                    <BottomNavItem Value="activity" Icon="bell"     Label="Activity" BadgeCount="124" MaxBadgeCount="99" />
+                    <BottomNavItem Value="profile"  Icon="user"     Label="Profile" />
+                </BottomNav>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom Icons ────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Custom Icon Content"
+        Description="Use the IconContent fragment for custom SVG, avatar images, or any markup instead of a Lucide icon name.">
+        <DemoBlock Code="@_customIconCode">
+            <div class="w-full max-w-sm border rounded-xl overflow-hidden relative" style="height: 220px;">
+                <div class="p-4 text-sm text-muted-foreground">
+                    Active: <strong>@_tabCustom</strong>
+                </div>
+                <BottomNav @bind-ActiveTab="@_tabCustom" Fixed="false">
+                    <BottomNavItem Value="home" Label="Home">
+                        <IconContent><LucideIcon Name="house" Class="h-5 w-5" /></IconContent>
+                    </BottomNavItem>
+                    <BottomNavItem Value="explore" Label="Explore">
+                        <IconContent><LucideIcon Name="compass" Class="h-5 w-5" /></IconContent>
+                    </BottomNavItem>
+                    <BottomNavItem Value="create" Label="Create">
+                        <IconContent>
+                            <div class="bg-primary rounded-full p-1">
+                                <LucideIcon Name="plus" Class="h-4 w-4 text-primary-foreground" />
+                            </div>
+                        </IconContent>
+                    </BottomNavItem>
+                    <BottomNavItem Value="profile" Label="You">
+                        <IconContent>
+                            <Avatar Class="h-6 w-6">
+                                <AvatarFallback Class="text-xs">JP</AvatarFallback>
+                            </Avatar>
+                        </IconContent>
+                    </BottomNavItem>
+                </BottomNav>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────────────────── *@
+    <DemoSection Title="API Reference" Description="BottomNav and BottomNavItem parameters.">
+        <h3 class="text-base font-semibold mb-2">BottomNav</h3>
+        <DemoPropsTable Rows="_navProps" />
+        <h3 class="text-base font-semibold mt-6 mb-2">BottomNavItem</h3>
+        <DemoPropsTable Rows="_itemProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private string _tab       = "home";
+    private string _tabBadge  = "home";
+    private string _tabCustom = "home";
+}
