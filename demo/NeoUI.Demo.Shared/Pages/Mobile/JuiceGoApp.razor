@@ -132,7 +132,7 @@
 
                         @* Category filter *@
                         <div class="px-4 pb-3">
-                            <ToggleGroup Type="ToggleGroupType.Single" Scrollable="true" @bind-Value="_homeCategory">
+                            <ToggleGroup Type="ToggleGroupType.Single" Required="true" Scrollable="true" @bind-Value="_homeCategory">
                                 <ToggleGroupItem Value="all"      Class="relative z-10 aria-[checked=true]:bg-transparent">All</ToggleGroupItem>
                                 <ToggleGroupItem Value="Green"    Class="relative z-10 aria-[checked=true]:bg-transparent">🥦 Green</ToggleGroupItem>
                                 <ToggleGroupItem Value="Tropical" Class="relative z-10 aria-[checked=true]:bg-transparent">🌴 Tropical</ToggleGroupItem>
@@ -140,7 +140,7 @@
                                 <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent">🍊 Citrus</ToggleGroupItem>
                                 <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent">💧 Fresh</ToggleGroupItem>
                                 <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent">✨ Golden</ToggleGroupItem>
-                                <SelectionIndicator Selector="[aria-checked=true]" />
+                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm" />
                             </ToggleGroup>
                         </div>
 
@@ -227,7 +227,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
                     </BottomNav>
                 }
 
@@ -246,7 +246,7 @@
 
                     <div class="flex-1 overflow-y-auto">
                         <div class="px-4 pt-3 pb-2">
-                            <ToggleGroup Type="ToggleGroupType.Single" Scrollable="true" @bind-Value="_menuCategory">
+                            <ToggleGroup Type="ToggleGroupType.Single" Required="true" Scrollable="true" @bind-Value="_menuCategory">
                                 <ToggleGroupItem Value="all"      Class="relative z-10 aria-[checked=true]:bg-transparent">All</ToggleGroupItem>
                                 <ToggleGroupItem Value="Green"    Class="relative z-10 aria-[checked=true]:bg-transparent">Green</ToggleGroupItem>
                                 <ToggleGroupItem Value="Tropical" Class="relative z-10 aria-[checked=true]:bg-transparent">Tropical</ToggleGroupItem>
@@ -254,7 +254,7 @@
                                 <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent">Citrus</ToggleGroupItem>
                                 <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent">Fresh</ToggleGroupItem>
                                 <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent">Golden</ToggleGroupItem>
-                                <SelectionIndicator Selector="[aria-checked=true]" />
+                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm" />
                             </ToggleGroup>
                         </div>
 
@@ -300,12 +300,12 @@
                             <div class="px-4 pb-6 space-y-5">
                                 <div class="space-y-2">
                                     <p class="text-sm font-medium">Sort by</p>
-                                    <ToggleGroup Type="ToggleGroupType.Single" @bind-Value="_sortBy">
+                                    <ToggleGroup Type="ToggleGroupType.Single" Required="true" @bind-Value="_sortBy">
                                         <ToggleGroupItem Value="popular"    Class="relative z-10 aria-[checked=true]:bg-transparent">Popular</ToggleGroupItem>
                                         <ToggleGroupItem Value="rating"     Class="relative z-10 aria-[checked=true]:bg-transparent">Rating</ToggleGroupItem>
                                         <ToggleGroupItem Value="price-asc"  Class="relative z-10 aria-[checked=true]:bg-transparent">Price ↑</ToggleGroupItem>
                                         <ToggleGroupItem Value="price-desc" Class="relative z-10 aria-[checked=true]:bg-transparent">Price ↓</ToggleGroupItem>
-                                        <SelectionIndicator Selector="[aria-checked=true]" />
+                                        <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm" />
                                     </ToggleGroup>
                                 </div>
                                 <Separator LineStyle="SeparatorStyle.Dashed" />
@@ -330,7 +330,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
                     </BottomNav>
                 }
 
@@ -537,7 +537,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
                     </BottomNav>
                 }
 
@@ -613,7 +613,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
                     </BottomNav>
                 }
 

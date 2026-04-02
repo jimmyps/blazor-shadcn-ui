@@ -85,6 +85,13 @@ public partial class ToggleGroup : ComponentBase
     public string? Class { get; set; }
 
     /// <summary>
+    /// When <c>true</c>, the current selection cannot be deselected by clicking it again.
+    /// At least one item will always remain selected in single-selection mode.
+    /// </summary>
+    [Parameter]
+    public bool Required { get; set; }
+
+    /// <summary>
     /// Gets or sets the content to be rendered inside the toggle group.
     /// </summary>
     [Parameter]
@@ -97,6 +104,7 @@ public partial class ToggleGroup : ComponentBase
     {
         if (Type == ToggleGroupType.Single)
         {
+            if (Required && Value == itemValue) return;
             Value = Value == itemValue ? null : itemValue;
             await ValueChanged.InvokeAsync(Value);
         }
