@@ -77,5 +77,66 @@ namespace NeoUI.Demo.Shared.Pages.Components
                     </SelectContent>
                 </Select>
                 """;
+
+        private const string _infiniteScrollCode = """
+                <Select @bind-Value="_sPagedValue" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select an option..." />
+                    </SelectTrigger>
+                    <SelectContent OnLoadMore="@HandleSelectLoadMore"
+                                   IsLoading="@_sPagedLoading"
+                                   EndOfListMessage="@SelectEndMessage">
+                        @foreach (var item in _sPagedItems)
+                        {
+                            <SelectItem Value="@item.Value" Text="@item.Label" TValue="string">@item.Label</SelectItem>
+                        }
+                    </SelectContent>
+                </Select>
+
+                @code {
+                    private List<SelectNumberedItem> _sPagedItems = new();
+                    private bool _sPagedLoading;
+                    private int _sPagedPage;
+                    private const int PageSize = 8;
+                    private const int Total = 40;
+
+                    protected override void OnInitialized() => LoadPage();
+
+                    private void LoadPage()
+                    {
+                        var start = _sPagedPage++ * PageSize;
+                        for (var i = start; i < Math.Min(start + PageSize, Total); i++)
+                            _sPagedItems.Add(new SelectNumberedItem { Value = $"item-{i+1}", Label = $"Item {i+1}" });
+                    }
+
+                    private async Task HandleSelectLoadMore()
+                    {
+                        if (_sPagedLoading || _sPagedItems.Count >= Total) return;
+                        _sPagedLoading = true;
+                        await Task.Delay(600);
+                        LoadPage();
+                        _sPagedLoading = false;
+                    }
+
+                    private string? SelectEndMessage =>
+                        _sPagedItems.Count >= Total ? $"All {Total} items loaded" : null;
+                }
+                """;
+
+        private const string _bottomSheetCode =
+                """
+                <Select @bind-Value="selectedCity" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select a city" />
+                    </SelectTrigger>
+                    <SelectContent Presentation="SelectPresentation.BottomSheet">
+                        <SelectItem Value="nyc"    Text="New York" TValue="string">New York</SelectItem>
+                        <SelectItem Value="london" Text="London"   TValue="string">London</SelectItem>
+                        <SelectItem Value="tokyo"  Text="Tokyo"    TValue="string">Tokyo</SelectItem>
+                        <SelectItem Value="paris"  Text="Paris"    TValue="string">Paris</SelectItem>
+                        <SelectItem Value="sydney" Text="Sydney"   TValue="string">Sydney</SelectItem>
+                    </SelectContent>
+                </Select>
+                """;
     }
 }
