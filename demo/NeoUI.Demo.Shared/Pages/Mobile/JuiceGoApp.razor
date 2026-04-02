@@ -1,4 +1,12 @@
 @page "/mobile/juicego"
+@page "/mobile/juicego/home"
+@page "/mobile/juicego/menu"
+@page "/mobile/juicego/menu/{ProductId}"
+@page "/mobile/juicego/cart"
+@page "/mobile/juicego/profile"
+
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <PageTitle>JuiceGo — Mobile App Demo</PageTitle>
 
@@ -222,7 +230,7 @@
                 @* ══════════════════════════════════════════════ *@
                 else if (_screen == Screen.Menu)
                 {
-                    <AppBar Title="Menu" OnBack="@(() => Navigate(Screen.Home))">
+                    <AppBar Title="Menu" OnBack="@GoBack">
                         <RightContent>
                             <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" OnClick="@OpenFilterDrawer">
                                 <LucideIcon Name="sliders-horizontal" Size="20" />
@@ -607,28 +615,54 @@
 
 @code {
 
+    // ── Route parameters ──────────────────────────────────────────────────
+
+    [Parameter] public string? ProductId { get; set; }
+
     // ── Navigation ────────────────────────────────────────────────────────
 
     private enum Screen { Login, Home, Menu, Product, Cart, Profile }
 
     private Screen _screen = Screen.Login;
-    private Screen _prev   = Screen.Home;
 
-    private void Navigate(Screen to)
+    protected override void OnParametersSet()
     {
-        _prev = _screen;
-        _tab  = to switch
+        var path = Nav.ToBaseRelativePath(Nav.Uri).ToLower().TrimEnd('/');
+
+        if (!string.IsNullOrEmpty(ProductId))
         {
-            Screen.Home    => "home",
-            Screen.Menu    => "menu",
-            Screen.Cart    => "cart",
-            Screen.Profile => "profile",
-            _              => _tab
-        };
-        _screen = to;
+            var p = Products.FirstOrDefault(x => x.Id == ProductId);
+            if (p != null) { _product = p; _size = p.Sizes[0]; _qty = 1; }
+            _screen = Screen.Product;
+        }
+        else
+        {
+            (_screen, _tab) = path switch
+            {
+                "mobile/juicego/cart"    => (Screen.Cart,    "cart"),
+                "mobile/juicego/profile" => (Screen.Profile, "profile"),
+                "mobile/juicego/menu"    => (Screen.Menu,    "menu"),
+                "mobile/juicego/home"    => (Screen.Home,    "home"),
+                _                        => (Screen.Login,   _tab),
+            };
+        }
     }
 
-    private void GoBack() => Navigate(_prev == _screen ? Screen.Home : _prev);
+    private void Navigate(Screen to, string? id = null)
+    {
+        var path = to switch
+        {
+            Screen.Home    => "/mobile/juicego/home",
+            Screen.Menu    => "/mobile/juicego/menu",
+            Screen.Product => $"/mobile/juicego/menu/{id}",
+            Screen.Cart    => "/mobile/juicego/cart",
+            Screen.Profile => "/mobile/juicego/profile",
+            _              => "/mobile/juicego",
+        };
+        Nav.NavigateTo(path);
+    }
+
+    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
 
     // ── Auth ──────────────────────────────────────────────────────────────
 
@@ -639,11 +673,9 @@
 
     private void ResetApp()
     {
-        _screen = Screen.Login;
-        _prev   = Screen.Home;
         _cart.Clear();
-        _tab      = "home";
         _password = "";
+        Nav.NavigateTo("/mobile/juicego");
     }
 
     // ── Bottom nav ────────────────────────────────────────────────────────
@@ -756,11 +788,9 @@
 
     private void OpenProduct(JuiceProduct p)
     {
-        _prev    = _screen;
-        _product = p;
-        _size    = p.Sizes[0];
-        _qty     = 1;
-        _screen  = Screen.Product;
+        _size = p.Sizes[0];
+        _qty  = 1;
+        Navigate(Screen.Product, p.Id);
     }
 
     // ── Cart ──────────────────────────────────────────────────────────────
