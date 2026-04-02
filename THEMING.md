@@ -254,29 +254,38 @@ Colors for data visualization components.
 
 #### Border Radius
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `--radius` | Base border radius | `0.5rem` |
+NeoUI v2 uses a **7-step proportional scale** driven by a single `--radius` base variable. All steps scale to zero when `--radius: 0rem`, so the Sharp/Lyra style works correctly.
 
-Components use this as a base:
-- `border-radius: var(--radius)` - Large (cards, dialogs)
-- `border-radius: calc(var(--radius) - 2px)` - Medium (buttons, inputs)
-- `border-radius: calc(var(--radius) - 4px)` - Small (badges, tags)
+| Variable | Multiplier | Example at default (0.625rem) |
+|---|---|---|
+| `--radius-xs` | `× 0.5` | `0.3125rem` |
+| `--radius-sm` | `× 0.75` | `0.469rem` |
+| `--radius-md` | `× 1` (base) | `0.625rem` |
+| `--radius-lg` | `× 1.5` | `0.9375rem` |
+| `--radius-xl` | `× 2` | `1.25rem` |
+| `--radius-2xl` | `× 3` | `1.875rem` |
+| `--radius-4xl` | `9999px` | full pill |
+
+The base `--radius` is set to `0.625rem` by default (aligning with shadcn/ui).
+
+Override for the whole app:
 
 ```css
 :root {
-  --radius: 0.5rem;    /* Rounded corners */
-  /* --radius: 0;      /* Sharp corners */
-  /* --radius: 1rem;   /* Very rounded */
+  --radius: 0.375rem;   /* Subtle — "Nova" look */
+  --radius: 1rem;       /* Generous — "Maia" look */
+  --radius: 0rem;       /* None — "Lyra" look */
 }
 ```
+
+Or use a **named radius preset** (see [Radius Presets](#radius-presets) below).
 
 #### Sidebar Dimensions
 
 **Library provides defaults** - override only if needed.
 
 | Variable | Description | Default |
-|----------|-------------|---------|
+|---|---|---|
 | `--sidebar-width` | Expanded sidebar width | `16rem` |
 | `--sidebar-width-mobile` | Mobile sidebar width | `18rem` |
 | `--sidebar-width-icon` | Collapsed (icon-only) width | `3rem` |
@@ -293,17 +302,220 @@ Components use this as a base:
 
 ### Typography
 
-| Variable | Description | Default Fallback |
-|----------|-------------|------------------|
-| `--font-sans` | Sans-serif font stack | `ui-sans-serif, system-ui, sans-serif` |
-| `--font-serif` | Serif font stack | `ui-serif, Georgia, serif` |
-| `--font-mono` | Monospace font stack | `ui-monospace, monospace` |
+| Variable | Description | Default |
+|---|---|---|
+| `--font-sans` | Body sans-serif font stack | system UI stack |
+| `--font-serif` | Serif font stack | system UI stack |
+| `--font-mono` | Monospace font stack | system UI stack |
+| `--font-heading` | Heading font (h1–h4) | falls back to `--font-sans` |
 
 ```css
 :root {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans:    'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Cal Sans', 'Inter', ui-sans-serif, sans-serif; /* distinct heading */
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
 }
+```
+
+Or use a **named font preset** (see [Font Presets](#font-presets) below).
+
+---
+
+## Theme v2 — Dimensions & Presets
+
+NeoUI v2 adds five new theme dimensions on top of the existing base color, primary color, and dark mode. Every dimension follows the same pattern end-to-end:
+
+```
+CSS file(s) → enum → ThemeService → JS apply → localStorage → ThemeSwitcher
+```
+
+---
+
+### Base Colors (v2 additions)
+
+Five new chromatic neutral base colors added in v2:
+
+| Name | Character | `BaseColor` enum value |
+|---|---|---|
+| `Luma` | Vibrant blue-indigo tinted neutral — flagship modern SaaS look | `BaseColor.Luma` |
+| `Mist` | Cool blue-gray | `BaseColor.Mist` |
+| `Mauve` | Warm purple-gray | `BaseColor.Mauve` |
+| `Taupe` | Warm brownish-gray | `BaseColor.Taupe` |
+| `Olive` | Muted green-gray | `BaseColor.Olive` |
+
+Load the CSS file for any base color you want available:
+
+```html
+<!-- In production, include only the base colors you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/luma.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/mist.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/mauve.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/taupe.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/olive.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetBaseColorAsync(BaseColor.Luma);
+```
+
+---
+
+### Style Variants
+
+Six named visual styles control `--radius` and `--spacing-scale` together, giving each a distinct character:
+
+| Style | `--radius` | `--spacing-scale` | Character |
+|---|---|---|---|
+| `Default` | *(unchanged)* | `1` | Standard NeoUI |
+| `Vega` | `0.625rem` | `1` | Professional, balanced |
+| `Nova` | `0.375rem` | `0.85` | Compact, dashboard/admin |
+| `Maia` | `1rem` | `1.15` | Spacious, consumer-friendly |
+| `Lyra` | `0rem` | `1` | Sharp/boxy, developer tooling |
+| `Mira` | `0.25rem` | `0.7` | Ultra-dense, data-heavy |
+
+Load the style CSS files you want available:
+
+```html
+<!-- In production, include only the styles you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/vega.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/nova.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/maia.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/lyra.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/mira.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetStyleVariantAsync(StyleVariant.Nova);
+```
+
+---
+
+### Radius Presets
+
+Independent named radius overrides. When both a Style Variant and a Radius Preset are active, the Radius Preset wins (it is loaded after styles in the cascade).
+
+| Preset | `--radius` | `RadiusPreset` value |
+|---|---|---|
+| `None` | `0rem` | `RadiusPreset.None` |
+| `Small` | `0.25rem` | `RadiusPreset.Small` |
+| `Medium` | `0.625rem` (default — no file) | `RadiusPreset.Medium` |
+| `Large` | `1rem` | `RadiusPreset.Large` |
+| `Full` | `9999px` (pill) | `RadiusPreset.Full` |
+
+```html
+<!-- In production, include only the radius presets you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/none.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/large.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/full.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetRadiusPresetAsync(RadiusPreset.Full);
+```
+
+---
+
+### Font Presets
+
+Curated font pairings that set both `--font-sans` and `--font-heading`. The `System` preset is the default (no CSS file needed).
+
+| Preset | Body | Heading | `FontPreset` value |
+|---|---|---|---|
+| `System` | System UI stack | Same as body | `FontPreset.System` |
+| `Inter` | Inter | Inter | `FontPreset.Inter` |
+| `Geist` | Geist | Geist | `FontPreset.Geist` |
+| `CalSans` | Inter | Cal Sans | `FontPreset.CalSans` |
+| `DmSans` | DM Sans | DM Sans | `FontPreset.DmSans` |
+| `PlusJakarta` | Plus Jakarta Sans | Plus Jakarta Sans | `FontPreset.PlusJakarta` |
+
+> **Note:** Font preset CSS files set `--font-sans` and `--font-heading` only. You must load the actual font faces separately (via Google Fonts, Bunny Fonts, or self-hosted).
+
+```html
+<!-- 1. Load the font face (example using Google Fonts) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<!-- 2. Load the NeoUI font preset CSS -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/inter.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetFontPresetAsync(FontPreset.Inter);
+```
+
+---
+
+### NeoThemePreset — Named Presets
+
+`NeoThemePreset` is a portable C# record that bundles all six theme dimensions into a single named unit. Apply it with `ApplyPresetAsync`.
+
+**Built-in presets:**
+
+| Preset | Base | Style | Radius | Font |
+|---|---|---|---|---|
+| `NeoThemePreset.Default` | Zinc | Default | Medium | System |
+| `NeoThemePreset.Luma` | Luma | Vega | Medium | Inter |
+| `NeoThemePreset.Nova` | Zinc | Nova | Small | Inter |
+| `NeoThemePreset.Maia` | Mauve | Maia | Large | Plus Jakarta |
+| `NeoThemePreset.Lyra` | Slate | Lyra | None | System |
+
+Usage:
+
+```csharp
+// Apply a built-in preset
+await ThemeService.ApplyPresetAsync(NeoThemePreset.Luma);
+
+// Build a custom preset
+var corporate = new NeoThemePreset(
+    Name:         "Corporate",
+    BaseColor:    BaseColor.Slate,
+    PrimaryColor: PrimaryColor.Blue,
+    StyleVariant: StyleVariant.Nova,
+    RadiusPreset: RadiusPreset.Small,
+    FontPreset:   FontPreset.Inter,
+    IsDarkMode:   false);
+
+await ThemeService.ApplyPresetAsync(corporate);
+```
+
+---
+
+### CSS Load Order
+
+Theme CSS files must be loaded in the following order so the cascade overrides work correctly:
+
+```html
+<!-- 1. Core component styles -->
+<link href="_content/NeoUI.Blazor/components.css" rel="stylesheet" />
+
+<!-- 2. Base color themes -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/zinc.css" />
+<!-- ... other base colors ... -->
+
+<!-- 3. Primary color themes -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/blue.css" />
+<!-- ... other primary colors ... -->
+
+<!-- 4. Visual style variants (sets --radius + --spacing-scale) -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/nova.css" />
+
+<!-- 5. Radius presets (overrides style variant's --radius if present) -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
+
+<!-- 6. Font presets -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/inter.css" />
+
+<!-- 7. Theme JS — must come before Blazor boots to prevent FOUC -->
+<script src="_content/NeoUI.Blazor/js/theme.js"></script>
 ```
 
 ---
@@ -344,7 +556,7 @@ Here's a complete theme file with all variables:
   --popover-foreground: oklch(0.145 0 0);
 
   /* Sizing */
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 }
 
 .dark {
