@@ -7,6 +7,7 @@
 
 @inject NavigationManager Nav
 @inject IJSRuntime JS
+@implements IDisposable
 
 <PageTitle>JuiceGo — Mobile App Demo</PageTitle>
 
@@ -51,7 +52,7 @@
                 @* ══════════════════════════════════════════════ *@
                 @*  LOGIN                                         *@
                 @* ══════════════════════════════════════════════ *@
-                @if (_screen == Screen.Login)
+                @if (CurrentScreen == Screen.Login)
                 {
                     <div class="flex flex-col flex-1 overflow-y-auto px-7 py-4 gap-4">
                         <div class="flex flex-col items-center gap-2 mt-10">
@@ -93,7 +94,7 @@
                 @* ══════════════════════════════════════════════ *@
                 @*  HOME                                          *@
                 @* ══════════════════════════════════════════════ *@
-                else if (_screen == Screen.Home)
+                else if (CurrentScreen == Screen.Home)
                 {
                     <AppBar>
                         <TitleContent>
@@ -217,7 +218,7 @@
                         <div class="h-2"></div>
                     </div>
 
-                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                    <BottomNav ActiveTab="@ActiveTab" Fixed="false" Class="shrink-0">
                         <BottomNavItem Value="home" Icon="house" Label="Home" />
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
@@ -228,7 +229,7 @@
                 @* ══════════════════════════════════════════════ *@
                 @*  MENU                                          *@
                 @* ══════════════════════════════════════════════ *@
-                else if (_screen == Screen.Menu)
+                else if (CurrentScreen == Screen.Menu)
                 {
                     <AppBar Title="Menu" OnBack="@GoBack">
                         <RightContent>
@@ -317,7 +318,7 @@
                         </DrawerContent>
                     </Drawer>
 
-                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                    <BottomNav ActiveTab="@ActiveTab" Fixed="false" Class="shrink-0">
                         <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Navigate(Screen.Home))" />
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
@@ -328,7 +329,7 @@
                 @* ══════════════════════════════════════════════ *@
                 @*  PRODUCT DETAIL                                *@
                 @* ══════════════════════════════════════════════ *@
-                else if (_screen == Screen.Product && _product != null)
+                else if (CurrentScreen == Screen.Product && _product != null)
                 {
                     var p = _product;
 
@@ -448,7 +449,7 @@
                 @* ══════════════════════════════════════════════ *@
                 @*  CART                                          *@
                 @* ══════════════════════════════════════════════ *@
-                else if (_screen == Screen.Cart)
+                else if (CurrentScreen == Screen.Cart)
                 {
                     <AppBar Title="My Cart" OnBack="@GoBack">
                         <RightContent>
@@ -523,7 +524,7 @@
                         }
                     </div>
 
-                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                    <BottomNav ActiveTab="@ActiveTab" Fixed="false" Class="shrink-0">
                         <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Navigate(Screen.Home))" />
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" />
@@ -534,7 +535,7 @@
                 @* ══════════════════════════════════════════════ *@
                 @*  PROFILE                                       *@
                 @* ══════════════════════════════════════════════ *@
-                else if (_screen == Screen.Profile)
+                else if (CurrentScreen == Screen.Profile)
                 {
                     <AppBar Title="Profile" />
 
@@ -594,7 +595,7 @@
                         </div>
                     </div>
 
-                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                    <BottomNav ActiveTab="@ActiveTab" Fixed="false" Class="shrink-0">
                         <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Navigate(Screen.Home))" />
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
@@ -623,30 +624,42 @@
 
     private enum Screen { Login, Home, Menu, Product, Cart, Profile }
 
-    private Screen _screen = Screen.Login;
-
-    protected override void OnParametersSet()
+    private Screen CurrentScreen
     {
-        var path = Nav.ToBaseRelativePath(Nav.Uri).ToLower().TrimEnd('/');
-
-        if (!string.IsNullOrEmpty(ProductId))
+        get
         {
-            var p = Products.FirstOrDefault(x => x.Id == ProductId);
-            if (p != null) { _product = p; _size = p.Sizes[0]; _qty = 1; }
-            _screen = Screen.Product;
-        }
-        else
-        {
-            (_screen, _tab) = path switch
+            if (!string.IsNullOrEmpty(ProductId)) return Screen.Product;
+            var path = Nav.ToBaseRelativePath(Nav.Uri).ToLower().TrimEnd('/');
+            return path switch
             {
-                "mobile/juicego/cart"    => (Screen.Cart,    "cart"),
-                "mobile/juicego/profile" => (Screen.Profile, "profile"),
-                "mobile/juicego/menu"    => (Screen.Menu,    "menu"),
-                "mobile/juicego/home"    => (Screen.Home,    "home"),
-                _                        => (Screen.Login,   _tab),
+                "mobile/juicego/cart"    => Screen.Cart,
+                "mobile/juicego/profile" => Screen.Profile,
+                "mobile/juicego/menu"    => Screen.Menu,
+                "mobile/juicego/home"    => Screen.Home,
+                _                        => Screen.Login,
             };
         }
     }
+
+    private string? ActiveTab => CurrentScreen switch
+    {
+        Screen.Home    => "home",
+        Screen.Menu    => "menu",
+        Screen.Cart    => "cart",
+        Screen.Profile => "profile",
+        _              => null,
+    };
+
+    protected override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => Nav.LocationChanged -= OnLocationChanged;
 
     private void Navigate(Screen to, string? id = null)
     {
@@ -786,12 +799,19 @@
     private string?       _size;
     private int           _qty = 1;
 
-    private void OpenProduct(JuiceProduct p)
+    protected override void OnParametersSet()
     {
-        _size = p.Sizes[0];
-        _qty  = 1;
-        Navigate(Screen.Product, p.Id);
+        if (string.IsNullOrEmpty(ProductId)) return;
+        var p = Products.FirstOrDefault(x => x.Id == ProductId);
+        if (p != null && p.Id != _product?.Id)
+        {
+            _product = p;
+            _size    = p.Sizes[0];
+            _qty     = 1;
+        }
     }
+
+    private void OpenProduct(JuiceProduct p) => Navigate(Screen.Product, p.Id);
 
     // ── Cart ──────────────────────────────────────────────────────────────
 
@@ -847,3 +867,4 @@
         new("star",        "Rate the App"),
     ];
 }
+
