@@ -140,7 +140,7 @@
                                 <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent">🍊 Citrus</ToggleGroupItem>
                                 <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent">💧 Fresh</ToggleGroupItem>
                                 <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent">✨ Golden</ToggleGroupItem>
-                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm" />
+                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm [--si-duration:500ms]" />
                             </ToggleGroup>
                         </div>
 
@@ -227,7 +227,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
                     </BottomNav>
                 }
 
@@ -254,7 +254,7 @@
                                 <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent">Citrus</ToggleGroupItem>
                                 <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent">Fresh</ToggleGroupItem>
                                 <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent">Golden</ToggleGroupItem>
-                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm" />
+                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm [--si-duration:500ms]" />
                             </ToggleGroup>
                         </div>
 
@@ -305,7 +305,7 @@
                                         <ToggleGroupItem Value="rating"     Class="relative z-10 aria-[checked=true]:bg-transparent">Rating</ToggleGroupItem>
                                         <ToggleGroupItem Value="price-asc"  Class="relative z-10 aria-[checked=true]:bg-transparent">Price ↑</ToggleGroupItem>
                                         <ToggleGroupItem Value="price-desc" Class="relative z-10 aria-[checked=true]:bg-transparent">Price ↓</ToggleGroupItem>
-                                        <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm" />
+                                        <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm [--si-duration:500ms]" />
                                     </ToggleGroup>
                                 </div>
                                 <Separator LineStyle="SeparatorStyle.Dashed" />
@@ -330,7 +330,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
                     </BottomNav>
                 }
 
@@ -537,7 +537,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
                     </BottomNav>
                 }
 
@@ -613,7 +613,7 @@
                         <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
                         <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
                         <BottomNavItem Value="profile" Icon="user" Label="Profile" />
-                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-muted shadow-none rounded-none" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
                     </BottomNav>
                 }
 
