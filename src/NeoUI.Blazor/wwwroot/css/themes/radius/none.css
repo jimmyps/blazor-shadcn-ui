@@ -1,0 +1,7 @@
+/* Radius Preset: None — square corners */
+
+@layer base {
+  :root.radius-none {
+    --radius: 0rem;
+  }
+}

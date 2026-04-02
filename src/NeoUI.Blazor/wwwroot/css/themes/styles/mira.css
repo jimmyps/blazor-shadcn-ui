@@ -1,0 +1,8 @@
+/* Mira Visual Style — ultra-dense, data-heavy tables */
+
+@layer base {
+  :root.style-mira {
+    --radius: 0.25rem;
+    --spacing-scale: 0.7;
+  }
+}

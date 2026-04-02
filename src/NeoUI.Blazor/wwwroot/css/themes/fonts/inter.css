@@ -1,0 +1,8 @@
+/* Font Preset: Inter — versatile, highly legible sans-serif */
+
+@layer base {
+  :root.font-inter {
+    --font-sans:    'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  }
+}

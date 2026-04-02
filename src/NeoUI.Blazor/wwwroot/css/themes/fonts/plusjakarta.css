@@ -1,0 +1,8 @@
+/* Font Preset: Plus Jakarta Sans — contemporary, warm humanist sans-serif */
+
+@layer base {
+  :root.font-plusjakarta {
+    --font-sans:    'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+}
