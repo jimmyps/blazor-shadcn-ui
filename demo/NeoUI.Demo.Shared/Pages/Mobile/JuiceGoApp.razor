@@ -198,7 +198,7 @@
                                         <div class="flex-1 min-w-0">
                                             <p class="font-medium text-sm truncate">@cn.Name</p>
                                             <p class="text-[11px] text-muted-foreground truncate">@cn.Tagline</p>
-                                            <Rating Value="@((double)cn.Rating)" ReadOnly="true" Size="RatingSize.Small" Max="5" />
+                                            <Rating Value="@((double)cn.Rating)" ReadOnly="true" Size="RatingSize.Small" MaxRating="5" />
                                         </div>
                                         <p class="font-bold text-sm shrink-0">$@cn.Price.ToString("F2")</p>
                                     </div>
@@ -369,7 +369,7 @@
                             </div>
 
                             <div class="flex items-center gap-2">
-                                <Rating Value="@((double)p.Rating)" ReadOnly="true" Max="5" />
+                                <Rating Value="@((double)p.Rating)" ReadOnly="true" MaxRating="5" />
                                 <span class="text-sm text-muted-foreground">@p.Rating · @p.Reviews reviews</span>
                             </div>
 
