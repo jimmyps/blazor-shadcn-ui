@@ -4,6 +4,9 @@
 @page "/mobile/juicego/menu/{ProductId}"
 @page "/mobile/juicego/cart"
 @page "/mobile/juicego/profile"
+@page "/mobile/juicego/profile/orders"
+@page "/mobile/juicego/profile/favourites"
+@page "/mobile/juicego/profile/help"
 
 @inject NavigationManager Nav
 @inject IJSRuntime JS
@@ -142,7 +145,7 @@
 
                         @* Featured carousel *@
                         <div class="px-4 mb-5">
-                            <Carousel ShowIndicators="true" DotsPosition="CarouselDotsPosition.Bottom" Loop="true" AutoPlay="true" AutoPlayInterval="3500">
+                            <Carousel ShowNavigation="false" EnableDrag="true" ShowIndicators="true" DotsPosition="CarouselDotsPosition.Bottom" Loop="true" AutoPlay="true" AutoPlayInterval="3500">
                                 @foreach (var fp in PopularProducts)
                                 {
                                     var captured = fp;
@@ -231,7 +234,7 @@
                 @* ══════════════════════════════════════════════ *@
                 else if (CurrentScreen == Screen.Menu)
                 {
-                    <AppBar Title="Menu" OnBack="@GoBack">
+                    <AppBar Title="Menu">
                         <RightContent>
                             <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" OnClick="@OpenFilterDrawer">
                                 <LucideIcon Name="sliders-horizontal" Size="20" />
@@ -451,7 +454,7 @@
                 @* ══════════════════════════════════════════════ *@
                 else if (CurrentScreen == Screen.Cart)
                 {
-                    <AppBar Title="My Cart" OnBack="@GoBack">
+                    <AppBar Title="My Cart">
                         <RightContent>
                             @if (_cart.Count > 0)
                             {
@@ -578,10 +581,14 @@
                                 }
                                 else
                                 {
-                                    <div class="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-muted cursor-pointer transition-colors">
+                                    <div class="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-muted cursor-pointer transition-colors"
+                                         @onclick="@(() => { if (row.NavScreen.HasValue) Navigate(row.NavScreen.Value); })">
                                         <LucideIcon Name="@row.Icon" Size="18" Class="text-muted-foreground shrink-0" />
                                         <span class="flex-1 text-sm font-medium">@row.Label</span>
-                                        <LucideIcon Name="chevron-right" Size="16" Class="text-muted-foreground" />
+                                        @if (row.NavScreen.HasValue)
+                                        {
+                                            <LucideIcon Name="chevron-right" Size="16" Class="text-muted-foreground" />
+                                        }
                                     </div>
                                 }
                             }
@@ -603,6 +610,111 @@
                     </BottomNav>
                 }
 
+                @* ══════════════════════════════════════════════ *@
+                @*  ORDERS                                         *@
+                @* ══════════════════════════════════════════════ *@
+                else if (CurrentScreen == Screen.Orders)
+                {
+                    <AppBar Title="My Orders" OnBack="@GoBack" />
+
+                    <div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                        @foreach (var o in SampleOrders)
+                        {
+                            <div class="rounded-2xl border bg-card p-4 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-mono text-muted-foreground">@o.Id</span>
+                                    <Badge Variant="@(o.Status == "Delivered" ? BadgeVariant.Default : BadgeVariant.Secondary)"
+                                           Class="text-[10px]">@o.Status</Badge>
+                                </div>
+                                <div class="flex gap-2">
+                                    @foreach (var item in o.Items)
+                                    {
+                                        <div class="text-2xl">@item</div>
+                                    }
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-muted-foreground">@o.Date</span>
+                                    <span class="font-bold text-sm">$@o.Total.ToString("F2")</span>
+                                </div>
+                                <Separator />
+                                <div class="flex gap-2">
+                                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="flex-1">Reorder</Button>
+                                    @if (o.Status == "Delivered")
+                                    {
+                                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="flex-1">Rate</Button>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @* ══════════════════════════════════════════════ *@
+                @*  FAVOURITES                                     *@
+                @* ══════════════════════════════════════════════ *@
+                else if (CurrentScreen == Screen.Favourites)
+                {
+                    <AppBar Title="Favourites" OnBack="@GoBack" />
+
+                    <div class="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+                        @foreach (var fp in Products.Where(p => p.IsPopular || p.IsNew))
+                        {
+                            var cfp = fp;
+                            <div class="flex items-center gap-3 rounded-2xl border bg-card p-3 cursor-pointer"
+                                 @onclick="@(() => OpenProduct(cfp))">
+                                <div class="size-14 rounded-xl @GetBg(cfp) flex items-center justify-center text-2xl shrink-0">@cfp.Emoji</div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-semibold text-sm">@cfp.Name</p>
+                                    <p class="text-xs text-muted-foreground truncate">@cfp.Tagline</p>
+                                    <p class="font-bold text-sm text-primary mt-0.5">$@cfp.Price.ToString("F2")</p>
+                                </div>
+                                <Button Size="ButtonSize.Icon" Class="size-8 rounded-full shrink-0" OnClick="@(() => QuickAdd(cfp))">
+                                    <LucideIcon Name="plus" Size="14" />
+                                </Button>
+                            </div>
+                        }
+                    </div>
+                }
+
+                @* ══════════════════════════════════════════════ *@
+                @*  HELP                                           *@
+                @* ══════════════════════════════════════════════ *@
+                else if (CurrentScreen == Screen.Help)
+                {
+                    <AppBar Title="Help &amp; Support" OnBack="@GoBack" />
+
+                    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                        <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-950 p-4 flex gap-3 items-center">
+                            <LucideIcon Name="life-buoy" Size="24" Class="text-emerald-600 shrink-0" />
+                            <div>
+                                <p class="font-semibold text-sm">Need help?</p>
+                                <p class="text-xs text-muted-foreground">Our support team is here 9am–6pm</p>
+                            </div>
+                        </div>
+
+                        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1">Frequently Asked</p>
+
+                        @foreach (var faq in Faqs)
+                        {
+                            <div class="rounded-2xl border bg-card p-4 space-y-1">
+                                <p class="font-semibold text-sm">@faq.Q</p>
+                                <p class="text-xs text-muted-foreground leading-relaxed">@faq.A</p>
+                            </div>
+                        }
+
+                        <Separator LineStyle="SeparatorStyle.Dashed" />
+
+                        <div class="space-y-2">
+                            <Button Variant="ButtonVariant.Outline" Class="w-full gap-2">
+                                <LucideIcon Name="mail" Size="16" /> Email Support
+                            </Button>
+                            <Button Variant="ButtonVariant.Outline" Class="w-full gap-2">
+                                <LucideIcon Name="message-circle" Size="16" /> Live Chat
+                            </Button>
+                        </div>
+                    </div>
+                }
+
             </div>
         </div>
     </div>
@@ -622,7 +734,7 @@
 
     // ── Navigation ────────────────────────────────────────────────────────
 
-    private enum Screen { Login, Home, Menu, Product, Cart, Profile }
+    private enum Screen { Login, Home, Menu, Product, Cart, Profile, Orders, Favourites, Help }
 
     private Screen CurrentScreen
     {
@@ -632,11 +744,14 @@
             var path = Nav.ToBaseRelativePath(Nav.Uri).ToLower().TrimEnd('/');
             return path switch
             {
-                "mobile/juicego/cart"    => Screen.Cart,
-                "mobile/juicego/profile" => Screen.Profile,
-                "mobile/juicego/menu"    => Screen.Menu,
-                "mobile/juicego/home"    => Screen.Home,
-                _                        => Screen.Login,
+                "mobile/juicego/cart"               => Screen.Cart,
+                "mobile/juicego/profile/orders"     => Screen.Orders,
+                "mobile/juicego/profile/favourites" => Screen.Favourites,
+                "mobile/juicego/profile/help"       => Screen.Help,
+                "mobile/juicego/profile"            => Screen.Profile,
+                "mobile/juicego/menu"               => Screen.Menu,
+                "mobile/juicego/home"               => Screen.Home,
+                _                                   => Screen.Login,
             };
         }
     }
@@ -665,12 +780,15 @@
     {
         var path = to switch
         {
-            Screen.Home    => "/mobile/juicego/home",
-            Screen.Menu    => "/mobile/juicego/menu",
-            Screen.Product => $"/mobile/juicego/menu/{id}",
-            Screen.Cart    => "/mobile/juicego/cart",
-            Screen.Profile => "/mobile/juicego/profile",
-            _              => "/mobile/juicego",
+            Screen.Home       => "/mobile/juicego/home",
+            Screen.Menu       => "/mobile/juicego/menu",
+            Screen.Product    => $"/mobile/juicego/menu/{id}",
+            Screen.Cart       => "/mobile/juicego/cart",
+            Screen.Profile    => "/mobile/juicego/profile",
+            Screen.Orders     => "/mobile/juicego/profile/orders",
+            Screen.Favourites => "/mobile/juicego/profile/favourites",
+            Screen.Help       => "/mobile/juicego/profile/help",
+            _                 => "/mobile/juicego",
         };
         Nav.NavigateTo(path);
     }
@@ -851,20 +969,44 @@
 
     // ── Profile ───────────────────────────────────────────────────────────
 
-    private record ProfileRow(string Icon, string Label, bool IsSeparator = false);
+    private record ProfileRow(string Icon, string Label, Screen? NavScreen = null, bool IsSeparator = false);
 
     private static readonly ProfileRow[] ProfileRows =
     [
-        new("package",     "My Orders"),
-        new("heart",       "Favourites"),
+        new("package",     "My Orders",           Screen.Orders),
+        new("heart",       "Favourites",           Screen.Favourites),
         new("map-pin",     "Delivery Addresses"),
         new("",            "", IsSeparator: true),
         new("bell",        "Notifications"),
         new("credit-card", "Payment Methods"),
         new("",            "", IsSeparator: true),
-        new("shield",      "Privacy & Security"),
-        new("help-circle", "Help & Support"),
+        new("shield",      "Privacy &amp; Security"),
+        new("life-buoy",   "Help &amp; Support",  Screen.Help),
         new("star",        "Rate the App"),
+    ];
+
+    // ── Orders data ───────────────────────────────────────────────────────
+
+    private record SampleOrder(string Id, string[] Items, decimal Total, string Date, string Status);
+
+    private static readonly SampleOrder[] SampleOrders =
+    [
+        new("#JG-00142", ["🥤", "🍹"], 15.50m, "Today, 10:24 AM",      "Out for Delivery"),
+        new("#JG-00138", ["🫐", "🍊", "🍉"], 21.00m, "Yesterday",       "Delivered"),
+        new("#JG-00131", ["🥕", "🥤"], 14.50m, "Mar 29",                "Delivered"),
+        new("#JG-00120", ["🍹", "🍹"], 16.00m, "Mar 25",                "Delivered"),
+    ];
+
+    // ── FAQ data ──────────────────────────────────────────────────────────
+
+    private record Faq(string Q, string A);
+
+    private static readonly Faq[] Faqs =
+    [
+        new("How fresh are the juices?",      "All juices are cold-pressed daily and delivered within 24 hours of production."),
+        new("Can I modify my order?",         "Orders can be modified within 30 minutes of placing them via the Orders screen."),
+        new("What areas do you deliver to?",  "We currently deliver to the city centre and surrounding suburbs within a 15km radius."),
+        new("How are juices kept cold?",      "We use insulated packaging and ice packs to keep your juices chilled during delivery."),
     ];
 }
 
