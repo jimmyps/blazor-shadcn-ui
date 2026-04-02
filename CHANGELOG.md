@@ -68,15 +68,15 @@ Five new chromatic neutral base palettes added alongside the existing Zinc/Slate
 
 CSS files: `_content/NeoUI.Blazor/css/themes/base/{luma,mist,mauve,taupe,olive}.css`
 
-#### ✨ New: `NeoThemePreset` Record
+#### ✨ New: `ThemePreset` Record
 
 A portable C# record bundling all six theme dimensions. Five built-in named presets ship out of the box:
 
 ```csharp
-await ThemeService.ApplyPresetAsync(NeoThemePreset.Luma);   // Luma+Vega+Inter
-await ThemeService.ApplyPresetAsync(NeoThemePreset.Nova);   // Zinc+Nova+Small+Inter
-await ThemeService.ApplyPresetAsync(NeoThemePreset.Maia);   // Mauve+Maia+Large+PlusJakarta
-await ThemeService.ApplyPresetAsync(NeoThemePreset.Lyra);   // Slate+Lyra+None+System
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);   // Luma+Vega+Inter
+await ThemeService.ApplyPresetAsync(ThemePreset.Nova);   // Zinc+Nova+Small+Inter
+await ThemeService.ApplyPresetAsync(ThemePreset.Maia);   // Mauve+Maia+Large+PlusJakarta
+await ThemeService.ApplyPresetAsync(ThemePreset.Lyra);   // Slate+Lyra+None+System
 ```
 
 #### ✨ New: Expanded `ThemeService` API
@@ -89,7 +89,7 @@ await ThemeService.ApplyPresetAsync(NeoThemePreset.Lyra);   // Slate+Lyra+None+S
 | `SetStyleVariantAsync(StyleVariant)` | Set + persist style |
 | `SetRadiusPresetAsync(RadiusPreset)` | Set + persist radius |
 | `SetFontPresetAsync(FontPreset)` | Set + persist font |
-| `ApplyPresetAsync(NeoThemePreset)` | Apply all dimensions atomically |
+| `ApplyPresetAsync(ThemePreset)` | Apply all dimensions atomically |
 
 #### ✨ New: 7-step Radius Scale
 

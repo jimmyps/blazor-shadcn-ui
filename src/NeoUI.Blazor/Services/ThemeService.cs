@@ -177,7 +177,7 @@ public enum FontPreset
 /// <param name="RadiusPreset">Explicit radius override. <see cref="RadiusPreset.Medium"/> means no override.</param>
 /// <param name="FontPreset">Font preset. <see cref="FontPreset.System"/> means no override.</param>
 /// <param name="IsDarkMode">Whether dark mode is active.</param>
-public record NeoThemePreset(
+public record ThemePreset(
     string        Name,
     BaseColor     BaseColor     = BaseColor.Zinc,
     PrimaryColor  PrimaryColor  = PrimaryColor.Default,
@@ -187,27 +187,27 @@ public record NeoThemePreset(
     bool          IsDarkMode    = false)
 {
     /// <summary>Clean, neutral default — the classic NeoUI look.</summary>
-    public static readonly NeoThemePreset Default = new("Default");
+    public static readonly ThemePreset Default = new("Default");
 
     /// <summary>Luma + Vega — modern SaaS, vibrant tinted neutrals with balanced style.</summary>
-    public static readonly NeoThemePreset Luma = new("Luma",
+    public static readonly ThemePreset Luma = new("Luma",
         BaseColor: BaseColor.Luma,
         StyleVariant: StyleVariant.Vega,
         FontPreset: FontPreset.Inter);
 
     /// <summary>Nova — compact dashboard preset with Zinc base.</summary>
-    public static readonly NeoThemePreset Nova = new("Nova",
+    public static readonly ThemePreset Nova = new("Nova",
         StyleVariant: StyleVariant.Nova,
         FontPreset: FontPreset.Geist);
 
     /// <summary>Maia — spacious consumer UI with generous rounding and warm neutrals.</summary>
-    public static readonly NeoThemePreset Maia = new("Maia",
+    public static readonly ThemePreset Maia = new("Maia",
         BaseColor: BaseColor.Mauve,
         StyleVariant: StyleVariant.Maia,
         FontPreset: FontPreset.PlusJakarta);
 
     /// <summary>Lyra — sharp developer/tooling preset with no rounding.</summary>
-    public static readonly NeoThemePreset Lyra = new("Lyra",
+    public static readonly ThemePreset Lyra = new("Lyra",
         StyleVariant: StyleVariant.Lyra,
         FontPreset: FontPreset.Geist);
 }
@@ -403,7 +403,7 @@ public class ThemeService
     /// <summary>
     /// Applies a named preset, updating all theme dimensions simultaneously.
     /// </summary>
-    public async Task ApplyPresetAsync(NeoThemePreset preset)
+    public async Task ApplyPresetAsync(ThemePreset preset)
     {
         _baseColor    = preset.BaseColor;
         _primaryColor = preset.PrimaryColor;

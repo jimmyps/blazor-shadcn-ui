@@ -28,7 +28,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("SetRadiusPresetAsync(RadiusPreset)", "Task", "—", "Changes and persists the border radius preset."),
                 new("SetFontPresetAsync(FontPreset)", "Task", "—", "Changes and persists the font preset."),
                 new("SetThemeAsync(bool)", "Task", "—", "Toggles dark mode and persists the preference."),
-                new("ApplyPresetAsync(NeoThemePreset)", "Task", "—", "Applies a named preset across all theme dimensions."),
+                new("ApplyPresetAsync(ThemePreset)", "Task", "—", "Applies a named preset across all theme dimensions."),
             ];
 
         private const string _demoCode = """
@@ -50,11 +50,11 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private const string _presetCode = """
                 // Apply a built-in named preset
-                await ThemeService.ApplyPresetAsync(NeoThemePreset.Luma);
-                await ThemeService.ApplyPresetAsync(NeoThemePreset.Nova);
+                await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
+                await ThemeService.ApplyPresetAsync(ThemePreset.Nova);
 
                 // Build a custom preset
-                var myPreset = new NeoThemePreset(
+                var myPreset = new ThemePreset(
                     Name:         "Corporate",
                     BaseColor:    BaseColor.Slate,
                     PrimaryColor: PrimaryColor.Blue,

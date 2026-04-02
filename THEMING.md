@@ -454,28 +454,28 @@ await ThemeService.SetFontPresetAsync(FontPreset.Inter);
 
 ---
 
-### NeoThemePreset — Named Presets
+### ThemePreset — Named Presets
 
-`NeoThemePreset` is a portable C# record that bundles all six theme dimensions into a single named unit. Apply it with `ApplyPresetAsync`.
+`ThemePreset` is a portable C# record that bundles all six theme dimensions into a single named unit. Apply it with `ApplyPresetAsync`.
 
 **Built-in presets:**
 
 | Preset | Base | Style | Radius | Font |
 |---|---|---|---|---|
-| `NeoThemePreset.Default` | Zinc | Default | Medium | System |
-| `NeoThemePreset.Luma` | Luma | Vega | Medium | Inter |
-| `NeoThemePreset.Nova` | Zinc | Nova | Small | Inter |
-| `NeoThemePreset.Maia` | Mauve | Maia | Large | Plus Jakarta |
-| `NeoThemePreset.Lyra` | Slate | Lyra | None | System |
+| `ThemePreset.Default` | Zinc | Default | Medium | System |
+| `ThemePreset.Luma` | Luma | Vega | Medium | Inter |
+| `ThemePreset.Nova` | Zinc | Nova | Small | Inter |
+| `ThemePreset.Maia` | Mauve | Maia | Large | Plus Jakarta |
+| `ThemePreset.Lyra` | Slate | Lyra | None | System |
 
 Usage:
 
 ```csharp
 // Apply a built-in preset
-await ThemeService.ApplyPresetAsync(NeoThemePreset.Luma);
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
 
 // Build a custom preset
-var corporate = new NeoThemePreset(
+var corporate = new ThemePreset(
     Name:         "Corporate",
     BaseColor:    BaseColor.Slate,
     PrimaryColor: PrimaryColor.Blue,
