@@ -1,0 +1,7 @@
+/* Radius Preset: Large — generously rounded corners */
+
+@layer base {
+  :root.radius-large {
+    --radius: 1rem;
+  }
+}

@@ -2,6 +2,117 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-4-2 — Theme v2: Style Variants, Radius Presets, Font Presets, 5 new base colors
+
+> **Release: `v3.9.0`**  
+> **Library change.** Affects `NeoUI.Blazor`. Additive — no breaking changes to existing API.
+
+---
+
+### 🎨 Theme v2 — Full Dimension Expansion
+
+NeoUI now matches shadcn/ui's Dec 2025–Mar 2026 customisation model. Every new theme dimension follows the same end-to-end pattern: CSS file → enum → ThemeService → JS → localStorage → ThemeSwitcher → Localizer.
+
+#### ✨ New: Visual Style Variants (`StyleVariant` enum)
+
+Six named styles that set `--radius` and `--spacing-scale` together for a coherent component character:
+
+| Style | Character |
+|---|---|
+| `Default` | Standard NeoUI |
+| `Vega` | Professional, balanced |
+| `Nova` | Compact, dashboard/admin |
+| `Maia` | Spacious, consumer-friendly |
+| `Lyra` | Sharp/boxy, developer tooling |
+| `Mira` | Ultra-dense, data-heavy |
+
+CSS files: `_content/NeoUI.Blazor/css/themes/styles/*.css`
+
+```csharp
+await ThemeService.SetStyleVariantAsync(StyleVariant.Nova);
+```
+
+#### ✨ New: Radius Presets (`RadiusPreset` enum)
+
+Five named border-radius overrides independent of style variants:
+
+`None` (0rem) | `Small` (0.25rem) | `Medium` (0.625rem, default) | `Large` (1rem) | `Full` (9999px pill)
+
+CSS files: `_content/NeoUI.Blazor/css/themes/radius/*.css`
+
+```csharp
+await ThemeService.SetRadiusPresetAsync(RadiusPreset.Full);
+```
+
+#### ✨ New: Font Presets (`FontPreset` enum)
+
+Six curated font pairings that set both `--font-sans` and the new `--font-heading` variable:
+
+`System` | `Inter` | `Geist` | `CalSans` | `DmSans` | `PlusJakarta`
+
+CSS files: `_content/NeoUI.Blazor/css/themes/fonts/*.css`
+
+```csharp
+await ThemeService.SetFontPresetAsync(FontPreset.Inter);
+```
+
+#### ✨ New: Base Colors — Luma, Mist, Mauve, Taupe, Olive
+
+Five new chromatic neutral base palettes added alongside the existing Zinc/Slate/Gray/Neutral/Stone:
+
+- **Luma** — vibrant blue-indigo tinted neutral; flagship modern SaaS look
+- **Mist** — cool blue-gray
+- **Mauve** — warm purple-gray
+- **Taupe** — warm brownish-gray
+- **Olive** — muted green-gray
+
+CSS files: `_content/NeoUI.Blazor/css/themes/base/{luma,mist,mauve,taupe,olive}.css`
+
+#### ✨ New: `ThemePreset` Record
+
+A portable C# record bundling all six theme dimensions. Five built-in named presets ship out of the box:
+
+```csharp
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);   // Luma+Vega+Inter
+await ThemeService.ApplyPresetAsync(ThemePreset.Nova);   // Zinc+Nova+Small+Inter
+await ThemeService.ApplyPresetAsync(ThemePreset.Maia);   // Mauve+Maia+Large+PlusJakarta
+await ThemeService.ApplyPresetAsync(ThemePreset.Lyra);   // Slate+Lyra+None+System
+```
+
+#### ✨ New: Expanded `ThemeService` API
+
+| New member | Description |
+|---|---|
+| `CurrentStyleVariant` | Active `StyleVariant` |
+| `CurrentRadiusPreset` | Active `RadiusPreset` |
+| `CurrentFontPreset` | Active `FontPreset` |
+| `SetStyleVariantAsync(StyleVariant)` | Set + persist style |
+| `SetRadiusPresetAsync(RadiusPreset)` | Set + persist radius |
+| `SetFontPresetAsync(FontPreset)` | Set + persist font |
+| `ApplyPresetAsync(ThemePreset)` | Apply all dimensions atomically |
+
+#### ✨ New: 7-step Radius Scale
+
+Replaced the old pixel-subtraction scale (`calc(var(--radius) - 2px)`) with a proportional multiplier scale safe at `--radius: 0rem`:
+
+`--radius-xs` (×0.5) · `--radius-sm` (×0.75) · `--radius-md` (×1) · `--radius-lg` (×1.5) · `--radius-xl` (×2) · `--radius-2xl` (×3) · `--radius-4xl` (9999px)
+
+#### ✨ New: `--font-heading` variable
+
+Added `--font-heading` as a first-class CSS variable (defaults to `var(--font-sans)`). Font presets set it independently to enable distinct heading typography.
+
+#### ✨ New: `ThemeSwitcher` Style / Radius / Font sections
+
+Three new picker sections added to the `ThemeSwitcher` popover (widened to `w-96`). All use `Enum.GetValues<T>()` — zero hardcoding.
+
+---
+
+### ⚠️ Minor Visual Change
+
+`--radius` default changed from `0.5rem` to `0.625rem` to align with shadcn/ui. Apps that rely on the default will see a subtle visual bump (~1.5px extra rounding). Override with `--radius: 0.5rem` in your theme CSS to restore the previous appearance.
+
+---
+
 ## 2026-3-30 — SelectionIndicator component + ToggleGroupItem aria-checked fix
 
 > **Release: `v3.8.2`**  

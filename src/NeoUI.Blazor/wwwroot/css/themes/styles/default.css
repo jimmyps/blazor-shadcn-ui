@@ -1,0 +1,7 @@
+/* Default Visual Style — no overrides, uses base defaults */
+
+@layer base {
+  :root.style-default {
+    --spacing-scale: 1;
+  }
+}

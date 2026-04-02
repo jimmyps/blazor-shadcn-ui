@@ -197,6 +197,39 @@ public class DefaultLocalizer : ILocalizer
         ["ThemeSwitcher.Settings"] = "Theme Settings",
         ["ThemeSwitcher.BaseColor"] = "Base Color",
         ["ThemeSwitcher.ThemeColor"] = "Theme Color",
+        ["ThemeSwitcher.Style"] = "Style",
+        ["ThemeSwitcher.BorderRadius"] = "Border Radius",
+        ["ThemeSwitcher.Font"] = "Font",
+
+        // ── ThemeSwitcher — BaseColor names ──────────────────────────────────
+        ["ThemeSwitcher.BaseColor.Luma"] = "Luma",
+        ["ThemeSwitcher.BaseColor.Mist"] = "Mist",
+        ["ThemeSwitcher.BaseColor.Mauve"] = "Mauve",
+        ["ThemeSwitcher.BaseColor.Taupe"] = "Taupe",
+        ["ThemeSwitcher.BaseColor.Olive"] = "Olive",
+
+        // ── ThemeSwitcher — StyleVariant names ───────────────────────────────
+        ["ThemeSwitcher.Style.Default"] = "Default",
+        ["ThemeSwitcher.Style.Vega"] = "Vega",
+        ["ThemeSwitcher.Style.Nova"] = "Nova",
+        ["ThemeSwitcher.Style.Maia"] = "Maia",
+        ["ThemeSwitcher.Style.Lyra"] = "Lyra",
+        ["ThemeSwitcher.Style.Mira"] = "Mira",
+
+        // ── ThemeSwitcher — RadiusPreset names ───────────────────────────────
+        ["ThemeSwitcher.Radius.None"] = "None",
+        ["ThemeSwitcher.Radius.Small"] = "Small",
+        ["ThemeSwitcher.Radius.Medium"] = "Medium",
+        ["ThemeSwitcher.Radius.Large"] = "Large",
+        ["ThemeSwitcher.Radius.Full"] = "Full",
+
+        // ── ThemeSwitcher — FontPreset names ─────────────────────────────────
+        ["ThemeSwitcher.Font.System"] = "System",
+        ["ThemeSwitcher.Font.Inter"] = "Inter",
+        ["ThemeSwitcher.Font.Geist"] = "Geist",
+        ["ThemeSwitcher.Font.CalSans"] = "Cal Sans",
+        ["ThemeSwitcher.Font.DmSans"] = "DM Sans",
+        ["ThemeSwitcher.Font.PlusJakarta"] = "Plus Jakarta",
 
         // ── Timeline ─────────────────────────────────────────────────────────
         ["Timeline.AriaLabel"] = "Timeline",

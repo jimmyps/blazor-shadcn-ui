@@ -96,6 +96,10 @@
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     --blur-sm: 4px;
+    /* Theme v2 — default values (overridden by style/radius/font theme files) */
+    --radius: 0.625rem;
+    --font-heading: var(--font-sans);
+    --spacing-scale: 1;
   }
 
   .dark {
@@ -259,7 +263,7 @@
   [role="menu"] div:has(> a:focus-visible) {
     outline: 2px solid var(--ring);
     outline-offset: -2px;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md);
     background-color: var(--accent);
   }
 
@@ -624,7 +628,7 @@
   [data-slot="rich-text-editor"] .ql-editor .ql-code-block-container {
     background-color: var(--muted);
     padding: 0.75em 1em;
-    border-radius: 0.375rem;
+    border-radius: var(--radius-sm);
     overflow-x: auto;
     font-family: var(--font-mono, ui-monospace, monospace);
     font-size: 0.875em;

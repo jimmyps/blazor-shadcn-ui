@@ -1,0 +1,8 @@
+/* Maia Visual Style — spacious, consumer-friendly */
+
+@layer base {
+  :root.style-maia {
+    --radius: 1rem;
+    --spacing-scale: 1.15;
+  }
+}

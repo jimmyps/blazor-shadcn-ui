@@ -1,0 +1,8 @@
+/* Lyra Visual Style — sharp/boxy, developer/tooling */
+
+@layer base {
+  :root.style-lyra {
+    --radius: 0rem;
+    --spacing-scale: 1;
+  }
+}

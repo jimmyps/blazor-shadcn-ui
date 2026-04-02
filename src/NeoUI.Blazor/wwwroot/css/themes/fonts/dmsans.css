@@ -1,0 +1,8 @@
+/* Font Preset: DM Sans — friendly, modern geometric sans-serif */
+
+@layer base {
+  :root.font-dmsans {
+    --font-sans:    'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+}

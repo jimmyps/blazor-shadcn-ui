@@ -1,0 +1,8 @@
+/* Font Preset: Cal Sans — geometric display heading paired with Inter body */
+
+@layer base {
+  :root.font-calsans {
+    --font-sans:    'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Cal Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  }
+}

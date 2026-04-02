@@ -18,16 +18,58 @@
                 </PopoverTrigger>
             </TooltipTrigger>
             <TooltipContent Strategy="@Strategy">
-                <p>@_currentBaseColor / @_currentPrimaryColor</p>
+                <p>@_currentBaseColor / @_currentPrimaryColor / @_currentStyleVariant</p>
             </TooltipContent>
         </Tooltip>
-    <PopoverContent Class="@($"w-80 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
+    <PopoverContent Class="@($"w-96 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
                     Align="@Align" Strategy="@Strategy" ZIndex="@ZIndex">
         <div class="space-y-4">
             <div class="space-y-2">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold">@Localizer["ThemeSwitcher.Settings"]</h3>
                     <DarkModeToggle />
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Style"]</h4>
+                <div class="grid grid-cols-6 gap-1">
+                    @foreach (var variant in Enum.GetValues<StyleVariant>())
+                    {
+                        <button @onclick="() => OnStyleVariantSelected(variant)"
+                                class="@GetOptionClass(_currentStyleVariant == variant)"
+                                title="@variant">
+                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.Style.{variant}"]</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BorderRadius"]</h4>
+                <div class="grid grid-cols-5 gap-1">
+                    @foreach (var preset in Enum.GetValues<RadiusPreset>())
+                    {
+                        <button @onclick="() => OnRadiusPresetSelected(preset)"
+                                class="@GetOptionClass(_currentRadiusPreset == preset)"
+                                title="@preset">
+                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.Radius.{preset}"]</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Font"]</h4>
+                <div class="grid grid-cols-3 gap-1">
+                    @foreach (var font in Enum.GetValues<FontPreset>())
+                    {
+                        <button @onclick="() => OnFontPresetSelected(font)"
+                                class="@GetOptionClass(_currentFontPreset == font)"
+                                title="@font">
+                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.Font.{font}"]</span>
+                        </button>
+                    }
                 </div>
             </div>
 
@@ -99,17 +141,16 @@
     [Parameter]
     public PopoverAlign Align { get; set; } = PopoverAlign.End;
 
-    private BaseColor _currentBaseColor;
+    private BaseColor    _currentBaseColor;
     private PrimaryColor _currentPrimaryColor;
+    private StyleVariant _currentStyleVariant;
+    private RadiusPreset _currentRadiusPreset;
+    private FontPreset   _currentFontPreset;
 
     protected override async Task OnInitializedAsync()
     {
-        // Initialize theme service
         await ThemeService.InitializeAsync();
-        _currentBaseColor = ThemeService.CurrentBaseColor;
-        _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
-
-        // Subscribe to theme changes
+        SyncFromService();
         ThemeService.OnThemeChanged += HandleThemeChanged;
     }
 
@@ -123,11 +164,34 @@
         await ThemeService.SetPrimaryColorAsync(primaryColor);
     }
 
+    private async Task OnStyleVariantSelected(StyleVariant variant)
+    {
+        await ThemeService.SetStyleVariantAsync(variant);
+    }
+
+    private async Task OnRadiusPresetSelected(RadiusPreset preset)
+    {
+        await ThemeService.SetRadiusPresetAsync(preset);
+    }
+
+    private async Task OnFontPresetSelected(FontPreset font)
+    {
+        await ThemeService.SetFontPresetAsync(font);
+    }
+
     private void HandleThemeChanged()
     {
-        _currentBaseColor = ThemeService.CurrentBaseColor;
-        _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
+        SyncFromService();
         InvokeAsync(StateHasChanged);
+    }
+
+    private void SyncFromService()
+    {
+        _currentBaseColor    = ThemeService.CurrentBaseColor;
+        _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
+        _currentStyleVariant = ThemeService.CurrentStyleVariant;
+        _currentRadiusPreset = ThemeService.CurrentRadiusPreset;
+        _currentFontPreset   = ThemeService.CurrentFontPreset;
     }
 
     private string GetTriggerButtonClass()
@@ -140,38 +204,50 @@
     {
         var baseColorValue = _currentBaseColor switch
         {
-            BaseColor.Zinc => "#27272a",
-            BaseColor.Slate => "#1e293b",
-            BaseColor.Gray => "#374151",
+            BaseColor.Zinc   => "#27272a",
+            BaseColor.Slate  => "#1e293b",
+            BaseColor.Gray   => "#374151",
             BaseColor.Neutral => "#262626",
-            BaseColor.Stone => "#292524",
-            _ => "#27272a"
+            BaseColor.Stone  => "#292524",
+            BaseColor.Luma   => "#4c5fb0",
+            BaseColor.Mist   => "#4a6fa5",
+            BaseColor.Mauve  => "#7c6d8a",
+            BaseColor.Taupe  => "#7a6a5a",
+            BaseColor.Olive  => "#5a6b4a",
+            _                => "#27272a"
         };
 
         var primaryColorValue = _currentPrimaryColor switch
         {
-            PrimaryColor.Default => baseColorValue,
-            PrimaryColor.Red => "#dc2626",
-            PrimaryColor.Rose => "#e11d48",
-            PrimaryColor.Orange => "#ea580c",
-            PrimaryColor.Amber => "#d97706",
-            PrimaryColor.Yellow => "#ca8a04",
-            PrimaryColor.Lime => "#65a30d",
-            PrimaryColor.Green => "#16a34a",
-            PrimaryColor.Emerald => "#059669",
-            PrimaryColor.Teal => "#0d9488",
-            PrimaryColor.Cyan => "#0891b2",
-            PrimaryColor.Sky => "#0284c7",
-            PrimaryColor.Blue => "#2563eb",
-            PrimaryColor.Indigo => "#4f46e5",
-            PrimaryColor.Violet => "#7c3aed",
-            PrimaryColor.Purple => "#9333ea",
-            PrimaryColor.Fuchsia => "#c026d3",
-            PrimaryColor.Pink => "#db2777",
-            _ => baseColorValue
+            PrimaryColor.Default  => baseColorValue,
+            PrimaryColor.Red      => "#dc2626",
+            PrimaryColor.Rose     => "#e11d48",
+            PrimaryColor.Orange   => "#ea580c",
+            PrimaryColor.Amber    => "#d97706",
+            PrimaryColor.Yellow   => "#ca8a04",
+            PrimaryColor.Lime     => "#65a30d",
+            PrimaryColor.Green    => "#16a34a",
+            PrimaryColor.Emerald  => "#059669",
+            PrimaryColor.Teal     => "#0d9488",
+            PrimaryColor.Cyan     => "#0891b2",
+            PrimaryColor.Sky      => "#0284c7",
+            PrimaryColor.Blue     => "#2563eb",
+            PrimaryColor.Indigo   => "#4f46e5",
+            PrimaryColor.Violet   => "#7c3aed",
+            PrimaryColor.Purple   => "#9333ea",
+            PrimaryColor.Fuchsia  => "#c026d3",
+            PrimaryColor.Pink     => "#db2777",
+            _                     => baseColorValue
         };
 
         return $"background: {baseColorValue}; border: 2px solid {primaryColorValue};";
+    }
+
+    private string GetOptionClass(bool isSelected)
+    {
+        var baseClass = "flex items-center justify-center p-2 rounded-md border hover:bg-accent transition-colors cursor-pointer text-center";
+        var selectedClass = isSelected ? "bg-accent border-ring" : "border-transparent";
+        return $"{baseClass} {selectedClass}";
     }
 
     private string GetBaseColorOptionClass(BaseColor color)
@@ -190,12 +266,17 @@
 
         var colorClass = color switch
         {
-            BaseColor.Zinc => "bg-zinc-500",
-            BaseColor.Slate => "bg-slate-500",
-            BaseColor.Gray => "bg-gray-500",
+            BaseColor.Zinc    => "bg-zinc-500",
+            BaseColor.Slate   => "bg-slate-500",
+            BaseColor.Gray    => "bg-gray-500",
             BaseColor.Neutral => "bg-neutral-500",
-            BaseColor.Stone => "bg-stone-500",
-            _ => "bg-zinc-500"
+            BaseColor.Stone   => "bg-stone-500",
+            BaseColor.Luma    => "bg-indigo-400",
+            BaseColor.Mist    => "bg-sky-400",
+            BaseColor.Mauve   => "bg-purple-400",
+            BaseColor.Taupe   => "bg-amber-700",
+            BaseColor.Olive   => "bg-lime-700",
+            _                 => "bg-zinc-500"
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
@@ -217,25 +298,25 @@
         
         var colorClass = color switch
         {
-            PrimaryColor.Default => "bg-gray-600",
-            PrimaryColor.Red => "bg-red-600",
-            PrimaryColor.Rose => "bg-rose-600",
-            PrimaryColor.Orange => "bg-orange-600",
-            PrimaryColor.Amber => "bg-amber-600",
-            PrimaryColor.Yellow => "bg-yellow-500",
-            PrimaryColor.Lime => "bg-lime-500",
-            PrimaryColor.Green => "bg-green-600",
-            PrimaryColor.Emerald => "bg-emerald-600",
-            PrimaryColor.Teal => "bg-teal-600",
-            PrimaryColor.Cyan => "bg-cyan-600",
-            PrimaryColor.Sky => "bg-sky-600",
-            PrimaryColor.Blue => "bg-blue-600",
-            PrimaryColor.Indigo => "bg-indigo-600",
-            PrimaryColor.Violet => "bg-violet-600",
-            PrimaryColor.Purple => "bg-purple-600",
-            PrimaryColor.Fuchsia => "bg-fuchsia-600",
-            PrimaryColor.Pink => "bg-pink-600",
-            _ => "bg-gray-600"
+            PrimaryColor.Default  => "bg-gray-600",
+            PrimaryColor.Red      => "bg-red-600",
+            PrimaryColor.Rose     => "bg-rose-600",
+            PrimaryColor.Orange   => "bg-orange-600",
+            PrimaryColor.Amber    => "bg-amber-600",
+            PrimaryColor.Yellow   => "bg-yellow-500",
+            PrimaryColor.Lime     => "bg-lime-500",
+            PrimaryColor.Green    => "bg-green-600",
+            PrimaryColor.Emerald  => "bg-emerald-600",
+            PrimaryColor.Teal     => "bg-teal-600",
+            PrimaryColor.Cyan     => "bg-cyan-600",
+            PrimaryColor.Sky      => "bg-sky-600",
+            PrimaryColor.Blue     => "bg-blue-600",
+            PrimaryColor.Indigo   => "bg-indigo-600",
+            PrimaryColor.Violet   => "bg-violet-600",
+            PrimaryColor.Purple   => "bg-purple-600",
+            PrimaryColor.Fuchsia  => "bg-fuchsia-600",
+            PrimaryColor.Pink     => "bg-pink-600",
+            _                     => "bg-gray-600"
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
@@ -243,7 +324,6 @@
 
     private string GetShortColorName(PrimaryColor color)
     {
-        // Shorten long color names for better display in grid
         return color.ToString();
     }
 
@@ -252,3 +332,4 @@
         ThemeService.OnThemeChanged -= HandleThemeChanged;
     }
 }
+
