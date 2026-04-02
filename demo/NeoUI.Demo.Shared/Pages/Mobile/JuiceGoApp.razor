@@ -133,14 +133,14 @@
                         @* Category filter *@
                         <div class="px-4 pb-3">
                             <ToggleGroup Type="ToggleGroupType.Single" Required="true" Scrollable="true" @bind-Value="_homeCategory">
-                                <ToggleGroupItem Value="all"      Class="relative z-10 aria-[checked=true]:bg-transparent">All</ToggleGroupItem>
-                                <ToggleGroupItem Value="Green"    Class="relative z-10 aria-[checked=true]:bg-transparent">🥦 Green</ToggleGroupItem>
-                                <ToggleGroupItem Value="Tropical" Class="relative z-10 aria-[checked=true]:bg-transparent">🌴 Tropical</ToggleGroupItem>
-                                <ToggleGroupItem Value="Berry"    Class="relative z-10 aria-[checked=true]:bg-transparent">🫐 Berry</ToggleGroupItem>
-                                <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent">🍊 Citrus</ToggleGroupItem>
-                                <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent">💧 Fresh</ToggleGroupItem>
-                                <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent">✨ Golden</ToggleGroupItem>
-                                <SelectionIndicator Selector="[aria-checked=true]" Hover="true" Class="bg-accent data-[si-hover]:bg-accent/50 shadow-sm [--si-duration:500ms]" />
+                                <ToggleGroupItem Value="all"      Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">All</ToggleGroupItem>
+                                <ToggleGroupItem Value="Green"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🥦 Green</ToggleGroupItem>
+                                <ToggleGroupItem Value="Tropical" Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🌴 Tropical</ToggleGroupItem>
+                                <ToggleGroupItem Value="Berry"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🫐 Berry</ToggleGroupItem>
+                                <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🍊 Citrus</ToggleGroupItem>
+                                <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">💧 Fresh</ToggleGroupItem>
+                                <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">✨ Golden</ToggleGroupItem>
+                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm [--si-duration:500ms]" />
                             </ToggleGroup>
                         </div>
 
@@ -247,14 +247,14 @@
                     <div class="flex-1 overflow-y-auto">
                         <div class="px-4 pt-3 pb-2">
                             <ToggleGroup Type="ToggleGroupType.Single" Required="true" Scrollable="true" @bind-Value="_menuCategory">
-                                <ToggleGroupItem Value="all"      Class="relative z-10 aria-[checked=true]:bg-transparent">All</ToggleGroupItem>
-                                <ToggleGroupItem Value="Green"    Class="relative z-10 aria-[checked=true]:bg-transparent">Green</ToggleGroupItem>
-                                <ToggleGroupItem Value="Tropical" Class="relative z-10 aria-[checked=true]:bg-transparent">Tropical</ToggleGroupItem>
-                                <ToggleGroupItem Value="Berry"    Class="relative z-10 aria-[checked=true]:bg-transparent">Berry</ToggleGroupItem>
-                                <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent">Citrus</ToggleGroupItem>
-                                <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent">Fresh</ToggleGroupItem>
-                                <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent">Golden</ToggleGroupItem>
-                                <SelectionIndicator Selector="[aria-checked=true]" Hover="true" Class="bg-accent data-[si-hover]:bg-accent/50 shadow-sm [--si-duration:500ms]" />
+                                <ToggleGroupItem Value="all"      Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">All</ToggleGroupItem>
+                                <ToggleGroupItem Value="Green"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Green</ToggleGroupItem>
+                                <ToggleGroupItem Value="Tropical" Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Tropical</ToggleGroupItem>
+                                <ToggleGroupItem Value="Berry"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Berry</ToggleGroupItem>
+                                <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Citrus</ToggleGroupItem>
+                                <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Fresh</ToggleGroupItem>
+                                <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Golden</ToggleGroupItem>
+                                <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm [--si-duration:500ms]" />
                             </ToggleGroup>
                         </div>
 
@@ -301,11 +301,11 @@
                                 <div class="space-y-2">
                                     <p class="text-sm font-medium">Sort by</p>
                                     <ToggleGroup Type="ToggleGroupType.Single" Required="true" @bind-Value="_sortBy">
-                                        <ToggleGroupItem Value="popular"    Class="relative z-10 aria-[checked=true]:bg-transparent">Popular</ToggleGroupItem>
-                                        <ToggleGroupItem Value="rating"     Class="relative z-10 aria-[checked=true]:bg-transparent">Rating</ToggleGroupItem>
-                                        <ToggleGroupItem Value="price-asc"  Class="relative z-10 aria-[checked=true]:bg-transparent">Price ↑</ToggleGroupItem>
-                                        <ToggleGroupItem Value="price-desc" Class="relative z-10 aria-[checked=true]:bg-transparent">Price ↓</ToggleGroupItem>
-                                        <SelectionIndicator Selector="[aria-checked=true]" Hover="true" Class="bg-accent data-[si-hover]:bg-accent/50 shadow-sm [--si-duration:500ms]" />
+                                        <ToggleGroupItem Value="popular"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Popular</ToggleGroupItem>
+                                        <ToggleGroupItem Value="rating"     Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Rating</ToggleGroupItem>
+                                        <ToggleGroupItem Value="price-asc"  Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Price ↑</ToggleGroupItem>
+                                        <ToggleGroupItem Value="price-desc" Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">Price ↓</ToggleGroupItem>
+                                        <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm [--si-duration:500ms]" />
                                     </ToggleGroup>
                                 </div>
                                 <Separator LineStyle="SeparatorStyle.Dashed" />
@@ -688,7 +688,7 @@
                 @* ══════════════════════════════════════════════ *@
                 else if (CurrentScreen == Screen.Help)
                 {
-                    <AppBar Title="Help &amp; Support" OnBack="@GoBack" />
+                    <AppBar Title="Help & Support" OnBack="@GoBack" />
 
                     <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
                         <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-950 p-4 flex gap-3 items-center">
@@ -987,8 +987,8 @@
         new("bell",        "Notifications"),
         new("credit-card", "Payment Methods"),
         new("",            "", IsSeparator: true),
-        new("shield",      "Privacy &amp; Security"),
-        new("life-buoy",   "Help &amp; Support",  Screen.Help),
+        new("shield",      "Privacy & Security"),
+        new("life-buoy",   "Help & Support",  Screen.Help),
         new("star",        "Rate the App"),
     ];
 
