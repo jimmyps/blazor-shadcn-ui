@@ -91,11 +91,16 @@ window.theme = {
         const allowedRadius  = ['None', 'Small', 'Medium', 'Large', 'Full'];
         const allowedFonts   = ['System', 'Inter', 'Geist', 'CalSans', 'DmSans', 'PlusJakarta'];
 
-        const validBase    = allowedBaseColors.find(c => c.toLowerCase() === savedBaseColor.toLowerCase())    || 'Zinc';
-        const validPrimary = allowedPrimaryColors.find(c => c.toLowerCase() === savedPrimaryColor.toLowerCase()) || 'Default';
-        const validStyle   = savedStyle   ? allowedStyles.find(c => c.toLowerCase()  === savedStyle.toLowerCase())   || '' : '';
-        const validRadius  = savedRadius  ? allowedRadius.find(c => c.toLowerCase()  === savedRadius.toLowerCase())  || '' : '';
-        const validFont    = savedFont    ? allowedFonts.find(c => c.toLowerCase()   === savedFont.toLowerCase())    || '' : '';
+        /** @param {string[]} list @param {string} val @param {string} fallback */
+        function validated(list, val, fallback) {
+            return val ? (list.find(c => c.toLowerCase() === val.toLowerCase()) || fallback) : fallback;
+        }
+
+        const validBase    = validated(allowedBaseColors,    savedBaseColor,    'Zinc');
+        const validPrimary = validated(allowedPrimaryColors, savedPrimaryColor, 'Default');
+        const validStyle   = validated(allowedStyles,        savedStyle,        '');
+        const validRadius  = validated(allowedRadius,        savedRadius,       '');
+        const validFont    = validated(allowedFonts,         savedFont,         '');
 
         html.classList.add('base-' + validBase.toLowerCase());
 

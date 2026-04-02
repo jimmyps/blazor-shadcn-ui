@@ -168,7 +168,7 @@ public enum FontPreset
 }
 
 /// <summary>
-/// A portable, serialisable record encoding all theme dimensions as a named preset.
+/// A portable, serializable record encoding all theme dimensions as a named preset.
 /// </summary>
 /// <param name="Name">Human-readable name for the preset.</param>
 /// <param name="BaseColor">Base (neutral) color scheme.</param>
