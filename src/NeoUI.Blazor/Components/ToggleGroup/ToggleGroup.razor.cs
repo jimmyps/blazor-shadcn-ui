@@ -68,6 +68,17 @@ public partial class ToggleGroup : ComponentBase
     public bool Disabled { get; set; }
 
     /// <summary>
+    /// Gets or sets whether the toggle group is horizontally scrollable.
+    /// </summary>
+    /// <remarks>
+    /// When true, the container allows overflow items to scroll horizontally
+    /// instead of wrapping. Items automatically get <c>shrink-0</c> to prevent compression.
+    /// Useful for displaying many options in a constrained width (e.g., mobile filter bars).
+    /// </remarks>
+    [Parameter]
+    public bool Scrollable { get; set; }
+
+    /// <summary>
     /// Gets or sets additional CSS classes to apply to the toggle group.
     /// </summary>
     [Parameter]
@@ -117,7 +128,9 @@ public partial class ToggleGroup : ComponentBase
     }
 
     private string CssClass => ClassNames.cn(
-        "inline-flex items-center justify-center rounded-md",
+        Scrollable
+            ? "flex items-center rounded-md max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            : "inline-flex items-center justify-center rounded-md",
         Class
     );
 }

@@ -118,6 +118,35 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Dashed and Dotted"
+        Description="Use LineStyle to render dashed or dotted separators for visual variety.">
+        <DemoBlock Code="@_lineStyleCode">
+            <div class="space-y-6 max-w-md">
+                <div>
+                    <p class="text-xs text-muted-foreground mb-2">Solid (default)</p>
+                    <Separator />
+                </div>
+                <div>
+                    <p class="text-xs text-muted-foreground mb-2">Dashed</p>
+                    <Separator LineStyle="SeparatorStyle.Dashed" />
+                </div>
+                <div>
+                    <p class="text-xs text-muted-foreground mb-2">Dotted</p>
+                    <Separator LineStyle="SeparatorStyle.Dotted" />
+                </div>
+                <div class="flex h-12 items-center gap-4 text-sm">
+                    <span>Solid</span>
+                    <Separator Orientation="SeparatorOrientation.Vertical" />
+                    <span>Dashed</span>
+                    <Separator Orientation="SeparatorOrientation.Vertical" LineStyle="SeparatorStyle.Dashed" />
+                    <span>Dotted</span>
+                    <Separator Orientation="SeparatorOrientation.Vertical" LineStyle="SeparatorStyle.Dotted" />
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_separatorProps" />
     </DemoSection>

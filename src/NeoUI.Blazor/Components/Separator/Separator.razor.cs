@@ -66,11 +66,38 @@ public partial class Separator : ComponentBase
     /// Custom classes are appended after the component's base classes,
     /// allowing for style overrides and extensions.
     /// </remarks>
+    /// <summary>
+    /// Gets or sets the line style of the separator.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <see cref="SeparatorStyle.Solid"/> (default) renders a solid filled line.
+    /// <see cref="SeparatorStyle.Dashed"/> renders a dashed border line.
+    /// <see cref="SeparatorStyle.Dotted"/> renders a dotted border line.
+    /// </para>
+    /// </remarks>
+    [Parameter]
+    public SeparatorStyle LineStyle { get; set; } = SeparatorStyle.Solid;
+
+    /// <summary>
+    /// Gets or sets additional CSS classes to apply to the separator.
+    /// </summary>
     [Parameter]
     public string? Class { get; set; }
 
-    private string CssClass => ClassNames.cn(
-        "shrink-0 bg-border",
-        Orientation == SeparatorOrientation.Horizontal ? "h-[1px] w-full" : "h-full w-[1px]",
-        Class);
+    private string CssClass => LineStyle switch
+    {
+        SeparatorStyle.Dashed => ClassNames.cn(
+            "shrink-0 border-border",
+            Orientation == SeparatorOrientation.Horizontal ? "w-full border-t border-dashed" : "h-full w-0 border-l border-dashed",
+            Class),
+        SeparatorStyle.Dotted => ClassNames.cn(
+            "shrink-0 border-border",
+            Orientation == SeparatorOrientation.Horizontal ? "w-full border-t border-dotted" : "h-full w-0 border-l border-dotted",
+            Class),
+        _ => ClassNames.cn(
+            "shrink-0 bg-border",
+            Orientation == SeparatorOrientation.Horizontal ? "h-[1px] w-full" : "h-full w-[1px]",
+            Class)
+    };
 }

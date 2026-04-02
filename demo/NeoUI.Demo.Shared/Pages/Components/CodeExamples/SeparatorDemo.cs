@@ -6,6 +6,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
         private static readonly IReadOnlyList<DemoPropRow> _separatorProps =
             [
                 new("Orientation", "SeparatorOrientation", "Horizontal", "The orientation of the separator. Options: Horizontal, Vertical."),
+                new("LineStyle",   "SeparatorStyle",       "Solid",      "Visual line style. Options: Solid, Dashed, Dotted."),
                 new("Decorative",  "bool",                 "true",       "When true, the separator is purely decorative and hidden from screen readers. Set to false for semantic separators."),
                 new("Class",       "string?",              null,         "Additional CSS classes appended to the separator element."),
             ];
@@ -60,6 +61,23 @@ namespace NeoUI.Demo.Shared.Pages.Components
                     <div class="p-4"><h3 class="font-medium">Notifications</h3></div>
                     <Separator />
                     <div class="p-4"><h3 class="font-medium">Security</h3></div>
+                </div>
+                """;
+
+        private const string _lineStyleCode =
+                """
+                <Separator />
+                <Separator LineStyle="SeparatorStyle.Dashed" />
+                <Separator LineStyle="SeparatorStyle.Dotted" />
+
+                <!-- Vertical variants -->
+                <div class="flex h-12 items-center gap-4 text-sm">
+                    <span>Solid</span>
+                    <Separator Orientation="SeparatorOrientation.Vertical" />
+                    <span>Dashed</span>
+                    <Separator Orientation="SeparatorOrientation.Vertical" LineStyle="SeparatorStyle.Dashed" />
+                    <span>Dotted</span>
+                    <Separator Orientation="SeparatorOrientation.Vertical" LineStyle="SeparatorStyle.Dotted" />
                 </div>
                 """;
     }

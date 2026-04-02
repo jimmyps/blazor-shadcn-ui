@@ -10,6 +10,12 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("ChildContent", "RenderFragment?",  null,       "The content to display inside the badge (text, icons, numbers, etc.)."),
             ];
 
+        private static readonly IReadOnlyList<DemoPropRow> _badgeIconProps =
+            [
+                new("Class",        "string?",          null,       "Additional CSS classes applied to the icon wrapper span."),
+                new("ChildContent", "RenderFragment?",  null,       "The icon element to display (e.g. a LucideIcon)."),
+            ];
+
         private const string _variantsCode =
                 """
                 <Badge Variant="BadgeVariant.Default">Default</Badge>
@@ -54,6 +60,26 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 <Badge Variant="BadgeVariant.Default" Class="text-lg px-4 py-1">Large Badge</Badge>
                 <Badge Variant="BadgeVariant.Secondary" Class="rounded-sm">Square Corners</Badge>
                 <Badge Variant="BadgeVariant.Outline" Class="border-2 border-blue-500 text-blue-500">Custom Color</Badge>
+                """;
+
+        private const string _badgeIconCode =
+                """
+                <Badge Variant="BadgeVariant.Default">
+                    <BadgeIcon><LucideIcon Name="check" /></BadgeIcon>
+                    Verified
+                </Badge>
+                <Badge Variant="BadgeVariant.Secondary">
+                    <BadgeIcon><LucideIcon Name="clock" /></BadgeIcon>
+                    Pending
+                </Badge>
+                <Badge Variant="BadgeVariant.Destructive">
+                    <BadgeIcon><LucideIcon Name="alert-circle" /></BadgeIcon>
+                    Error
+                </Badge>
+                <Badge Variant="BadgeVariant.Outline">
+                    <BadgeIcon><LucideIcon Name="info" /></BadgeIcon>
+                    Info
+                </Badge>
                 """;
     }
 }
