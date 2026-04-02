@@ -171,6 +171,35 @@
     </DemoSection>
 
     <DemoSection
+        Title="With BadgeIcon"
+        Description="Use BadgeIcon to embed an icon inside a badge with correct sizing and spacing.">
+        <DemoBlock Code="@_badgeIconCode">
+            <div class="flex flex-wrap gap-4">
+                <Badge Variant="BadgeVariant.Default">
+                    <BadgeIcon><LucideIcon Name="check" /></BadgeIcon>
+                    Verified
+                </Badge>
+                <Badge Variant="BadgeVariant.Destructive">
+                    <BadgeIcon><LucideIcon Name="x" /></BadgeIcon>
+                    Closed
+                </Badge>
+                <Badge Variant="BadgeVariant.Secondary">
+                    <BadgeIcon><LucideIcon Name="star" /></BadgeIcon>
+                    Featured
+                </Badge>
+                <Badge Variant="BadgeVariant.Outline">
+                    <BadgeIcon><LucideIcon Name="lock" /></BadgeIcon>
+                    Private
+                </Badge>
+                <Badge Variant="BadgeVariant.Default">
+                    <BadgeIcon><LucideIcon Name="zap" /></BadgeIcon>
+                    Pro
+                </Badge>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Accessibility Notes"
         Description="Best practices for using badges accessibly.">
         <div class="border rounded-lg p-6 space-y-3 bg-muted/50">

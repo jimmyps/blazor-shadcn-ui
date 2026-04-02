@@ -220,6 +220,53 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Dots Position"
+        Description="Control where dot indicators appear using the DotsPosition parameter.">
+        <DemoBlock Code="@_dotsPositionCode">
+            <div class="grid grid-cols-2 gap-6">
+                <div class="space-y-1">
+                    <p class="text-xs text-muted-foreground text-center">Bottom (default)</p>
+                    <div class="w-full">
+                        <Carousel ShowIndicators="true" DotsPosition="CarouselDotsPosition.Bottom">
+                            @foreach (var i in Enumerable.Range(1, 4))
+                            {
+                                <CarouselItem>
+                                    <div class="p-1">
+                                        <Card>
+                                            <CardContent Class="flex h-[120px] items-center justify-center p-4">
+                                                <span class="text-3xl font-semibold">@i</span>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            }
+                        </Carousel>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-xs text-muted-foreground text-center">Top</p>
+                    <div class="w-full">
+                        <Carousel ShowIndicators="true" DotsPosition="CarouselDotsPosition.Top">
+                            @foreach (var i in Enumerable.Range(1, 4))
+                            {
+                                <CarouselItem>
+                                    <div class="p-1">
+                                        <Card>
+                                            <CardContent Class="flex h-[120px] items-center justify-center p-4">
+                                                <span class="text-3xl font-semibold">@i</span>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </CarouselItem>
+                            }
+                        </Carousel>
+                    </div>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_carouselProps" />
     </DemoSection>

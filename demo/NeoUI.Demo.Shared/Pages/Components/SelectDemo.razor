@@ -113,6 +113,32 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Bottom Sheet (Mobile)"
+        Description="Use Presentation=BottomSheet to render the options in a Drawer that slides up from the bottom. Recommended for mobile-first UIs.">
+        <DemoBlock Code="@_bottomSheetCode">
+            <div class="flex items-center gap-4">
+                <Select @bind-Value="selectedBottomSheet" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select a city" />
+                    </SelectTrigger>
+                    <SelectContent Presentation="SelectPresentation.BottomSheet">
+                        <SelectItem Value="@("nyc")" Text="New York" TValue="string">New York</SelectItem>
+                        <SelectItem Value="@("london")" Text="London" TValue="string">London</SelectItem>
+                        <SelectItem Value="@("tokyo")" Text="Tokyo" TValue="string">Tokyo</SelectItem>
+                        <SelectItem Value="@("paris")" Text="Paris" TValue="string">Paris</SelectItem>
+                        <SelectItem Value="@("sydney")" Text="Sydney" TValue="string">Sydney</SelectItem>
+                        <SelectItem Value="@("berlin")" Text="Berlin" TValue="string">Berlin</SelectItem>
+                    </SelectContent>
+                </Select>
+                @if (!string.IsNullOrEmpty(selectedBottomSheet))
+                {
+                    <p class="text-sm">Selected: <strong>@selectedBottomSheet</strong></p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_selectProps" />
     </DemoSection>
@@ -125,6 +151,7 @@
     private string? selectedAnimal;
     private string? selectedCountry;
     private int selectedNumber;
+    private string? selectedBottomSheet;
 
     private readonly string[] countries = new[]
     {

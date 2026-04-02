@@ -2,24 +2,44 @@
 @namespace NeoUI.Blazor
 @attribute [CascadingTypeParameter(nameof(TValue))]
 
-@* Styled SelectContent wrapper around SelectContent primitive *@
-<SelectContentPrimitive TValue="TValue"
-                                               class="@CssClass">
-    <div class="p-1">
-        @ChildContent
-    </div>
-</SelectContentPrimitive>
+@* Styled SelectContent wrapper — supports Popover (default) and BottomSheet presentation *@
+
+@if (Presentation == SelectPresentation.BottomSheet)
+{
+    @* BottomSheet: delegate to Drawer for consistent slide-up behaviour *@
+    <Drawer Open="@(Context?.IsOpen == true)" OpenChanged="@HandleOpenChangedAsync" Direction="DrawerDirection.Bottom">
+        <DrawerContent ShowHandle="true">
+            <div class="overflow-auto max-h-[50vh] px-1 pb-4">
+                @ChildContent
+            </div>
+        </DrawerContent>
+    </Drawer>
+}
+else
+{
+    <SelectContentPrimitive TValue="TValue"
+                            class="@CssClass">
+        <div class="p-1">
+            @ChildContent
+        </div>
+    </SelectContentPrimitive>
+}
 
 @code {
-    /// <summary>
-    /// Cascading parameter to infer TValue from parent Select context.
-    /// </summary>
     [CascadingParameter]
     private SelectContext<TValue>? Context { get; set; }
 
+    /// <summary>
+    /// Gets or sets how the select content is presented.
+    /// <see cref="SelectPresentation.Popover"/> (default) anchors a floating dropdown below the trigger.
+    /// <see cref="SelectPresentation.BottomSheet"/> slides up from the bottom of the viewport using a Drawer.
+    /// </summary>
+    [Parameter]
+    public SelectPresentation Presentation { get; set; } = SelectPresentation.Popover;
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the content container.
+    /// Only applies in <see cref="SelectPresentation.Popover"/> mode.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
@@ -30,9 +50,27 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>
-    /// Gets the computed CSS classes for the content container.
-    /// </summary>
+    private bool _prevIsOpen = false;
+
+    protected override void OnParametersSet()
+    {
+        var isOpen = Context?.IsOpen == true;
+        if (Presentation == SelectPresentation.BottomSheet && isOpen && !_prevIsOpen)
+        {
+            // Clear stale registrations so items register fresh on each open.
+            // (DrawerContent mounts/unmounts items on open/close unlike ForceMount.)
+            Context?.ClearItems();
+        }
+        _prevIsOpen = isOpen;
+    }
+
+    private Task HandleOpenChangedAsync(bool open)
+    {
+        if (!open)
+            Context?.Close();
+        return Task.CompletedTask;
+    }
+
     private string CssClass => ClassNames.cn(
         $"z-{ZIndexLevels.PopoverContent} max-h-60 w-full overflow-auto rounded-md border",
         "bg-popover text-popover-foreground shadow-md",
@@ -41,7 +79,6 @@
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
         "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
         "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        // Hide scrollbar but keep scroll functionality
         "[&::-webkit-scrollbar]:hidden",
         Class
     );
