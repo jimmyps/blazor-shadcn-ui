@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace NeoUI.Blazor;
 
+
 /// <summary>
 /// A searchable combobox component that enables users to filter and select from a list of options.
 /// </summary>
@@ -135,6 +136,37 @@ public partial class Combobox<TItem> : ComponentBase
     public bool MatchTriggerWidth { get; set; } = false;
 
     /// <summary>
+    /// Gets or sets the callback invoked when the user scrolls near the bottom of the dropdown list.
+    /// Use this to load additional items for infinite scroll scenarios.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnLoadMore { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether additional items are currently being loaded.
+    /// When true, a loading spinner is shown at the bottom of the list and
+    /// <see cref="OnLoadMore"/> is suppressed until loading completes.
+    /// </summary>
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a message displayed at the bottom of the list when all items have been loaded.
+    /// Only shown when <see cref="IsLoading"/> is false. Set to <c>null</c> or empty to hide.
+    /// </summary>
+    [Parameter]
+    public string? EndOfListMessage { get; set; }
+
+    /// <summary>
+    /// Gets or sets the callback invoked on every search keystroke.
+    /// When set, the component's built-in text filter is completely bypassed — the consumer
+    /// decides which <see cref="Items"/> to show (e.g. by fetching from a server).
+    /// The search query persists across dropdown reopens for both client-side and server-side modes.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> SearchQueryChanged { get; set; }
+
+    /// <summary>
     /// Tracks whether the popover is currently open.
     /// </summary>
     private bool _isOpen { get; set; } = false;
@@ -148,6 +180,17 @@ public partial class Combobox<TItem> : ComponentBase
     /// Tracks whether focus has been done for the current open.
     /// </summary>
     private bool _focusDone = false;
+
+    /// <summary>
+    /// Mirrors the CommandContext search query so it can be reset programmatically on close.
+    /// </summary>
+    private string _commandSearchQuery = string.Empty;
+
+    /// <summary>
+    /// Static filter function that passes all items through — used when <see cref="SearchQueryChanged"/>
+    /// is set so the consumer's server-side results are shown without a second client-side pass.
+    /// </summary>
+    private static readonly Func<CommandItemMetadata, string, bool> _bypassFilter = static (_, _) => true;
 
     /// <summary>
     /// Gets a unique identifier for this combobox instance.
@@ -226,13 +269,13 @@ public partial class Combobox<TItem> : ComponentBase
     /// Resets focus tracking when the popover closes.
     /// </summary>
     /// <param name="isOpen">Whether the popover is now open.</param>
-    private void HandleOpenChanged(bool isOpen)
+    private Task HandleOpenChanged(bool isOpen)
     {
         _isOpen = isOpen;
         if (!isOpen)
-        {
-            _focusDone = false; // Reset for next open
-        }
+            _focusDone = false;
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -252,6 +295,25 @@ public partial class Combobox<TItem> : ComponentBase
         // Close the popover after selection
         _isOpen = false;
         // Note: _focusDone is reset by HandleOpenChanged
+    }
+
+    /// <summary>
+    /// Returns a filter function that bypasses all client-side filtering when
+    /// <see cref="SearchQueryChanged"/> is set; otherwise returns <c>null</c> so
+    /// the default contains-based filter is used.
+    /// </summary>
+    private Func<CommandItemMetadata, string, bool>? GetFilterFunction() =>
+        SearchQueryChanged.HasDelegate ? _bypassFilter : null;
+
+    /// <summary>
+    /// Relays the search query change from <see cref="CommandContent"/> to the consumer's
+    /// <see cref="SearchQueryChanged"/> delegate and keeps <see cref="_commandSearchQuery"/> in sync.
+    /// </summary>
+    private async Task HandleInternalSearchQueryChanged(string query)
+    {
+        _commandSearchQuery = query;
+        if (SearchQueryChanged.HasDelegate)
+            await SearchQueryChanged.InvokeAsync(query);
     }
 
     /// <summary>

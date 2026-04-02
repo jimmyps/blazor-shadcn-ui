@@ -2,6 +2,643 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-3-30 — SelectionIndicator component + ToggleGroupItem aria-checked fix
+
+> **Release: `v3.8.2`**  
+> **Library change.** Affects `NeoUI.Blazor`. All changes are additive — no breaking changes.
+
+---
+
+### ✨ New Component — `SelectionIndicator`
+
+A composable, spring-animated indicator that slides between the active item in any selection container. Drop it as the last child of any container that marks its active child via a CSS attribute — no event wiring or Blazor state required.
+
+**How it works:**
+
+`SelectionIndicator` uses a `MutationObserver` to watch for attribute changes on its siblings. When the active item changes, JS reads the new item's bounding rect and animates the indicator's `left`, `top`, `width`, and `height` inline styles via CSS `transition`. The indicator tracks both axes, so it works for horizontal navigation (Tabs, ToggleGroup) and vertical lists (DropdownMenu radio groups) equally.
+
+**Works with any selection container — not just NeoUI components.**
+
+`SelectionIndicator` reacts to attribute changes, so it works with every component that marks its active child via a DOM attribute. This includes all NeoUI selection-based components (`Tabs`, `ToggleGroup`, `RadioGroup`, `Select`, `DropdownMenuRadioGroup`, `Pagination`, `NavigationMenu`, etc.) as well as fully custom HTML markup — as long as you can set an attribute on the active element, the indicator follows.
+
+Common selectors for NeoUI components:
+
+| Container | Selector |
+|---|---|
+| `Tabs` | `[data-state=active]` (default — no config needed) |
+| `ToggleGroup` single | `[aria-checked=true]` |
+| `RadioGroup` / `Select` / `DropdownMenuRadioGroup` | `[data-state=checked]` |
+| `Pagination` | `[aria-current=page]` |
+| `NavigationMenuLink` | `[data-active=true]` |
+| Plain HTML / custom markup | any attribute, e.g. `[data-active=true]` |
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Selector` | `string` | `[data-state=active]` | CSS selector used to find the active element within the parent container. |
+| `Hover` | `bool` | `false` | When `true`, the indicator also slides to the hovered item and snaps back on mouse leave. JS sets `data-si-hover` on the indicator during hover — use `data-[si-hover]:` Tailwind variants to style the hover state differently from the selected state. |
+| `Class` | `string?` | — | Additional CSS classes. Use `--si-height` for a fixed-height underline variant (JS pins the indicator to the bottom of each item). Use `--si-duration` / `--si-easing` to customise the animation. |
+
+**CSS custom properties (set on the indicator element):**
+
+| Property | Default | Description |
+|---|---|---|
+| `--si-duration` | `350ms` | Transition duration. |
+| `--si-easing` | `cubic-bezier(0.34, 1.26, 0.64, 1)` | Easing — the default produces a gentle spring overshoot. |
+| `--si-height` | — | Fixed height override. When set, the indicator is pinned to the bottom of the active element at this height (e.g. `2px` for an underline). |
+
+**Usage patterns:**
+
+```razor
+@* 1. Tabs — pill indicator (default appearance, no Selector needed) *@
+<TabsList>
+    <TabsTrigger Value="a" Class="relative z-1 data-[state=active]:bg-transparent data-[state=active]:shadow-none">A</TabsTrigger>
+    <TabsTrigger Value="b" Class="relative z-1 data-[state=active]:bg-transparent data-[state=active]:shadow-none">B</TabsTrigger>
+    <SelectionIndicator />
+</TabsList>
+
+@* 2. Navigation underline — fixed-height indicator pinned to the bottom of each item *@
+<div class="inline-flex border-b border-border">
+    <button class="relative z-1 px-4 py-2" data-active="true">Overview</button>
+    <button class="relative z-1 px-4 py-2">API</button>
+    <SelectionIndicator Selector="[data-active=true]"
+                        Class="rounded-none bg-foreground [--si-height:2px]" />
+</div>
+
+@* 3. DropdownMenu radio — vertical sliding with hover preview *@
+<DropdownMenuRadioGroup @bind-Value="@_view">
+    <DropdownMenuRadioItem Value="list" CloseOnSelect="false" Class="relative z-1 hover:bg-transparent">List</DropdownMenuRadioItem>
+    <DropdownMenuRadioItem Value="grid" CloseOnSelect="false" Class="relative z-1 hover:bg-transparent">Grid</DropdownMenuRadioItem>
+    <SelectionIndicator Selector="[data-state=checked]"
+                        Hover="true"
+                        Class="inset-x-1 bg-accent data-[si-hover]:bg-accent/50 rounded-sm shadow-none" />
+</DropdownMenuRadioGroup>
+
+@* 4. Fully custom container — any markup, any attribute *@
+<div class="inline-flex bg-muted rounded-lg p-1">
+    @foreach (var period in _periods)
+    {
+        <button class="relative z-1 px-3 py-1 text-xs font-medium rounded-md"
+                data-active="@(_period == period ? "true" : null)"
+                @onclick="@(() => _period = period)">
+            @period
+        </button>
+    }
+    <SelectionIndicator Selector="[data-active=true]" />
+</div>
+```
+
+> **Tip:** Items must be `relative z-1` to appear above the indicator (`z-0`). The container needs `position: relative` — JS sets this automatically if missing.
+
+---
+
+### 📖 Demo — `/components/selection-indicator`
+
+| Section | What it shows |
+|---|---|
+| **Tabs** | Default pill indicator inside `TabsList`. Custom bounce easing via `--si-duration` / `--si-easing` CSS custom properties. |
+| **Segmented Control** | `ToggleGroup` in Single mode as a segmented control. Uses `Selector="[aria-checked=true]"` — `ToggleGroupItem` signals selection via `aria-checked`, not `data-state`. |
+| **DropdownMenu Radio** | Vertical sliding indicator inside `DropdownMenuRadioGroup`. `Hover="true"` makes the indicator preview items on mouse-over; `data-[si-hover]:bg-accent/50` applies a lighter tint during hover vs the solid selected state. |
+| **Pagination** | Pill indicator tracking the active page via `Selector="[aria-current=page]"`. |
+| **Navigation Underline** | Thin 2 px underline via `[--si-height:2px]` — JS pins the indicator to the bottom of each item at the fixed height. Uses custom plain `<button>` elements with `data-active="true"`. |
+| **Custom Container** | Fully custom HTML period-selector. No NeoUI components involved — any element with the right attribute works. |
+| **API Reference** | Parameter table for `Selector`, `Hover`, and `Class`. |
+
+---
+
+### ✨ Improvement — `SelectionIndicator`: pure CSS transitions, no external dependencies
+
+The initial implementation used a Motion One CDN import for spring animation. This has been replaced with pure CSS `transition` using `cubic-bezier(0.34, 1.56, 0.64, 1)` — a spring-like easing with gentle overshoot, no external dependency. The CDN import was fragile: a top-level `import` inside a JS module causes the entire `import()` call to reject if the CDN is unavailable, crashing the Blazor circuit.
+
+---
+
+### 🐛 Fix — `ToggleGroupItem`: `aria-checked` rendered in Pascal case
+
+`aria-checked="@IsSelected"` (C# `bool`) rendered `"True"` / `"False"` (Pascal case). CSS attribute selectors are case-sensitive, so `[aria-checked=true]` never matched, making `SelectionIndicator` non-functional with `ToggleGroup`. Fixed by rendering `@(IsSelected ? "true" : "false")`.
+
+## 2026-3-30 — Sortable cross-list drag-and-drop
+
+> **Release: `v3.8.2`**  
+> **Enhancement.** Adds cross-list (multi-container) drag-and-drop to `Sortable` and `SortablePrimitive`. No breaking changes — single-list consumers are completely unaffected.
+
+---
+
+Multiple `Sortable` instances sharing the same `Group` name form a drag group. Items can be dragged freely between any containers in the group. Each container fires its own transfer events; the consumer is fully responsible for mutating its state — the component never auto-commits a transfer.
+
+```razor
+<Sortable TItem="KanbanItem" Items="@col.Items" Group="kanban"
+          GetItemId="@(i => i.Id)"
+          OnItemsReordered="@(r => col.Items = r)"
+          OnItemTransferredOut="@(args => RemoveFromCol(args, col))"
+          OnItemTransferredIn="@(args => InsertIntoCol(args, col))">
+    <SortableContent Class="flex flex-col gap-2 min-h-[80px] rounded-lg border border-dashed p-2
+                            transition-colors data-[state=over]:border-primary/60 data-[state=over]:bg-primary/5">
+        @foreach (var item in col.Items)
+        {
+            <SortableItem @key="@item.Id" Value="@item.Id">
+                <SortableItemHandle />
+                <span class="flex-1 text-sm">@item.Name</span>
+            </SortableItem>
+        }
+    </SortableContent>
+    <SortableOverlay />
+</Sortable>
+```
+
+> **`@key` is required** on `SortableItem` (and on `SortableItemPrimitive`) when items can be transferred between lists. Without it Blazor re-renders by index and the wrong rows update. Always add `@key="@item.Id"` (or equivalent unique key).
+
+---
+
+### 🔧 Enhancement — `Sortable<TItem>` / `SortablePrimitive<TItem>`: cross-list parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Group` | `string?` | `null` | Shared group name. All `Sortable` instances with the same `Group` accept drops from each other. Leave `null` for single-list behaviour. |
+| `OnItemTransferredIn` | `EventCallback<SortableTransferArgs>` | — | Fired on the **target** instance when an item is dropped from a peer container. Consumer inserts the item into its own list at `args.Index`. |
+| `OnItemTransferredOut` | `EventCallback<SortableTransferArgs>` | — | Fired on the **source** instance after the target has accepted. Consumer removes the item identified by `args.ActiveId` from its own list. |
+| `OnCanDrop` | `Func<SortableDragQueryArgs, bool>?` | `null` | Optional guard evaluated at drop time (not during hover — no JS round-trip). Return `false` to reject the drop; `OnItemTransferredIn` and `OnItemTransferredOut` are not fired. |
+
+---
+
+### ✨ New — `SortableTransferArgs`
+
+Payload for `OnItemTransferredIn` and `OnItemTransferredOut`.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ActiveId` | `string` | Identity of the item being transferred. |
+| `OverId` | `string` | Identity of the item the dragged item was dropped over (`__neo_empty__` for an empty container, `__neo_append__` when dropped in the trailing padding zone). |
+| `Index` | `int` | Resolved insertion index in the target list (on `TransferredIn`) or original index in the source list (on `TransferredOut`). |
+| `SourceInstanceId` | `string` | Internal instance ID of the source container. |
+| `TargetInstanceId` | `string` | Internal instance ID of the target container. |
+
+---
+
+### ✨ New — `SortableDragQueryArgs`
+
+Payload for the `OnCanDrop` guard.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `ActiveId` | `string` | Identity of the item being dragged. |
+| `SourceInstanceId` | `string` | Internal instance ID of the source container. |
+| `TargetInstanceId` | `string` | Internal instance ID of the target container. |
+
+---
+
+### ✨ UX — Container `data-state="over"` feedback
+
+When the dragged overlay enters a peer container, that container receives `data-state="over"`. The attribute is removed when the overlay leaves. Consumers can use Tailwind arbitrary-variant classes to style the hover state:
+
+```html
+<SortableContent Class="... transition-colors
+                         data-[state=over]:ring-2 data-[state=over]:ring-primary/40
+                         data-[state=over]:bg-primary/5">
+```
+
+The attribute is cleared on `resetDrag` (drop or cancel) so containers always return to their resting state.
+
+---
+
+### ✨ UX — Bottom drop zone expansion
+
+On drag start, JS adds `paddingBottom` equal to the active item's height to every peer container. This creates an invisible drop zone below the last item so users can easily place items at the end of a non-empty list. The padding is restored to its original value when the drag ends or is cancelled.
+
+---
+
+### ✨ UX — Scrollable descendant unclipping
+
+When a peer container hosts a scrolling component (e.g. a `DataTable` with a `max-height` scroll wrapper), JS temporarily sets `overflow: visible` and `max-height: none` on all scrollable descendants of the container for the duration of the drag. This makes every row reachable as a drop target regardless of scroll position. Original styles are fully restored on drag end or cancel.
+
+---
+
+### 📖 Demo — Kanban Board
+
+New demo at **`/components/sortable`** under *Kanban Board*. Three columns (To Do / In Progress / Done) share `Group="kanban-demo"`. Items drag freely between columns. Each column shows a *"Drop an item here"* placeholder when empty.
+
+### 📖 Demo — Cross-List Transfer (Table ↔ Table)
+
+New demo at **`/components/sortable`** under *Cross-List Transfer — Table ↔ Table*. Two `DataTable<CardItem>` instances share `Group="cross-demo"`. A toast notification confirms each successful transfer.
+
+---
+
+## 2026-3-28 — Sortable drag-and-drop component
+
+> **Release: `v3.8.0`**  
+> **New feature.** Adds headless `SortablePrimitive` to `NeoUI.Blazor.Primitives` and styled `Sortable` wrapper to `NeoUI.Blazor`. No breaking changes.
+
+---
+
+**Design philosophy — composition over modification**
+
+The Sortable component follows the same shadcn/ui principle that shapes the rest of NeoUI: *composability*. Drag-and-drop is layered *around* existing components rather than baked into them. `DataTable`, `DataView`, and any other list-rendering component remain unchanged — you simply wrap them with `<Sortable>`, set `Class="block"` on `<SortableContent>` so the container doesn't interfere with the inner layout, and drop a `<SortableItemHandle>` into a column `CellTemplate` or list template. No new variants, no feature flags, no re-implementation of the existing component. The handle wires itself to the nearest `SortableItem` through the primitive's context, so the drag behaviour activates exactly where the consumer places it.
+
+This also means `Sortable` composes cleanly with any future component — the primitive only needs a `data-sortable-id` attribute on each item element to track identity, and `SortableContent` to register the droppable region.
+
+---
+
+### ✨ New Component — `SortablePrimitive<TItem>` (headless)
+
+A fully headless drag-and-drop sortable primitive with pointer, touch, and keyboard support. Zero visual opinions — all styling is supplied by the consumer.
+
+```razor
+<SortablePrimitive TItem="MyItem"
+                   Items="@items"
+                   OnItemsReordered="@(r => items = r)"
+                   GetItemId="@(i => i.Id)">
+    <SortableContentPrimitive class="flex flex-col gap-2">
+        @foreach (var item in items)
+        {
+            <SortableItemPrimitive Value="@item.Id"
+                                   class="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
+                <SortableItemHandlePrimitive class="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" />
+                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+            </SortableItemPrimitive>
+        }
+    </SortableContentPrimitive>
+    <SortableOverlayPrimitive class="rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]" />
+</SortablePrimitive>
+```
+
+**Interaction model:**
+
+- **Pointer/touch:** drag a handle (or the whole item when `AsHandle` is set) to reorder
+- **Keyboard:** focus a handle → `Space`/`Enter` to grab → `↑`/`↓` (or `←`/`→` for horizontal) to move → `Space`/`Enter` to drop, `Escape` to cancel; arrow keys call `preventDefault` during a drag to prevent page scroll
+- **Orientations:** `Vertical`, `Horizontal`, `Grid` (2-D grid reordering), `Mixed`
+
+**Drag overlay architecture:**
+
+`SortableOverlayPrimitive` is a fixed-position frame that JS positions over the cursor. When `ChildContent` is null the JS sensor auto-clones the source element into the overlay (`cloneNode(true)`) — the clone fills `100 × 100 %` and provides its own background/padding from the source styles. When `ChildContent` is provided the consumer renders a fully custom ghost; JS skips cloning to avoid duplicates (enforced via `data-has-child-content`). Visual effects (shadow, opacity, scale, transition) belong on the overlay frame.
+
+**Table row overlay:** when the dragged element is a `<tr>`, the sensor snapshots each `td`/`th` computed width before cloning and stamps it as an inline `width` on the clone cells — preserving shared table layout geometry outside its parent `<table>`. 
+
+**Drop UX on Blazor Server:** on drag-end the sensor freezes a fixed-position snapshot of the container (showing items already at their settled positions via CSS transforms), hides the real container, then removes the snapshot once the `invokeMethodAsync` promise resolves — ensuring Blazor's SignalR re-render occurs invisibly with zero flash or positional glitching.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Items` | `IList<TItem>` | — | The list of items to sort. Required. |
+| `GetItemId` | `Func<TItem, string>` | — | Extracts a unique string ID from each item. Required. |
+| `Orientation` | `SortableOrientation` | `Vertical` | Drag axis: `Vertical`, `Horizontal`, `Grid`, or `Mixed`. |
+| `OnItemsReordered` | `EventCallback<IList<TItem>>` | — | Fired after a successful drop that changed item order. Receives the new ordered list. |
+| `OnDragStart` | `EventCallback<string>` | — | Fired when a drag begins. Receives the active item ID. |
+| `OnDragEnd` | `EventCallback<SortableDragEndArgs>` | — | Fired when a drag ends. Carries `ActiveId`, `OverId`, `FromIndex`, `ToIndex`, and `Moved`. |
+| `OnDragCancel` | `EventCallback` | — | Fired when a drag is cancelled (Escape or pointer cancel). |
+
+---
+
+### ✨ New Component — `SortableContentPrimitive`
+
+Container that registers itself with the JS sensor as the droppable region. Supply layout classes directly (`class="flex flex-col gap-2"`, `class="block"` for table/DataView wrappers, etc.).
+
+---
+
+### ✨ New Component — `SortableItemPrimitive`
+
+Wrapper for each draggable item. When `AsHandle` is false (default), only a nested `SortableItemHandlePrimitive` initiates a drag; when `AsHandle` is true the entire element is the handle.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `string` | — | Unique identifier matching `GetItemId` output. Required. |
+| `AsHandle` | `bool` | `false` | When true the entire item surface is the drag handle. |
+
+---
+
+### ✨ New Component — `SortableItemHandlePrimitive`
+
+Focusable grip button. Renders a six-dot braille character by default; replace via `ChildContent`. Apply `cursor-grab active:cursor-grabbing` and `focus-visible:outline-2 focus-visible:outline-primary` here.
+
+---
+
+### ✨ New Component — `SortableOverlayPrimitive`
+
+Fixed-position overlay frame shown while dragging. JS sets `data-state="dragging"` on the element after positioning it, enabling Tailwind data-attribute variants (`data-[state=dragging]:scale-[1.05]`) for CSS-driven visual effects — no JS inline transforms needed. When `ChildContent` (a `RenderFragment<string>`, context = active item ID) is provided the consumer controls the ghost entirely.
+
+---
+
+### ✨ New Component — `Sortable<TItem>` (styled)
+
+Pre-styled layer on top of `SortablePrimitive`. Composes `SortableContent`, `SortableItem`, `SortableItemHandle`, and `SortableOverlay` with sensible opinionated defaults so most use-cases need zero extra CSS.
+
+The component is deliberately *open-ended*: its `ChildContent` is not a fixed slot for `SortableItem` children alone — it accepts any markup, including fully-featured NeoUI components like `DataView` or `DataTable`. DnD behaviour is activated purely by the presence of `data-sortable-id` on descendant elements, which means **no existing component needs to be modified or re-wrapped** to gain sortability.
+
+```razor
+<Sortable TItem="MyItem"
+          Items="@items"
+          OnItemsReordered="@(r => items = r)"
+          GetItemId="@(i => i.Id)">
+    <SortableContent>
+        @foreach (var item in items)
+        {
+            <SortableItem Value="@item.Id">
+                <SortableItemHandle />
+                <span class="flex-1 text-sm font-medium select-none">@item.Name</span>
+            </SortableItem>
+        }
+    </SortableContent>
+    <SortableOverlay />
+</Sortable>
+```
+
+Accepts the same `Items`, `GetItemId`, `Orientation`, `OnItemsReordered`, `OnDragStart`, `OnDragEnd`, and `OnDragCancel` parameters as `SortablePrimitive<TItem>`.
+
+---
+
+### ✨ New Component — `SortableContent`
+
+Styled content container. Defaults to `flex flex-col gap-2`. Override with `Class="flex-row gap-3"` for horizontal, or `Class="block"` when wrapping a `DataView` / `DataTable`.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Class` | `string?` | `flex flex-col gap-2` | CSS classes merged with the default layout. |
+
+---
+
+### ✨ New Component — `SortableItem`
+
+Styled item wrapper with `flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm` defaults, placeholder opacity while dragging, and focus ring. Accepts `AsHandle` and `Class` overrides.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `string` | — | Unique identifier matching `GetItemId` output. Required. |
+| `AsHandle` | `bool` | `false` | When true the entire item surface is the drag handle. |
+| `Class` | `string?` | `null` | Additional CSS classes merged with defaults. |
+
+---
+
+### ✨ New Component — `SortableItemHandle`
+
+Styled grip handle button. Renders a six-dot grip icon; replace via `ChildContent`. `Class` merges additional styles.
+
+---
+
+### ✨ New Component — `SortableOverlay`
+
+Styled overlay frame. Defaults: `rounded-lg shadow-lg opacity-90 transition-transform duration-150 data-[state=dragging]:scale-[1.05]`. These defaults give a floating card appearance and an animated scale-up on drag start — all driven by CSS with no JS inline styles. Override shadow, opacity, scale, or easing via `Class`; provide a `ChildContent` (context = active item ID) for a fully custom ghost.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Class` | `string?` | *(see above)* | Merged with the default overlay classes. |
+| `ChildContent` | `RenderFragment<string>?` | `null` | Custom ghost. Context is the active item ID. When null the sensor auto-clones the dragged element. |
+
+---
+
+> **Enhancement.** Adds `SortableScope<TItem>` and a typed `ChildContent` context to `Sortable` and `SortablePrimitive`. No breaking changes — existing consumers require no updates.
+
+---
+
+Simply add `Context="s"` to `<Sortable>` (or `<SortablePrimitive>`) and use `s.RowAttributes` — works with any downstream component, forever:
+
+```razor
+<Sortable TItem="TaskItem" Items="@_items" GetItemId="@(i => i.Id)" Context="s">
+    <SortableContent Class="block">
+        <DataTable AdditionalRowAttributes="@s.RowAttributes" ...>
+        @* or any other grid/list/table component *@
+        <MyCustomGrid RowAttrs="@s.RowAttributes" ...>
+```
+
+Existing consumers that don't use `Context=` compile and behave identically.
+
+---
+
+### ✨ New — `SortableScope<TItem>`
+
+Typed context object exposed via the `Context` parameter on `<Sortable>` and `<SortablePrimitive>`. Follows the standard Blazor composability pattern (e.g. `EditForm Context="ctx"`, `QuickGrid Context="item"`).
+
+| Member | Type | Description |
+|--------|------|-------------|
+| `RowAttributes` | `Func<TItem, Dictionary<string, object>>` | Pre-built delegate that stamps `data-sortable-id` on each row/item. Pass directly to `AdditionalRowAttributes` or any equivalent parameter on any grid, list, or table component. |
+| `ActiveId` | `string?` | Identifier of the item currently being dragged, or `null` when idle. |
+| `IsDragging` | `bool` | `true` while a drag operation is in progress. |
+| `IsItemDragging(TItem)` | `bool` | Returns `true` when the given item is the one being dragged. |
+
+### 🔧 Enhancement — `SortablePrimitive<TItem>` / `Sortable<TItem>`
+
+`ChildContent` changed from `RenderFragment?` to `RenderFragment<SortableScope<TItem>>?`. Fully backward compatible — consumers without `Context=` are unaffected.
+
+---
+
+### 🔧 Enhancement — `DataTable<TData>`: `AdditionalRowAttributes` parameter
+
+This is a minimal, non-invasive hook that unlocks full composability with `Sortable` and can be used in any use cases that require additional attributes on each row. The only change to `DataTable` is the addition of `AdditionalRowAttributes` (`Func<TData, Dictionary<string, object>?>?`), which lets callers stamp any HTML attributes — `data-*`, `aria-*`, or otherwise — onto each rendered `<tr>`. The common use case is supplying `data-sortable-id` for Sortable row reorder, but the API is intentionally general-purpose. Everything else — column definitions, sorting, selection, toolbar, pagination — works exactly as before.
+
+The drag handle is placed inside any `CellTemplate` in the normal Columns API. There is no new `SortableColumn` type, no `Draggable` flag on the table, and no modified render path. The handle simply finds its nearest `SortableItem` context through the primitive's DOM-registration, and the drag engine does the rest.
+
+```razor
+<Sortable TItem="TaskItem" Items="@items" OnItemsReordered="@(r => items = r)" GetItemId="@(i => i.Id)">
+    <SortableContent Class="block">
+        <DataTable TData="TaskItem" Data="@items"
+                   AdditionalRowAttributes="@(i => new Dictionary<string, object> { ["data-sortable-id"] = i.Id })"
+                   ShowPagination="false" ShowToolbar="false">
+            <Columns>
+                <DataTableColumn TData="TaskItem" TValue="string" Property="@(i => i.Id)" Header="" Width="40px">
+                    <CellTemplate Context="row">
+                        <SortableItemHandle Class="mx-auto" />
+                    </CellTemplate>
+                </DataTableColumn>
+                ...
+            </Columns>
+        </DataTable>
+    </SortableContent>
+    <SortableOverlay Class="rounded" />
+</Sortable>
+```
+
+The same composability pattern applies to `DataView` with no `DataView` changes at all — place `<SortableItem>` directly inside `<ListTemplate>` or `<GridTemplate>` and it works.
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `AdditionalRowAttributes` | `Func<TData, Dictionary<string, object>?>?` | `null` | Callback supplying extra HTML attributes for each body `<tr>`. Use it to attach `data-sortable-id` for Sortable row reorder, or any `data-*`/`aria-*` attributes your consumers need. |
+
+---
+
+### 📖 Demo — `SortableDemo` & `SortablePrimitiveDemo`
+
+**`/components/sortable`** — styled component demos covering: default vertical list, full-item drag, horizontal chips, custom handle icon, `DataView` list/grid composability, `DataTable` integration, and primitive escape hatch.  
+**`/primitives/sortable`** — headless primitive demos covering: vertical with handle, full-item drag, horizontal, custom overlay content (custom ghost rendering), and keyboard navigation.
+
+Both pages include a complete **API Reference** section.
+
+---
+
+## 2026-3-26 — Infinite scroll for selection components
+
+> **Release: `v3.7.2`**  
+> **New capability.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No breaking API changes.
+
+---
+
+### ✨ Feature — `OnLoadMore`, `IsLoading`, `EndOfListMessage` on `Combobox`, `MultiSelect`, and `SelectContent`
+
+All three selection components now support scroll-based pagination for large datasets loaded in batches.
+
+**Parameters added to `Combobox<TItem>`, `MultiSelect<TItem>`, and `SelectContent<TValue>`:**
+
+| Parameter | Type | Description |
+|---|---|---|
+| `OnLoadMore` | `EventCallback` | Invoked when the user scrolls within 80 px of the list bottom. Suppressed while `IsLoading` is `true`. |
+| `IsLoading` | `bool` | Shows a `Spinner` at the bottom of the list while the next page is loading. |
+| `EndOfListMessage` | `string?` | Shown below all items when `IsLoading` is `false` and there are no more pages. Set `null`/empty to hide. |
+
+**Works in both Options-mode and ChildContent-mode.**
+
+**Implementation approach:**
+- `Combobox` — `OnLoadMore`/`IsLoading`/`EndOfListMessage` flow through to `CommandList`, which hosts the scroll container and JS detection.
+- `MultiSelect` — `_listboxScrollRef` (`ElementReference`) added to the listbox div with `@onscroll="HandleListboxScrollAsync"`. Scroll handler lazily imports `element-utils.js`.
+- `SelectContent` — Restructured into outer (border/shadow/animation, `overflow-hidden`) + inner (scrollable `max-h-60 overflow-auto`) div. Scroll handler on the inner div.
+- All three dispose their `IJSObjectReference` to `element-utils.js` in `DisposeAsync`.
+
+**JS utility (`element-utils.js`):**
+Added `isNearBottom(element, threshold = 80)` to `NeoUI.Blazor.Primitives/wwwroot/js/primitives/element-utils.js`. Returns `true` when `scrollTop + clientHeight >= scrollHeight - threshold`.
+
+---
+
+### ✨ Feature — `SearchQueryChanged` on `MultiSelect<TItem>`
+
+`EventCallback<string> SearchQueryChanged` added — enables two-way `@bind-SearchQuery`-style external filtering.
+
+- When `SearchQueryChanged` has a delegate, the internal text filter is **bypassed**; the consumer is responsible for updating `Items` based on the query.
+- The callback fires on every keystroke with the current query string.
+- On dropdown close, the callback is invoked with `string.Empty` so the consumer can reload the default dataset for the next open.
+
+**Related:**
+- `HandleSearchInput` updated to `async Task` to invoke the callback.
+- `Close()` updated to `async Task` (with cascade to `HandleClickOutside`, `HandleEnter`, `HandleEscape`, `HandleSearchKeyDown`).
+- `ShouldRender` now tracks `IsLoading` to re-render when the spinner state changes.
+
+---
+
+### ✨ Feature — `SearchQueryChanged` on `Combobox<TItem>`
+
+`EventCallback<string> SearchQueryChanged` added to `Combobox<TItem>` — mirrors the same API introduced on `MultiSelect<TItem>`.
+
+- When `SearchQueryChanged` has a delegate, the built-in client-side text filter is **bypassed**; the consumer controls `Items` externally.
+- The callback fires on every keystroke with the current query string.
+- On dropdown close, `HandleOpenChanged` invokes `SearchQueryChanged` with `string.Empty` so the consumer can reload the default dataset for the next open.
+- `AllowLoadMoreDuringSearch="@SearchQueryChanged.HasDelegate"` is forwarded from `Combobox` to `CommandList`, enabling `OnLoadMore` to continue firing while a server-side search is active.
+
+---
+
+### 🐛 Fix — `OnLoadMore` suppressed during client-side search
+
+When a consumer wires up `OnLoadMore` without `SearchQueryChanged` (client-side filtering only), the scroll handler now guards against triggering load-more while a search query is active — preventing the list from growing beyond the filtered results.
+
+**Implementation:**
+- `CommandList.razor` — added `bool AllowLoadMoreDuringSearch` parameter (default `false`). `HandleScroll` skips the `OnLoadMore` invocation when a non-empty search filter is present and `AllowLoadMoreDuringSearch` is `false`.
+- `MultiSelect.razor.cs` — `HandleListboxScrollAsync` applies the same guard using the local `_searchQuery` field.
+
+---
+
+### 📄 Demo — Combobox and MultiSelect demo pages updated
+
+**`ComboboxDemo.razor`:**
+- Added **Async Filtering** demo section — simulated server delay, `SearchQueryChanged` callback, `IsLoading` spinner, and end-of-list message.
+- Added **Infinite Scroll** demo section — `OnLoadMore` with simulated paging, status paragraph, and the upstream Take-based pattern throughout.
+- Removed `LoadComboboxPage` / `HandleComboboxSelectionChanged` helpers (superseded by Take pattern).
+
+**`MultiSelectDemo.razor`:**
+- Added **Infinite Scroll** demo section — `OnLoadMore` with Take-based paging and status display.
+- Added **Server-Side Search** demo section — `SearchQueryChanged` + `IsLoading` with simulated delay.
+
+**`ComboboxDemo.cs` / `MultiSelectDemo.cs` (props tables):**
+- `SearchQueryChanged` type corrected to `EventCallback<string>` on both tables.
+- `MultiSelect.Values` type corrected to `IEnumerable<string>?` (no `TValue` generic).
+- `MultiSelect.OnLoadMore` default corrected to `null`.
+
+---
+
+## Structured logging migration
+
+> **Internal refactor + bug fixes + minor enhancement.** Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`. No public API breaking changes.
+
+---
+
+### 🔧 Refactor — Replace `Console.WriteLine` / `Console.Error.WriteLine` with structured `ILogger` logging
+
+All diagnostic output across primitives and components has been migrated from raw `Console` writes to the standard .NET structured logging pipeline using the high-performance `LoggerMessage.Define` source-generated delegate pattern (matching the pattern established in `FloatingPortal`).
+
+**Pattern applied:**
+
+- Each file declares `static readonly Action<ILogger, T…, Exception?> LogXxx = LoggerMessage.Define<T…>(…)` delegates with sequential `EventId` values.
+- **Razor component files** receive `@inject ILogger<T> Logger` (or `[Inject] private ILogger<T> Logger` in partial `.cs` files).
+- **Service / non-component classes** receive `ILogger<T>` via constructor injection with a `NullLogger<T>.Instance` fallback where DI registration is open-generic (e.g. `AgDataGridRenderer<TItem>`).
+- **Generic abstract base** (`ChartBase`) uses injected `ILoggerFactory` with a lazy `ILogger` property resolved to the concrete subtype at runtime.
+- Pure trace / diagnostic lines (animation keyframes, stagger delays, render lifecycle steps, etc.) were **removed outright**; catch-block and guard-condition lines were retained as `Warning` or `Error` level.
+
+**Files updated (22 total):**
+
+| File | Notes |
+|---|---|
+| `Primitives/Floating/FloatingPortal.razor` | Reference pattern (pre-existing) |
+| `Primitives/Floating/DialogContent.razor` | |
+| `Primitives/Floating/DropdownMenuContent.razor` | |
+| `Primitives/Floating/PopoverContent.razor` | |
+| `Primitives/Floating/SelectContent.razor` | |
+| `Primitives/Floating/SheetContent.razor` | |
+| `Primitives/Table/Table.razor.cs` | |
+| `Primitives/Services/KeyboardShortcutService.cs` | Constructor injection |
+| `Components/Carousel/Carousel.razor` | |
+| `Components/DrawerContent/DrawerContent.razor` | |
+| `Components/Resizable/ResizableHandle.razor` | |
+| `Components/Toast/Toast.razor` | |
+| `Components/Motion/Motion.razor` | 3 trace-only lines removed |
+| `Components/MultiSelect/MultiSelect.razor.cs` | |
+| `Components/Chart/ChartThemeService.cs` | Constructor injection |
+| `Components/Chart/ChartBase.cs` | `ILoggerFactory` + lazy logger (generic base) |
+| `Components/Grid/DataGrid.razor.cs` | 2 trace-only lines removed |
+| `Components/Command/CommandInput.razor` | |
+| `Components/Input/Input.razor.cs` | |
+| `Components/NumericInput/NumericInput.razor.cs` | |
+| `Components/RichTextEditor/RichTextEditor.razor.cs` | |
+| `Services/Grid/DataGridTemplateRenderer.cs` | Constructor injection; 5 trace-only lines removed |
+| `Services/Grid/AgDataGridRenderer.cs` | Optional constructor param + `NullLogger` fallback; 25 delegates; ~30 trace-only lines removed |
+
+---
+
+### 🔧 Refactor — Remove verbose diagnostic trace logs from `EChartsRenderer`
+
+Removed 9 `Console.WriteLine` trace statements from `EChartsRenderer.cs` that logged every lifecycle step at noise level (module loaded, config serialized, chart ID assigned, options updated, etc.). These carried no error context and produced log spam in both development and production. The class retains no `Console` output; any genuine failures surface as JS interop exceptions.
+
+---
+
+### 🐛 Fix — `NativeSelect<TValue>`: `Convert.ChangeType` crash for nullable value types
+
+`Convert.ChangeType(stringValue, typeof(TValue))` threw `InvalidCastException` when `TValue` was a nullable type (e.g. `int?`, `decimal?`) because the CLR does not accept `typeof(int?)` as a conversion target. The handler now unwraps the underlying type via `Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue)` before converting and then casts the result to `TValue`.
+
+---
+
+### 🐛 Fix — `FilterExtensions`: `Between` operator emitted wrong expression for the lower bound
+
+In `BuildBetweenExpression`, the `FilterOperator.GreaterThan` arm inside the range builder was incorrectly generating `Expression.GreaterThanOrEqual` and the `FilterOperator.LessThan` case was absent entirely, causing the lower-bound half of a `Between` comparison to silently use the wrong operator. The expression tree now correctly emits `Expression.LessThan` for the lower bound and handles the `GreaterThan` bound accurately.
+
+---
+
+### 🐛 Fix — `MultiSelect` (`multiselect.js`): Space key swallowed by keyboard handler when no list item is focused
+
+The Space key handler previously called `e.preventDefault()` unconditionally, consuming the character even when `focusedIndex` was outside the options list — preventing the user from typing a space in the search input. The handler now returns early when no option is focused, allowing the space character to reach the input normally. Also tightened the `setupMultiSelectInput` null-guard to `!(inputElement instanceof HTMLElement)` with a more descriptive error message.
+
+---
+
+### ✨ Enhancement — `FileUpload`: new `ClearFiles()` public API method
+
+Added a public `ClearFiles()` method (accessible via `@ref`) that resets the component to its empty state after a successful form submission without requiring a page reload. Clears `Files`, validation errors, preview URLs, and upload-progress state, and resets the native `<input type="file">` DOM element via a new `resetFileInput(inputId)` JavaScript helper in `file-upload.js`.
+
+```csharp
+<FileUpload @ref="_uploader" ... />
+
+@code {
+    private FileUpload _uploader = null!;
+
+    async Task HandleSubmit()
+    {
+        await SubmitFilesAsync(_uploader.Files);
+        await _uploader.ClearFiles(); // reset after submit
+    }
+}
+```
+
+---
+
 ## 2026-3-23 — SplitButton enhancements & SidebarPillNav tooltip integration
 
 > **Release: `v3.7.1`**  
@@ -158,7 +795,7 @@ A **Pill Mode** section has been added to `/components/sidebar`, inserted betwee
 
 ---
 
-## 2026-3-20
+## 2026-3-20 — DataTable keyboard focus ring Safari fix
 
 > **Bug fix.** Affects `DataTable<TData>` in `NeoUI.Blazor` and `TableRow` in `NeoUI.Blazor.Primitives`. No breaking changes.
 

@@ -94,7 +94,8 @@
         {
             try
             {
-                var convertedValue = (TValue)Convert.ChangeType(stringValue, typeof(TValue));
+                var targetType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+                var convertedValue = (TValue)Convert.ChangeType(stringValue, targetType);
                 await ValueChanged.InvokeAsync(convertedValue);
             }
             catch

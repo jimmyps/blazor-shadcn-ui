@@ -1,7 +1,9 @@
 @namespace NeoUI.Blazor
+@using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @inject IFocusManager FocusManager
 @inject IJSRuntime JS
+@inject ILogger<DrawerContent> Logger
 @implements IAsyncDisposable
 
 @if (Context?.IsOpen == true)
@@ -35,6 +37,14 @@
 }
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogFocusTrapFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "FocusTrapFailed"),
+            "Failed to set up focus trap: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogScrollLockFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(2, "ScrollLockFailed"),
+            "Failed to lock body scroll: {ErrorMessage}");
+
     [CascadingParameter]
     public Drawer? Context { get; set; }
 
@@ -101,8 +111,14 @@
 
             if (TrapFocus)
             {
-                try { _focusTrap = await FocusManager.TrapFocus(_contentRef); }
-                catch (Exception ex) { Console.WriteLine($"Failed to set up focus trap: {ex.Message}"); }
+                try
+                {
+                    _focusTrap = await FocusManager.TrapFocus(_contentRef);
+                }
+                catch (Exception ex)
+                {
+                    LogFocusTrapFailed(Logger, ex.Message, ex);
+                }
             }
 
             if (LockScroll)
@@ -113,7 +129,10 @@
                         "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/portal.js");
                     _scrollLockCleanup = await _portalModule.InvokeAsync<IJSObjectReference>("lockBodyScroll");
                 }
-                catch (Exception ex) { Console.WriteLine($"Failed to lock body scroll: {ex.Message}"); }
+                catch (Exception ex)
+                { 
+                    LogScrollLockFailed(Logger, ex.Message, ex);
+                }
             }
 
             if (HasSnapPoints && !_snapInitialized)

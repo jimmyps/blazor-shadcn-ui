@@ -357,5 +357,35 @@ partial class DataViewDemo
                 </ListTemplate>
             </DataView>
             """;
+
+        public const string SortableList =
+            """
+            @* Wrap DataView in Sortable + SortableContent.
+               SortableItem renders inside the ListTemplate — DataView itself is unchanged. *@
+            <Sortable TItem="ProductRow"
+                      Items="@_sortableProducts"
+                      OnItemsReordered="@(r => _sortableProducts = r)"
+                      GetItemId="@(p => p.Id.ToString())">
+                <SortableContent Class="block">
+                    <DataView Items="@_sortableProducts" ItemKey="@(p => p.Id)"
+                              ShowToolbar="false" ShowPagination="false">
+                        <ListTemplate Context="p">
+                            <SortableItem Value="@p.Id.ToString()" Class="-mx-1 rounded-none border-0 border-b last:border-b-0 shadow-none px-2">
+                                <SortableItemHandle />
+                                <div class="h-8 w-8 rounded-md bg-muted flex items-center justify-center shrink-0">
+                                    <LucideIcon Name="@p.Icon" Size="16" Class="text-muted-foreground" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium truncate">@p.Name</p>
+                                    <p class="text-xs text-muted-foreground">@p.Category</p>
+                                </div>
+                                <span class="text-sm font-semibold tabular-nums">$@p.Price.ToString("F2")</span>
+                            </SortableItem>
+                        </ListTemplate>
+                    </DataView>
+                </SortableContent>
+                <SortableOverlay />
+            </Sortable>
+            """;
     }
 }

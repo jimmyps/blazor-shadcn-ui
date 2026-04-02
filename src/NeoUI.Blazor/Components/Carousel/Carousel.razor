@@ -1,8 +1,10 @@
 @namespace NeoUI.Blazor
+@using Microsoft.Extensions.Logging
 @using NeoUI.Icons.Lucide
 @inject ILocalizer Localizer
-@implements IAsyncDisposable
 @inject IJSRuntime JSRuntime
+@inject ILogger<Carousel> Logger
+@implements IAsyncDisposable
 
 @* Carousel - Slideshow component with animations and gestures *@
 
@@ -58,6 +60,10 @@
 </div>
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "CarouselInitializationFailed"),
+            "Carousel initialization failed: {ErrorMessage}");
+
     private ElementReference _carouselRef;
     private ElementReference _viewportRef;
     private ElementReference _containerRef;
@@ -191,7 +197,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Carousel initialization error: {ex.Message}");
+                LogInitializationFailed(Logger, ex.Message, ex);
             }
         }
     }

@@ -1,0 +1,114 @@
+@namespace NeoUI.Blazor
+@typeparam TItem
+@*
+    Styled Sortable component wrapper.
+    Wraps the SortablePrimitive with a thin pass-through for class and attributes.
+*@
+
+<SortablePrimitive TItem="TItem"
+                   Items="@Items"
+                   OnItemsReordered="@OnItemsReordered"
+                   OnDragStart="@OnDragStart"
+                   OnDragEnd="@OnDragEnd"
+                   OnDragCancel="@OnDragCancel"
+                   OnItemTransferredOut="@OnItemTransferredOut"
+                   OnItemTransferredIn="@OnItemTransferredIn"
+                   OnCanDrop="@OnCanDrop"
+                   GetItemId="@GetItemId"
+                   Orientation="@Orientation"
+                   Group="@Group"
+                   ChildContent="@ChildContent"
+                   class="@Class"
+                   @attributes="AdditionalAttributes" />
+
+@code {
+    /// <summary>
+    /// The list of items to sort. Required.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public IList<TItem> Items { get; set; } = [];
+
+    /// <summary>
+    /// Callback invoked after a drag operation reorders items.
+    /// </summary>
+    [Parameter]
+    public EventCallback<IList<TItem>> OnItemsReordered { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation starts. Argument is the dragged item's identifier.
+    /// </summary>
+    [Parameter]
+    public EventCallback<string> OnDragStart { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation ends (whether or not the item moved).
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableDragEndArgs> OnDragEnd { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a drag operation is cancelled (e.g. Escape key).
+    /// </summary>
+    [Parameter]
+    public EventCallback OnDragCancel { get; set; }
+
+    /// <summary>
+    /// Function that extracts a unique string identifier from each item. Required.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Func<TItem, string> GetItemId { get; set; } = _ => string.Empty;
+
+    /// <summary>
+    /// Drag axis. Defaults to <see cref="SortableOrientation.Vertical"/>.
+    /// </summary>
+    [Parameter]
+    public SortableOrientation Orientation { get; set; } = SortableOrientation.Vertical;
+
+    /// <summary>
+    /// Group name for cross-list drag-and-drop.
+    /// Instances with the same group name can exchange items.
+    /// </summary>
+    [Parameter]
+    public string? Group { get; set; }
+
+    /// <summary>
+    /// Callback invoked on the source instance when an item is transferred out to another list.
+    /// The consumer should remove the item from its collection.
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableTransferArgs> OnItemTransferredOut { get; set; }
+
+    /// <summary>
+    /// Callback invoked on the target instance when an item is transferred in from another list.
+    /// The consumer should insert the item into its collection.
+    /// </summary>
+    [Parameter]
+    public EventCallback<SortableTransferArgs> OnItemTransferredIn { get; set; }
+
+    /// <summary>
+    /// Optional synchronous predicate evaluated on the target instance at drop time.
+    /// Return <c>false</c> to reject the transfer. Defaults to accepting all transfers.
+    /// </summary>
+    [Parameter]
+    public Func<SortableDragQueryArgs, bool>? OnCanDrop { get; set; }
+
+    /// <summary>
+    /// Child content: SortableContentPrimitive, SortableOverlayPrimitive, etc.
+    /// Add <c>Context="s"</c> to receive a <see cref="SortableScope{TItem}"/> with helpers
+    /// such as <c>s.RowAttributes</c> for wiring any grid, table, or list component.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<SortableScope<TItem>>? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes appended to the root element.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the root element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+}

@@ -1,6 +1,8 @@
 @namespace NeoUI.Blazor
+@using Microsoft.Extensions.Logging
 @using NeoUI.Icons.Lucide
 @inject IJSRuntime JSRuntime
+@inject ILogger<Toast> Logger
 @implements IAsyncDisposable
 
 @* Toast - individual toast notification *@
@@ -37,6 +39,10 @@
 </div>
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogAnimationInitFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "ToastAnimationInitFailed"),
+            "Toast animation initialization failed: {ErrorMessage}");
+
 /// <summary>
 /// The unique identifier for this toast.
 /// </summary>
@@ -138,7 +144,7 @@ protected override async Task OnAfterRenderAsync(bool firstRender)
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Toast animation initialization failed: {ex.Message}");
+            LogAnimationInitFailed(Logger, ex.Message, ex);
             // Animation will fail gracefully - toast still visible but without animation
         }
     }

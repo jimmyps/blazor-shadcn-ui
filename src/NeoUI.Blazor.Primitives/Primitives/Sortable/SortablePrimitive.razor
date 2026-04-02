@@ -1,0 +1,11 @@
+@namespace NeoUI.Blazor.Primitives
+@typeparam TItem
+
+<CascadingValue Value="@_context" IsFixed="true">
+    <div @attributes="AdditionalAttributes">
+        @if (ChildContent is not null)
+        {
+            @ChildContent(_scope)
+        }
+    </div>
+</CascadingValue>

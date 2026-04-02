@@ -1,0 +1,34 @@
+@namespace NeoUI.Blazor
+@*
+    Styled SortableContent component.
+    Wraps SortableContentPrimitive with an opinionated default layout:
+    a vertical flex column with a gap between items.
+    Override via Class or pass custom attributes.
+*@
+
+<SortableContentPrimitive class="@CssClass"
+                           @attributes="AdditionalAttributes">
+    @ChildContent
+</SortableContentPrimitive>
+
+@code {
+    /// <summary>
+    /// Child sortable items rendered inside the container.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes merged with the default layout classes.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the container element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CssClass => ClassNames.cn("flex flex-col gap-2", Class);
+}

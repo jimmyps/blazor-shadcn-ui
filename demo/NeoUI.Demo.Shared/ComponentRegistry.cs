@@ -337,6 +337,7 @@ public static class ComponentRegistry
             new("collapsible",      "Collapsible",      "Expandable content area with trigger control",                                  "circle-chevron-down",   C, LY),
             new("resizable",        "Resizable",        "Split layouts with draggable handles",                                           "panel-left",            C, LY),
             new("separator",        "Separator",        "Visual dividers for content sections",                                           "minus",                 C, LY),
+            new("sortable",         "Sortable",         "Styled drag-and-drop sortable lists with keyboard support",                       "grip-vertical",         C, LY),
             new("split-button",     "Split Button",     "Combined action button with dropdown for secondary actions",                    "circle-chevron-down",   C, LY),
             new("tabs",             "Tabs",             "Tabbed interface for organizing related content",                                "folder",                C, LY),
             new("theme-switcher",   "Theme Switcher",   "Multi-theme colour palette switcher with live preview",                         "palette",               C, LY),
@@ -359,8 +360,9 @@ public static class ComponentRegistry
             new("chart/scatter",    "Scatter Chart",    "Scatter plots for correlation and distribution data",                           "scatter-chart",         C, CH, IsSubPage: true),
 
             // ── Animation ─────────────────────────────────────────────────
-            new("carousel",             "Carousel",             "Slideshow component with touch gestures and animations",                        "images",                C, AN),
-            new("motion",               "Motion",               "Declarative animation system with 20+ presets",                                 "zap",                   C, AN),
+            new("carousel",            "Carousel",            "Slideshow component with touch gestures and animations",                                 "images",          C, AN),
+            new("motion",              "Motion",              "Declarative animation system with 20+ presets",                                          "zap",             C, AN),
+            new("selection-indicator", "Selection Indicator", "Composable spring-animated indicator that slides between active items in any container", "move-horizontal", C, AN),
 
             // ── Mobile ────────────────────────────────────────────────────
             new("app-bar",              "AppBar",               "Mobile top bar with centered title, back button, and right action slot",        "rectangle-horizontal",  C, ML),
@@ -388,6 +390,7 @@ public static class ComponentRegistry
             // ── Layout (Primitives) ───────────────────────────────────────
             new("accordion",     "Accordion",     "Headless accordion with keyboard navigation",                       "chevrons-down-up",     P, LY),
             new("collapsible",   "Collapsible",   "Unstyled collapsible content with trigger",                        "chevron-down",         P, LY),
+            new("sortable",      "Sortable",      "Headless drag-and-drop sortable list with pointer and keyboard support", "grip-vertical",   P, LY),
 
             // ── Overlays (Primitives) ─────────────────────────────────────
             new("dialog",        "Dialog",        "Headless modal dialog with focus trap and ARIA",                   "square",               P, OV),

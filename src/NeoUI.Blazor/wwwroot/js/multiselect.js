@@ -15,8 +15,8 @@ let multiSelectStates = new Map();
  * @param {string} contentId - ID of the listbox content element
  */
 export function setupMultiSelectInput(inputElement, dotNetRef, inputId, contentId) {
-    if (!inputElement || !dotNetRef) {
-        console.error('setupMultiSelectInput: missing required parameters');
+    if (!inputElement || !(inputElement instanceof HTMLElement) || !dotNetRef) {
+        console.error('setupMultiSelectInput: missing required parameters or inputElement is not a DOM element');
         return;
     }
 
@@ -104,14 +104,16 @@ export function setupMultiSelectInput(inputElement, dotNetRef, inputId, contentI
                 updateFocusedItem(options.length - 1);
                 break;
 
-            case ' ': // Space - toggle checkbox, don't close
+            case ' ': // Space - toggle checkbox, don't close (only when an item is focused)
+                if (state.focusedIndex < 0 || state.focusedIndex >= options.length) {
+                    // No item focused — let the space character through to the search input
+                    return;
+                }
                 e.preventDefault();
-                if (state.focusedIndex >= 0 && state.focusedIndex < options.length) {
+                {
                     const focusedEl = options[state.focusedIndex];
                     if (focusedEl.getAttribute('aria-disabled') !== 'true') {
-                        // Click the focused item to trigger toggle
                         focusedEl.click();
-                        // Call Blazor to handle the toggle
                         dotNetRef.invokeMethodAsync('HandleSpace').catch(err => {
                             console.error('Error invoking HandleSpace:', err);
                         });

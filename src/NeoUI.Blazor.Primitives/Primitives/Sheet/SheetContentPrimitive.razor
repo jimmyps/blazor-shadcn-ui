@@ -1,6 +1,8 @@
 @namespace NeoUI.Blazor.Primitives
+@using Microsoft.Extensions.Logging
 @inject IFocusManager FocusManager
 @inject IJSRuntime JSRuntime
+@inject ILogger<SheetContentPrimitive> Logger
 @implements IAsyncDisposable
 
 @*
@@ -26,6 +28,14 @@
 }
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogFocusTrapFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "FocusTrapFailed"),
+            "Failed to set up focus trap: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogScrollLockFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(2, "ScrollLockFailed"),
+            "Failed to lock body scroll: {ErrorMessage}");
+
     [CascadingParameter]
     private SheetContext Context { get; set; } = null!;
 
@@ -102,7 +112,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to set up focus trap: {ex.Message}");
+                    LogFocusTrapFailed(Logger, ex.Message, ex);
                 }
             }
 
@@ -117,7 +127,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to lock body scroll: {ex.Message}");
+                    LogScrollLockFailed(Logger, ex.Message, ex);
                 }
             }
         }

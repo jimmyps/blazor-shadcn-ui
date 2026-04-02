@@ -3,6 +3,7 @@ using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
@@ -50,9 +51,9 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
-    /// <summary>
-    /// JavaScript module for input event handling and validation.
-    /// </summary>
+    private static readonly Action<ILogger, string, Exception?> LogJsInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogJsInitializationFailed)),
+            "Error initializing input JS: {Message}");
     private IJSObjectReference? _inputModule;
     
     /// <summary>
@@ -80,6 +81,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    private ILogger<Input> Logger { get; set; } = default!;
 
     /// <summary>
     /// Gets the cascaded EditContext from an EditForm.
@@ -578,7 +582,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error initializing input JS: {ex.Message}");
+                LogJsInitializationFailed(Logger, ex.Message, ex);
             }
         }
     }
