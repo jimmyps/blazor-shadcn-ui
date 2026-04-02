@@ -1,0 +1,819 @@
+@page "/mobile/juicego"
+
+<PageTitle>JuiceGo — Mobile App Demo</PageTitle>
+
+<div class="flex flex-col items-center gap-4 pb-10">
+
+    <div class="text-center space-y-1.5 max-w-xl">
+        <h1 class="text-2xl font-bold tracking-tight">JuiceGo</h1>
+        <p class="text-sm text-muted-foreground">
+            A to-go bottled juice app — mobile components proof of concept.
+            Uses AppBar, BottomNav, Carousel, Scrollable ToggleGroup, Select BottomSheet,
+            Drawer with SnapPoints, BadgeIcon, QuantityStepper, Rating, and more.
+        </p>
+    </div>
+
+    @* ── Phone frame ── *@
+    <div class="relative select-none shrink-0" style="padding:10px;width:395px">
+        @* Outer shell *@
+        <div class="absolute inset-0 rounded-[52px] bg-zinc-800 shadow-2xl dark:shadow-zinc-900/80"></div>
+        @* Notch *@
+        <div class="absolute top-[10px] left-1/2 -translate-x-1/2 w-28 h-7 bg-zinc-800 rounded-b-3xl z-20 pointer-events-none"></div>
+        @* Side buttons *@
+        <div class="absolute left-0 top-[120px] w-[3px] h-8 bg-zinc-600 rounded-l-sm"></div>
+        <div class="absolute left-0 top-[168px] w-[3px] h-8 bg-zinc-600 rounded-l-sm"></div>
+        <div class="absolute right-0 top-[150px] w-[3px] h-12 bg-zinc-600 rounded-r-sm"></div>
+
+        @* Screen *@
+        <div class="relative z-10 rounded-[44px] overflow-hidden bg-background flex flex-col" style="height:780px">
+
+            @* Status bar *@
+            <div class="flex items-center justify-between px-8 pt-3 pb-0 text-[11px] font-semibold shrink-0 z-10 bg-background">
+                <span>9:41</span>
+                <div class="flex items-center gap-1">
+                    <LucideIcon Name="signal" Size="11" />
+                    <LucideIcon Name="wifi" Size="11" />
+                    <LucideIcon Name="battery" Size="13" />
+                </div>
+            </div>
+
+            @* App content *@
+            <div class="flex flex-col flex-1 overflow-hidden">
+
+                @* ══════════════════════════════════════════════ *@
+                @*  LOGIN                                         *@
+                @* ══════════════════════════════════════════════ *@
+                @if (_screen == Screen.Login)
+                {
+                    <div class="flex flex-col flex-1 overflow-y-auto px-7 py-4 gap-4">
+                        <div class="flex flex-col items-center gap-2 mt-10">
+                            <div class="size-16 rounded-2xl bg-emerald-500 flex items-center justify-center text-3xl shadow-lg">🥤</div>
+                            <h2 class="text-2xl font-bold">JuiceGo</h2>
+                            <p class="text-xs text-muted-foreground text-center">Fresh to your door. Pure, cold-pressed joy.</p>
+                        </div>
+
+                        <div class="space-y-3 mt-2">
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium">Email</label>
+                                <Input @bind-Value="_email" Type="InputType.Email" Placeholder="you@example.com" />
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium">Password</label>
+                                <Input @bind-Value="_password" Type="InputType.Password" Placeholder="••••••••" />
+                            </div>
+                            <Button Class="w-full" OnClick="@DoLogin">Sign in</Button>
+                            <p class="text-center text-xs text-muted-foreground">
+                                New here?
+                                <span class="text-foreground font-medium underline underline-offset-2 cursor-pointer" @onclick="@DoLogin">Create account</span>
+                            </p>
+                        </div>
+
+                        <Separator />
+
+                        <div class="space-y-2">
+                            <p class="text-xs text-center text-muted-foreground font-medium">CONTINUE WITH</p>
+                            <Button Variant="ButtonVariant.Outline" Class="w-full gap-2" OnClick="@DoLogin">
+                                <span class="text-base">🍏</span> Apple
+                            </Button>
+                            <Button Variant="ButtonVariant.Outline" Class="w-full gap-2" OnClick="@DoLogin">
+                                <span class="text-base">🔵</span> Google
+                            </Button>
+                        </div>
+                    </div>
+                }
+
+                @* ══════════════════════════════════════════════ *@
+                @*  HOME                                          *@
+                @* ══════════════════════════════════════════════ *@
+                else if (_screen == Screen.Home)
+                {
+                    <AppBar>
+                        <TitleContent>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-base">🥤</span>
+                                <span class="font-bold text-base">JuiceGo</span>
+                            </div>
+                        </TitleContent>
+                        <RightContent>
+                            <div class="relative">
+                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" OnClick="@(() => Navigate(Screen.Cart))">
+                                    <LucideIcon Name="shopping-bag" Size="20" />
+                                </Button>
+                                @if (_cartTotal > 0)
+                                {
+                                    <span class="absolute -top-0.5 -right-0.5 size-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center pointer-events-none">
+                                        @(_cartTotal > 9 ? "9+" : _cartTotal.ToString())
+                                    </span>
+                                }
+                            </div>
+                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                                <LucideIcon Name="bell" Size="20" />
+                            </Button>
+                        </RightContent>
+                    </AppBar>
+
+                    <div class="flex-1 overflow-y-auto">
+                        <div class="px-4 pt-3 pb-2">
+                            <p class="text-xs text-muted-foreground">Good morning, Jordan 👋</p>
+                            <h2 class="text-lg font-semibold leading-snug">What would you like today?</h2>
+                        </div>
+
+                        @* Category filter *@
+                        <div class="px-4 pb-3">
+                            <ToggleGroup Type="ToggleGroupType.Single" Scrollable="true" @bind-Value="_homeCategory">
+                                <ToggleGroupItem Value="all">All</ToggleGroupItem>
+                                <ToggleGroupItem Value="Green">🥦 Green</ToggleGroupItem>
+                                <ToggleGroupItem Value="Tropical">🌴 Tropical</ToggleGroupItem>
+                                <ToggleGroupItem Value="Berry">🫐 Berry</ToggleGroupItem>
+                                <ToggleGroupItem Value="Citrus">🍊 Citrus</ToggleGroupItem>
+                                <ToggleGroupItem Value="Fresh">💧 Fresh</ToggleGroupItem>
+                                <ToggleGroupItem Value="Golden">✨ Golden</ToggleGroupItem>
+                            </ToggleGroup>
+                        </div>
+
+                        @* Featured carousel *@
+                        <div class="px-4 mb-5">
+                            <Carousel ShowIndicators="true" DotsPosition="CarouselDotsPosition.Bottom" Loop="true" AutoPlay="true" AutoPlayInterval="3500">
+                                @foreach (var fp in PopularProducts)
+                                {
+                                    var captured = fp;
+                                    <CarouselItem>
+                                        <div class="rounded-2xl p-4 @GetBg(captured) flex items-center gap-4 cursor-pointer" style="min-height:120px" @onclick="@(() => OpenProduct(captured))">
+                                            <div class="text-5xl shrink-0">@captured.Emoji</div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex flex-wrap gap-1 mb-1">
+                                                    @if (captured.IsNew) {
+                                                        <Badge Variant="BadgeVariant.Secondary" Class="text-[10px] px-1.5 py-0">
+                                                            <BadgeIcon><LucideIcon Name="sparkles" /></BadgeIcon>New
+                                                        </Badge>
+                                                    }
+                                                    @if (captured.IsPopular) {
+                                                        <Badge Class="text-[10px] px-1.5 py-0">
+                                                            <BadgeIcon><LucideIcon Name="flame" /></BadgeIcon>Hot
+                                                        </Badge>
+                                                    }
+                                                </div>
+                                                <p class="font-semibold truncate">@captured.Name</p>
+                                                <p class="text-xs opacity-70 truncate">@captured.Tagline</p>
+                                                <p class="font-bold text-lg mt-0.5">$@captured.Price.ToString("F2")</p>
+                                            </div>
+                                        </div>
+                                    </CarouselItem>
+                                }
+                            </Carousel>
+                        </div>
+
+                        @* Popular picks *@
+                        <div class="px-4 mb-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="font-semibold text-sm">Popular Picks</p>
+                                <span class="text-xs text-primary cursor-pointer" @onclick="@(() => Navigate(Screen.Menu))">See all →</span>
+                            </div>
+                            <div class="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                                @foreach (var pp in HomeFeed)
+                                {
+                                    var cp = pp;
+                                    <div class="shrink-0 w-28 rounded-2xl border bg-card p-3 cursor-pointer" @onclick="@(() => OpenProduct(cp))">
+                                        <div class="text-3xl text-center mb-1">@cp.Emoji</div>
+                                        <p class="text-xs font-semibold truncate">@cp.Name</p>
+                                        <div class="flex items-center gap-0.5 my-0.5">
+                                            <LucideIcon Name="star" Size="10" Class="text-yellow-500 fill-yellow-500" />
+                                            <span class="text-[10px] text-muted-foreground">@cp.Rating</span>
+                                        </div>
+                                        <p class="text-sm font-bold text-primary">$@cp.Price.ToString("F2")</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @* New arrivals *@
+                        <div class="px-4 mb-4">
+                            <p class="font-semibold text-sm mb-2">New Arrivals</p>
+                            <div class="space-y-2">
+                                @foreach (var np in NewArrivals)
+                                {
+                                    var cn = np;
+                                    <div class="flex items-center gap-3 rounded-xl border bg-card p-3 cursor-pointer" @onclick="@(() => OpenProduct(cn))">
+                                        <div class="text-3xl shrink-0">@cn.Emoji</div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-medium text-sm truncate">@cn.Name</p>
+                                            <p class="text-[11px] text-muted-foreground truncate">@cn.Tagline</p>
+                                            <Rating Value="@((double)cn.Rating)" ReadOnly="true" Size="RatingSize.Small" Max="5" />
+                                        </div>
+                                        <p class="font-bold text-sm shrink-0">$@cn.Price.ToString("F2")</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="h-2"></div>
+                    </div>
+
+                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                        <BottomNavItem Value="home" Icon="house" Label="Home" />
+                        <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
+                        <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
+                        <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
+                    </BottomNav>
+                }
+
+                @* ══════════════════════════════════════════════ *@
+                @*  MENU                                          *@
+                @* ══════════════════════════════════════════════ *@
+                else if (_screen == Screen.Menu)
+                {
+                    <AppBar Title="Menu" OnBack="@(() => Navigate(Screen.Home))">
+                        <RightContent>
+                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" OnClick="@OpenFilterDrawer">
+                                <LucideIcon Name="sliders-horizontal" Size="20" />
+                            </Button>
+                        </RightContent>
+                    </AppBar>
+
+                    <div class="flex-1 overflow-y-auto">
+                        <div class="px-4 pt-3 pb-2">
+                            <ToggleGroup Type="ToggleGroupType.Single" Scrollable="true" @bind-Value="_menuCategory">
+                                <ToggleGroupItem Value="all">All</ToggleGroupItem>
+                                <ToggleGroupItem Value="Green">Green</ToggleGroupItem>
+                                <ToggleGroupItem Value="Tropical">Tropical</ToggleGroupItem>
+                                <ToggleGroupItem Value="Berry">Berry</ToggleGroupItem>
+                                <ToggleGroupItem Value="Citrus">Citrus</ToggleGroupItem>
+                                <ToggleGroupItem Value="Fresh">Fresh</ToggleGroupItem>
+                                <ToggleGroupItem Value="Golden">Golden</ToggleGroupItem>
+                            </ToggleGroup>
+                        </div>
+
+                        <div class="px-4 pb-4 space-y-2 mt-1">
+                            @foreach (var mp in MenuProducts)
+                            {
+                                var cm = mp;
+                                <div class="flex items-center gap-3 rounded-2xl border bg-card p-3">
+                                    <div class="size-14 rounded-xl @GetBg(cm) flex items-center justify-center text-2xl shrink-0 cursor-pointer" @onclick="@(() => OpenProduct(cm))">
+                                        @cm.Emoji
+                                    </div>
+                                    <div class="flex-1 min-w-0 cursor-pointer" @onclick="@(() => OpenProduct(cm))">
+                                        <div class="flex items-center gap-1.5">
+                                            <p class="font-semibold text-sm truncate">@cm.Name</p>
+                                            @if (cm.IsNew) {
+                                                <Badge Variant="BadgeVariant.Secondary" Class="text-[10px] px-1.5 py-0 shrink-0">New</Badge>
+                                            }
+                                        </div>
+                                        <p class="text-xs text-muted-foreground truncate">@cm.Tagline</p>
+                                        <div class="flex items-center gap-1 mt-0.5">
+                                            <LucideIcon Name="star" Size="10" Class="text-yellow-500 fill-yellow-500" />
+                                            <span class="text-[10px] text-muted-foreground">@cm.Rating (@cm.Reviews)</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0 space-y-1">
+                                        <p class="font-bold text-sm">$@cm.Price.ToString("F2")</p>
+                                        <Button Size="ButtonSize.Icon" Class="size-8 rounded-full" OnClick="@(() => QuickAdd(cm))">
+                                            <LucideIcon Name="plus" Size="14" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    @* Sort & Filter Drawer with snap points *@
+                    <Drawer @bind-Open="_filterOpen">
+                        <DrawerContent SnapPoints="@(new[] { 0.45f, 0.78f })" @bind-SnapIndex="_filterSnap">
+                            <DrawerHeader>
+                                <DrawerTitle>Sort &amp; Filter</DrawerTitle>
+                                <DrawerDescription>Narrow down your juice selection</DrawerDescription>
+                            </DrawerHeader>
+                            <div class="px-4 pb-6 space-y-5">
+                                <div class="space-y-2">
+                                    <p class="text-sm font-medium">Sort by</p>
+                                    <ToggleGroup Type="ToggleGroupType.Single" @bind-Value="_sortBy">
+                                        <ToggleGroupItem Value="popular">Popular</ToggleGroupItem>
+                                        <ToggleGroupItem Value="rating">Rating</ToggleGroupItem>
+                                        <ToggleGroupItem Value="price-asc">Price ↑</ToggleGroupItem>
+                                        <ToggleGroupItem Value="price-desc">Price ↓</ToggleGroupItem>
+                                    </ToggleGroup>
+                                </div>
+                                <Separator LineStyle="SeparatorStyle.Dashed" />
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <p class="text-sm font-medium">Max price</p>
+                                        <p class="text-sm font-bold">$@_maxPrice.ToString("F2")</p>
+                                    </div>
+                                    <Slider @bind-Value="_maxPrice" Min="5" Max="12" Step="0.5" Class="w-full" />
+                                </div>
+                                <Separator LineStyle="SeparatorStyle.Dashed" />
+                                <div class="flex gap-2">
+                                    <Button Variant="ButtonVariant.Outline" Class="flex-1" OnClick="@ResetFilters">Reset</Button>
+                                    <Button Class="flex-1" OnClick="@(() => _filterOpen = false)">Apply</Button>
+                                </div>
+                            </div>
+                        </DrawerContent>
+                    </Drawer>
+
+                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                        <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Navigate(Screen.Home))" />
+                        <BottomNavItem Value="menu" Icon="list" Label="Menu" />
+                        <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
+                        <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
+                    </BottomNav>
+                }
+
+                @* ══════════════════════════════════════════════ *@
+                @*  PRODUCT DETAIL                                *@
+                @* ══════════════════════════════════════════════ *@
+                else if (_screen == Screen.Product && _product != null)
+                {
+                    var p = _product;
+
+                    <AppBar OnBack="@GoBack">
+                        <TitleContent>
+                            <span class="text-base font-semibold">@p.Name</span>
+                        </TitleContent>
+                        <RightContent>
+                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                                <LucideIcon Name="heart" Size="20" />
+                            </Button>
+                            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                                <LucideIcon Name="share-2" Size="20" />
+                            </Button>
+                        </RightContent>
+                    </AppBar>
+
+                    <div class="flex-1 overflow-y-auto">
+                        @* Hero *@
+                        <div class="@GetBg(p) flex flex-col items-center justify-center py-8 gap-2">
+                            <div class="text-7xl">@p.Emoji</div>
+                            <div class="flex gap-1.5 flex-wrap justify-center">
+                                @if (p.IsNew) {
+                                    <Badge Variant="BadgeVariant.Secondary">
+                                        <BadgeIcon><LucideIcon Name="sparkles" /></BadgeIcon>New
+                                    </Badge>
+                                }
+                                @if (p.IsPopular) {
+                                    <Badge>
+                                        <BadgeIcon><LucideIcon Name="flame" /></BadgeIcon>Popular
+                                    </Badge>
+                                }
+                                <Badge Variant="BadgeVariant.Outline">
+                                    <BadgeIcon><LucideIcon Name="leaf" /></BadgeIcon>Cold-Pressed
+                                </Badge>
+                            </div>
+                        </div>
+
+                        <div class="px-4 py-4 space-y-4">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <h2 class="text-xl font-bold">@p.Name</h2>
+                                    <p class="text-sm text-muted-foreground">@p.Tagline</p>
+                                </div>
+                                <p class="text-2xl font-bold text-primary shrink-0">$@p.Price.ToString("F2")</p>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <Rating Value="@((double)p.Rating)" ReadOnly="true" Max="5" />
+                                <span class="text-sm text-muted-foreground">@p.Rating · @p.Reviews reviews</span>
+                            </div>
+
+                            <Separator />
+
+                            @* Size selector — BottomSheet presentation *@
+                            <div class="space-y-1.5">
+                                <p class="text-sm font-medium">Size</p>
+                                <Select @bind-Value="_size" TValue="string" Class="w-full">
+                                    <SelectTrigger>
+                                        <SelectValue Placeholder="Choose a size" />
+                                    </SelectTrigger>
+                                    <SelectContent Presentation="SelectPresentation.BottomSheet">
+                                        @foreach (var sz in p.Sizes)
+                                        {
+                                            <SelectItem Value="@sz" Text="@sz" TValue="string">@sz</SelectItem>
+                                        }
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            @* Quantity *@
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium">Quantity</p>
+                                <QuantityStepper @bind-Value="_qty" Min="1" Max="20" />
+                            </div>
+
+                            <Separator />
+
+                            @* Benefits *@
+                            <div>
+                                <p class="text-sm font-medium mb-2">Benefits</p>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach (var b in GetBenefits(p))
+                                    {
+                                        <span class="rounded-full border px-3 py-0.5 text-xs">@b</span>
+                                    }
+                                </div>
+                            </div>
+
+                            @* Nutrition *@
+                            <div>
+                                <p class="text-sm font-medium mb-2">Nutrition per 250ml</p>
+                                <div class="grid grid-cols-4 gap-2 text-center">
+                                    @foreach (var kv in GetNutrition(p))
+                                    {
+                                        <div class="rounded-xl border p-2">
+                                            <p class="text-sm font-bold">@kv.Value</p>
+                                            <p class="text-[10px] text-muted-foreground">@kv.Key</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="h-4"></div>
+                    </div>
+
+                    @* Sticky Add to Cart footer *@
+                    <div class="px-4 py-3 border-t bg-background shrink-0">
+                        <Button Class="w-full" OnClick="@AddToCart">
+                            <LucideIcon Name="shopping-bag" Size="16" Class="mr-2" />
+                            Add to Cart — $@((p.Price * _qty).ToString("F2"))
+                        </Button>
+                    </div>
+                }
+
+                @* ══════════════════════════════════════════════ *@
+                @*  CART                                          *@
+                @* ══════════════════════════════════════════════ *@
+                else if (_screen == Screen.Cart)
+                {
+                    <AppBar Title="My Cart" OnBack="@GoBack">
+                        <RightContent>
+                            @if (_cart.Count > 0)
+                            {
+                                <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" Class="text-destructive text-xs" OnClick="@ClearCart">Clear</Button>
+                            }
+                        </RightContent>
+                    </AppBar>
+
+                    <div class="flex-1 overflow-y-auto px-4 py-3">
+                        @if (_cart.Count == 0)
+                        {
+                            <div class="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground pb-12">
+                                <div class="text-5xl">🛒</div>
+                                <p class="font-medium">Your cart is empty</p>
+                                <p class="text-xs text-center">Add some fresh juices from the menu</p>
+                                <Button Variant="ButtonVariant.Outline" OnClick="@(() => Navigate(Screen.Menu))">Browse Menu</Button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="space-y-3">
+                                @foreach (var item in _cart.ToList())
+                                {
+                                    var ci = item;
+                                    <div class="flex items-center gap-3 rounded-2xl border bg-card p-3">
+                                        <div class="size-12 rounded-xl @GetBg(ci.Product) flex items-center justify-center text-2xl shrink-0">
+                                            @ci.Product.Emoji
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="font-semibold text-sm truncate">@ci.Product.Name</p>
+                                            <p class="text-xs text-muted-foreground">@ci.Size</p>
+                                            <p class="text-sm font-bold text-primary">$@((ci.Product.Price * ci.Quantity).ToString("F2"))</p>
+                                        </div>
+                                        <QuantityStepper Value="@ci.Quantity"
+                                                         ValueChanged="@((v) => UpdateQty(ci, v))"
+                                                         Min="1" Max="20"
+                                                         Size="QuantityStepperSize.Small"
+                                                         DestructiveAtMin="true"
+                                                         OnDestructiveClick="@(() => RemoveItem(ci))" />
+                                    </div>
+                                }
+
+                                <Separator Class="my-1" />
+
+                                @* Order summary *@
+                                <div class="space-y-2 text-sm rounded-2xl border bg-card p-4">
+                                    <p class="font-semibold mb-3">Order Summary</p>
+                                    <div class="flex justify-between">
+                                        <span class="text-muted-foreground">Subtotal</span>
+                                        <span>$@Subtotal.ToString("F2")</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-muted-foreground">Delivery</span>
+                                        <Badge Variant="BadgeVariant.Secondary" Class="text-[10px]">
+                                            <BadgeIcon><LucideIcon Name="zap" /></BadgeIcon>Free
+                                        </Badge>
+                                    </div>
+                                    <Separator LineStyle="SeparatorStyle.Dashed" Class="my-1" />
+                                    <div class="flex justify-between font-bold text-base">
+                                        <span>Total</span>
+                                        <span>$@Subtotal.ToString("F2")</span>
+                                    </div>
+                                </div>
+
+                                <Button Class="w-full">
+                                    <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
+                                    Checkout
+                                </Button>
+                            </div>
+                        }
+                    </div>
+
+                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                        <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Navigate(Screen.Home))" />
+                        <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
+                        <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" />
+                        <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Navigate(Screen.Profile))" />
+                    </BottomNav>
+                }
+
+                @* ══════════════════════════════════════════════ *@
+                @*  PROFILE                                       *@
+                @* ══════════════════════════════════════════════ *@
+                else if (_screen == Screen.Profile)
+                {
+                    <AppBar Title="Profile" />
+
+                    <div class="flex-1 overflow-y-auto">
+                        <div class="flex flex-col items-center gap-2 py-5">
+                            <Avatar Size="AvatarSize.ExtraLarge">
+                                <AvatarFallback>JD</AvatarFallback>
+                            </Avatar>
+                            <div class="text-center">
+                                <p class="font-semibold text-lg">Jordan Doe</p>
+                                <p class="text-xs text-muted-foreground">@_email</p>
+                            </div>
+                            <Badge Variant="BadgeVariant.Secondary">
+                                <BadgeIcon><LucideIcon Name="leaf" /></BadgeIcon>
+                                Juice Enthusiast
+                            </Badge>
+                        </div>
+
+                        <div class="grid grid-cols-3 border-y divide-x text-center py-4">
+                            <div>
+                                <p class="font-bold text-lg">12</p>
+                                <p class="text-[10px] text-muted-foreground">Orders</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg">4.8</p>
+                                <p class="text-[10px] text-muted-foreground">Avg Rating</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg">5</p>
+                                <p class="text-[10px] text-muted-foreground">Favourites</p>
+                            </div>
+                        </div>
+
+                        <div class="px-4 py-3 space-y-0.5">
+                            @foreach (var row in ProfileRows)
+                            {
+                                @if (row.IsSeparator)
+                                {
+                                    <Separator Class="my-1.5" />
+                                }
+                                else
+                                {
+                                    <div class="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-muted cursor-pointer transition-colors">
+                                        <LucideIcon Name="@row.Icon" Size="18" Class="text-muted-foreground shrink-0" />
+                                        <span class="flex-1 text-sm font-medium">@row.Label</span>
+                                        <LucideIcon Name="chevron-right" Size="16" Class="text-muted-foreground" />
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <div class="px-4 pb-4 pt-2">
+                            <Button Variant="ButtonVariant.Outline" Class="w-full text-destructive border-destructive/30" OnClick="@ResetApp">
+                                <LucideIcon Name="log-out" Size="16" Class="mr-2" />
+                                Sign Out
+                            </Button>
+                        </div>
+                    </div>
+
+                    <BottomNav @bind-ActiveTab="_tab" Fixed="false" Class="shrink-0">
+                        <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Navigate(Screen.Home))" />
+                        <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Navigate(Screen.Menu))" />
+                        <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@_cartTotal" OnClick="@(() => Navigate(Screen.Cart))" />
+                        <BottomNavItem Value="profile" Icon="user" Label="Profile" />
+                    </BottomNav>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@ResetApp">
+        <LucideIcon Name="rotate-ccw" Size="14" Class="mr-1.5" />
+        Reset App
+    </Button>
+
+</div>
+
+@code {
+
+    // ── Navigation ────────────────────────────────────────────────────────
+
+    private enum Screen { Login, Home, Menu, Product, Cart, Profile }
+
+    private Screen _screen = Screen.Login;
+    private Screen _prev   = Screen.Home;
+
+    private void Navigate(Screen to)
+    {
+        _prev = _screen;
+        _tab  = to switch
+        {
+            Screen.Home    => "home",
+            Screen.Menu    => "menu",
+            Screen.Cart    => "cart",
+            Screen.Profile => "profile",
+            _              => _tab
+        };
+        _screen = to;
+    }
+
+    private void GoBack() => Navigate(_prev == _screen ? Screen.Home : _prev);
+
+    // ── Auth ──────────────────────────────────────────────────────────────
+
+    private string _email    = "jordan@example.com";
+    private string _password = "";
+
+    private void DoLogin() => Navigate(Screen.Home);
+
+    private void ResetApp()
+    {
+        _screen = Screen.Login;
+        _prev   = Screen.Home;
+        _cart.Clear();
+        _tab      = "home";
+        _password = "";
+    }
+
+    // ── Bottom nav ────────────────────────────────────────────────────────
+
+    private string? _tab = "home";
+
+    // ── Data ──────────────────────────────────────────────────────────────
+
+    private record JuiceProduct(
+        string   Id,
+        string   Name,
+        string   Tagline,
+        string   Emoji,
+        string   Color,
+        decimal  Price,
+        float    Rating,
+        int      Reviews,
+        bool     IsNew,
+        bool     IsPopular,
+        string   Category,
+        string[] Sizes);
+
+    private static readonly JuiceProduct[] Products =
+    [
+        new("1", "Green Detox",     "Spinach, apple, ginger & lemon",    "🥤", "emerald", 7.50m, 4.8f, 234, false, true,  "Green",    ["250ml", "500ml"]),
+        new("2", "Tropical Blast",  "Mango, pineapple & coconut water",  "🍹", "yellow",  8.00m, 4.9f, 312, true,  true,  "Tropical", ["250ml", "500ml", "750ml"]),
+        new("3", "Berry Boost",     "Blueberry, strawberry & beet",      "🫐", "purple",  7.00m, 4.6f, 189, true,  false, "Berry",    ["250ml", "500ml"]),
+        new("4", "Citrus Zing",     "Orange, lemon, lime & turmeric",    "🍊", "orange",  6.50m, 4.7f, 156, false, false, "Citrus",   ["250ml", "500ml"]),
+        new("5", "Watermelon Wave", "Watermelon, mint & lime",           "🍉", "rose",    7.50m, 4.5f,  98, true,  false, "Fresh",    ["250ml", "500ml"]),
+        new("6", "Golden Hour",     "Carrot, orange, ginger & turmeric", "🥕", "amber",   7.00m, 4.8f, 201, false, true,  "Golden",   ["250ml", "500ml"]),
+    ];
+
+    private IEnumerable<JuiceProduct> PopularProducts => Products.Where(p => p.IsPopular);
+    private IEnumerable<JuiceProduct> NewArrivals     => Products.Where(p => p.IsNew).Take(2);
+
+    private IEnumerable<JuiceProduct> HomeFeed =>
+        _homeCategory == "all"
+            ? Products
+            : Products.Where(p => p.Category == _homeCategory);
+
+    private IEnumerable<JuiceProduct> MenuProducts
+    {
+        get
+        {
+            var q = (_menuCategory == "all" ? Products.AsEnumerable() : Products.Where(p => p.Category == _menuCategory))
+                    .Where(p => (double)p.Price <= _maxPrice);
+            return _sortBy switch
+            {
+                "rating"     => q.OrderByDescending(p => p.Rating),
+                "price-asc"  => q.OrderBy(p => p.Price),
+                "price-desc" => q.OrderByDescending(p => p.Price),
+                _            => q.OrderByDescending(p => p.IsPopular ? 1 : 0),
+            };
+        }
+    }
+
+    private static string GetBg(JuiceProduct p) => p.Color switch
+    {
+        "emerald" => "bg-emerald-100 dark:bg-emerald-950",
+        "yellow"  => "bg-yellow-100  dark:bg-yellow-950",
+        "purple"  => "bg-purple-100  dark:bg-purple-950",
+        "orange"  => "bg-orange-100  dark:bg-orange-950",
+        "rose"    => "bg-rose-100    dark:bg-rose-950",
+        "amber"   => "bg-amber-100   dark:bg-amber-950",
+        _         => "bg-muted",
+    };
+
+    private static string[] GetBenefits(JuiceProduct p) => p.Category switch
+    {
+        "Green"    => ["Detox", "Energy", "Immunity", "Alkaline"],
+        "Tropical" => ["Hydrating", "Vitamins", "Antioxidants", "Natural Sugars"],
+        "Berry"    => ["Antioxidants", "Anti-inflammatory", "Skin Glow"],
+        "Citrus"   => ["Vitamin C", "Immune Boost", "Digestive"],
+        "Fresh"    => ["Hydrating", "Cooling", "Electrolytes"],
+        "Golden"   => ["Anti-inflammatory", "Turmeric", "Digestive Health"],
+        _          => ["Natural", "Cold-Pressed"],
+    };
+
+    private static Dictionary<string, string> GetNutrition(JuiceProduct p) => p.Category switch
+    {
+        "Green"    => new() { ["Cal"] = "68",  ["Carb"] = "16g", ["Fibre"] = "2g",  ["Vit C"] = "40%" },
+        "Tropical" => new() { ["Cal"] = "120", ["Carb"] = "28g", ["Fibre"] = "1g",  ["Vit C"] = "60%" },
+        "Berry"    => new() { ["Cal"] = "90",  ["Carb"] = "21g", ["Fibre"] = "3g",  ["Vit C"] = "35%" },
+        "Citrus"   => new() { ["Cal"] = "75",  ["Carb"] = "18g", ["Fibre"] = "1g",  ["Vit C"] = "95%" },
+        "Fresh"    => new() { ["Cal"] = "50",  ["Carb"] = "12g", ["Fibre"] = "1g",  ["Vit C"] = "20%" },
+        "Golden"   => new() { ["Cal"] = "80",  ["Carb"] = "19g", ["Fibre"] = "2g",  ["Vit C"] = "45%" },
+        _          => new() { ["Cal"] = "80",  ["Carb"] = "19g", ["Fibre"] = "2g",  ["Vit C"] = "30%" },
+    };
+
+    // ── Home ──────────────────────────────────────────────────────────────
+
+    private string _homeCategory = "all";
+
+    // ── Menu ──────────────────────────────────────────────────────────────
+
+    private string _menuCategory = "all";
+    private string _sortBy       = "popular";
+    private double _maxPrice     = 12.0;
+    private bool   _filterOpen;
+    private int    _filterSnap;
+
+    private void OpenFilterDrawer() { _filterSnap = 0; _filterOpen = true; }
+    private void ResetFilters()     { _sortBy = "popular"; _maxPrice = 12.0; }
+
+    // ── Product detail ────────────────────────────────────────────────────
+
+    private JuiceProduct? _product;
+    private string?       _size;
+    private int           _qty = 1;
+
+    private void OpenProduct(JuiceProduct p)
+    {
+        _prev    = _screen;
+        _product = p;
+        _size    = p.Sizes[0];
+        _qty     = 1;
+        _screen  = Screen.Product;
+    }
+
+    // ── Cart ──────────────────────────────────────────────────────────────
+
+    private record CartItem(JuiceProduct Product, string Size, int Quantity);
+
+    private readonly List<CartItem> _cart = [];
+
+    private int     _cartTotal => _cart.Sum(i => i.Quantity);
+    private decimal Subtotal   => _cart.Sum(i => i.Product.Price * i.Quantity);
+
+    private void QuickAdd(JuiceProduct p)
+    {
+        var size = p.Sizes[0];
+        var idx  = _cart.FindIndex(i => i.Product.Id == p.Id && i.Size == size);
+        if (idx >= 0) _cart[idx] = _cart[idx] with { Quantity = _cart[idx].Quantity + 1 };
+        else _cart.Add(new CartItem(p, size, 1));
+    }
+
+    private void AddToCart()
+    {
+        if (_product is null) return;
+        var size = _size ?? _product.Sizes[0];
+        var idx  = _cart.FindIndex(i => i.Product.Id == _product.Id && i.Size == size);
+        if (idx >= 0) _cart[idx] = _cart[idx] with { Quantity = _cart[idx].Quantity + _qty };
+        else _cart.Add(new CartItem(_product, size, _qty));
+        Navigate(Screen.Cart);
+    }
+
+    private void UpdateQty(CartItem item, int qty)
+    {
+        var idx = _cart.IndexOf(item);
+        if (idx >= 0) _cart[idx] = item with { Quantity = qty };
+    }
+
+    private void RemoveItem(CartItem item) => _cart.Remove(item);
+    private void ClearCart()               => _cart.Clear();
+
+    // ── Profile ───────────────────────────────────────────────────────────
+
+    private record ProfileRow(string Icon, string Label, bool IsSeparator = false);
+
+    private static readonly ProfileRow[] ProfileRows =
+    [
+        new("package",     "My Orders"),
+        new("heart",       "Favourites"),
+        new("map-pin",     "Delivery Addresses"),
+        new("",            "", IsSeparator: true),
+        new("bell",        "Notifications"),
+        new("credit-card", "Payment Methods"),
+        new("",            "", IsSeparator: true),
+        new("shield",      "Privacy & Security"),
+        new("help-circle", "Help & Support"),
+        new("star",        "Rate the App"),
+    ];
+}
