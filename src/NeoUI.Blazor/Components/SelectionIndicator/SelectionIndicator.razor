@@ -1,0 +1,96 @@
+@namespace NeoUI.Blazor
+@implements IAsyncDisposable
+@*
+    SelectionIndicator — composable animated selection indicator.
+
+    Drop this as the last child inside any "selection" container to get an animated
+    pill/underline that tracks the active item. Uses CSS transitions (configurable via
+    CSS custom properties) and a MutationObserver to detect selection changes automatically.
+
+    Supported containers and their selectors:
+      Tabs               → [data-state=active]   (default)
+      RadioGroup         → [data-state=checked]
+      ToggleGroup single → [aria-checked=true]
+      NavigationMenuLink → [data-active=true]
+      Select (dropdown)  → [data-state=checked]
+      DropdownMenuRadio  → [data-state=checked]
+      Pagination         → [aria-current=page]
+
+    When used with Tabs, also pass to each TabsTrigger:
+      Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+
+    Variants via Class override:
+      Pill (default):    "absolute inset-y-1 rounded-sm bg-background shadow-sm …"
+      Underline:         "absolute inset-x-0 bottom-0 top-auto h-0.5 rounded-full bg-foreground"
+*@
+
+<div @ref="_ref"
+     data-selection-indicator
+     aria-hidden="true"
+     class="@CssClass"
+     style="opacity: 0">
+</div>
+
+@code {
+    private ElementReference _ref;
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// CSS selector used to find the active element within the parent container.
+    /// Defaults to <c>[data-state=active]</c>, which matches Tabs, RadioGroup, Select, etc.
+    /// </summary>
+    [Parameter]
+    public string Selector { get; set; } = "[data-state=active]";
+
+    /// <summary>
+    /// When <c>true</c>, the indicator also slides to whichever item the pointer is currently
+    /// hovering over, then snaps back to the selected item on mouse leave.
+    /// Useful in menus or lists where you want a visual hover highlight.
+    /// </summary>
+    [Parameter]
+    public bool Hover { get; set; }
+
+    /// <summary>
+    /// Optional CSS selector used to resolve the hover target element.
+    /// When set, the indicator uses <c>e.target.closest(HoverTarget)</c> on mouse-over
+    /// instead of walking up to the direct child of the container.
+    /// Use this for nested menus where selectable items exist at varying depths —
+    /// e.g. <c>HoverTarget="[data-active]"</c> targets any element carrying the active attribute.
+    /// </summary>
+    [Parameter]
+    public string? HoverTarget { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes appended to the indicator element.
+    /// Use this to switch variants, e.g. underline:
+    /// <c>Class="[--si-height:2px] rounded-none bg-foreground"</c>
+    /// (--si-height pins the indicator to the bottom of each item at the given fixed height)
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "absolute rounded-sm bg-background shadow-sm pointer-events-none z-0",
+        "[--si-duration:350ms] [--si-easing:cubic-bezier(0.34,1.26,0.64,1)]",
+        Class);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/NeoUI.Blazor/js/selection-indicator.js");
+
+        await _module.InvokeVoidAsync("init", _ref, Selector, Hover, HoverTarget);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null) return;
+        try { await _module.InvokeVoidAsync("dispose", _ref); } catch { }
+        await _module.DisposeAsync();
+    }
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; } = null!;
+}

@@ -1,8 +1,10 @@
 @typeparam TValue
 @namespace NeoUI.Blazor
 @attribute [CascadingTypeParameter(nameof(TValue))]
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
 
-@* Styled SelectContent wrapper — supports Popover (default) and BottomSheet presentation *@
+@* Styled SelectContent wrapper around SelectContent primitive *@
 
 @if (Presentation == SelectPresentation.BottomSheet)
 {
@@ -26,6 +28,13 @@ else
 }
 
 @code {
+    private ElementReference _scrollRef;
+    private IJSObjectReference? _jsModule;
+    private bool _prevIsOpen = false;
+
+    /// <summary>
+    /// Cascading parameter to infer TValue from parent Select context.
+    /// </summary>
     [CascadingParameter]
     private SelectContext<TValue>? Context { get; set; }
 
@@ -50,7 +59,47 @@ else
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private bool _prevIsOpen = false;
+    /// <summary>
+    /// Gets or sets the callback invoked when the user scrolls near the bottom of the dropdown list.
+    /// Use this to load additional items for infinite scroll scenarios.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnLoadMore { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether additional items are currently being loaded.
+    /// When true, a loading spinner is shown at the bottom of the list and
+    /// <see cref="OnLoadMore"/> is suppressed until loading completes.
+    /// </summary>
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    /// <summary>
+    /// Gets or sets a message displayed at the bottom of the list when all items have been loaded.
+    /// Only shown when <see cref="IsLoading"/> is false. Set to <c>null</c> or empty to hide.
+    /// </summary>
+    [Parameter]
+    public string? EndOfListMessage { get; set; }
+
+    /// <summary>
+    /// Outer container: border, shadow, animation — no scrolling.
+    /// </summary>
+    private string OuterCssClass => ClassNames.cn(
+        $"z-{ZIndexLevels.PopoverContent} w-full overflow-hidden rounded-md border",
+        "bg-popover text-popover-foreground shadow-md",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "[&::-webkit-scrollbar]:hidden",
+        Class
+    );
+
+    /// <summary>
+    /// Inner container: scrollable area with max height.
+    /// </summary>
+    private static string InnerCssClass => "max-h-60 overflow-auto p-1 [&::-webkit-scrollbar]:hidden";
 
     protected override void OnParametersSet()
     {
@@ -73,13 +122,45 @@ else
 
     private string CssClass => ClassNames.cn(
         $"z-{ZIndexLevels.PopoverContent} max-h-60 w-full overflow-auto rounded-md border",
-        "bg-popover text-popover-foreground shadow-md",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
-        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        "[&::-webkit-scrollbar]:hidden",
-        Class
-    );
+      
+    private async Task HandleScroll()
+    {
+        if (!OnLoadMore.HasDelegate || IsLoading)
+        {
+            return;
+        }
+
+        _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/element-utils.js");
+
+        try
+        {
+            var nearBottom = await _jsModule.InvokeAsync<bool>("isNearBottom", _scrollRef, 80.0);
+            if (nearBottom)
+            {
+                await OnLoadMore.InvokeAsync();
+            }
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException)
+        {
+            // Expected during circuit disconnect or disposal
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule != null)
+        {
+            try
+            {
+                await _jsModule.DisposeAsync();
+            }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException)
+            {
+                // Expected during circuit disconnect
+            }
+
+            _jsModule = null;
+        }
+    }
 }

@@ -189,6 +189,9 @@ public class DefaultLocalizer : ILocalizer
         ["Sidebar.Pill.AriaLabel"] = "Navigation",
         ["Sidebar.Pill.ExpandButton"] = "Open navigation",
 
+        // ── Sortable ─────────────────────────────────────────────────────────
+        ["Sortable.DragHandle"] = "Drag handle",
+
         // ── ThemeSwitcher ────────────────────────────────────────────────────
         ["ThemeSwitcher.ChangeTheme"] = "Change theme",
         ["ThemeSwitcher.Settings"] = "Theme Settings",

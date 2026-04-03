@@ -1,0 +1,38 @@
+@namespace NeoUI.Blazor
+@*
+    SidebarSelectionIndicator — a pre-configured SelectionIndicator for use inside
+    any sidebar menu container (SidebarMenu or SidebarMenuSub).
+
+    Drop as the last child of a SidebarMenu or SidebarMenuSub to get an animated
+    pill that tracks the active item across both flat and nested navigation structures.
+
+    Compared to the generic SelectionIndicator, this component:
+      - Defaults Selector to [data-active=true]  (matches SidebarMenuButton / SidebarMenuSubButton)
+      - Defaults HoverTarget to [data-active]     (resolves hover via closest(), handles nesting)
+      - Defaults Hover to true
+
+    Pair with relative z-1 + suppressed active/hover backgrounds on each menu button:
+      SidebarMenuButton:    Class="relative z-1 data-[active=true]:bg-transparent hover:bg-transparent"
+      SidebarMenuSubButton: Class="relative z-1 data-[active=true]:bg-transparent hover:bg-transparent"
+*@
+
+<SelectionIndicator Selector="[data-active=true]"
+                    HoverTarget="[data-active]"
+                    Hover="@Hover"
+                    Class="@Class" />
+
+@code {
+    /// <summary>
+    /// When <c>true</c> (default), the indicator slides to the hovered item and
+    /// snaps back to the active item on mouse leave.
+    /// </summary>
+    [Parameter]
+    public bool Hover { get; set; } = true;
+
+    /// <summary>
+    /// Additional CSS classes forwarded to the indicator element.
+    /// Use to control colour, rounding, shadow, etc.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+}

@@ -234,6 +234,96 @@
     </DemoSection>
 
     <DemoSection
+        Title="Infinite Scroll"
+        Description="Load items in batches as the user scrolls to the bottom of the list.">
+        <DemoBlock Code="@_infiniteScrollCode">
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Size="16" /></Icon>
+                    <ChildContent>
+                        <AlertDescription>
+                            Open the dropdown and scroll to the bottom to trigger <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">OnLoadMore</code>.
+                            A spinner appears during the simulated 600 ms fetch. Once all @_msTotalItems items are loaded,
+                            <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">EndOfListMessage</code> is shown instead.
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
+            <ChildContent>
+                <div class="flex flex-col gap-2">
+                    <MultiSelect TItem="NumberedMsItem"
+                                Items="@_msDisplayedItems"
+                                @bind-Values="_msPagedValues"
+                                ValueSelector="@(x => x.Value)"
+                                DisplaySelector="@(x => x.Label)"
+                                Placeholder="Select options..."
+                                SearchPlaceholder="Search options..."
+                                OnLoadMore="@HandleMsLoadMore"
+                                IsLoading="@_msPagedLoading"
+                                EndOfListMessage="@MsEndMessage"
+                                SearchQueryChanged="@HandleMsInfiniteSearch"
+                                PopoverWidth="w-[300px]" />
+                    <p class="text-xs text-muted-foreground">
+                        @if (!string.IsNullOrWhiteSpace(_msSearchQuery))
+                        {
+                            <span>@_msFilteredTotal results for "@_msSearchQuery"</span>
+                        }
+                        else
+                        {
+                            <span>@Math.Min(_msDisplayedCount, _msTotalItems) / @_msTotalItems items loaded</span>
+                        }
+                        @if (_msPagedValues?.Any() == true)
+                        {
+                            <span> · @_msPagedValues.Count() selected</span>
+                        }
+                    </p>
+                </div>
+            </ChildContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Server-Side Search"
+        Description="Use SearchQueryChanged to drive filtering externally. The built-in text filter is bypassed and the consumer controls the displayed items.">
+        <DemoBlock Code="@_searchQueryChangedCode">
+            <AdditionalContent>
+                <Alert Variant="AlertVariant.Info">
+                    <Icon><LucideIcon Name="info" Size="16" /></Icon>
+                    <ChildContent>
+                        <AlertDescription>
+                            The search input fires <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">SearchQueryChanged</code> on every keystroke.
+                            A 300 ms simulated delay mimics a server round-trip. Because <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">SearchQueryChanged</code> has a delegate,
+                            the component's built-in text filter is completely bypassed — the consumer decides what <code class="px-1.5 py-0.5 text-xs bg-muted rounded font-mono">Items</code> to show.
+                            On close, the callback fires with an empty string so the consumer can reload the default list.
+                        </AlertDescription>
+                    </ChildContent>
+                </Alert>
+            </AdditionalContent>
+            <ChildContent>
+                <div class="flex flex-col gap-2">
+                    <MultiSelect TItem="PersonItem"
+                                Items="@_filteredPeople"
+                                @bind-Values="_selectedPeople"
+                                ValueSelector="@(p => p.Value)"
+                                DisplaySelector="@(p => p.Label)"
+                                Placeholder="Search and select people..."
+                                SearchPlaceholder="Type to search..."
+                                SearchQueryChanged="@HandlePeopleSearch"
+                                IsLoading="@_peopleSearching"
+                                PopoverWidth="w-[320px]" />
+                    <p class="text-xs text-muted-foreground">
+                        @_filteredPeople.Count / @_allPeople.Count matches
+                        @if (_selectedPeople?.Any() == true)
+                        {
+                            <span> · @_selectedPeople.Count() selected</span>
+                        }
+                    </p>
+                </div>
+            </ChildContent>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="API Reference"
         Description="Component parameters and their types.">
         <DemoPropsTable Rows="_multiSelectProps" />
@@ -324,6 +414,93 @@
         StateHasChanged();
     }
 
+    // Infinite Scroll demo
+    private static readonly IReadOnlyList<NumberedMsItem> _masterMsItems =
+        Enumerable.Range(1, 50).Select(i => new NumberedMsItem { Value = $"ms-item-{i}", Label = $"Option {i}" }).ToList();
+    private List<NumberedMsItem> _msDisplayedItems = new();
+    private bool _msPagedLoading;
+    private IEnumerable<string>? _msPagedValues;
+    private const int _msPageSize = 10;
+    private const int _msTotalItems = 50;
+    private string _msSearchQuery = string.Empty;
+    private int _msFilteredTotal;
+    private int _msDisplayedCount;
+
+    private IReadOnlyList<NumberedMsItem> GetFilteredMsItems(string query) =>
+        string.IsNullOrWhiteSpace(query)
+            ? _masterMsItems
+            : _masterMsItems.Where(x => x.Label.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+
+    // Server-Side Search demo
+    private readonly List<PersonItem> _allPeople = new()
+    {
+        new PersonItem { Value = "alice", Label = "Alice Johnson" },
+        new PersonItem { Value = "bob", Label = "Bob Smith" },
+        new PersonItem { Value = "carol", Label = "Carol White" },
+        new PersonItem { Value = "dave", Label = "Dave Brown" },
+        new PersonItem { Value = "eve", Label = "Eve Davis" },
+        new PersonItem { Value = "frank", Label = "Frank Miller" },
+        new PersonItem { Value = "grace", Label = "Grace Wilson" },
+        new PersonItem { Value = "hank", Label = "Hank Moore" },
+        new PersonItem { Value = "iris", Label = "Iris Taylor" },
+        new PersonItem { Value = "jack", Label = "Jack Anderson" },
+        new PersonItem { Value = "kate", Label = "Kate Thomas" },
+        new PersonItem { Value = "liam", Label = "Liam Jackson" },
+        new PersonItem { Value = "mia", Label = "Mia Martinez" },
+        new PersonItem { Value = "noah", Label = "Noah Garcia" },
+        new PersonItem { Value = "olivia", Label = "Olivia Rodriguez" },
+    };
+    private List<PersonItem> _filteredPeople = new();
+    private IEnumerable<string>? _selectedPeople;
+    private bool _peopleSearching;
+
+    protected override void OnInitialized()
+    {
+        var filtered = GetFilteredMsItems(string.Empty);
+        _msFilteredTotal = filtered.Count;
+        _msDisplayedCount = _msPageSize;
+        _msDisplayedItems = filtered.Take(_msDisplayedCount).ToList();
+        _filteredPeople = new(_allPeople);
+    }
+
+    private async Task HandleMsLoadMore()
+    {
+        _msPagedLoading = true;
+        StateHasChanged();
+        await Task.Delay(600);
+        _msDisplayedCount += _msPageSize;
+        var filtered = GetFilteredMsItems(_msSearchQuery);
+        _msFilteredTotal = filtered.Count;
+        _msDisplayedItems = filtered.Take(_msDisplayedCount).ToList();
+        _msPagedLoading = false;
+    }
+
+    private string? MsEndMessage =>
+        _msDisplayedCount >= _msFilteredTotal && _msFilteredTotal > 0
+            ? $"All {_msFilteredTotal} options loaded"
+            : null;
+
+    private Task HandleMsInfiniteSearch(string query)
+    {
+        _msSearchQuery = query;
+        _msDisplayedCount = _msPageSize;
+        var filtered = GetFilteredMsItems(query);
+        _msFilteredTotal = filtered.Count;
+        _msDisplayedItems = filtered.Take(_msDisplayedCount).ToList();
+        return Task.CompletedTask;
+    }
+
+    private async Task HandlePeopleSearch(string query)
+    {
+        _peopleSearching = true;
+        StateHasChanged();
+        await Task.Delay(300);
+        _filteredPeople = string.IsNullOrWhiteSpace(query)
+            ? new(_allPeople)
+            : _allPeople.Where(p => p.Label.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList();
+        _peopleSearching = false;
+    }
+
     public class Language
     {
         public required string Value { get; set; }
@@ -346,6 +523,18 @@
     {
         public required string Code { get; set; }
         public required string Name { get; set; }
+    }
+
+    public class NumberedMsItem
+    {
+        public required string Value { get; set; }
+        public required string Label { get; set; }
+    }
+
+    public class PersonItem
+    {
+        public required string Value { get; set; }
+        public required string Label { get; set; }
     }
 
 }

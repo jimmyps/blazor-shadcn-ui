@@ -1,0 +1,50 @@
+@namespace NeoUI.Blazor
+@*
+    Styled SortableOverlay component.
+    Wraps SortableOverlayPrimitive. The overlay acts as a customisable frame
+    around the auto-cloned dragged element. Properties visible on the frame
+    itself (shadow, border-radius, opacity, transition, drag scale) are set
+    here; the clone inside provides its own bg/border/padding.
+    Override any default via Class or pass arbitrary HTML attributes.
+*@
+
+<SortableOverlayPrimitive class="@CssClass"
+                           ChildContent="@ChildContent"
+                           @attributes="AdditionalAttributes" />
+
+@code {
+    /// <summary>
+    /// Optional custom ghost content. Receives the active item's ID as context.
+    /// When <c>null</c> (default) the JS sensor clones the dragged element automatically.
+    /// </summary>
+    [Parameter]
+    public RenderFragment<string>? ChildContent { get; set; }
+
+    /// <summary>
+    /// Additional CSS classes merged with the default overlay classes.
+    /// Use to override shadow, opacity, transition timing, scale, border-radius etc.
+    /// Example: Class="shadow-2xl duration-200 ease-out data-[state=dragging]:scale-[1.1]"
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional HTML attributes applied to the overlay element.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    // Defaults own the properties that are meaningful on the overlay frame:
+    //   rounded-lg                          → shapes the shadow / border-radius of the ghost
+    //   shadow-lg                           → the "lifted" drop shadow
+    //   opacity-70                          → slight transparency gives the ghost a "lifted" feel
+    //   transition-[box-shadow] duration-300 → smoothly animates shadow in/out as state changes
+    //   data-[state=dragging]:scale-[1.05]  → scale applied via Tailwind when JS sets data-state="dragging"
+    //
+    //   Note: if you also want the scale change to animate, merge transition-transform into the Class:
+    //   Class="transition-[box-shadow,transform]"
+    private string CssClass => ClassNames.cn(
+        "rounded-lg shadow-lg opacity-70 transition-[box-shadow] duration-300 data-[state=dragging]:scale-[1.05]",
+        Class
+    );
+}

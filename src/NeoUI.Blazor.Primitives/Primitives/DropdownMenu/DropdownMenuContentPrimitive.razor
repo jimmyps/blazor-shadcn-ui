@@ -1,5 +1,7 @@
 @namespace NeoUI.Blazor.Primitives
+@using Microsoft.Extensions.Logging
 @inject IJSRuntime JSRuntime
+@inject ILogger<DropdownMenuContentPrimitive> Logger
 @implements IAsyncDisposable
 
 @*
@@ -23,6 +25,10 @@
 </FloatingPortal>
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogTriggerWidthMatchFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "TriggerWidthMatchFailed"),
+            "Failed to set up trigger width matching: {ErrorMessage}");
+
     [CascadingParameter]
     private DropdownMenuContext Context { get; set; } = null!;
 
@@ -245,7 +251,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to set up trigger width matching: {ex.Message}");
+            LogTriggerWidthMatchFailed(Logger, ex.Message, ex);
         }
     }
 

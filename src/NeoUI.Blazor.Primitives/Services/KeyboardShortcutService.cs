@@ -1,4 +1,5 @@
 using NeoUI.Blazor.Primitives;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace NeoUI.Blazor.Primitives.Services;
@@ -8,7 +9,12 @@ namespace NeoUI.Blazor.Primitives.Services;
 /// </summary>
 public class KeyboardShortcutService : IKeyboardShortcutService
 {
+    private static readonly Action<ILogger, string, string, Exception?> LogShortcutHandlerFailed =
+        LoggerMessage.Define<string, string>(LogLevel.Error, new EventId(1, nameof(LogShortcutHandlerFailed)),
+            "Error handling keyboard shortcut '{Shortcut}': {Message}");
+
     private readonly IJSRuntime _jsRuntime;
+    private readonly ILogger<KeyboardShortcutService> _logger;
     private readonly Dictionary<string, ShortcutRegistration> _shortcuts = new();
     private readonly SemaphoreSlim _moduleLock = new(1, 1);
     private IJSObjectReference? _module;
@@ -21,9 +27,11 @@ public class KeyboardShortcutService : IKeyboardShortcutService
     /// Initializes a new instance of the <see cref="KeyboardShortcutService"/> class.
     /// </summary>
     /// <param name="jsRuntime">The JavaScript runtime for invoking keyboard handling functions.</param>
-    public KeyboardShortcutService(IJSRuntime jsRuntime)
+    /// <param name="logger">The logger instance.</param>
+    public KeyboardShortcutService(IJSRuntime jsRuntime, ILogger<KeyboardShortcutService> logger)
     {
         _jsRuntime = jsRuntime;
+        _logger = logger;
     }
 
     /// <inheritdoc />
@@ -131,8 +139,8 @@ public class KeyboardShortcutService : IKeyboardShortcutService
             }
             catch (Exception ex)
             {
-                // Log or handle exception - don't let it propagate to JS
-                Console.Error.WriteLine($"Error handling keyboard shortcut '{normalizedKey}': {ex.Message}");
+                // Don't let exceptions propagate to JS
+                LogShortcutHandlerFailed(_logger, normalizedKey, ex.Message, ex);
             }
         }
     }

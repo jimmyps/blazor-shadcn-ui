@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Components
+@using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @implements IDisposable
@@ -136,6 +137,53 @@
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+    [Inject]
+    private ILogger<Motion> Logger { get; set; } = default!;
+
+    private static readonly Action<ILogger, string, Exception?> LogModuleLoadFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "MotionModuleLoadFailed"),
+            "Motion: Failed to load JS module: {ErrorMessage}");
+
+    private static readonly Action<ILogger, Exception?> LogJsModuleNotLoaded =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(2, "MotionJsModuleNotLoaded"),
+            "Motion: AnimateInternalAsync called but JS module is not loaded.");
+
+    private static readonly Action<ILogger, Exception?> LogNoKeyframesFromPreset =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(3, "MotionNoKeyframesFromPreset"),
+            "Motion: No keyframes produced by any preset.");
+
+    private static readonly Action<ILogger, Exception?> LogNoKeyframesToAnimate =
+        LoggerMessage.Define(LogLevel.Warning, new EventId(4, "MotionNoKeyframesToAnimate"),
+            "Motion: No keyframes to animate (neither presets nor Keyframes defined).");
+
+    private static readonly Action<ILogger, string, Exception?> LogAnimationFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(5, "MotionAnimationFailed"),
+            "Motion: Animation failed: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogAnimationUnexpectedError =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(6, "MotionAnimationUnexpectedError"),
+            "Motion: Unexpected animation error: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogReducedMotionCheckFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(7, "MotionReducedMotionCheckFailed"),
+            "Motion: Failed to check reduced motion preference: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogIntersectionObserverFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(8, "MotionIntersectionObserverFailed"),
+            "Motion: Failed to set up IntersectionObserver: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogStopAnimationFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(9, "MotionStopAnimationFailed"),
+            "Motion: Failed to stop animation during disposal: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogCleanupObserverFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(10, "MotionCleanupObserverFailed"),
+            "Motion: Failed to clean up InView observer during disposal: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogDisposeModuleFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(11, "MotionDisposeModuleFailed"),
+            "Motion: Failed to dispose JS module: {ErrorMessage}");
+
     [CascadingParameter(Name = "MotionContext")]
     private MotionContext? Context { get; set; }
 
@@ -219,7 +267,7 @@
         }
         catch (JSException ex)
         {
-            Console.WriteLine($"Motion: Failed to setup IntersectionObserver - {ex.Message}");
+            LogIntersectionObserverFailed(Logger, ex.Message, ex);
         }
     }
 
@@ -239,7 +287,7 @@
     {
         if (_jsModule == null)
         {
-            Console.WriteLine("Motion: JS module not loaded");
+            LogJsModuleNotLoaded(Logger, null);
             return;
         }
 
@@ -250,7 +298,6 @@
             if (prefersReducedMotion)
             {
                 // Skip animation or use simplified version
-                Console.WriteLine("Motion: Animation skipped due to reduced motion preference");
                 return;
             }
         }
@@ -261,8 +308,6 @@
             List<MotionKeyframe> keyframes;
             MotionOptions? options = Options;
             SpringOptions? spring = Spring;
-
-            Console.WriteLine($"Motion: Starting animation with {CollectedPresets.Count} presets");
 
             if (CollectedPresets.Any())
             {
@@ -288,14 +333,13 @@
                 if (keyframePresets.Count == 0)
                 {
                     // No keyframes to animate (shouldn't happen, but handle gracefully)
-                    Console.WriteLine("Motion: No keyframes from any preset");
+                    LogNoKeyframesFromPreset(Logger, null);
                     return;
                 }
                 else if (keyframePresets.Count == 1)
                 {
                     // Single preset with keyframes: use all keyframes as-is
                     keyframes = keyframePresets[0].GetKeyframes();
-                    Console.WriteLine($"Motion: Using {keyframes.Count} keyframes from single preset");
                 }
                 else
                 {
@@ -314,7 +358,6 @@
                     }
 
                     keyframes = new List<MotionKeyframe> { fromKeyframe, toKeyframe };
-                    Console.WriteLine($"Motion: Merged {keyframePresets.Count} keyframe presets into 2 keyframes");
                 }
             }
             else if (Keyframes != null && Keyframes.Any())
@@ -324,18 +367,15 @@
             else
             {
                 // No animation to perform
-                Console.WriteLine("Motion: No keyframes to animate");
+                LogNoKeyframesToAnimate(Logger, null);
                 return;
             }
-
-            Console.WriteLine($"Motion: Animating with {keyframes.Count} keyframes");
 
             // Apply stagger if in context
             if (Context != null && Context.StaggerDelay > 0)
             {
                 options = options ?? new MotionOptions();
                 options.Delay = (options.Delay ?? 0) + (_myStaggerIndex * Context.StaggerDelay);
-                Console.WriteLine($"Motion: Stagger delay applied - MyIndex={_myStaggerIndex}, StaggerDelay={Context.StaggerDelay}, TotalDelay={options.Delay}");
             }
 
             _animationId = await _jsModule.InvokeAsync<int>(
@@ -345,15 +385,14 @@
                 options,
                 spring);
 
-            Console.WriteLine($"Motion: Animation started with ID {_animationId}");
         }
         catch (JSException ex)
         {
-            Console.WriteLine($"Motion: Animation failed - {ex.Message}");
+            LogAnimationFailed(Logger, ex.Message, ex);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Motion: Unexpected error - {ex.Message}");
+            LogAnimationUnexpectedError(Logger, ex.Message, ex);
         }
     }
 
@@ -371,7 +410,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Motion: Failed to check reduced motion preference - {ex.Message}");
+            LogReducedMotionCheckFailed(Logger, ex.Message, ex);
             return false;
         }
     }
@@ -452,7 +491,7 @@
             }
             catch (JSException ex)
             {
-                Console.WriteLine($"Motion: Failed to load module - {ex.Message}");
+                LogModuleLoadFailed(Logger, ex.Message, ex);
                 return;
             }
 
@@ -506,7 +545,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Motion: Failed to stop animation during disposal - {ex.Message}");
+                    LogStopAnimationFailed(Logger, ex.Message, ex);
                 }
             }
 
@@ -518,7 +557,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Motion: Failed to cleanup observer during disposal - {ex.Message}");
+                    LogCleanupObserverFailed(Logger, ex.Message, ex);
                 }
             }
 
@@ -528,7 +567,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Motion: Failed to dispose JS module - {ex.Message}");
+                LogDisposeModuleFailed(Logger, ex.Message, ex);
             }
         }
 

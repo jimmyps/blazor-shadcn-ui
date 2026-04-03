@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
 
 @*
     SidebarPillNavItem — an icon-only button for use inside <SidebarPillNav>.
@@ -41,6 +42,7 @@ else if (!string.IsNullOrEmpty(Href))
              class="@GetNavLinkClasses()"
              title="@NativeTitle"
              aria-label="@Label"
+             data-active="@(IsNavLinkActive() ? "true" : "false")"
              @attributes="AdditionalAttributes">
         @ChildContent
     </NavLink>
@@ -51,6 +53,7 @@ else
             class="@GetButtonClasses()"
             title="@NativeTitle"
             aria-label="@Label"
+            data-active="@(IsActive ? "true" : "false")"
             @onclick="OnClick"
             @attributes="AdditionalAttributes">
         @ChildContent
@@ -128,13 +131,16 @@ else
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter]
+    private SidebarContext? Context { get; set; }
+
     private string? NativeTitle => Title ?? Label;
 
     private string BaseClasses =>
         "flex h-9 w-9 items-center justify-center rounded-full transition-all duration-200 [&>svg]:size-4 [&>svg]:shrink-0";
 
     private string InactiveClasses =>
-        "text-foreground hover:bg-accent hover:text-accent-foreground";
+        "text-foreground hover:bg-accent";
 
     private string ActiveClasses =>
         "bg-primary text-primary-foreground hover:bg-primary/90";
@@ -156,6 +162,16 @@ else
             : "[&.active]:bg-primary [&.active]:text-primary-foreground [&.active]:hover:bg-primary/90",
         Class
     );
+
+    private bool IsNavLinkActive()
+    {
+        if (string.IsNullOrEmpty(Href)) return false;
+        var currentPath = Context?.CurrentPath ?? new Uri(NavigationManager.Uri).AbsolutePath;
+        var hrefPath = NavigationManager.ToAbsoluteUri(Href).AbsolutePath;
+        return Match == NavLinkMatch.All
+            ? string.Equals(currentPath, hrefPath, StringComparison.OrdinalIgnoreCase)
+            : currentPath.StartsWith(hrefPath, StringComparison.OrdinalIgnoreCase);
+    }
 
     protected override void OnParametersSet()
     {

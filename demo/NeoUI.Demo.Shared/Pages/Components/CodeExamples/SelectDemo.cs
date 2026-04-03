@@ -5,11 +5,14 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private static readonly IReadOnlyList<DemoPropRow> _selectProps =
             [
-                new("TValue",       "generic",               "-",        "The value type (string, int, enum, etc.)."),
-                new("Value",        "@bind-Value / TValue?", null,       "The selected value."),
-                new("Class",        "string?",               null,       "Additional CSS classes applied to the root element."),
-                new("Disabled",     "bool",                  "false",    "Disables the select."),
+                new("TValue",  "generic",          "-",     "The value type (string, int, enum, etc.)."),
+                new("Value",   "@bind-Value / TValue?", null, "The selected value."),
+                new("Class",   "string?",          null,    "Additional CSS classes applied to the root element."),
+                new("Disabled","bool",             "false", "Disables the select."),
                 new("Presentation", "SelectPresentation",    "Popover",  "How the options are presented. Popover (default) or BottomSheet (mobile drawer)."),
+                new("SelectContent: OnLoadMore",   "EventCallback",  "\u2014",    "Invoked when the user scrolls near the bottom. Use to append additional SelectItem elements."),
+                new("SelectContent: IsLoading",    "bool",           "false",  "Shows a spinner at the bottom of the dropdown while the next batch is loading."),
+                new("SelectContent: EndOfListMessage", "string?",    "null",   "Message shown when all items have been loaded. Hidden when null or empty."),
             ];
 
         private const string _basicCode =
@@ -88,6 +91,51 @@ namespace NeoUI.Demo.Shared.Pages.Components
                         <SelectItem Value="paris" Text="Paris" TValue="string">Paris</SelectItem>
                     </SelectContent>
                 </Select>
+                """;
+                      
+        private const string _infiniteScrollCode = """
+                <Select @bind-Value="_sPagedValue" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select an option..." />
+                    </SelectTrigger>
+                    <SelectContent OnLoadMore="@HandleSelectLoadMore"
+                                   IsLoading="@_sPagedLoading"
+                                   EndOfListMessage="@SelectEndMessage">
+                        @foreach (var item in _sPagedItems)
+                        {
+                            <SelectItem Value="@item.Value" Text="@item.Label" TValue="string">@item.Label</SelectItem>
+                        }
+                    </SelectContent>
+                </Select>
+
+                @code {
+                    private List<SelectNumberedItem> _sPagedItems = new();
+                    private bool _sPagedLoading;
+                    private int _sPagedPage;
+                    private const int PageSize = 8;
+                    private const int Total = 40;
+
+                    protected override void OnInitialized() => LoadPage();
+
+                    private void LoadPage()
+                    {
+                        var start = _sPagedPage++ * PageSize;
+                        for (var i = start; i < Math.Min(start + PageSize, Total); i++)
+                            _sPagedItems.Add(new SelectNumberedItem { Value = $"item-{i+1}", Label = $"Item {i+1}" });
+                    }
+
+                    private async Task HandleSelectLoadMore()
+                    {
+                        if (_sPagedLoading || _sPagedItems.Count >= Total) return;
+                        _sPagedLoading = true;
+                        await Task.Delay(600);
+                        LoadPage();
+                        _sPagedLoading = false;
+                    }
+
+                    private string? SelectEndMessage =>
+                        _sPagedItems.Count >= Total ? $"All {Total} items loaded" : null;
+                }
                 """;
     }
 }

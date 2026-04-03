@@ -1,0 +1,10 @@
+@namespace NeoUI.Blazor.Primitives
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<div @ref="_containerRef"
+     data-sortable-content="@Context!.InstanceId"
+     data-orientation="@Context!.Orientation.ToString().ToLowerInvariant()"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>

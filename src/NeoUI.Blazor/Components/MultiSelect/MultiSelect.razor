@@ -100,7 +100,7 @@
             </div>
 
             @* Items list section *@
-            <div id="@($"{Id}-listbox")" role="listbox" aria-multiselectable="true" class="max-h-[250px] overflow-y-auto p-1">
+            <div id="@($"{Id}-listbox")" @ref="_listboxScrollRef" @onscroll="HandleListboxScrollAsync" role="listbox" aria-multiselectable="true" class="max-h-[250px] overflow-y-auto p-1">
                 @if (!HasFilteredItems)
                 {
                     <div class="py-6 text-center text-sm text-muted-foreground">@EffectiveEmptyMessage</div>
@@ -158,6 +158,18 @@
                             <span>@displayText</span>
                         </div>
                     }
+                }
+                @if (IsLoading)
+                {
+                    <div class="flex items-center justify-center py-2">
+                        <Spinner Size="SpinnerSize.Small" />
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(EndOfListMessage))
+                {
+                    <div class="py-2 text-center text-xs text-muted-foreground">
+                        @EndOfListMessage
+                    </div>
                 }
             </div>
 

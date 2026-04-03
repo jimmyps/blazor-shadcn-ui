@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor
 @using Microsoft.JSInterop
+@using Microsoft.Extensions.Logging
 @implements IAsyncDisposable
 
 <div class="@CssClass" data-command-input-wrapper>
@@ -31,8 +32,15 @@
 </div>
 
 @code {
+    private static readonly Action<ILogger, string, Exception?> LogJsInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogJsInitializationFailed)),
+            "Error initializing command input JS: {Message}");
+
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
+
+    [Inject]
+    private ILogger<CommandInput> Logger { get; set; } = default!;
 
     [CascadingParameter]
     public CommandContext? Context { get; set; }
@@ -162,7 +170,7 @@
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine($"Error initializing command input JS: {ex.Message}");
+                LogJsInitializationFailed(Logger, ex.Message, ex);
             }
         }
         else if (_shouldFocus && _jsInitialized && _inputModule != null)
