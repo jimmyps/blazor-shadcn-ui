@@ -37,12 +37,14 @@ public static class ComponentCategories
     public static readonly ComponentCategoryInfo Charts         = new("charts",           "Charts");
     /// <summary>Motion and animation components.</summary>
     public static readonly ComponentCategoryInfo Animation      = new("animation",        "Animation");
+    /// <summary>Mobile-first components for app bars, bottom nav, and mobile-specific UX patterns.</summary>
+    public static readonly ComponentCategoryInfo Mobile         = new("mobile",           "Mobile");
 
     /// <summary>All categories in intended display order.</summary>
     public static IReadOnlyList<ComponentCategoryInfo> All { get; } =
     [
         InputsForms, AdvancedInputs, DataDisplay, Navigation,
-        Overlays, Feedback, Layout, Charts, Animation,
+        Overlays, Feedback, Layout, Charts, Animation, Mobile,
     ];
 }
 
@@ -228,6 +230,7 @@ public static class ComponentRegistry
         var LY = ComponentCategories.Layout;
         var CH = ComponentCategories.Charts;
         var AN = ComponentCategories.Animation;
+        var ML = ComponentCategories.Mobile;
 
         var components = new List<ComponentRegistryEntry>
         {
@@ -359,7 +362,16 @@ public static class ComponentRegistry
             // ── Animation ─────────────────────────────────────────────────
             new("carousel",            "Carousel",            "Slideshow component with touch gestures and animations",                                 "images",          C, AN),
             new("motion",              "Motion",              "Declarative animation system with 20+ presets",                                          "zap",             C, AN),
+            new("page-transition",     "Page Transition",     "Automatic fade transition on SPA navigation, SSR-aware and zero-config",                "arrow-right-left", C, AN),
+            new("screen-transition",   "Screen Transition",   "Direction-aware animated screen switcher for shell-based navigation (Tab/Push/Pop)",    "move-diagonal-2",  C, AN),
             new("selection-indicator", "Selection Indicator", "Composable spring-animated indicator that slides between active items in any container", "move-horizontal", C, AN),
+
+            // ── Mobile ────────────────────────────────────────────────────
+            new("app-bar",              "AppBar",               "Mobile top bar with centered title, back button, and right action slot",        "rectangle-horizontal",  C, ML),
+            new("bottom-nav",           "BottomNav",            "Persistent bottom tab bar with icon, label, and notification badge per item",   "layout-panel-bottom",   C, ML),
+            new("notification-badge",   "Notification Badge",   "Wraps any element with a count or dot badge in its top-right corner",           "bell-dot",              C, ML),
+            new("quantity-stepper",     "Quantity Stepper",     "Circular +/− buttons for quantity selection with cart remove support",          "circle-plus",           C, ML),
+            new("section-header",       "Section Header",       "Title row with optional view-all link and separator for mobile screen layouts", "heading",               C, ML),
         };
 
         var primitives = new List<ComponentRegistryEntry>

@@ -1,6 +1,7 @@
 @namespace NeoUI.Blazor
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
+@using System.Globalization
 @inject IFocusManager FocusManager
 @inject IJSRuntime JS
 @inject ILogger<DrawerContent> Logger
@@ -17,6 +18,7 @@
     @* Drawer Content *@
     <div @ref="_contentRef"
          class="@CssClass"
+         style="@InitialSnapStyle"
          data-state="open"
          role="dialog"
          aria-modal="true"
@@ -24,9 +26,14 @@
          @onkeydown="HandleKeyDown">
         @if (ShowHandle)
         {
-            <div class="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted"></div>
+            <div class="sticky top-0 z-10 flex justify-center pt-4 pb-2 bg-background shrink-0 cursor-grab active:cursor-grabbing"
+                 data-drawer-handle="true">
+                <div class="h-2 w-[100px] rounded-full bg-muted pointer-events-none"></div>
+            </div>
         }
-        @ChildContent
+        <div class="overflow-y-auto flex-1 min-h-0">
+            @ChildContent
+        </div>
     </div>
 }
 
@@ -38,6 +45,10 @@
     private static readonly Action<ILogger, string, Exception?> LogScrollLockFailed =
         LoggerMessage.Define<string>(LogLevel.Warning, new EventId(2, "ScrollLockFailed"),
             "Failed to lock body scroll: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogSnapInitFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(3, "SnapInitFailed"),
+            "Failed to initialise snap points: {ErrorMessage}");
 
     [CascadingParameter]
     public Drawer? Context { get; set; }
@@ -60,21 +71,49 @@
     [Parameter]
     public bool CloseOnEscape { get; set; } = true;
 
+    /// <summary>
+    /// Gets or sets snap-point heights as fractions of the viewport height (0–1).
+    /// Only applies when <see cref="Drawer.Direction"/> is <see cref="DrawerDirection.Bottom"/>.
+    /// Example: <c>SnapPoints="new[] { 0.35f, 0.65f, 1.0f }"</c>
+    /// The drawer opens at the first snap point and the user can drag to others.
+    /// </summary>
+    [Parameter]
+    public float[]? SnapPoints { get; set; }
+
+    /// <summary>
+    /// Gets or sets the active snap-point index (0-based).
+    /// Use with <see cref="SnapIndexChanged"/> for two-way binding.
+    /// </summary>
+    [Parameter]
+    public int SnapIndex { get; set; } = 0;
+
+    /// <summary>
+    /// Gets or sets the callback invoked when the active snap index changes
+    /// (either by user drag or programmatic <see cref="SnapIndex"/> assignment).
+    /// </summary>
+    [Parameter]
+    public EventCallback<int> SnapIndexChanged { get; set; }
+
     private ElementReference _contentRef;
     private IAsyncDisposable? _focusTrap;
     private IJSObjectReference? _portalModule;
     private IJSObjectReference? _scrollLockCleanup;
+    private IJSObjectReference? _drawerModule;
+    private DotNetObjectReference<DrawerContent>? _drawerDotNetRef;
+    private readonly string _instanceId = Guid.NewGuid().ToString();
     private bool _isInitialized;
-    private bool _wasClosed = true;
+    private bool _snapInitialized;
+    private int _prevSnapIndex = 0;
+
+    private bool HasSnapPoints =>
+        SnapPoints is { Length: > 0 } && Context?.Direction == DrawerDirection.Bottom;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (Context?.IsOpen == true && !_isInitialized)
         {
             _isInitialized = true;
-            _wasClosed = false;
 
-            // Set up focus trap
             if (TrapFocus)
             {
                 try
@@ -87,7 +126,6 @@
                 }
             }
 
-            // Lock body scroll
             if (LockScroll)
             {
                 try
@@ -96,63 +134,84 @@
                         "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/portal.js");
                     _scrollLockCleanup = await _portalModule.InvokeAsync<IJSObjectReference>("lockBodyScroll");
                 }
-                catch (Exception ex)
-                {
-                    LogScrollLockFailed(Logger, ex.Message, ex);
+                catch (Exception ex) 
+                { 
+                    LogScrollLockFailed(Logger, ex.Message, ex); 
                 }
+            }
+
+            if (HasSnapPoints && !_snapInitialized)
+            {
+                try
+                {
+                    _drawerModule ??= await JS.InvokeAsync<IJSObjectReference>(
+                        "import", "./_content/NeoUI.Blazor/js/drawer.js");
+                    _drawerDotNetRef ??= DotNetObjectReference.Create(this);
+                    await _drawerModule.InvokeVoidAsync(
+                        "init", _instanceId, _drawerDotNetRef, _contentRef, SnapPoints);
+                    _snapInitialized = true;
+                    _prevSnapIndex = SnapIndex;
+                }
+                catch (Exception ex) { LogSnapInitFailed(Logger, ex.Message, ex); }
             }
         }
         else if (Context?.IsOpen != true && _isInitialized)
         {
-            _wasClosed = true;
             await CleanupAsync();
         }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Programmatic SnapIndex change
+        if (_snapInitialized && _drawerModule != null && SnapIndex != _prevSnapIndex)
+        {
+            _prevSnapIndex = SnapIndex;
+            try { await _drawerModule.InvokeVoidAsync("snapTo", _instanceId, SnapIndex); }
+            catch { /* ignore if module disposed */ }
+        }
+    }
+
+    /// <summary>Called from JavaScript when the user drags to a new snap point.</summary>
+    [JSInvokable]
+    public async Task OnSnapIndexChangedFromJs(int index)
+    {
+        _prevSnapIndex = index;
+        SnapIndex = index;
+        await SnapIndexChanged.InvokeAsync(index);
+        StateHasChanged();
     }
 
     private async Task HandleOverlayClick()
     {
         if (Context != null)
-        {
             await Context.SetOpen(false);
-        }
     }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Escape" && CloseOnEscape && Context != null)
-        {
             await Context.SetOpen(false);
-        }
     }
 
     private async Task CleanupAsync()
     {
-        // Dispose focus trap
         if (_focusTrap != null)
         {
-            try
-            {
-                await _focusTrap.DisposeAsync();
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
+            try { await _focusTrap.DisposeAsync(); } catch { }
             _focusTrap = null;
         }
 
-        // Unlock body scroll
         if (_scrollLockCleanup != null)
         {
-            try
-            {
-                await _scrollLockCleanup.InvokeVoidAsync("apply");
-            }
-            catch
-            {
-                // Cleanup may already be disposed
-            }
+            try { await _scrollLockCleanup.InvokeVoidAsync("apply"); } catch { }
             _scrollLockCleanup = null;
+        }
+
+        if (_drawerModule != null && _snapInitialized)
+        {
+            try { await _drawerModule.InvokeVoidAsync("dispose", _instanceId); } catch { }
+            _snapInitialized = false;
         }
 
         _isInitialized = false;
@@ -164,30 +223,41 @@
 
         if (_portalModule != null)
         {
-            try
-            {
-                await _portalModule.DisposeAsync();
-            }
-            catch
-            {
-                // Ignore disposal errors
-            }
+            try { await _portalModule.DisposeAsync(); } catch { }
         }
+
+        if (_drawerModule != null)
+        {
+            try { await _drawerModule.DisposeAsync(); } catch { }
+        }
+
+        _drawerDotNetRef?.Dispose();
     }
 
     private string DirectionClasses => Context?.Direction switch
     {
-        DrawerDirection.Top => "inset-x-0 top-0 border-b data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top",
+        DrawerDirection.Top    => "inset-x-0 top-0 border-b data-[state=open]:slide-in-from-top data-[state=closed]:slide-out-to-top",
         DrawerDirection.Bottom => "inset-x-0 bottom-0 border-t data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom",
-        DrawerDirection.Left => "inset-y-0 left-0 h-full w-3/4 border-r data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left sm:max-w-sm",
-        DrawerDirection.Right => "inset-y-0 right-0 h-full w-3/4 border-l data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right sm:max-w-sm",
-        _ => "inset-x-0 bottom-0 border-t data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom"
+        DrawerDirection.Left   => "inset-y-0 left-0 h-full w-3/4 border-r data-[state=open]:slide-in-from-left data-[state=closed]:slide-out-to-left sm:max-w-sm",
+        DrawerDirection.Right  => "inset-y-0 right-0 h-full w-3/4 border-l data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right sm:max-w-sm",
+        _                      => "inset-x-0 bottom-0 border-t data-[state=open]:slide-in-from-bottom data-[state=closed]:slide-out-to-bottom"
     };
 
     private string CssClass => ClassNames.cn(
-        "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out",
+        "fixed z-50 gap-4 bg-background shadow-lg transition ease-in-out flex flex-col overflow-hidden",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
         DirectionClasses,
         Class
     );
+
+    private string? InitialSnapStyle
+    {
+        get
+        {
+            if (!HasSnapPoints) return null;
+            var pct = (SnapPoints![Math.Clamp(SnapIndex, 0, SnapPoints.Length - 1)] * 100f)
+                          .ToString("G", CultureInfo.InvariantCulture);
+            return $"height:{pct}vh;max-height:{pct}vh;";
+        }
+    }
 }

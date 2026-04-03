@@ -1,0 +1,29 @@
+@namespace NeoUI.Blazor
+
+<header class="@CssClass">
+    @if (OnBack.HasDelegate)
+    {
+        <button type="button"
+                class="absolute left-2 flex items-center justify-center size-9 rounded-full hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label="@BackLabel"
+                @onclick="OnBack">
+            <LucideIcon Name="chevron-left" Size="24" Class="text-foreground" />
+        </button>
+    }
+
+    @if (TitleContent is not null)
+    {
+        <div class="@TitleCssClass">@TitleContent</div>
+    }
+    else if (!string.IsNullOrEmpty(Title))
+    {
+        <h1 class="@TitleCssClass">@Title</h1>
+    }
+
+    @if (RightContent is not null)
+    {
+        <div class="absolute right-2 flex items-center gap-1">
+            @RightContent
+        </div>
+    }
+</header>

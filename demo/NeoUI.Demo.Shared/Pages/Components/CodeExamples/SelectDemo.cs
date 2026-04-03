@@ -9,6 +9,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 new("Value",   "@bind-Value / TValue?", null, "The selected value."),
                 new("Class",   "string?",          null,    "Additional CSS classes applied to the root element."),
                 new("Disabled","bool",             "false", "Disables the select."),
+                new("Presentation", "SelectPresentation",    "Popover",  "How the options are presented. Popover (default) or BottomSheet (mobile drawer)."),
                 new("SelectContent: OnLoadMore",   "EventCallback",  "\u2014",    "Invoked when the user scrolls near the bottom. Use to append additional SelectItem elements."),
                 new("SelectContent: IsLoading",    "bool",           "false",  "Shows a spinner at the bottom of the dropdown while the next batch is loading."),
                 new("SelectContent: EndOfListMessage", "string?",    "null",   "Message shown when all items have been loaded. Hidden when null or empty."),
@@ -77,6 +78,21 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 </Select>
                 """;
 
+        private const string _bottomSheetCode =
+                """
+                <Select @bind-Value="selectedCity" TValue="string" Class="w-[280px]">
+                    <SelectTrigger>
+                        <SelectValue Placeholder="Select a city" />
+                    </SelectTrigger>
+                    <SelectContent Presentation="SelectPresentation.BottomSheet">
+                        <SelectItem Value="nyc" Text="New York" TValue="string">New York</SelectItem>
+                        <SelectItem Value="london" Text="London" TValue="string">London</SelectItem>
+                        <SelectItem Value="tokyo" Text="Tokyo" TValue="string">Tokyo</SelectItem>
+                        <SelectItem Value="paris" Text="Paris" TValue="string">Paris</SelectItem>
+                    </SelectContent>
+                </Select>
+                """;
+                      
         private const string _infiniteScrollCode = """
                 <Select @bind-Value="_sPagedValue" TValue="string" Class="w-[280px]">
                     <SelectTrigger>

@@ -1,0 +1,140 @@
+@page "/components/notification-badge"
+
+<PageTitle>NotificationBadge - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Notification Badge"
+        Description="Wraps any element and overlays a count badge in its top-right corner. Supports numeric counts, dot mode, three colour variants, and a max-count truncation." />
+
+    @* ── Basic ──────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Basic"
+        Description="Wrap any element — icon button, avatar, or custom markup — and set Count to show the badge.">
+        <DemoBlock Code="@_basicCode">
+            <div class="flex items-center gap-8">
+                <NotificationBadge Count="3">
+                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                        <LucideIcon Name="bell" Class="h-5 w-5" />
+                    </Button>
+                </NotificationBadge>
+                <NotificationBadge Count="12">
+                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                        <LucideIcon Name="message-circle" Class="h-5 w-5" />
+                    </Button>
+                </NotificationBadge>
+                <NotificationBadge Count="0">
+                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                        <LucideIcon Name="inbox" Class="h-5 w-5" />
+                    </Button>
+                </NotificationBadge>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Variants ────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Colour Variants"
+        Description="Three variants: Destructive (red, default), Primary (brand), and Success (green).">
+        <DemoBlock Code="@_variantsCode">
+            <div class="flex items-center gap-8">
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="5" Variant="NotificationBadgeVariant.Destructive">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="bell" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">Destructive</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="5" Variant="NotificationBadgeVariant.Primary">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="bell" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">Primary</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="5" Variant="NotificationBadgeVariant.Success">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="bell" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">Success</span>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Dot Mode ────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Dot Mode"
+        Description="Dot=true shows a small indicator without a number — useful for &quot;has unread&quot; signals where the exact count isn't important.">
+        <DemoBlock Code="@_dotCode">
+            <div class="flex items-center gap-6">
+                <NotificationBadge Dot="true" Count="1">
+                    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+                        <LucideIcon Name="bell" Class="h-5 w-5" />
+                    </Button>
+                </NotificationBadge>
+                <NotificationBadge Dot="true" Count="1" Variant="NotificationBadgeVariant.Success">
+                    <Avatar Class="h-9 w-9">
+                        <AvatarFallback>JP</AvatarFallback>
+                    </Avatar>
+                </NotificationBadge>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Max Count ───────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Max Count Truncation"
+        Description="Counts above Max are shown as &quot;99+&quot; by default. Override Max to change the threshold.">
+        <DemoBlock Code="@_maxCode">
+            <div class="flex items-center gap-8">
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="42">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="inbox" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">42</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="100">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="inbox" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">100 → 99+</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="100" Max="9">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="inbox" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">Max=9 → 9+</span>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Show Zero ───────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Show Zero"
+        Description="By default the badge hides when Count is zero. ShowZero=true keeps it visible.">
+        <DemoBlock Code="@_showZeroCode">
+            <div class="flex items-center gap-8">
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="0">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="bell" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">Hidden (default)</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <NotificationBadge Count="0" ShowZero="true">
+                        <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Icon"><LucideIcon Name="bell" Class="h-5 w-5" /></Button>
+                    </NotificationBadge>
+                    <span class="text-xs text-muted-foreground">ShowZero=true</span>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────────────────── *@
+    <DemoSection Title="API Reference" Description="NotificationBadge parameters.">
+        <DemoPropsTable Rows="_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
