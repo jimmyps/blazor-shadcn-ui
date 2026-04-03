@@ -106,7 +106,7 @@ brand, links, and a hamburger menu. `AppBar` is a simple, fixed-height header de
 detail/sub-screens where only a back button and a title are needed.
 
 ```razor
-<AppBar Title="Product Detail" OnBack="NavigateBack">
+<AppBar Title="Product Detail" OnBack="@GoBack">
     <RightContent>
         <NotificationBadge Count="@cartCount">
             <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
@@ -117,7 +117,12 @@ detail/sub-screens where only a back button and a title are needed.
 </AppBar>
 
 <!-- Transparent mode over hero image -->
-<AppBar Transparent="true" OnBack="NavigateBack" />
+<AppBar Transparent="true" OnBack="@GoBack" />
+
+@code {
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+}
 ```
 
 Key parameters:
@@ -152,7 +157,7 @@ without a separate delete button.
                  Min="1"
                  DestructiveAtMin="true"
                  OnDestructiveClick="() => RemoveFromCart(item)"
-                 Size="QuantityStepperSize.Sm" />
+                 Size="QuantityStepperSize.Small" />
 ```
 
 Key parameters:
@@ -164,7 +169,7 @@ Key parameters:
 | `Max` | `int?` | `null` | Maximum value (null = unlimited) |
 | `DestructiveAtMin` | `bool` | `false` | Trash icon + `OnDestructiveClick` at min |
 | `OnDestructiveClick` | `EventCallback` | — | Fires when trash button is pressed |
-| `Size` | `QuantityStepperSize` | `Default` | `Sm` / `Default` / `Lg` |
+| `Size` | `QuantityStepperSize` | `Default` | `Small` / `Default` / `Large` |
 
 ---
 
@@ -222,17 +227,17 @@ Key parameters:
 
 ---
 
-## Existing Component Enhancements (follow-up issues)
+## Existing Component Enhancements
 
 The following enhancements to existing components were identified during the same
-mobile-first audit. Each deserves its own focused issue/PR.
+mobile-first audit.
 
-| Component | Enhancement | Issue |
+| Component | Enhancement | Status |
 |---|---|---|
 | `Carousel` | Add `ShowDots` + `ShowArrows` params for dots-only pagination mode (no prev/next buttons) | TBD |
-| `ToggleGroup` | Add `Scrollable` param for horizontal-scroll overflow on mobile filter pills | TBD |
-| `Badge` | Add `<BadgeIcon>` child render fragment for icon+text badges (e.g. coin icon + "17 pts") | TBD |
-| `Separator` | Add `Style="SeparatorStyle.Dashed"` variant for ticket/voucher card dividers | TBD |
+| `ToggleGroup` | Add `Scrollable` param for horizontal-scroll overflow on mobile filter pills | Included in this PR |
+| `Badge` | Add `<BadgeIcon>` child render fragment for icon+text badges (e.g. coin icon + "17 pts") | Included in this PR |
+| `Separator` | Add `LineStyle` variant (e.g. `Dashed`) for ticket/voucher card dividers | Included in this PR |
 
 ---
 
@@ -243,12 +248,3 @@ mobile-first audit. Each deserves its own focused issue/PR.
 - Demo pages (to be added in a follow-up PR against the demo project)
 - Unit tests (to be added in a follow-up PR)
 
----
-
-## Reference: Audit Source
-
-The component gaps were identified by building a full **Mama Roz** mobile app UI
-(12 screens: Onboard, Auth, Home, Menu, Orders, Account, Product Detail, Cart, Points,
-Voucher, Referral, Premium) in React + shadcn/ui, then systematically mapping every UI
-pattern to its NeoUI equivalent — identifying what was missing or insufficient for a
-1:1 port to Blazor.

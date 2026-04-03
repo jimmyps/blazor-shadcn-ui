@@ -1,6 +1,7 @@
 @namespace NeoUI.Blazor
 @using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
+@using System.Globalization
 @inject IFocusManager FocusManager
 @inject IJSRuntime JS
 @inject ILogger<DrawerContent> Logger
@@ -44,6 +45,10 @@
     private static readonly Action<ILogger, string, Exception?> LogScrollLockFailed =
         LoggerMessage.Define<string>(LogLevel.Warning, new EventId(2, "ScrollLockFailed"),
             "Failed to lock body scroll: {ErrorMessage}");
+
+    private static readonly Action<ILogger, string, Exception?> LogSnapInitFailed =
+        LoggerMessage.Define<string>(LogLevel.Warning, new EventId(3, "SnapInitFailed"),
+            "Failed to initialise snap points: {ErrorMessage}");
 
     [CascadingParameter]
     public Drawer? Context { get; set; }
@@ -139,15 +144,15 @@
             {
                 try
                 {
-                    _drawerModule = await JS.InvokeAsync<IJSObjectReference>(
+                    _drawerModule ??= await JS.InvokeAsync<IJSObjectReference>(
                         "import", "./_content/NeoUI.Blazor/js/drawer.js");
-                    _drawerDotNetRef = DotNetObjectReference.Create(this);
+                    _drawerDotNetRef ??= DotNetObjectReference.Create(this);
                     await _drawerModule.InvokeVoidAsync(
                         "init", _instanceId, _drawerDotNetRef, _contentRef, SnapPoints);
                     _snapInitialized = true;
                     _prevSnapIndex = SnapIndex;
                 }
-                catch (Exception ex) { Console.WriteLine($"Failed to init snap points: {ex.Message}"); }
+                catch (Exception ex) { LogSnapInitFailed(Logger, ex.Message, ex); }
             }
         }
         else if (Context?.IsOpen != true && _isInitialized)
@@ -245,8 +250,14 @@
         Class
     );
 
-    private string? InitialSnapStyle =>
-        HasSnapPoints
-            ? $"height:{SnapPoints![Math.Clamp(SnapIndex, 0, SnapPoints.Length - 1)] * 100}vh;max-height:{SnapPoints![Math.Clamp(SnapIndex, 0, SnapPoints.Length - 1)] * 100}vh;"
-            : null;
+    private string? InitialSnapStyle
+    {
+        get
+        {
+            if (!HasSnapPoints) return null;
+            var pct = (SnapPoints![Math.Clamp(SnapIndex, 0, SnapPoints.Length - 1)] * 100f)
+                          .ToString("G", CultureInfo.InvariantCulture);
+            return $"height:{pct}vh;max-height:{pct}vh;";
+        }
+    }
 }

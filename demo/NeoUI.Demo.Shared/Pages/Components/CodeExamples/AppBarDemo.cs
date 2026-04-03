@@ -21,10 +21,12 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private const string _backCode =
             """
+            @inject IJSRuntime JS
+
             <AppBar Title="Order Details" OnBack="@GoBack" />
 
             @code {
-                private void GoBack() => NavigationManager.NavigateBack();
+                private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
             }
             """;
 

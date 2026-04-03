@@ -30,10 +30,10 @@ namespace NeoUI.Blazor;
 /// <example>
 /// <code>
 /// &lt;!-- Basic back + title --&gt;
-/// &lt;AppBar Title="Product Detail" OnBack="NavigateBack" /&gt;
+/// &lt;AppBar Title="Product Detail" OnBack="@GoBack" /&gt;
 ///
 /// &lt;!-- With right action (cart icon with badge) --&gt;
-/// &lt;AppBar Title="Menu" OnBack="NavigateBack"&gt;
+/// &lt;AppBar Title="Menu" OnBack="@GoBack"&gt;
 ///     &lt;RightContent&gt;
 ///         &lt;NotificationBadge Count="@cartCount"&gt;
 ///             &lt;Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon"&gt;
@@ -44,7 +44,12 @@ namespace NeoUI.Blazor;
 /// &lt;/AppBar&gt;
 ///
 /// &lt;!-- Transparent mode over hero --&gt;
-/// &lt;AppBar Transparent="true" OnBack="NavigateBack" /&gt;
+/// &lt;AppBar Transparent="true" OnBack="@GoBack" /&gt;
+///
+/// @code {
+///     [Inject] private IJSRuntime JS { get; set; } = default!;
+///     private async Task GoBack() =&gt; await JS.InvokeVoidAsync("history.back");
+/// }
 /// </code>
 /// </example>
 public partial class AppBar : ComponentBase
