@@ -362,6 +362,8 @@ public static class ComponentRegistry
             // ── Animation ─────────────────────────────────────────────────
             new("carousel",            "Carousel",            "Slideshow component with touch gestures and animations",                                 "images",          C, AN),
             new("motion",              "Motion",              "Declarative animation system with 20+ presets",                                          "zap",             C, AN),
+            new("page-transition",     "Page Transition",     "Automatic fade transition on SPA navigation, SSR-aware and zero-config",                "arrow-right-left", C, AN),
+            new("screen-transition",   "Screen Transition",   "Direction-aware animated screen switcher for shell-based navigation (Tab/Push/Pop)",    "move-diagonal-2",  C, AN),
             new("selection-indicator", "Selection Indicator", "Composable spring-animated indicator that slides between active items in any container", "move-horizontal", C, AN),
 
             // ── Mobile ────────────────────────────────────────────────────
