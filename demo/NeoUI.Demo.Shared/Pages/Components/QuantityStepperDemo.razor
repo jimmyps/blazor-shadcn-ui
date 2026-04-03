@@ -1,0 +1,109 @@
+@page "/components/quantity-stepper"
+
+<PageTitle>QuantityStepper - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Quantity Stepper"
+        Description="Circular +/- buttons for quantity selection — a staple of e-commerce cart UIs. Supports min/max bounds, three sizes, and a destructive trash-icon mode at minimum value." />
+
+    @* ── Basic ──────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Basic"
+        Description="Use two-way binding with bind-Value. The stepper enforces Min=1 by default and has no upper limit.">
+        <DemoBlock Code="@_basicCode">
+            <div class="flex items-center gap-6">
+                <QuantityStepper @bind-Value="@_qty" />
+                <span class="text-sm text-muted-foreground">Value: <strong>@_qty</strong></span>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Min / Max ───────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Min / Max Bounds"
+        Description="Set Min and Max to constrain the range. The + button is disabled at Max and the − button at Min.">
+        <DemoBlock Code="@_minMaxCode">
+            <div class="flex items-center gap-6">
+                <QuantityStepper @bind-Value="@_qtyBounded" Min="1" Max="10" />
+                <span class="text-sm text-muted-foreground">1 – 10, value: <strong>@_qtyBounded</strong></span>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Destructive At Min ──────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Destructive At Min"
+        Description="DestructiveAtMin=true replaces the − button with a trash icon when the value reaches Min. Pressing it fires OnDestructiveClick instead of decrementing — ideal for &quot;remove from cart&quot; UX.">
+        <DemoBlock Code="@_destructiveCode">
+            <div class="space-y-4">
+                <div class="flex items-center gap-6">
+                    <QuantityStepper @bind-Value="@_qtyCart"
+                                     DestructiveAtMin="true"
+                                     OnDestructiveClick="@OnRemove"
+                                     Min="1" Max="10" />
+                    <span class="text-sm text-muted-foreground">Qty: <strong>@_qtyCart</strong></span>
+                </div>
+                @if (_removed)
+                {
+                    <p class="text-sm text-destructive">Item removed from cart!</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Sizes ───────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Sizes"
+        Description="Three sizes: Small (28 px buttons), Default (32 px), and Large (44 px).">
+        <DemoBlock Code="@_sizesCode">
+            <div class="flex items-end gap-8">
+                <div class="flex flex-col items-center gap-2">
+                    <QuantityStepper @bind-Value="@_qtySmall" Size="QuantityStepperSize.Small" />
+                    <span class="text-xs text-muted-foreground">Small</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <QuantityStepper @bind-Value="@_qtyDefault" />
+                    <span class="text-xs text-muted-foreground">Default</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <QuantityStepper @bind-Value="@_qtyLarge" Size="QuantityStepperSize.Large" />
+                    <span class="text-xs text-muted-foreground">Large</span>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Disabled ────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Disabled"
+        Description="Disabled=true disables both buttons and the count display.">
+        <DemoBlock Code="@_disabledCode">
+            <QuantityStepper Value="3" Disabled="true" />
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────────────────── *@
+    <DemoSection Title="API Reference" Description="QuantityStepper parameters.">
+        <DemoPropsTable Rows="_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
+
+@code {
+    private int  _qty        = 1;
+    private int  _qtyBounded = 1;
+    private int  _qtyCart    = 1;
+    private int  _qtySmall   = 1;
+    private int  _qtyDefault = 2;
+    private int  _qtyLarge   = 1;
+    private bool _removed    = false;
+
+    private void OnRemove()
+    {
+        _removed = true;
+        _qtyCart = 1;
+    }
+}
