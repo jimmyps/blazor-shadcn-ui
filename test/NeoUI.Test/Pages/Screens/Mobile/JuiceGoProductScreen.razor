@@ -1,6 +1,5 @@
 @namespace NeoUI.Test.Pages.Screens.Mobile
 @inject NavigationManager Nav
-@inject IJSRuntime JS
 
 <AppBar OnBack="@GoBack">
     <TitleContent>
@@ -16,7 +15,7 @@
     </RightContent>
 </AppBar>
 
-<div class="flex-1 overflow-y-auto">
+<ScrollArea Class="flex-1" EnableScrollShadows="true">
     @* Hero *@
     <div class="@GetBg(Product) flex flex-col items-center justify-center py-8 gap-2">
         <div class="text-7xl">@Product.Emoji</div>
@@ -104,7 +103,7 @@
     </div>
 
     <div class="h-4"></div>
-</div>
+</ScrollArea>
 
 @* Sticky Add to Cart footer *@
 <div class="px-4 py-3 border-t bg-background shrink-0">
@@ -120,9 +119,10 @@
     [Parameter] public EventCallback<string> SizeChanged { get; set; }
     [Parameter] public int      Qty        { get; set; } = 1;
     [Parameter] public EventCallback<int>    QtyChanged  { get; set; }
+    [Parameter] public EventCallback         OnGoBack    { get; set; }
     [Parameter] public EventCallback<CartItem> OnAddToCart { get; set; }
 
-    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+    private Task GoBack() => OnGoBack.InvokeAsync();
 
     private Task HandleAddToCart()
     {

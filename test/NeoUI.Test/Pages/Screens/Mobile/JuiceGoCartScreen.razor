@@ -10,7 +10,8 @@
     </RightContent>
 </AppBar>
 
-<div class="flex-1 overflow-y-auto px-4 py-3">
+<ScrollArea Class="flex-1" EnableScrollShadows="true">
+<div class="px-4 py-3">
     @if (CartItems.Count == 0)
     {
         <div class="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground pb-12">
@@ -73,14 +74,7 @@
         </div>
     }
 </div>
-
-<BottomNav ActiveTab="cart" Fixed="false" Class="shrink-0">
-    <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Home)))" />
-    <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))" />
-    <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@CartTotal" />
-    <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Profile)))" />
-    <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
-</BottomNav>
+</ScrollArea>
 
 @code {
     [Parameter] public List<CartItem>                         CartItems     { get; set; } = [];
@@ -88,7 +82,6 @@
     [Parameter] public EventCallback<(CartItem Item, int Qty)> OnUpdateQty  { get; set; }
     [Parameter] public EventCallback                          OnClearCart   { get; set; }
 
-    private int     CartTotal => CartItems.Sum(i => i.Quantity);
     private decimal Subtotal  => CartItems.Sum(i => i.Product.Price * i.Quantity);
 
     private static string GetBg(Product p) => p.Color switch

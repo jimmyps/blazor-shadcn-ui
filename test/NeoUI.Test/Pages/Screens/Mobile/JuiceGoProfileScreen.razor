@@ -3,7 +3,7 @@
 
 <AppBar Title="Profile" />
 
-<div class="flex-1 overflow-y-auto">
+<ScrollArea Class="flex-1" EnableScrollShadows="true">
     <div class="flex flex-col items-center gap-2 py-5">
         <Avatar Size="AvatarSize.ExtraLarge">
             <AvatarFallback>JD</AvatarFallback>
@@ -61,19 +61,10 @@
             Sign Out
         </Button>
     </div>
-</div>
-
-<BottomNav ActiveTab="profile" Fixed="false" Class="shrink-0">
-    <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Home)))" />
-    <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))" />
-    <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@CartTotal" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Cart)))" />
-    <BottomNavItem Value="profile" Icon="user" Label="Profile" />
-    <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
-</BottomNav>
+</ScrollArea>
 
 @code {
     [Parameter] public string       Email       { get; set; } = "";
-    [Parameter] public int          CartTotal   { get; set; }
     [Parameter] public ProfileRow[] Rows        { get; set; } = [];
     [Parameter] public EventCallback OnSignedOut { get; set; }
 }

@@ -1,10 +1,9 @@
 @namespace NeoUI.Test.Pages.Screens.Mobile
-@inject NavigationManager Nav
-@inject IJSRuntime JS
 
 <AppBar Title="Help &amp; Support" OnBack="@GoBack" />
 
-<div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+<ScrollArea Class="flex-1" EnableScrollShadows="true">
+<div class="px-4 py-4 space-y-4">
     <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-950 p-4 flex gap-3 items-center">
         <LucideIcon Name="life-buoy" Size="24" Class="text-emerald-600 shrink-0" />
         <div>
@@ -34,9 +33,11 @@
         </Button>
     </div>
 </div>
+</ScrollArea>
 
 @code {
-    [Parameter] public Faq[] Faqs { get; set; } = [];
+    [Parameter] public Faq[]         Faqs    { get; set; } = [];
+    [Parameter] public EventCallback OnGoBack { get; set; }
 
-    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+    private Task GoBack() => OnGoBack.InvokeAsync();
 }

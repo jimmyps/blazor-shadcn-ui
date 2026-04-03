@@ -52,6 +52,7 @@
             @* App content *@
             <div class="flex flex-col flex-1 overflow-hidden">
 
+                <ScreenTransition Direction="@_transitionDirection" Key="@CurrentScreen" Class="flex-1 flex flex-col min-h-0 overflow-hidden">
                 @if (CurrentScreen == Screen.Login)
                 {
                     <JuiceGoLoginScreen
@@ -74,7 +75,6 @@
                         MenuCategory="@_menuCategory" MenuCategoryChanged="@(v => _menuCategory = v)"
                         SortBy="@_sortBy"     SortByChanged="@(v => _sortBy = v)"
                         MaxPrice="@_maxPrice" MaxPriceChanged="@(v => _maxPrice = v)"
-                        CartTotal="@_cartTotal"
                         OnNavigateToProduct="@(id => Navigate(Screen.Product, id))"
                         OnQuickAdd="@(p => QuickAdd(p))" />
                 }
@@ -84,6 +84,7 @@
                         Product="@_product"
                         Size="@(_size ?? "")" SizeChanged="@(v => _size = v)"
                         Qty="@_qty"           QtyChanged="@(v => _qty = v)"
+                        OnGoBack="@GoBack"
                         OnAddToCart="@(item => HandleAddToCart(item))" />
                 }
                 else if (CurrentScreen == Screen.Cart)
@@ -98,23 +99,36 @@
                 {
                     <JuiceGoProfileScreen
                         Email="@_email"
-                        CartTotal="@_cartTotal"
                         Rows="@ProfileRows"
                         OnSignedOut="@ResetApp" />
                 }
                 else if (CurrentScreen == Screen.Orders)
                 {
-                    <JuiceGoOrdersScreen Orders="@SampleOrders" />
+                    <JuiceGoOrdersScreen Orders="@SampleOrders" OnGoBack="@GoBack" />
                 }
                 else if (CurrentScreen == Screen.Favourites)
                 {
                     <JuiceGoFavouritesScreen
                         Products="@Products.ToList()"
+                        OnGoBack="@GoBack"
                         OnQuickAdd="@(p => QuickAdd(p))" />
                 }
                 else if (CurrentScreen == Screen.Help)
                 {
-                    <JuiceGoHelpScreen Faqs="@Faqs" />
+                    <JuiceGoHelpScreen Faqs="@Faqs" OnGoBack="@GoBack" />
+                }
+                </ScreenTransition>
+
+                @* Shared tab bar — outside ScreenTransition so it stays static during tab switches *@
+                @if (CurrentScreen is Screen.Home or Screen.Menu or Screen.Cart or Screen.Profile)
+                {
+                    <BottomNav ActiveTab="@ActiveTab" Fixed="false" Class="shrink-0">
+                        <BottomNavItem Value="home"    Icon="house"        Label="Home"    OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Home)))" />
+                        <BottomNavItem Value="menu"    Icon="list"         Label="Menu"    OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))" />
+                        <BottomNavItem Value="cart"    Icon="shopping-bag" Label="Cart"    BadgeCount="@_cartTotal" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Cart)))" />
+                        <BottomNavItem Value="profile" Icon="user"         Label="Profile" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Profile)))" />
+                        <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-md" />
+                    </BottomNav>
                 }
 
             </div>
@@ -135,6 +149,21 @@
     [Parameter] public string? ProductId { get; set; }
 
     // ── Navigation ────────────────────────────────────────────────────────
+
+    private ScreenTransitionDirection _transitionDirection = ScreenTransitionDirection.None;
+    private string _fromPath    = string.Empty;
+    private string _backTarget  = string.Empty;
+    private bool   _isGoingBack = false;
+
+    // Root-tab paths — always cross-fade (Tab direction), never Push/Pop.
+    private static readonly HashSet<string> RootPaths = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "screens/mobile/juicego",
+        "screens/mobile/juicego/home",
+        "screens/mobile/juicego/menu",
+        "screens/mobile/juicego/cart",
+        "screens/mobile/juicego/profile",
+    };
 
     private Screen CurrentScreen
     {
@@ -158,17 +187,70 @@
 
     protected override void OnInitialized()
     {
+        _fromPath = Nav.ToBaseRelativePath(Nav.Uri).ToLower().TrimEnd('/');
         Nav.LocationChanged += OnLocationChanged;
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-        => InvokeAsync(StateHasChanged);
+    {
+        var newPath = Nav.ToBaseRelativePath(e.Location).ToLower().TrimEnd('/');
+
+        if (_isGoingBack)
+        {
+            _transitionDirection = ScreenTransitionDirection.Pop;
+            _isGoingBack = false;
+        }
+        else if (RootPaths.Contains(newPath))
+        {
+            _transitionDirection = ScreenTransitionDirection.Tab;
+            _backTarget = string.Empty;
+        }
+        else
+        {
+            var fromDepth = _fromPath.Split('/').Length;
+            var newDepth  = newPath.Split('/').Length;
+            if (newDepth > fromDepth)
+            {
+                _transitionDirection = ScreenTransitionDirection.Push;
+                _backTarget = _fromPath;
+            }
+            else if (newDepth < fromDepth)
+            {
+                _transitionDirection = ScreenTransitionDirection.Pop;
+            }
+            else
+            {
+                _transitionDirection = ScreenTransitionDirection.Tab;
+            }
+        }
+
+        _fromPath = newPath;
+        InvokeAsync(StateHasChanged);
+    }
 
     public void Dispose()
         => Nav.LocationChanged -= OnLocationChanged;
 
     private void Navigate(Screen to, string? id = null)
         => Nav.NavigateTo(JuiceGoRoutes.Get(to, id));
+
+    private void GoBack()
+    {
+        if (!string.IsNullOrEmpty(_backTarget))
+        {
+            _isGoingBack = true;
+            Nav.NavigateTo(_backTarget);
+        }
+    }
+
+    private string ActiveTab => CurrentScreen switch
+    {
+        Screen.Home    => "home",
+        Screen.Menu    => "menu",
+        Screen.Cart    => "cart",
+        Screen.Profile => "profile",
+        _              => ""
+    };
 
     // ── Auth ──────────────────────────────────────────────────────────────
 

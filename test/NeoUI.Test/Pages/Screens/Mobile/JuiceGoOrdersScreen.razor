@@ -1,10 +1,9 @@
 @namespace NeoUI.Test.Pages.Screens.Mobile
-@inject NavigationManager Nav
-@inject IJSRuntime JS
 
 <AppBar Title="My Orders" OnBack="@GoBack" />
 
-<div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+<ScrollArea Class="flex-1" EnableScrollShadows="true">
+<div class="px-4 py-3 space-y-3">
     @foreach (var o in Orders)
     {
         <div class="rounded-2xl border bg-card p-4 space-y-3">
@@ -34,9 +33,11 @@
         </div>
     }
 </div>
+</ScrollArea>
 
 @code {
-    [Parameter] public SampleOrder[] Orders { get; set; } = [];
+    [Parameter] public SampleOrder[] Orders  { get; set; } = [];
+    [Parameter] public EventCallback  OnGoBack { get; set; }
 
-    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+    private Task GoBack() => OnGoBack.InvokeAsync();
 }
