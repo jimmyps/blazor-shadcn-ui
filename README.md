@@ -21,7 +21,7 @@ A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://
   <table align="center">
     <tr>
       <td align="center"><b>⚡ Zero Config</b><br/>Pre-built CSS, no Node.js or build tools required</td>
-      <td align="center"><b>🧩 126+ Components</b><br/>Modern, composable UI components</td>
+      <td align="center"><b>🧩 135+ Components</b><br/>Modern, composable UI components</td>
       <td align="center"><b>🎨 shadcn/ui Themes</b><br/>Drop in any shadcn/ui or tweakcn theme</td>
       <td align="center"><b>🌙 Dark Mode</b><br/>Built-in light &amp; dark with CSS variables</td>
     </tr>
@@ -386,7 +386,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## 📚 Components
 
-NeoUI includes **126+ styled components** with full shadcn/ui design compatibility:
+NeoUI includes **135+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -408,7 +408,7 @@ NeoUI includes **126+ styled components** with full shadcn/ui design compatibili
 - **Radio Group** - Radio button groups with keyboard navigation
 - **Range Slider** - Dual-handle slider for selecting value ranges
 - **Rating** - Star rating input with half-star precision and readonly mode
-- **Select** - Dropdown select with search and keyboard navigation
+- **Select** - Dropdown select with search and keyboard navigation; supports `Presentation="SelectPresentation.BottomSheet"` for a mobile-friendly drawer presentation
 - **Slider** - Range input for numeric value selection
 - **Switch** - Toggle switch component
 - **Textarea** - Multi-line text input with automatic content sizing
@@ -423,7 +423,7 @@ NeoUI includes **126+ styled components** with full shadcn/ui design compatibili
 - **Accordion** - Collapsible content sections
 - **Aspect Ratio** - Display content within a desired width/height ratio
 - **Breadcrumb** - Hierarchical navigation with customizable separators
-- **Carousel** - Slideshow component with touch gestures and animations
+- **Carousel** - Slideshow component with touch gestures, animations, configurable dot-indicator position (`DotsPosition`: Top, Bottom, Left, Right), and drag-click suppression
 - **Card** - Container for grouped content with header and footer
 - **Collapsible** - Expandable/collapsible panels
 - **Navigation Menu** - Horizontal navigation with dropdown panels
@@ -433,7 +433,7 @@ NeoUI includes **126+ styled components** with full shadcn/ui design compatibili
 - **Selection Indicator** - Spring-animated indicator that slides between the active item in any selection container (Tabs, ToggleGroup, DropdownMenuRadioGroup, Pagination, custom markup). Zero wiring — place it as the last child and point it at the active-state attribute. Supports hover preview (`Hover="true"`) and CSS custom properties for animation and underline variants.
 - **Sortable** - Drag-and-drop reordering with pointer, touch, and keyboard support. Composes with `DataTable`, `DataView`, and any list component without modifying them — place a `SortableItemHandle` in any column template and it works. Supports **cross-list transfer** between multiple lists sharing a `Group` name, with consumer-controlled transfer events (`OnItemTransferredIn`, `OnItemTransferredOut`, `OnCanDrop`). Use `Context="s"` to get a `SortableScope<TItem>` for passing `data-sortable-id` to any table or grid via `s.RowAttributes`.
 - **Item** - Flexible list items with media, content, and actions
-- **Separator** - Visual dividers
+- **Separator** - Visual dividers with configurable line style (`Solid`, `Dashed`, `Dotted`)
 - **Sidebar** - Responsive sidebar with collapsible icon mode, variants (default, floating, inset), and mobile sheet integration
 - **Tabs** - Tabbed interfaces with controlled/uncontrolled modes
 
@@ -443,7 +443,7 @@ NeoUI includes **126+ styled components** with full shadcn/ui design compatibili
 - **Command** - Command palette with keyboard navigation
 - **Dialog** - Modal dialogs
 - **Dialog Service** - Programmatic dialogs with async/await API for alerts and confirmations
-- **Drawer** - Slide-out panel with gesture controls and backdrop
+- **Drawer** - Slide-out panel with gesture controls, backdrop, and multi-step **snap points** with draggable handle (bottom direction)
 - **Dropdown Menu** - Context menus with nested submenus
 - **Hover Card** - Rich hover previews
 - **Menubar** - Desktop application-style horizontal menu bar
@@ -461,7 +461,7 @@ NeoUI includes **126+ styled components** with full shadcn/ui design compatibili
 ### Display Components
 - **Alert** - Status messages and callouts
 - **Avatar** - User avatars with fallback support
-- **Badge** - Status badges and labels
+- **Badge** - Status badges and labels; includes **BadgeIcon** sub-component for icon-based badge chips
 - **Card** - Container for grouped content with header and footer
 - **Command** - Command palette with keyboard navigation
 - **Data Table** - Powerful tables with sorting, filtering, pagination, and selection
@@ -472,7 +472,7 @@ NeoUI includes **126+ styled components** with full shadcn/ui design compatibili
 - **Skeleton** - Loading placeholders
 - **Spinner** - Loading indicators
 - **Toggle** - Pressable toggle buttons
-- **Toggle Group** - Single/multiple selection toggle groups
+- **Toggle Group** - Single/multiple selection toggle groups; `Scrollable` for horizontal overflow on mobile, `Required` to prevent deselecting the active item
 - **Typography** - Semantic text styling
 
 ### Data Visualization
@@ -492,6 +492,20 @@ NeoUI includes **126+ styled components** with full shadcn/ui design compatibili
 
 ### Animation
 - **Motion** - Declarative animation system powered by Motion.dev with 20+ presets including fade, scale, slide, shake, bounce, pulse, spring physics, scroll-triggered animations, and staggered list/grid animations
+- **PageTransition** - Animated page-level transition wrapper; replays an entrance animation on `Key` change (fade, slide variants). Ideal for router-level transitions.
+- **ScreenTransition** - Screen-level animated transition wrapper for shell-based navigation. Supports `Tab` (fade), `Push` (slide from right), and `Pop` (slide from left) directions. Pair with `Tabs` for tab-switch fades and a push/pop navigation stack.
+
+### 📱 Mobile
+
+Five dedicated mobile-first components for `.NET MAUI Blazor Hybrid`, PWA, and mobile-first web apps. All live in `NeoUI.Blazor` — no separate package or `@using` required.
+
+- **AppBar** - Mobile-style top application bar with centered title, optional back-chevron (`OnBack`), transparent hero-overlay mode, and a `RightContent` slot
+- **BottomNav** + **BottomNavItem** - Persistent bottom tab bar (iOS/Android/MAUI style). Supports 2–5 icon+label items, per-item notification badge, `Fixed` mode toggle for MAUI Hybrid containers, and safe-area inset padding
+- **NotificationBadge** - Wraps any element and overlays a count badge (numeric, dot mode, three colour variants, max-count truncation with `N+`)
+- **QuantityStepper** - Circular +/− buttons for quantity input. `DestructiveAtMin` swaps the minus button for a trash icon at the minimum value (cart UX)
+- **SectionHeader** - Title row with optional "view all" chevron and separator line; eliminates repetitive header boilerplate in content-heavy screens
+
+> **MAUI Hybrid note:** `BottomNav` defaults to `Fixed="true"` (viewport-fixed) but can be set to `Fixed="false"` for in-flow layout inside a `BlazorWebView` container. Safe-area padding is applied via `env(safe-area-inset-bottom)` for iOS home indicator clearance.
 
 ### 🎭 Icons
 
@@ -542,7 +556,7 @@ All primitives are fully accessible, keyboard-navigable, and provide complete co
 - **🎯 .NET 10 Ready** - Built for the latest .NET platform with Auto rendering mode
 - **Auto Rendering Mode** - Seamless transition between Server and WebAssembly rendering
 - **🌙 Dark Mode Support** - Built-in light/dark theme switching with CSS variables
-- **📱 Responsive Design** - Mobile-first components that adapt to all screen sizes
+- **📱 Mobile-First & MAUI Hybrid Ready** - Dedicated mobile components (AppBar, BottomNav, QuantityStepper, etc.) authored for Blazor mobile-first web apps and .NET MAUI Blazor Hybrid (`BlazorWebView`), with safe-area insets and in-flow layout options
 - **♿ Accessibility First** - WCAG 2.1 AA compliant with keyboard navigation and ARIA attributes
 - **⌨️ Keyboard Shortcuts** - Native keyboard navigation support (e.g., Ctrl/Cmd+B for sidebar toggle)
 - **🔄 State Persistence** - Cookie-based state management for user preferences
@@ -576,7 +590,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Version**: 3.8.2
+- **Current Version**: 3.9.0
 - **Target Framework**: .NET 10
 - **Package IDs**: 
   - `NeoUI.Blazor`
