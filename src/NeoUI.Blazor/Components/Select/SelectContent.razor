@@ -20,9 +20,21 @@
 else
 {
     <SelectContentPrimitive TValue="TValue"
-                            class="@CssClass">
-        <div class="p-1">
+                            class="@OuterCssClass">
+        <div @ref="_scrollRef" @onscroll="HandleScroll" class="@InnerCssClass">
             @ChildContent
+            @if (IsLoading)
+            {
+                <div class="flex items-center justify-center py-2">
+                    <Spinner Size="SpinnerSize.Small" />
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(EndOfListMessage))
+            {
+                <div class="py-2 text-center text-xs text-muted-foreground">
+                    @EndOfListMessage
+                </div>
+            }
         </div>
     </SelectContentPrimitive>
 }
@@ -120,9 +132,6 @@ else
         return Task.CompletedTask;
     }
 
-    private string CssClass => ClassNames.cn(
-        $"z-{ZIndexLevels.PopoverContent} max-h-60 w-full overflow-auto rounded-md border",
-      
     private async Task HandleScroll()
     {
         if (!OnLoadMore.HasDelegate || IsLoading)
