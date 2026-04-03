@@ -1,0 +1,79 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@inject NavigationManager Nav
+
+<AppBar Title="Profile" />
+
+<div class="flex-1 overflow-y-auto">
+    <div class="flex flex-col items-center gap-2 py-5">
+        <Avatar Size="AvatarSize.ExtraLarge">
+            <AvatarFallback>JD</AvatarFallback>
+        </Avatar>
+        <div class="text-center">
+            <p class="font-semibold text-lg">Jordan Doe</p>
+            <p class="text-xs text-muted-foreground">@Email</p>
+        </div>
+        <Badge Variant="BadgeVariant.Secondary">
+            <BadgeIcon><LucideIcon Name="leaf" /></BadgeIcon>
+            Juice Enthusiast
+        </Badge>
+    </div>
+
+    <div class="grid grid-cols-3 border-y divide-x text-center py-4">
+        <div>
+            <p class="font-bold text-lg">12</p>
+            <p class="text-[10px] text-muted-foreground">Orders</p>
+        </div>
+        <div>
+            <p class="font-bold text-lg">4.8</p>
+            <p class="text-[10px] text-muted-foreground">Avg Rating</p>
+        </div>
+        <div>
+            <p class="font-bold text-lg">5</p>
+            <p class="text-[10px] text-muted-foreground">Favourites</p>
+        </div>
+    </div>
+
+    <div class="px-4 py-3 space-y-0.5">
+        @foreach (var row in Rows)
+        {
+            @if (row.IsSeparator)
+            {
+                <Separator Class="my-1.5" />
+            }
+            else
+            {
+                <div class="flex items-center gap-3 rounded-xl px-3 py-3 hover:bg-muted cursor-pointer transition-colors"
+                     @onclick="@(() => { if (row.NavScreen.HasValue) Nav.NavigateTo(JuiceGoRoutes.Get(row.NavScreen.Value)); })">
+                    <LucideIcon Name="@row.Icon" Size="18" Class="text-muted-foreground shrink-0" />
+                    <span class="flex-1 text-sm font-medium">@row.Label</span>
+                    @if (row.NavScreen.HasValue)
+                    {
+                        <LucideIcon Name="chevron-right" Size="16" Class="text-muted-foreground" />
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <div class="px-4 pb-4 pt-2">
+        <Button Variant="ButtonVariant.Outline" Class="w-full text-destructive border-destructive/30" OnClick="@(() => OnSignedOut.InvokeAsync())">
+            <LucideIcon Name="log-out" Size="16" Class="mr-2" />
+            Sign Out
+        </Button>
+    </div>
+</div>
+
+<BottomNav ActiveTab="profile" Fixed="false" Class="shrink-0">
+    <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Home)))" />
+    <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))" />
+    <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@CartTotal" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Cart)))" />
+    <BottomNavItem Value="profile" Icon="user" Label="Profile" />
+    <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
+</BottomNav>
+
+@code {
+    [Parameter] public string       Email       { get; set; } = "";
+    [Parameter] public int          CartTotal   { get; set; }
+    [Parameter] public ProfileRow[] Rows        { get; set; } = [];
+    [Parameter] public EventCallback OnSignedOut { get; set; }
+}

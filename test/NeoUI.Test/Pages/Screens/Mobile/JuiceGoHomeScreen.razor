@@ -1,0 +1,161 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@inject NavigationManager Nav
+
+<AppBar>
+    <TitleContent>
+        <div class="flex items-center gap-1.5">
+            <span class="text-base">🥤</span>
+            <span class="font-bold text-base">JuiceGo</span>
+        </div>
+    </TitleContent>
+    <RightContent>
+        <div class="relative">
+            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Cart)))">
+                <LucideIcon Name="shopping-bag" Size="20" />
+            </Button>
+            @if (CartTotal > 0)
+            {
+                <span class="absolute -top-0.5 -right-0.5 size-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold flex items-center justify-center pointer-events-none">
+                    @(CartTotal > 9 ? "9+" : CartTotal.ToString())
+                </span>
+            }
+        </div>
+        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+            <LucideIcon Name="bell" Size="20" />
+        </Button>
+    </RightContent>
+</AppBar>
+
+<div class="flex-1 overflow-y-auto">
+    <div class="px-4 pt-3 pb-2">
+        <p class="text-xs text-muted-foreground">Good morning, Jordan 👋</p>
+        <h2 class="text-lg font-semibold leading-snug">What would you like today?</h2>
+    </div>
+
+    @* Category filter *@
+    <div class="px-4 pb-3">
+        <ToggleGroup Type="ToggleGroupType.Single" Required="true" Scrollable="true"
+                     Value="@HomeCategory" ValueChanged="@(v => HomeCategoryChanged.InvokeAsync(v))">
+            <ToggleGroupItem Value="all"      Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">All</ToggleGroupItem>
+            <ToggleGroupItem Value="Green"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🥦 Green</ToggleGroupItem>
+            <ToggleGroupItem Value="Tropical" Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🌴 Tropical</ToggleGroupItem>
+            <ToggleGroupItem Value="Berry"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🫐 Berry</ToggleGroupItem>
+            <ToggleGroupItem Value="Citrus"   Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">🍊 Citrus</ToggleGroupItem>
+            <ToggleGroupItem Value="Fresh"    Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">💧 Fresh</ToggleGroupItem>
+            <ToggleGroupItem Value="Golden"   Class="relative z-10 aria-[checked=true]:bg-transparent hover:bg-transparent">✨ Golden</ToggleGroupItem>
+            <SelectionIndicator Selector="[aria-checked=true]" Class="bg-accent shadow-sm [--si-duration:500ms]" />
+        </ToggleGroup>
+    </div>
+
+    @* Featured carousel *@
+    <div class="px-4 mb-5">
+        <Carousel ShowNavigation="false" EnableDrag="true" ShowIndicators="true" DotsPosition="CarouselDotsPosition.Bottom" Loop="true" AutoPlay="true" AutoPlayInterval="3500">
+            @foreach (var fp in PopularProducts)
+            {
+                var captured = fp;
+                <CarouselItem>
+                    <div class="rounded-2xl p-4 @GetBg(captured) flex items-center gap-4 cursor-pointer" style="min-height:120px" @onclick="@(() => OnNavigateToProduct.InvokeAsync(captured.Id))">
+                        <div class="text-5xl shrink-0">@captured.Emoji</div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-wrap gap-1 mb-1">
+                                @if (captured.IsNew) {
+                                    <Badge Variant="BadgeVariant.Secondary" Class="text-[10px] px-1.5 py-0">
+                                        <BadgeIcon><LucideIcon Name="sparkles" /></BadgeIcon>New
+                                    </Badge>
+                                }
+                                @if (captured.IsPopular) {
+                                    <Badge Class="text-[10px] px-1.5 py-0">
+                                        <BadgeIcon><LucideIcon Name="flame" /></BadgeIcon>Hot
+                                    </Badge>
+                                }
+                            </div>
+                            <p class="font-semibold truncate">@captured.Name</p>
+                            <p class="text-xs opacity-70 truncate">@captured.Tagline</p>
+                            <p class="font-bold text-lg mt-0.5">$@captured.Price.ToString("F2")</p>
+                        </div>
+                    </div>
+                </CarouselItem>
+            }
+        </Carousel>
+    </div>
+
+    @* Popular picks *@
+    <div class="px-4 mb-4">
+        <div class="flex justify-between items-center mb-2">
+            <p class="font-semibold text-sm">Popular Picks</p>
+            <span class="text-xs text-primary cursor-pointer" @onclick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))">See all →</span>
+        </div>
+        <div class="flex gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            @foreach (var pp in HomeFeed)
+            {
+                var cp = pp;
+                <div class="shrink-0 w-28 rounded-2xl border bg-card p-3 cursor-pointer" @onclick="@(() => OnNavigateToProduct.InvokeAsync(cp.Id))">
+                    <div class="text-3xl text-center mb-1">@cp.Emoji</div>
+                    <p class="text-xs font-semibold truncate">@cp.Name</p>
+                    <div class="flex items-center gap-0.5 my-0.5">
+                        <LucideIcon Name="star" Size="10" Class="text-yellow-500 fill-yellow-500" />
+                        <span class="text-[10px] text-muted-foreground">@cp.Rating</span>
+                    </div>
+                    <p class="text-sm font-bold text-primary">$@cp.Price.ToString("F2")</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    @* New arrivals *@
+    <div class="px-4 mb-4">
+        <p class="font-semibold text-sm mb-2">New Arrivals</p>
+        <div class="space-y-2">
+            @foreach (var np in NewArrivals)
+            {
+                var cn = np;
+                <div class="flex items-center gap-3 rounded-xl border bg-card p-3 cursor-pointer" @onclick="@(() => OnNavigateToProduct.InvokeAsync(cn.Id))">
+                    <div class="text-3xl shrink-0">@cn.Emoji</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-sm truncate">@cn.Name</p>
+                        <p class="text-[11px] text-muted-foreground truncate">@cn.Tagline</p>
+                        <Rating Value="@((double)cn.Rating)" ReadOnly="true" Size="RatingSize.Small" MaxRating="5" />
+                    </div>
+                    <p class="font-bold text-sm shrink-0">$@cn.Price.ToString("F2")</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="h-2"></div>
+</div>
+
+<BottomNav ActiveTab="home" Fixed="false" Class="shrink-0">
+    <BottomNavItem Value="home" Icon="house" Label="Home" />
+    <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))" />
+    <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@CartTotal" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Cart)))" />
+    <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Profile)))" />
+    <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
+</BottomNav>
+
+@code {
+    [Parameter] public List<Product> Products          { get; set; } = [];
+    [Parameter] public string        HomeCategory      { get; set; } = "all";
+    [Parameter] public EventCallback<string> HomeCategoryChanged { get; set; }
+    [Parameter] public int           CartTotal         { get; set; }
+    [Parameter] public EventCallback<string> OnNavigateToProduct { get; set; }
+
+    private IEnumerable<Product> PopularProducts => Products.Where(p => p.IsPopular);
+    private IEnumerable<Product> NewArrivals     => Products.Where(p => p.IsNew).Take(2);
+
+    private IEnumerable<Product> HomeFeed =>
+        HomeCategory == "all"
+            ? Products
+            : Products.Where(p => p.Category == HomeCategory);
+
+    private static string GetBg(Product p) => p.Color switch
+    {
+        "emerald" => "bg-emerald-100 dark:bg-emerald-950",
+        "yellow"  => "bg-yellow-100  dark:bg-yellow-950",
+        "purple"  => "bg-purple-100  dark:bg-purple-950",
+        "orange"  => "bg-orange-100  dark:bg-orange-950",
+        "rose"    => "bg-rose-100    dark:bg-rose-950",
+        "amber"   => "bg-amber-100   dark:bg-amber-950",
+        _         => "bg-muted",
+    };
+}

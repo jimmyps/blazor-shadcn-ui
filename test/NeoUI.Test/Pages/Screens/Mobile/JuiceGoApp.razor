@@ -1,0 +1,285 @@
+@page "/screens/mobile/juicego"
+@page "/screens/mobile/juicego/home"
+@page "/screens/mobile/juicego/menu"
+@page "/screens/mobile/juicego/menu/{ProductId}"
+@page "/screens/mobile/juicego/cart"
+@page "/screens/mobile/juicego/profile"
+@page "/screens/mobile/juicego/profile/orders"
+@page "/screens/mobile/juicego/profile/favourites"
+@page "/screens/mobile/juicego/profile/help"
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@layout NeoUI.Test.Layout.ScreensLayout
+@implements IDisposable
+@inject NavigationManager Nav
+
+<PageTitle>JuiceGo — Mobile App Demo</PageTitle>
+
+<div class="flex flex-col items-center gap-4 pb-10">
+
+    <div class="text-center space-y-1.5 max-w-xl">
+        <h1 class="text-2xl font-bold tracking-tight">JuiceGo</h1>
+        <p class="text-sm text-muted-foreground">
+            A to-go bottled juice app — mobile components proof of concept.
+            Uses AppBar, BottomNav, Carousel, Scrollable ToggleGroup, Select BottomSheet,
+            Drawer with SnapPoints, BadgeIcon, QuantityStepper, Rating, and more.
+        </p>
+    </div>
+
+    @* ── Phone frame ── *@
+    <div class="relative select-none shrink-0" style="padding:10px;width:395px">
+        @* Outer shell *@
+        <div class="absolute inset-0 rounded-[52px] bg-zinc-800 shadow-2xl dark:shadow-zinc-900/80"></div>
+        @* Notch *@
+        <div class="absolute top-[10px] left-1/2 -translate-x-1/2 w-28 h-7 bg-zinc-800 rounded-b-3xl z-20 pointer-events-none"></div>
+        @* Side buttons *@
+        <div class="absolute left-0 top-[120px] w-[3px] h-8 bg-zinc-600 rounded-l-sm"></div>
+        <div class="absolute left-0 top-[168px] w-[3px] h-8 bg-zinc-600 rounded-l-sm"></div>
+        <div class="absolute right-0 top-[150px] w-[3px] h-12 bg-zinc-600 rounded-r-sm"></div>
+
+        @* Screen *@
+        <div class="relative z-10 rounded-[44px] overflow-hidden bg-background flex flex-col" style="height:780px">
+
+            @* Status bar *@
+            <div class="flex items-center justify-between px-8 pt-3 pb-0 text-[11px] font-semibold shrink-0 z-10 bg-background">
+                <span>9:41</span>
+                <div class="flex items-center gap-1">
+                    <LucideIcon Name="signal" Size="11" />
+                    <LucideIcon Name="wifi" Size="11" />
+                    <LucideIcon Name="battery" Size="13" />
+                </div>
+            </div>
+
+            @* App content *@
+            <div class="flex flex-col flex-1 overflow-hidden">
+
+                @if (CurrentScreen == Screen.Login)
+                {
+                    <JuiceGoLoginScreen
+                        Email="@_email"       EmailChanged="@(v => _email = v)"
+                        Password="@_password" PasswordChanged="@(v => _password = v)"
+                        OnSignedIn="@(() => Navigate(Screen.Home))" />
+                }
+                else if (CurrentScreen == Screen.Home)
+                {
+                    <JuiceGoHomeScreen
+                        Products="@Products.ToList()"
+                        HomeCategory="@_homeCategory" HomeCategoryChanged="@(v => _homeCategory = v)"
+                        CartTotal="@_cartTotal"
+                        OnNavigateToProduct="@(id => Navigate(Screen.Product, id))" />
+                }
+                else if (CurrentScreen == Screen.Menu)
+                {
+                    <JuiceGoMenuScreen
+                        Products="@Products.ToList()"
+                        MenuCategory="@_menuCategory" MenuCategoryChanged="@(v => _menuCategory = v)"
+                        SortBy="@_sortBy"     SortByChanged="@(v => _sortBy = v)"
+                        MaxPrice="@_maxPrice" MaxPriceChanged="@(v => _maxPrice = v)"
+                        CartTotal="@_cartTotal"
+                        OnNavigateToProduct="@(id => Navigate(Screen.Product, id))"
+                        OnQuickAdd="@(p => QuickAdd(p))" />
+                }
+                else if (CurrentScreen == Screen.Product && _product != null)
+                {
+                    <JuiceGoProductScreen
+                        Product="@_product"
+                        Size="@(_size ?? "")" SizeChanged="@(v => _size = v)"
+                        Qty="@_qty"           QtyChanged="@(v => _qty = v)"
+                        OnAddToCart="@(item => HandleAddToCart(item))" />
+                }
+                else if (CurrentScreen == Screen.Cart)
+                {
+                    <JuiceGoCartScreen
+                        CartItems="@_cart"
+                        OnRemoveItem="@(item => RemoveItem(item))"
+                        OnUpdateQty="@(u => UpdateQty(u.Item, u.Qty))"
+                        OnClearCart="@ClearCart" />
+                }
+                else if (CurrentScreen == Screen.Profile)
+                {
+                    <JuiceGoProfileScreen
+                        Email="@_email"
+                        CartTotal="@_cartTotal"
+                        Rows="@ProfileRows"
+                        OnSignedOut="@ResetApp" />
+                }
+                else if (CurrentScreen == Screen.Orders)
+                {
+                    <JuiceGoOrdersScreen Orders="@SampleOrders" />
+                }
+                else if (CurrentScreen == Screen.Favourites)
+                {
+                    <JuiceGoFavouritesScreen
+                        Products="@Products.ToList()"
+                        OnQuickAdd="@(p => QuickAdd(p))" />
+                }
+                else if (CurrentScreen == Screen.Help)
+                {
+                    <JuiceGoHelpScreen Faqs="@Faqs" />
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="@ResetApp">
+        <LucideIcon Name="rotate-ccw" Size="14" Class="mr-1.5" />
+        Reset App
+    </Button>
+
+</div>
+
+@code {
+
+    // ── Route parameters ──────────────────────────────────────────────────
+
+    [Parameter] public string? ProductId { get; set; }
+
+    // ── Navigation ────────────────────────────────────────────────────────
+
+    private Screen CurrentScreen
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(ProductId)) return Screen.Product;
+            var path = Nav.ToBaseRelativePath(Nav.Uri).ToLower().TrimEnd('/');
+            return path switch
+            {
+                "screens/mobile/juicego/cart"               => Screen.Cart,
+                "screens/mobile/juicego/profile/orders"     => Screen.Orders,
+                "screens/mobile/juicego/profile/favourites" => Screen.Favourites,
+                "screens/mobile/juicego/profile/help"       => Screen.Help,
+                "screens/mobile/juicego/profile"            => Screen.Profile,
+                "screens/mobile/juicego/menu"               => Screen.Menu,
+                "screens/mobile/juicego/home"               => Screen.Home,
+                _                                           => Screen.Login,
+            };
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+        => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+        => Nav.LocationChanged -= OnLocationChanged;
+
+    private void Navigate(Screen to, string? id = null)
+        => Nav.NavigateTo(JuiceGoRoutes.Get(to, id));
+
+    // ── Auth ──────────────────────────────────────────────────────────────
+
+    private string _email    = "jordan@example.com";
+    private string _password = "";
+
+    private void ResetApp()
+    {
+        _cart.Clear();
+        _password = "";
+        Nav.NavigateTo(JuiceGoRoutes.Base);
+    }
+
+    // ── Home ──────────────────────────────────────────────────────────────
+
+    private string _homeCategory = "all";
+
+    // ── Menu ──────────────────────────────────────────────────────────────
+
+    private string _menuCategory = "all";
+    private string _sortBy       = "popular";
+    private double _maxPrice     = 12.0;
+
+    // ── Product detail ────────────────────────────────────────────────────
+
+    private Product? _product;
+    private string?  _size;
+    private int      _qty = 1;
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrEmpty(ProductId)) return;
+        var p = Products.FirstOrDefault(x => x.Id == ProductId);
+        if (p != null && p.Id != _product?.Id)
+        {
+            _product = p;
+            _size    = p.Sizes[0];
+            _qty     = 1;
+        }
+    }
+
+    // ── Cart ──────────────────────────────────────────────────────────────
+
+    private readonly List<CartItem> _cart = [];
+
+    private int _cartTotal => _cart.Sum(i => i.Quantity);
+
+    private void HandleAddToCart(CartItem item)
+    {
+        var idx = _cart.FindIndex(i => i.Product.Id == item.Product.Id && i.Size == item.Size);
+        if (idx >= 0) _cart[idx] = _cart[idx] with { Quantity = _cart[idx].Quantity + item.Quantity };
+        else _cart.Add(item);
+        Navigate(Screen.Cart);
+    }
+
+    private void QuickAdd(Product p)
+    {
+        var size = p.Sizes[0];
+        var idx  = _cart.FindIndex(i => i.Product.Id == p.Id && i.Size == size);
+        if (idx >= 0) _cart[idx] = _cart[idx] with { Quantity = _cart[idx].Quantity + 1 };
+        else _cart.Add(new CartItem(p, size, 1));
+    }
+
+    private void UpdateQty(CartItem item, int qty)
+    {
+        var idx = _cart.IndexOf(item);
+        if (idx >= 0) _cart[idx] = item with { Quantity = qty };
+    }
+
+    private void RemoveItem(CartItem item) => _cart.Remove(item);
+    private void ClearCart()               => _cart.Clear();
+
+    // ── Data ──────────────────────────────────────────────────────────────
+
+    private static readonly Product[] Products =
+    [
+        new("1", "Green Detox",     "Spinach, apple, ginger & lemon",    "🥤", "emerald", 7.50m, 4.8f, 234, false, true,  "Green",    ["250ml", "500ml"]),
+        new("2", "Tropical Blast",  "Mango, pineapple & coconut water",  "🍹", "yellow",  8.00m, 4.9f, 312, true,  true,  "Tropical", ["250ml", "500ml", "750ml"]),
+        new("3", "Berry Boost",     "Blueberry, strawberry & beet",      "🫐", "purple",  7.00m, 4.6f, 189, true,  false, "Berry",    ["250ml", "500ml"]),
+        new("4", "Citrus Zing",     "Orange, lemon, lime & turmeric",    "🍊", "orange",  6.50m, 4.7f, 156, false, false, "Citrus",   ["250ml", "500ml"]),
+        new("5", "Watermelon Wave", "Watermelon, mint & lime",           "🍉", "rose",    7.50m, 4.5f,  98, true,  false, "Fresh",    ["250ml", "500ml"]),
+        new("6", "Golden Hour",     "Carrot, orange, ginger & turmeric", "🥕", "amber",   7.00m, 4.8f, 201, false, true,  "Golden",   ["250ml", "500ml"]),
+    ];
+
+    private static readonly ProfileRow[] ProfileRows =
+    [
+        new("package",     "My Orders",           Screen.Orders),
+        new("heart",       "Favourites",           Screen.Favourites),
+        new("map-pin",     "Delivery Addresses"),
+        new("",            "", IsSeparator: true),
+        new("bell",        "Notifications"),
+        new("credit-card", "Payment Methods"),
+        new("",            "", IsSeparator: true),
+        new("shield",      "Privacy & Security"),
+        new("life-buoy",   "Help & Support",  Screen.Help),
+        new("star",        "Rate the App"),
+    ];
+
+    private static readonly SampleOrder[] SampleOrders =
+    [
+        new("#JG-00142", ["🥤", "🍹"], 15.50m, "Today, 10:24 AM",      "Out for Delivery"),
+        new("#JG-00138", ["🫐", "🍊", "🍉"], 21.00m, "Yesterday",       "Delivered"),
+        new("#JG-00131", ["🥕", "🥤"], 14.50m, "Mar 29",                "Delivered"),
+        new("#JG-00120", ["🍹", "🍹"], 16.00m, "Mar 25",                "Delivered"),
+    ];
+
+    private static readonly Faq[] Faqs =
+    [
+        new("How fresh are the juices?",      "All juices are cold-pressed daily and delivered within 24 hours of production."),
+        new("Can I modify my order?",         "Orders can be modified within 30 minutes of placing them via the Orders screen."),
+        new("What areas do you deliver to?",  "We currently deliver to the city centre and surrounding suburbs within a 15km radius."),
+        new("How are juices kept cold?",      "We use insulated packaging and ice packs to keep your juices chilled during delivery."),
+    ];
+}

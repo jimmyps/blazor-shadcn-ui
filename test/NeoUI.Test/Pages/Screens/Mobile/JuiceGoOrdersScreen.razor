@@ -1,0 +1,42 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<AppBar Title="My Orders" OnBack="@GoBack" />
+
+<div class="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+    @foreach (var o in Orders)
+    {
+        <div class="rounded-2xl border bg-card p-4 space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-mono text-muted-foreground">@o.Id</span>
+                <Badge Variant="@(o.Status == "Delivered" ? BadgeVariant.Default : BadgeVariant.Secondary)"
+                       Class="text-[10px]">@o.Status</Badge>
+            </div>
+            <div class="flex gap-2">
+                @foreach (var item in o.Items)
+                {
+                    <div class="text-2xl">@item</div>
+                }
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-muted-foreground">@o.Date</span>
+                <span class="font-bold text-sm">$@o.Total.ToString("F2")</span>
+            </div>
+            <Separator />
+            <div class="flex gap-2">
+                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="flex-1">Reorder</Button>
+                @if (o.Status == "Delivered")
+                {
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" Class="flex-1">Rate</Button>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public SampleOrder[] Orders { get; set; } = [];
+
+    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+}

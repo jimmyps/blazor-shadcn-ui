@@ -1,0 +1,42 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<AppBar Title="Help &amp; Support" OnBack="@GoBack" />
+
+<div class="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+    <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-950 p-4 flex gap-3 items-center">
+        <LucideIcon Name="life-buoy" Size="24" Class="text-emerald-600 shrink-0" />
+        <div>
+            <p class="font-semibold text-sm">Need help?</p>
+            <p class="text-xs text-muted-foreground">Our support team is here 9am–6pm</p>
+        </div>
+    </div>
+
+    <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1">Frequently Asked</p>
+
+    @foreach (var faq in Faqs)
+    {
+        <div class="rounded-2xl border bg-card p-4 space-y-1">
+            <p class="font-semibold text-sm">@faq.Q</p>
+            <p class="text-xs text-muted-foreground leading-relaxed">@faq.A</p>
+        </div>
+    }
+
+    <Separator LineStyle="SeparatorStyle.Dashed" />
+
+    <div class="space-y-2">
+        <Button Variant="ButtonVariant.Outline" Class="w-full gap-2">
+            <LucideIcon Name="mail" Size="16" /> Email Support
+        </Button>
+        <Button Variant="ButtonVariant.Outline" Class="w-full gap-2">
+            <LucideIcon Name="message-circle" Size="16" /> Live Chat
+        </Button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Faq[] Faqs { get; set; } = [];
+
+    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+}

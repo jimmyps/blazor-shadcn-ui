@@ -1,0 +1,42 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<AppBar Title="Favourites" OnBack="@GoBack" />
+
+<div class="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+    @foreach (var fp in Products.Where(p => p.IsPopular || p.IsNew))
+    {
+        var cfp = fp;
+        <div class="flex items-center gap-3 rounded-2xl border bg-card p-3 cursor-pointer"
+             @onclick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Product, cfp.Id)))">
+            <div class="size-14 rounded-xl @GetBg(cfp) flex items-center justify-center text-2xl shrink-0">@cfp.Emoji</div>
+            <div class="flex-1 min-w-0">
+                <p class="font-semibold text-sm">@cfp.Name</p>
+                <p class="text-xs text-muted-foreground truncate">@cfp.Tagline</p>
+                <p class="font-bold text-sm text-primary mt-0.5">$@cfp.Price.ToString("F2")</p>
+            </div>
+            <Button Size="ButtonSize.Icon" Class="size-8 rounded-full shrink-0" OnClick="@((e) => OnQuickAdd.InvokeAsync(cfp))">
+                <LucideIcon Name="plus" Size="14" />
+            </Button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<Product>          Products    { get; set; } = [];
+    [Parameter] public EventCallback<Product> OnQuickAdd  { get; set; }
+
+    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+
+    private static string GetBg(Product p) => p.Color switch
+    {
+        "emerald" => "bg-emerald-100 dark:bg-emerald-950",
+        "yellow"  => "bg-yellow-100  dark:bg-yellow-950",
+        "purple"  => "bg-purple-100  dark:bg-purple-950",
+        "orange"  => "bg-orange-100  dark:bg-orange-950",
+        "rose"    => "bg-rose-100    dark:bg-rose-950",
+        "amber"   => "bg-amber-100   dark:bg-amber-950",
+        _         => "bg-muted",
+    };
+}

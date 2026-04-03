@@ -1,0 +1,165 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<AppBar OnBack="@GoBack">
+    <TitleContent>
+        <span class="text-base font-semibold">@Product.Name</span>
+    </TitleContent>
+    <RightContent>
+        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+            <LucideIcon Name="heart" Size="20" />
+        </Button>
+        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+            <LucideIcon Name="share-2" Size="20" />
+        </Button>
+    </RightContent>
+</AppBar>
+
+<div class="flex-1 overflow-y-auto">
+    @* Hero *@
+    <div class="@GetBg(Product) flex flex-col items-center justify-center py-8 gap-2">
+        <div class="text-7xl">@Product.Emoji</div>
+        <div class="flex gap-1.5 flex-wrap justify-center">
+            @if (Product.IsNew) {
+                <Badge Variant="BadgeVariant.Secondary">
+                    <BadgeIcon><LucideIcon Name="sparkles" /></BadgeIcon>New
+                </Badge>
+            }
+            @if (Product.IsPopular) {
+                <Badge>
+                    <BadgeIcon><LucideIcon Name="flame" /></BadgeIcon>Popular
+                </Badge>
+            }
+            <Badge Variant="BadgeVariant.Outline">
+                <BadgeIcon><LucideIcon Name="leaf" /></BadgeIcon>Cold-Pressed
+            </Badge>
+        </div>
+    </div>
+
+    <div class="px-4 py-4 space-y-4">
+        <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+                <h2 class="text-xl font-bold">@Product.Name</h2>
+                <p class="text-sm text-muted-foreground">@Product.Tagline</p>
+            </div>
+            <p class="text-2xl font-bold text-primary shrink-0">$@Product.Price.ToString("F2")</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <Rating Value="@((double)Product.Rating)" ReadOnly="true" MaxRating="5" />
+            <span class="text-sm text-muted-foreground">@Product.Rating · @Product.Reviews reviews</span>
+        </div>
+
+        <Separator />
+
+        @* Size selector — BottomSheet presentation *@
+        <div class="space-y-1.5">
+            <p class="text-sm font-medium">Size</p>
+            <Select Value="@Size" ValueChanged="@(v => SizeChanged.InvokeAsync(v))" TValue="string" Class="w-full">
+                <SelectTrigger>
+                    <SelectValue Placeholder="Choose a size" />
+                </SelectTrigger>
+                <SelectContent Presentation="SelectPresentation.BottomSheet">
+                    @foreach (var sz in Product.Sizes)
+                    {
+                        <SelectItem Value="@sz" Text="@sz" TValue="string">@sz</SelectItem>
+                    }
+                </SelectContent>
+            </Select>
+        </div>
+
+        @* Quantity *@
+        <div class="flex items-center justify-between">
+            <p class="text-sm font-medium">Quantity</p>
+            <QuantityStepper Value="@Qty" ValueChanged="@(v => QtyChanged.InvokeAsync(v))" Min="1" Max="20" />
+        </div>
+
+        <Separator />
+
+        @* Benefits *@
+        <div>
+            <p class="text-sm font-medium mb-2">Benefits</p>
+            <div class="flex flex-wrap gap-2">
+                @foreach (var b in GetBenefits(Product))
+                {
+                    <span class="rounded-full border px-3 py-0.5 text-xs">@b</span>
+                }
+            </div>
+        </div>
+
+        @* Nutrition *@
+        <div>
+            <p class="text-sm font-medium mb-2">Nutrition per 250ml</p>
+            <div class="grid grid-cols-4 gap-2 text-center">
+                @foreach (var kv in GetNutrition(Product))
+                {
+                    <div class="rounded-xl border p-2">
+                        <p class="text-sm font-bold">@kv.Value</p>
+                        <p class="text-[10px] text-muted-foreground">@kv.Key</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="h-4"></div>
+</div>
+
+@* Sticky Add to Cart footer *@
+<div class="px-4 py-3 border-t bg-background shrink-0">
+    <Button Class="w-full" OnClick="@HandleAddToCart">
+        <LucideIcon Name="shopping-bag" Size="16" Class="mr-2" />
+        Add to Cart — $@((Product.Price * Qty).ToString("F2"))
+    </Button>
+</div>
+
+@code {
+    [Parameter] public Product  Product    { get; set; } = null!;
+    [Parameter] public string   Size       { get; set; } = "";
+    [Parameter] public EventCallback<string> SizeChanged { get; set; }
+    [Parameter] public int      Qty        { get; set; } = 1;
+    [Parameter] public EventCallback<int>    QtyChanged  { get; set; }
+    [Parameter] public EventCallback<CartItem> OnAddToCart { get; set; }
+
+    private async Task GoBack() => await JS.InvokeVoidAsync("history.back");
+
+    private Task HandleAddToCart()
+    {
+        var cartItem = new CartItem(Product, string.IsNullOrEmpty(Size) ? Product.Sizes[0] : Size, Qty);
+        return OnAddToCart.InvokeAsync(cartItem);
+    }
+
+    private static string GetBg(Product p) => p.Color switch
+    {
+        "emerald" => "bg-emerald-100 dark:bg-emerald-950",
+        "yellow"  => "bg-yellow-100  dark:bg-yellow-950",
+        "purple"  => "bg-purple-100  dark:bg-purple-950",
+        "orange"  => "bg-orange-100  dark:bg-orange-950",
+        "rose"    => "bg-rose-100    dark:bg-rose-950",
+        "amber"   => "bg-amber-100   dark:bg-amber-950",
+        _         => "bg-muted",
+    };
+
+    private static string[] GetBenefits(Product p) => p.Category switch
+    {
+        "Green"    => ["Detox", "Energy", "Immunity", "Alkaline"],
+        "Tropical" => ["Hydrating", "Vitamins", "Antioxidants", "Natural Sugars"],
+        "Berry"    => ["Antioxidants", "Anti-inflammatory", "Skin Glow"],
+        "Citrus"   => ["Vitamin C", "Immune Boost", "Digestive"],
+        "Fresh"    => ["Hydrating", "Cooling", "Electrolytes"],
+        "Golden"   => ["Anti-inflammatory", "Turmeric", "Digestive Health"],
+        _          => ["Natural", "Cold-Pressed"],
+    };
+
+    private static Dictionary<string, string> GetNutrition(Product p) => p.Category switch
+    {
+        "Green"    => new() { ["Cal"] = "68",  ["Carb"] = "16g", ["Fibre"] = "2g",  ["Vit C"] = "40%" },
+        "Tropical" => new() { ["Cal"] = "120", ["Carb"] = "28g", ["Fibre"] = "1g",  ["Vit C"] = "60%" },
+        "Berry"    => new() { ["Cal"] = "90",  ["Carb"] = "21g", ["Fibre"] = "3g",  ["Vit C"] = "35%" },
+        "Citrus"   => new() { ["Cal"] = "75",  ["Carb"] = "18g", ["Fibre"] = "1g",  ["Vit C"] = "95%" },
+        "Fresh"    => new() { ["Cal"] = "50",  ["Carb"] = "12g", ["Fibre"] = "1g",  ["Vit C"] = "20%" },
+        "Golden"   => new() { ["Cal"] = "80",  ["Carb"] = "19g", ["Fibre"] = "2g",  ["Vit C"] = "45%" },
+        _          => new() { ["Cal"] = "80",  ["Carb"] = "19g", ["Fibre"] = "2g",  ["Vit C"] = "30%" },
+    };
+}

@@ -1,0 +1,45 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+
+<div class="flex flex-col flex-1 overflow-y-auto px-7 py-4 gap-4">
+    <div class="flex flex-col items-center gap-2 mt-10">
+        <div class="size-16 rounded-2xl bg-emerald-500 flex items-center justify-center text-3xl shadow-lg">🥤</div>
+        <h2 class="text-2xl font-bold">JuiceGo</h2>
+        <p class="text-xs text-muted-foreground text-center">Fresh to your door. Pure, cold-pressed joy.</p>
+    </div>
+
+    <div class="space-y-3 mt-2">
+        <div class="space-y-1">
+            <label class="text-sm font-medium">Email</label>
+            <Input Value="@Email" ValueChanged="@(v => EmailChanged.InvokeAsync(v))" Type="InputType.Email" Placeholder="you@example.com" />
+        </div>
+        <div class="space-y-1">
+            <label class="text-sm font-medium">Password</label>
+            <Input Value="@Password" ValueChanged="@(v => PasswordChanged.InvokeAsync(v))" Type="InputType.Password" Placeholder="••••••••" />
+        </div>
+        <Button Class="w-full" OnClick="@(() => OnSignedIn.InvokeAsync())">Sign in</Button>
+        <p class="text-center text-xs text-muted-foreground">
+            New here?
+            <span class="text-foreground font-medium underline underline-offset-2 cursor-pointer" @onclick="@(() => OnSignedIn.InvokeAsync())">Create account</span>
+        </p>
+    </div>
+
+    <Separator />
+
+    <div class="space-y-2">
+        <p class="text-xs text-center text-muted-foreground font-medium">CONTINUE WITH</p>
+        <Button Variant="ButtonVariant.Outline" Class="w-full gap-2" OnClick="@(() => OnSignedIn.InvokeAsync())">
+            <span class="text-base">🍏</span> Apple
+        </Button>
+        <Button Variant="ButtonVariant.Outline" Class="w-full gap-2" OnClick="@(() => OnSignedIn.InvokeAsync())">
+            <span class="text-base">🔵</span> Google
+        </Button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Email    { get; set; } = "";
+    [Parameter] public EventCallback<string> EmailChanged    { get; set; }
+    [Parameter] public string Password { get; set; } = "";
+    [Parameter] public EventCallback<string> PasswordChanged { get; set; }
+    [Parameter] public EventCallback OnSignedIn { get; set; }
+}

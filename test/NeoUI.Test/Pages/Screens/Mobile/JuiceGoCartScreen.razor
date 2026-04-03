@@ -1,0 +1,104 @@
+@namespace NeoUI.Test.Pages.Screens.Mobile
+@inject NavigationManager Nav
+
+<AppBar Title="My Cart">
+    <RightContent>
+        @if (CartItems.Count > 0)
+        {
+            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" Class="text-destructive text-xs" OnClick="@(() => OnClearCart.InvokeAsync())">Clear</Button>
+        }
+    </RightContent>
+</AppBar>
+
+<div class="flex-1 overflow-y-auto px-4 py-3">
+    @if (CartItems.Count == 0)
+    {
+        <div class="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground pb-12">
+            <div class="text-5xl">🛒</div>
+            <p class="font-medium">Your cart is empty</p>
+            <p class="text-xs text-center">Add some fresh juices from the menu</p>
+            <Button Variant="ButtonVariant.Outline" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))">Browse Menu</Button>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-3">
+            @foreach (var item in CartItems.ToList())
+            {
+                var ci = item;
+                <div class="flex items-center gap-3 rounded-2xl border bg-card p-3">
+                    <div class="size-12 rounded-xl @GetBg(ci.Product) flex items-center justify-center text-2xl shrink-0">
+                        @ci.Product.Emoji
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-sm truncate">@ci.Product.Name</p>
+                        <p class="text-xs text-muted-foreground">@ci.Size</p>
+                        <p class="text-sm font-bold text-primary">$@((ci.Product.Price * ci.Quantity).ToString("F2"))</p>
+                    </div>
+                    <QuantityStepper Value="@ci.Quantity"
+                                     ValueChanged="@((v) => OnUpdateQty.InvokeAsync((ci, v)))"
+                                     Min="1" Max="20"
+                                     Size="QuantityStepperSize.Small"
+                                     DestructiveAtMin="true"
+                                     OnDestructiveClick="@(() => OnRemoveItem.InvokeAsync(ci))" />
+                </div>
+            }
+
+            <Separator Class="my-1" />
+
+            @* Order summary *@
+            <div class="space-y-2 text-sm rounded-2xl border bg-card p-4">
+                <p class="font-semibold mb-3">Order Summary</p>
+                <div class="flex justify-between">
+                    <span class="text-muted-foreground">Subtotal</span>
+                    <span>$@Subtotal.ToString("F2")</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-muted-foreground">Delivery</span>
+                    <Badge Variant="BadgeVariant.Secondary" Class="text-[10px]">
+                        <BadgeIcon><LucideIcon Name="zap" /></BadgeIcon>Free
+                    </Badge>
+                </div>
+                <Separator LineStyle="SeparatorStyle.Dashed" Class="my-1" />
+                <div class="flex justify-between font-bold text-base">
+                    <span>Total</span>
+                    <span>$@Subtotal.ToString("F2")</span>
+                </div>
+            </div>
+
+            <Button Class="w-full">
+                <LucideIcon Name="credit-card" Size="16" Class="mr-2" />
+                Checkout
+            </Button>
+        </div>
+    }
+</div>
+
+<BottomNav ActiveTab="cart" Fixed="false" Class="shrink-0">
+    <BottomNavItem Value="home" Icon="house" Label="Home" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Home)))" />
+    <BottomNavItem Value="menu" Icon="list" Label="Menu" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Menu)))" />
+    <BottomNavItem Value="cart" Icon="shopping-bag" Label="Cart" BadgeCount="@CartTotal" />
+    <BottomNavItem Value="profile" Icon="user" Label="Profile" OnClick="@(() => Nav.NavigateTo(JuiceGoRoutes.Get(Screen.Profile)))" />
+    <SelectionIndicator Selector="[aria-current=page]" Class="bg-primary/10 shadow-none rounded-none" />
+</BottomNav>
+
+@code {
+    [Parameter] public List<CartItem>                         CartItems     { get; set; } = [];
+    [Parameter] public EventCallback<CartItem>                OnRemoveItem  { get; set; }
+    [Parameter] public EventCallback<(CartItem Item, int Qty)> OnUpdateQty  { get; set; }
+    [Parameter] public EventCallback                          OnClearCart   { get; set; }
+
+    private int     CartTotal => CartItems.Sum(i => i.Quantity);
+    private decimal Subtotal  => CartItems.Sum(i => i.Product.Price * i.Quantity);
+
+    private static string GetBg(Product p) => p.Color switch
+    {
+        "emerald" => "bg-emerald-100 dark:bg-emerald-950",
+        "yellow"  => "bg-yellow-100  dark:bg-yellow-950",
+        "purple"  => "bg-purple-100  dark:bg-purple-950",
+        "orange"  => "bg-orange-100  dark:bg-orange-950",
+        "rose"    => "bg-rose-100    dark:bg-rose-950",
+        "amber"   => "bg-amber-100   dark:bg-amber-950",
+        _         => "bg-muted",
+    };
+}
