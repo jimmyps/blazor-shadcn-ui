@@ -30,7 +30,8 @@ export function init(instanceId, dotNetRef, element, snapPoints) {
         isDragging: false,
         startY: 0,
         startHeight: 0,
-        _removeHandleListeners: null
+        _removeHandleListeners: null,
+        _removeDragListeners: null
     };
 
     instances.set(instanceId, state);
@@ -65,6 +66,7 @@ export function dispose(instanceId) {
     const state = instances.get(instanceId);
     if (state) {
         state._removeHandleListeners?.();
+        state._removeDragListeners?.();
     }
     instances.delete(instanceId);
 }
@@ -118,7 +120,10 @@ function startDrag(state, startY) {
         document.removeEventListener('touchmove', onTouchMove);
         document.removeEventListener('touchend', onTouchEnd);
         state.element.style.userSelect = '';
+        state._removeDragListeners = null;
     }
+
+    state._removeDragListeners = cleanup;
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);

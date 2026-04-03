@@ -66,6 +66,9 @@ public partial class Separator : ComponentBase
     /// Custom classes are appended after the component's base classes,
     /// allowing for style overrides and extensions.
     /// </remarks>
+    [Parameter]
+    public string? Class { get; set; }
+
     /// <summary>
     /// Gets or sets the line style of the separator.
     /// </summary>
@@ -78,12 +81,6 @@ public partial class Separator : ComponentBase
     /// </remarks>
     [Parameter]
     public SeparatorStyle LineStyle { get; set; } = SeparatorStyle.Solid;
-
-    /// <summary>
-    /// Gets or sets additional CSS classes to apply to the separator.
-    /// </summary>
-    [Parameter]
-    public string? Class { get; set; }
 
     private string CssClass => LineStyle switch
     {

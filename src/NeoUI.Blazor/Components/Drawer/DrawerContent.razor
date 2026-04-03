@@ -25,9 +25,9 @@
          @onkeydown="HandleKeyDown">
         @if (ShowHandle)
         {
-            <div class="sticky top-0 z-10 flex justify-center pt-4 pb-2 bg-background shrink-0"
+            <div class="sticky top-0 z-10 flex justify-center pt-4 pb-2 bg-background shrink-0 cursor-grab active:cursor-grabbing"
                  data-drawer-handle="true">
-                <div class="h-2 w-[100px] rounded-full bg-muted cursor-grab active:cursor-grabbing pointer-events-none"></div>
+                <div class="h-2 w-[100px] rounded-full bg-muted pointer-events-none"></div>
             </div>
         }
         <div class="overflow-y-auto flex-1 min-h-0">
@@ -247,6 +247,6 @@
 
     private string? InitialSnapStyle =>
         HasSnapPoints
-            ? $"height:{SnapPoints![SnapIndex] * 100}vh;max-height:{SnapPoints![SnapIndex] * 100}vh;"
+            ? $"height:{SnapPoints![Math.Clamp(SnapIndex, 0, SnapPoints.Length - 1)] * 100}vh;max-height:{SnapPoints![Math.Clamp(SnapIndex, 0, SnapPoints.Length - 1)] * 100}vh;"
             : null;
 }

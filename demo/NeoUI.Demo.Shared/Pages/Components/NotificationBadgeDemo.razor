@@ -67,12 +67,12 @@
         Description="Dot=true shows a small indicator without a number — useful for &quot;has unread&quot; signals where the exact count isn't important.">
         <DemoBlock Code="@_dotCode">
             <div class="flex items-center gap-6">
-                <NotificationBadge Dot="true">
+                <NotificationBadge Dot="true" Count="1">
                     <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
                         <LucideIcon Name="bell" Class="h-5 w-5" />
                     </Button>
                 </NotificationBadge>
-                <NotificationBadge Dot="true" Variant="NotificationBadgeVariant.Success">
+                <NotificationBadge Dot="true" Count="1" Variant="NotificationBadgeVariant.Success">
                     <Avatar Class="h-9 w-9">
                         <AvatarFallback>JP</AvatarFallback>
                     </Avatar>

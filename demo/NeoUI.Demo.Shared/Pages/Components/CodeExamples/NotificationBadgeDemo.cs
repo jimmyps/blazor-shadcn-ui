@@ -31,7 +31,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private const string _dotCode =
             """
-            <NotificationBadge Dot="true">
+            <NotificationBadge Dot="true" Count="1">
                 <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
                     <LucideIcon Name="bell" Class="h-5 w-5" />
                 </Button>

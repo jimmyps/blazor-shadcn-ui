@@ -259,6 +259,8 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
                 containerElement.removeEventListener('click', suppressClick, true);
             };
             containerElement.addEventListener('click', suppressClick, true);
+            // Safety fallback: remove suppressor after 500ms in case click never fires
+            setTimeout(() => containerElement.removeEventListener('click', suppressClick, true), 500);
         }
         dragMoved = false;
 
