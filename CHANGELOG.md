@@ -2,6 +2,312 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-4-3 — Mobile-first components + ScreenTransition + component enhancements
+
+> **Release: `v3.9.0`**  
+> **Library change.** Affects `NeoUI.Blazor`. All changes are additive — no breaking changes.
+
+---
+
+### ✨ New Category — Mobile
+
+Five new components are added under the **Mobile** category in the component registry. All components live in the existing `NeoUI.Blazor` namespace — no separate package or `@using` directive required. Each is authored with `.NET MAUI Blazor Hybrid` (`BlazorWebView`) constraints in mind: no viewport-fixed assumptions by default, safe-area insets via CSS `env()`, and no JS interop dependencies.
+
+---
+
+### ✨ New Component — `AppBar`
+
+Mobile-style top application bar. Centered title, optional back-chevron with `OnBack` callback, transparent mode for hero overlays, and a `RightContent` render fragment slot for action buttons.
+
+```razor
+<AppBar TitleContent="<span>Product Detail</span>" OnBack="NavigateBack">
+    <RightContent>
+        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+            <LucideIcon Name="shopping-cart" Size="20" />
+        </Button>
+    </RightContent>
+</AppBar>
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `TitleContent` | `RenderFragment?` | — | Custom title markup (takes precedence over `Title`). |
+| `Title` | `string?` | — | Plain-text title (use when no rich markup is needed). |
+| `OnBack` | `EventCallback` | — | When set, renders a chevron-left back button on the left. |
+| `Transparent` | `bool` | `false` | Removes background/border for hero image overlays. |
+| `RightContent` | `RenderFragment?` | — | Slot for right-side action(s). Title padding adjusts automatically when populated. |
+| `Class` | `string?` | — | Additional CSS classes. |
+
+---
+
+### ✨ New Component — `BottomNav` + `BottomNavItem`
+
+Persistent mobile bottom tab bar — the primary navigation pattern for iOS, Android, and .NET MAUI Shell `TabBar`. Supports 2–5 icon+label tabs, per-item notification badge, and safe-area-inset padding for iOS home indicator.
+
+```razor
+<BottomNav @bind-ActiveTab="activeTab">
+    <BottomNavItem Value="home"   Icon="house"          Label="Home" />
+    <BottomNavItem Value="search" Icon="search"         Label="Search" />
+    <BottomNavItem Value="orders" Icon="clipboard-list" Label="Orders" BadgeCount="@pendingOrders" />
+    <BottomNavItem Value="profile" Icon="user"          Label="Profile" />
+</BottomNav>
+```
+
+**`BottomNav` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ActiveTab` | `string?` | — | Two-way bindable active tab value. |
+| `ActiveTabChanged` | `EventCallback<string?>` | — | Fired when the active tab changes. |
+| `Fixed` | `bool` | `true` | `position: fixed` (viewport) vs. in-flow for MAUI Hybrid containers. |
+| `AriaLabel` | `string` | `"Main navigation"` | Nav landmark label. |
+| `ChildContent` | `RenderFragment` | — | `BottomNavItem` elements. |
+| `Class` | `string?` | — | Additional CSS classes. |
+
+**`BottomNavItem` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `string` | required | Matched against `BottomNav.ActiveTab`. |
+| `Icon` | `string?` | — | Lucide icon name shorthand. |
+| `IconContent` | `RenderFragment?` | — | Custom icon markup (takes precedence over `Icon`). |
+| `Label` | `string?` | — | Text label beneath the icon. |
+| `BadgeCount` | `int` | `0` | Notification count overlay. Hidden when 0 unless `ShowZeroBadge`. |
+| `MaxBadgeCount` | `int` | `99` | Counts above this show as `"N+"`. |
+| `ShowZeroBadge` | `bool` | `false` | Show badge chip when `BadgeCount` is 0. |
+
+---
+
+### ✨ New Component — `NotificationBadge`
+
+Wraps any element and overlays a count badge in its top-right corner. Supports numeric counts, dot mode, three colour variants, and max-count truncation.
+
+```razor
+<NotificationBadge Count="@unread">
+    <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon">
+        <LucideIcon Name="bell" Class="h-5 w-5" />
+    </Button>
+</NotificationBadge>
+
+@* Dot-only indicator — no number *@
+<NotificationBadge Dot="true" Count="1">
+    <Avatar><AvatarFallback>JP</AvatarFallback></Avatar>
+</NotificationBadge>
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Count` | `int` | `0` | Badge count. Negative values are clamped to 0. Hidden when 0 unless `ShowZero`. |
+| `ShowZero` | `bool` | `false` | Show badge when `Count` is 0. |
+| `Dot` | `bool` | `false` | Show a small dot indicator instead of a number. |
+| `Max` | `int` | `99` | Counts above this are shown as `"N+"`. |
+| `Variant` | `NotificationBadgeVariant` | `Destructive` | `Destructive` (red), `Primary` (brand), `Success` (green). |
+| `ChildContent` | `RenderFragment` | — | The element to wrap. |
+| `Class` | `string?` | — | Additional CSS classes on the outer wrapper. |
+
+---
+
+### ✨ New Component — `QuantityStepper`
+
+Circular +/- buttons for quantity selection. `DestructiveAtMin` replaces the minus button with a trash icon when the value is at `Min` — ideal for cart remove-item UX.
+
+```razor
+<QuantityStepper @bind-Value="qty" Min="0" Max="10" DestructiveAtMin="true" />
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `int` | `1` | Current quantity (two-way bindable). |
+| `ValueChanged` | `EventCallback<int>` | — | Fired after value changes. |
+| `Min` | `int` | `1` | Minimum value. |
+| `Max` | `int` | `int.MaxValue` | Maximum value. |
+| `Step` | `int` | `1` | Increment/decrement step. |
+| `Size` | `QuantityStepperSize` | `Default` | `Small`, `Default`, `Large`. |
+| `DestructiveAtMin` | `bool` | `false` | Replaces minus with a trash icon at `Min`. |
+| `OnDestructiveAction` | `EventCallback` | — | Fired when the destructive (trash) button is tapped. |
+| `Disabled` | `bool` | `false` | Disables both buttons. |
+
+---
+
+### ✨ New Component — `SectionHeader`
+
+Title row with optional "view all" chevron and optional separator line. Eliminates repetitive layout boilerplate in content-heavy mobile screens.
+
+```razor
+<SectionHeader TitleContent="<span>Featured</span>" OnViewAll="NavigateToFeatured" ShowSeparator="true" />
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `TitleContent` | `RenderFragment?` | — | Custom title markup (takes precedence over `Title`). |
+| `Title` | `string?` | — | Plain-text title. |
+| `OnViewAll` | `EventCallback` | — | When set, renders a "View all" chevron button on the right. |
+| `ShowSeparator` | `bool` | `false` | Renders a `Separator` below the title row. |
+| `Class` | `string?` | — | Additional CSS classes. |
+
+---
+
+### ✨ New Component — `ScreenTransition` + `ScreenTransitionDirection`
+
+Animated container for shell-based multi-screen navigation. Wraps any content and replays an entrance animation whenever `Key` changes. Works alongside `Tabs` for tab-switch fades and push/pop stack navigation.
+
+```razor
+@* Tab switch — fade between screens *@
+<ScreenTransition Key="@_activeTab" Direction="ScreenTransitionDirection.Tab">
+    @switch (_activeTab)
+    {
+        case "home": <HomeScreen /> break;
+        case "explore": <ExploreScreen /> break;
+    }
+</ScreenTransition>
+
+@* Push/pop stack navigation *@
+<ScreenTransition Key="@_screen" Direction="@_direction">
+    @if (_screen == "settings") { <SettingsScreen OnBack="GoBack" /> }
+    else { <MainScreen OnPush="PushSettings" /> }
+</ScreenTransition>
+```
+
+**`ScreenTransitionDirection` values:**
+
+| Value | Animation |
+|---|---|
+| `None` | No animation — plain `<div>` passthrough. |
+| `Tab` | Fade-in only (no slide); use for sibling tab switches. |
+| `Push` | Slides in from the right (forward navigation). |
+| `Pop` | Slides in from the left (back navigation). |
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Key` | `string` | — | Changing this value triggers the entrance animation. |
+| `Direction` | `ScreenTransitionDirection` | `Tab` | Animation preset. Set before updating `Key`. |
+| `Class` | `string?` | — | Additional CSS classes on the transition wrapper. |
+| `ChildContent` | `RenderFragment` | — | The screen content to render. |
+
+---
+
+### 🔧 Enhancement — `Carousel`: `DotsPosition` + drag-click suppression
+
+**New `DotsPosition` parameter** (`CarouselDotsPosition`): `Bottom` (default), `Top`, `Left`, `Right`. Allows placing dot indicators on any edge of the carousel.
+
+**Drag-click suppression:** the browser fires a synthetic `click` after a pointer drag gesture ends. This was causing accidental activations (e.g., slide content links). A capturing click listener now suppresses the first click after any drag. A 500 ms `setTimeout` fallback ensures the suppressor self-removes if no click fires (e.g., on pointer-leave drag release).
+
+---
+
+### 🔧 Enhancement — `Drawer`: snap points + draggable handle
+
+Bottom-direction drawers now support multi-step snap points. The handle bar is draggable — users can resize the drawer by dragging it to any registered snap point.
+
+```razor
+<Drawer>
+    <DrawerTrigger>Open</DrawerTrigger>
+    <DrawerContent SnapPoints="new[] { 0.35f, 0.65f, 1.0f }" @bind-SnapIndex="snapIndex" ShowHandle="true">
+        ...
+    </DrawerContent>
+</Drawer>
+```
+
+**New `DrawerContent` parameters:**
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `SnapPoints` | `float[]?` | — | Fractions of viewport height (0–1). Only active when `Direction=Bottom`. |
+| `SnapIndex` | `int` | `0` | Currently active snap point index (two-way bindable). |
+| `SnapIndexChanged` | `EventCallback<int>` | — | Fired after user drag or programmatic snap. |
+
+`SnapIndex` is clamped to `[0, SnapPoints.Length - 1]` before use — out-of-range bindings are silently corrected.
+
+---
+
+### 🔧 Enhancement — `Select`: `Presentation` parameter (bottom-sheet mode)
+
+A new `Presentation` parameter on `Select` / `SelectContent` controls how the dropdown is shown.
+
+| Value | Behaviour |
+|---|---|
+| `SelectPresentation.Popover` | Standard popover (default — existing behaviour unchanged). |
+| `SelectPresentation.BottomSheet` | Opens the select options inside a `Drawer` from the bottom — the mobile-idiomatic pattern. |
+
+```razor
+<Select Presentation="SelectPresentation.BottomSheet">
+    <SelectTrigger>Pick colour</SelectTrigger>
+    <SelectContent>
+        <SelectItem Value="red">Red</SelectItem>
+        <SelectItem Value="blue">Blue</SelectItem>
+    </SelectContent>
+</Select>
+```
+
+---
+
+### 🔧 Enhancement — `Separator`: `LineStyle` parameter
+
+A new `LineStyle` parameter of type `SeparatorStyle` controls the border style.
+
+| Value | Appearance |
+|---|---|
+| `Solid` | Solid filled line (default — existing behaviour unchanged). |
+| `Dashed` | Dashed border line. |
+| `Dotted` | Dotted border line. |
+
+---
+
+### 🔧 Enhancement — `ToggleGroup`: `Scrollable` + `Required` parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Scrollable` | `bool` | `false` | Renders the group in a horizontally scrolling strip — useful on mobile where items overflow the viewport. Items do not shrink when scrollable. |
+| `Required` | `bool` | `false` | When `true`, the active item cannot be deselected — clicking the active `ToggleGroupItem` is a no-op. |
+
+---
+
+### ✨ New Sub-Component — `BadgeIcon`
+
+A `Badge` variant that renders an icon inside the chip instead of text. Supply any `LucideIcon` (or custom `ChildContent`) — `BadgeIcon` handles size tokens and spacing automatically.
+
+```razor
+<BadgeIcon Variant="BadgeVariant.Destructive">
+    <LucideIcon Name="x" />
+</BadgeIcon>
+```
+
+---
+
+### 🔧 Enhancement — `ScrollArea`: layout fixes
+
+- Non-horizontal `ScrollArea` instances no longer force `width: 100%` on the inner container, which was causing `Carousel` items inside a `ScrollArea` to measure incorrectly and overflow to full viewport width.
+- Horizontal shadow indicators are now only rendered when `Orientation` includes a horizontal axis.
+
+---
+
+### 🐛 Bug Fixes
+
+| Component | Fix |
+|---|---|
+| `DrawerContent` | `cursor-grab` / `cursor-grabbing` moved from the inner `pointer-events-none` bar to the outer handle `div`, so the grab cursor actually applies. |
+| `DrawerContent` | `SnapIndex` is now clamped to valid range before indexing `SnapPoints` — prevents `IndexOutOfRangeException` when binding an out-of-range value. |
+| `drawer.js` | `dispose()` now invokes `_removeDragListeners` to clean up document-level `mousemove`/`mouseup`/`touchmove`/`touchend` listeners that would otherwise leak if the drawer is closed mid-drag. |
+| `carousel.js` | Click-suppressor listener is now also removed via a 500 ms `setTimeout` fallback, preventing a stale capturing listener from silently blocking a later legitimate click. |
+| `BottomNavItem` | `aria-label` falls back to `Value` when `Label` is empty — icon-only tabs now have an accessible name. |
+| `SelectContent` | Removed stale `CssClass` property fragment that was causing build errors (`CS1002`, `CS0535`). `InnerCssClass` (scroll constraints) is now correctly applied to the inner content div. |
+
+---
+
+### 📖 New Demo Pages
+
+| Page | Route |
+|---|---|
+| AppBar | `/components/app-bar` |
+| BottomNav | `/components/bottom-nav` |
+| NotificationBadge | `/components/notification-badge` |
+| QuantityStepper | `/components/quantity-stepper` |
+| SectionHeader | `/components/section-header` |
+| ScreenTransition | `/components/screen-transition` |
+
+Existing demo pages updated: `DrawerDemo` (snap points), `SelectDemo` (bottom-sheet), `SeparatorDemo` (line styles), `ToggleGroupDemo` (scrollable), `BadgeDemo` (BadgeIcon), `CarouselDemo` (dots position), `PageTransitionDemo` (revamped layout).
+
+---
+
 ## 2026-3-30 — SelectionIndicator component + ToggleGroupItem aria-checked fix
 
 > **Release: `v3.8.2`**  
