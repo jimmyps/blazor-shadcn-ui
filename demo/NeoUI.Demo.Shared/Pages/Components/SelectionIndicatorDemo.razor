@@ -97,6 +97,42 @@
         </DemoBlock>
     </DemoSection>
 
+    @* ── DropdownMenu Items (hover-only) ───────────────────────────────────── *@
+    <DemoSection
+        Title="DropdownMenu (Hover Only)"
+        Description="Regular menu items have no persistent selected state, so the indicator works purely in hover mode. Use HoverTarget to scope hover detection to &quot;[role=menuitem]&quot; so labels and separators are ignored. The indicator snaps instantly to the first hovered item and animates between items thereafter.">
+        <DemoBlock Code="@_dropdownHoverCode">
+            <DropdownMenu>
+                <DropdownMenuTrigger AsChild="true">
+                    <Button Variant="ButtonVariant.Outline">
+                        <LucideIcon Name="plus" Class="h-4 w-4 mr-2" />
+                        Create New
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent Class="w-44">
+                    <DropdownMenuLabel>Create New</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">
+                        <LucideIcon Name="file" Class="h-4 w-4 mr-2" />Document
+                    </DropdownMenuItem>
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">
+                        <LucideIcon Name="folder" Class="h-4 w-4 mr-2" />Folder
+                    </DropdownMenuItem>
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">
+                        <LucideIcon Name="image" Class="h-4 w-4 mr-2" />Image
+                    </DropdownMenuItem>
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">
+                        <LucideIcon Name="link" Class="h-4 w-4 mr-2" />Link
+                    </DropdownMenuItem>
+                    <SelectionIndicator
+                        Hover="true"
+                        HoverTarget="[role=menuitem]"
+                        Class="inset-x-1 bg-accent rounded-sm shadow-none" />
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </DemoBlock>
+    </DemoSection>
+
     @* ── Pagination ─────────────────────────────────────────────────────────── *@
     <DemoSection
         Title="Pagination"
