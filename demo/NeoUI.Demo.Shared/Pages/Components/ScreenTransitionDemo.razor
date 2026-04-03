@@ -1,0 +1,392 @@
+@page "/components/screen-transition"
+
+<PageTitle>Screen Transition - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Screen Transition"
+        Description="Direction-aware animated screen switcher for shell-based navigation. Supports Tab (fade), Push (slide right), and Pop (slide left) — the three primitives of mobile-style navigation." />
+
+    @* ── Interactive demo ─────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Interactive demo"
+        Description="A shell with 3 tabs and a push/pop flow. Tab-switching fades; tapping Settings pushes a detail screen; the back button pops back.">
+        <DemoBlock Code="@_demoCode">
+            @* Phone shell *@
+            <div class="flex justify-center py-4">
+                <div class="border rounded-2xl overflow-hidden shadow-md bg-background flex flex-col" style="width:320px; height:480px;">
+
+                    @* ── Push screen app bar (replaces tab bar while in Settings) *@
+                    @if (_demoScreen == DemoScreen.Settings)
+                    {
+                        <div class="flex items-center gap-2 px-3 h-12 border-b bg-card shrink-0">
+                            <button class="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors" @onclick="DemoGoBack">
+                                <LucideIcon Name="chevron-left" Size="18" />
+                                Back
+                            </button>
+                            <span class="font-semibold text-sm mx-auto pr-10">Settings</span>
+                        </div>
+                    }
+
+                    @* ── Screen area — ScreenTransition sits here, Tabs drives it *@
+                    <div class="relative flex-1 overflow-hidden">
+                        <ScreenTransition Direction="@_demoDirection" Key="@_demoScreen" Class="absolute inset-0 overflow-y-auto">
+                            @if (_demoScreen == DemoScreen.Home)
+                            {
+                                <div class="p-4 space-y-3">
+                                    <p class="font-semibold text-base">Good morning 👋</p>
+                                    <p class="text-xs text-muted-foreground">Welcome to the Home tab.</p>
+                                    <div class="grid grid-cols-2 gap-2 pt-1">
+                                        @foreach (var card in new[] { ("🍎","Fruits"), ("🥑","Veggies"), ("🥩","Proteins"), ("🧁","Treats") })
+                                        {
+                                            <div class="rounded-lg border bg-muted/40 p-3 flex flex-col gap-1">
+                                                <span class="text-2xl">@card.Item1</span>
+                                                <span class="text-xs font-medium">@card.Item2</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else if (_demoScreen == DemoScreen.Explore)
+                            {
+                                <div class="p-4 space-y-3">
+                                    <p class="font-semibold text-base">Explore</p>
+                                    <p class="text-xs text-muted-foreground">Discover new content.</p>
+                                    <div class="space-y-2">
+                                        @foreach (var item in new[] { ("🌍","Travel","48 articles"), ("🎵","Music","120 tracks"), ("📚","Books","30 titles") })
+                                        {
+                                            <div class="flex items-center gap-3 rounded-lg border bg-muted/30 px-3 py-2">
+                                                <span class="text-xl">@item.Item1</span>
+                                                <div>
+                                                    <p class="text-xs font-medium">@item.Item2</p>
+                                                    <p class="text-xs text-muted-foreground">@item.Item3</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                            else if (_demoScreen == DemoScreen.Profile)
+                            {
+                                <div class="p-4 space-y-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-10 rounded-full bg-primary/20 flex items-center justify-center text-lg">🙂</div>
+                                        <div>
+                                            <p class="text-sm font-semibold">Alex Johnson</p>
+                                            <p class="text-xs text-muted-foreground">alex@example.com</p>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1">
+                                        @foreach (var row in new[] { ("bell","Notifications"), ("bookmark","Saved items"), ("credit-card","Billing") })
+                                        {
+                                            <div class="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-muted/50 cursor-default">
+                                                <LucideIcon Name="@row.Item1" Size="15" Class="text-muted-foreground" />
+                                                <span class="text-xs flex-1">@row.Item2</span>
+                                                <LucideIcon Name="chevron-right" Size="14" Class="text-muted-foreground" />
+                                            </div>
+                                        }
+                                        <div class="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-accent cursor-pointer" @onclick="DemoPushSettings">
+                                            <LucideIcon Name="settings" Size="15" Class="text-muted-foreground" />
+                                            <span class="text-xs flex-1 font-medium">Settings</span>
+                                            <LucideIcon Name="chevron-right" Size="14" Class="text-muted-foreground" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else @* Settings *@
+                            {
+                                <div class="p-4 space-y-3">
+                                    <p class="text-xs text-muted-foreground">Manage your preferences.</p>
+                                    <div class="space-y-1">
+                                        @foreach (var row in new[] { ("moon","Dark mode"), ("globe","Language"), ("shield","Privacy"), ("log-out","Sign out") })
+                                        {
+                                            <div class="flex items-center gap-3 rounded-lg px-2 py-2.5 hover:bg-muted/50 cursor-default">
+                                                <LucideIcon Name="@row.Item1" Size="15" Class="text-muted-foreground" />
+                                                <span class="text-xs flex-1">@row.Item2</span>
+                                                <LucideIcon Name="chevron-right" Size="14" Class="text-muted-foreground" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </ScreenTransition>
+                    </div>
+
+                    @* ── Tabs acts as the bottom tab bar; OnValueChange drives ScreenTransition *@
+                    @if (_demoScreen != DemoScreen.Settings)
+                    {
+                        <Tabs Value="@_activeTab" OnValueChange="@OnTabChanged"
+                              Class="border-t bg-card shrink-0">
+                            <TabsList Class="w-full rounded-none bg-transparent h-14 px-0 gap-0">
+                                <TabsTrigger Value="home"    Class="flex-1 flex-col gap-0.5 h-full rounded-none text-[10px] data-[state=active]:shadow-none data-[state=active]:bg-transparent">
+                                    <LucideIcon Name="house"    Size="18" />
+                                    Home
+                                </TabsTrigger>
+                                <TabsTrigger Value="explore" Class="flex-1 flex-col gap-0.5 h-full rounded-none text-[10px] data-[state=active]:shadow-none data-[state=active]:bg-transparent">
+                                    <LucideIcon Name="compass" Size="18" />
+                                    Explore
+                                </TabsTrigger>
+                                <TabsTrigger Value="profile" Class="flex-1 flex-col gap-0.5 h-full rounded-none text-[10px] data-[state=active]:shadow-none data-[state=active]:bg-transparent">
+                                    <LucideIcon Name="user"    Size="18" />
+                                    Profile
+                                </TabsTrigger>
+                            </TabsList>
+                        </Tabs>
+                    }
+
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Direction reference ───────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Direction reference"
+        Description="Each direction maps to a real navigation gesture — use them semantically for the best UX.">
+        <div class="grid gap-3 sm:grid-cols-3">
+            <div class="rounded-lg border bg-card p-4 space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge>Tab</Badge>
+                    <span class="text-xs text-muted-foreground">Fade in</span>
+                </div>
+                <p class="text-xs text-muted-foreground">Switching between sibling tabs. The tab bar stays static; only the content area fades.</p>
+            </div>
+            <div class="rounded-lg border bg-card p-4 space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge>Push</Badge>
+                    <span class="text-xs text-muted-foreground">Slide from right</span>
+                </div>
+                <p class="text-xs text-muted-foreground">Drilling into a detail screen. Mirrors iOS/Android push navigation.</p>
+            </div>
+            <div class="rounded-lg border bg-card p-4 space-y-2">
+                <div class="flex items-center gap-2">
+                    <Badge>Pop</Badge>
+                    <span class="text-xs text-muted-foreground">Slide from left</span>
+                </div>
+                <p class="text-xs text-muted-foreground">Returning to a parent screen. Pair with a back button to complete the gesture.</p>
+            </div>
+        </div>
+    </DemoSection>
+
+    @* ── Usage ────────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Usage in a shell component"
+        Description="Set Direction before changing Key — both happen in the same render cycle so no extra StateHasChanged is needed.">
+        <div class="rounded-lg border overflow-hidden relative">
+            <ScrollArea ShowHorizontalScrollbar="true" ShowVerticalScrollbar="false" EnableScrollShadows="true">
+                <pre class="p-4 text-sm bg-muted/30 font-mono leading-relaxed">@_shellCode</pre>
+            </ScrollArea>
+            <DemoCopyButton Text="@_shellCode" Class="absolute top-2 right-2" />
+        </div>
+    </DemoSection>
+
+    @* ── Navigation direction auto-detection ─────────────────────────────── *@
+    <DemoSection
+        Title="Auto-detecting direction from URL depth"
+        Description="When sub-components trigger navigation directly via NavigationManager, detect direction in OnLocationChanged by comparing URL segment depth.">
+        <div class="rounded-lg border overflow-hidden relative">
+            <ScrollArea ShowHorizontalScrollbar="true" ShowVerticalScrollbar="false" EnableScrollShadows="true">
+                <pre class="p-4 text-sm bg-muted/30 font-mono leading-relaxed">@_autoDetectCode</pre>
+            </ScrollArea>
+            <DemoCopyButton Text="@_autoDetectCode" Class="absolute top-2 right-2" />
+        </div>
+        <Alert Class="mt-3">
+            <AlertDescription>
+                Set direction <strong>before</strong> NavigateTo — both run synchronously on the server so OnLocationChanged
+                sees the flag immediately. Use a separate <code class="px-1 py-0.5 bg-muted rounded text-xs">_backTarget</code>
+                string (set on Push) so GoBack always navigates to the right screen.
+            </AlertDescription>
+        </Alert>
+    </DemoSection>
+
+    @* ── Parameters ───────────────────────────────────────────────────────── *@
+    <DemoSection Title="Parameters">
+        <div class="border rounded-lg overflow-hidden text-sm">
+            <table class="w-full">
+                <thead class="bg-muted">
+                    <tr>
+                        <th class="text-left p-3 font-medium">Parameter</th>
+                        <th class="text-left p-3 font-medium">Type</th>
+                        <th class="text-left p-3 font-medium">Default</th>
+                        <th class="text-left p-3 font-medium">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    <tr><td class="p-3"><code class="text-xs">Key</code></td><td class="p-3 text-muted-foreground">object?</td><td class="p-3 text-muted-foreground">—</td><td class="p-3 text-muted-foreground">Change this to trigger the transition (enum, string, or int)</td></tr>
+                    <tr><td class="p-3"><code class="text-xs">Direction</code></td><td class="p-3 text-muted-foreground">ScreenTransitionDirection</td><td class="p-3 text-muted-foreground">None</td><td class="p-3 text-muted-foreground">Tab, Push, Pop, or None (no animation)</td></tr>
+                    <tr><td class="p-3"><code class="text-xs">Duration</code></td><td class="p-3 text-muted-foreground">double</td><td class="p-3 text-muted-foreground">0.28</td><td class="p-3 text-muted-foreground">Animation duration in seconds</td></tr>
+                    <tr><td class="p-3"><code class="text-xs">SlideDistance</code></td><td class="p-3 text-muted-foreground">double</td><td class="p-3 text-muted-foreground">40</td><td class="p-3 text-muted-foreground">Slide distance in pixels for Push/Pop</td></tr>
+                    <tr><td class="p-3"><code class="text-xs">Class</code></td><td class="p-3 text-muted-foreground">string?</td><td class="p-3 text-muted-foreground">—</td><td class="p-3 text-muted-foreground">CSS classes applied to the wrapper element</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </DemoSection>
+
+</div>
+
+@code {
+    // ── Demo state ───────────────────────────────────────────────────────────
+    private enum DemoScreen { Home, Explore, Profile, Settings }
+
+    private DemoScreen _demoScreen = DemoScreen.Home;
+    private string _activeTab = "home";
+    private ScreenTransitionDirection _demoDirection = ScreenTransitionDirection.None;
+    private DemoScreen _backTarget = DemoScreen.Profile;
+
+    private void OnTabChanged(string? value)
+    {
+        if (value is null) return;
+        _activeTab = value;
+        _demoDirection = ScreenTransitionDirection.Tab;
+        _demoScreen = value switch
+        {
+            "explore" => DemoScreen.Explore,
+            "profile" => DemoScreen.Profile,
+            _         => DemoScreen.Home,
+        };
+    }
+
+    private void DemoPushSettings()
+    {
+        _backTarget = _demoScreen;
+        _demoDirection = ScreenTransitionDirection.Push;
+        _demoScreen = DemoScreen.Settings;
+    }
+
+    private void DemoGoBack()
+    {
+        _demoDirection = ScreenTransitionDirection.Pop;
+        _demoScreen = _backTarget;
+        _activeTab = _backTarget switch
+        {
+            DemoScreen.Explore => "explore",
+            DemoScreen.Profile => "profile",
+            _                  => "home",
+        };
+    }
+
+    // ── Code snippets ────────────────────────────────────────────────────────
+    private string _demoCode = """
+        @* Tabs drives the tab bar state; OnValueChange wires it to ScreenTransition.
+           No TabsContent needed — ScreenTransition owns the content area. *@
+
+        <Tabs Value="@_activeTab" OnValueChange="@OnTabChanged">
+            <TabsList Class="w-full h-14 ...">
+                <TabsTrigger Value="home">    <LucideIcon Name="home"    /> Home    </TabsTrigger>
+                <TabsTrigger Value="explore"> <LucideIcon Name="compass" /> Explore </TabsTrigger>
+                <TabsTrigger Value="profile"> <LucideIcon Name="user"    /> Profile </TabsTrigger>
+            </TabsList>
+        </Tabs>
+
+        @* Content area — animated by ScreenTransition *@
+        <ScreenTransition Direction="@_direction" Key="@_screen" Class="...">
+            @if (_screen == Screen.Home)    { <HomeScreen /> }
+            else if (_screen == Screen.Explore)  { <ExploreScreen /> }
+            else if (_screen == Screen.Profile)  { <ProfileScreen OnPushSettings="PushSettings" /> }
+            else                                 { <SettingsScreen /> }
+        </ScreenTransition>
+
+        @code {
+            private string _activeTab = "home";
+            private Screen _screen = Screen.Home;
+            private ScreenTransitionDirection _direction = ScreenTransitionDirection.None;
+            private Screen _backTarget;
+
+            // Tabs fires this — set Tab direction, sync screen
+            private void OnTabChanged(string? value)
+            {
+                _direction  = ScreenTransitionDirection.Tab;
+                _activeTab  = value ?? "home";
+                _screen     = value switch { "explore" => Screen.Explore, "profile" => Screen.Profile, _ => Screen.Home };
+            }
+
+            // Push — slide new screen in from right, remember where to go back
+            private void PushSettings()
+            {
+                _backTarget = _screen;
+                _direction  = ScreenTransitionDirection.Push;
+                _screen     = Screen.Settings;
+            }
+
+            // Pop — slide back to previous tab screen
+            private void GoBack()
+            {
+                _direction = ScreenTransitionDirection.Pop;
+                _screen    = _backTarget;
+                _activeTab = _backTarget switch { Screen.Explore => "explore", Screen.Profile => "profile", _ => "home" };
+            }
+        }
+        """;
+
+    private string _shellCode = """
+        // In the parent shell component:
+        private ScreenTransitionDirection _dir;
+        private Screen _current;
+
+        private void NavigateTo(Screen screen)
+        {
+            _dir = screen is Screen.Home or Screen.Menu
+                ? ScreenTransitionDirection.Tab
+                : ScreenTransitionDirection.Push;
+            _current = screen;    // Key changes → animation fires
+        }
+
+        private void GoBack()
+        {
+            _dir = ScreenTransitionDirection.Pop;
+            _current = _previousScreen;
+        }
+        """;
+
+    private string _autoDetectCode = """
+        // When sub-components call Nav.NavigateTo() directly,
+        // detect direction in OnLocationChanged:
+
+        private string _fromPath = string.Empty;
+        private string _backTarget = string.Empty;
+        private bool _isGoingBack = false;
+
+        protected override void OnInitialized()
+        {
+            _fromPath = Nav.ToBaseRelativePath(Nav.Uri).ToLower().TrimEnd('/');
+            Nav.LocationChanged += OnLocationChanged;
+        }
+
+        private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+        {
+            var newPath = Nav.ToBaseRelativePath(e.Location).ToLower().TrimEnd('/');
+
+            if (_isGoingBack)
+            {
+                _transitionDirection = ScreenTransitionDirection.Pop;
+                _isGoingBack = false;
+            }
+            else if (IsRootTab(newPath))
+            {
+                _transitionDirection = ScreenTransitionDirection.Tab;
+                _backTarget = string.Empty;
+            }
+            else
+            {
+                var fromDepth = _fromPath.Split('/').Length;
+                var newDepth  = newPath.Split('/').Length;
+                if (newDepth > fromDepth) { _transitionDirection = ScreenTransitionDirection.Push; _backTarget = _fromPath; }
+                else if (newDepth < fromDepth) { _transitionDirection = ScreenTransitionDirection.Pop; }
+                else { _transitionDirection = ScreenTransitionDirection.Tab; }
+            }
+
+            _fromPath = newPath;
+            InvokeAsync(StateHasChanged);
+        }
+
+        private void GoBack()
+        {
+            if (!string.IsNullOrEmpty(_backTarget))
+            {
+                _isGoingBack = true;
+                Nav.NavigateTo(_backTarget);
+            }
+        }
+        """;
+}
