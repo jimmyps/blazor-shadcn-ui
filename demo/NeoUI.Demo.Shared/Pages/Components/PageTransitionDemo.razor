@@ -112,20 +112,4 @@
 
 </div>
 
-@code {
-    private string _basicCode = """
-        @* MainLayout.razor *@
-        <RenderStateProvider>
-            <PageTransition>
-                @Body
-            </PageTransition>
-        </RenderStateProvider>
-        """;
-
-    private string _slideCode = """
-        <PageTransition EnableSlide="true" SlideDistance="16" Duration="0.3">
-            @Body
-        </PageTransition>
-        """;
-}
 

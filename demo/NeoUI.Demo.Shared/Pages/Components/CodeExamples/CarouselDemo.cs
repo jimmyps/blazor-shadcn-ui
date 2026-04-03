@@ -98,12 +98,12 @@ namespace NeoUI.Demo.Shared.Pages.Components
         private const string _dotsPositionCode =
                 """
                 <!-- Dots at the bottom (default for horizontal) -->
-                <Carousel ShowIndicators="true" DotsPosition="CarouselDotsPosition.Bottom">
+                <Carousel ShowIndicators="true" ShowNavigation="false" DotsPosition="CarouselDotsPosition.Bottom">
                     <!-- CarouselItems... -->
                 </Carousel>
 
                 <!-- Dots at the top -->
-                <Carousel ShowIndicators="true" DotsPosition="CarouselDotsPosition.Top">
+                <Carousel ShowIndicators="true" ShowNavigation="false" DotsPosition="CarouselDotsPosition.Top">
                     <!-- CarouselItems... -->
                 </Carousel>
 
