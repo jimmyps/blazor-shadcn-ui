@@ -5,7 +5,7 @@
 *@
 
 <DialogPortal>
-    <DialogOverlay CloseOnClick="@CloseOnClickOutside" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
+    <DialogOverlay CloseOnClick="@CloseOnClickOutside" data-slot="overlay" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
     <DialogContentPrimitive
         class="@GetClassNames()"

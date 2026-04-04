@@ -2,6 +2,6 @@
 
 @layer base {
   :root.radius-small {
-    --radius: 0.25rem;
+    --radius: 0.45rem;
   }
 }

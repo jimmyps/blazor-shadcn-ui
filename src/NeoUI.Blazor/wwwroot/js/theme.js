@@ -20,7 +20,9 @@ window.theme = {
             !c.startsWith('primary-') &&
             !c.startsWith('style-') &&
             !c.startsWith('radius-') &&
-            !c.startsWith('font-')
+            !c.startsWith('font-') &&
+            !c.startsWith('menu-accent-') &&
+            !c.startsWith('menu-color-')
         );
 
         html.className = filtered.join(' ');
@@ -32,6 +34,8 @@ window.theme = {
         if (config.style)   html.classList.add(config.style);
         if (config.radius)  html.classList.add(config.radius);
         if (config.font)    html.classList.add(config.font);
+        if (config.menuAccent) html.classList.add(config.menuAccent);
+        if (config.menuColor)  html.classList.add(config.menuColor);
 
         if (config.dark) {
             html.classList.add('dark');
@@ -59,6 +63,8 @@ window.theme = {
         let savedStyle        = '';
         let savedRadius       = '';
         let savedFont         = '';
+        let savedMenuAccent   = '';
+        let savedMenuColor    = '';
 
         try {
             if (typeof window !== 'undefined' && window.localStorage) {
@@ -68,6 +74,8 @@ window.theme = {
                 savedStyle        = window.localStorage.getItem('styleVariant') || '';
                 savedRadius       = window.localStorage.getItem('radiusPreset') || '';
                 savedFont         = window.localStorage.getItem('fontPreset')   || '';
+                savedMenuAccent   = window.localStorage.getItem('menuAccent')   || '';
+                savedMenuColor    = window.localStorage.getItem('menuColor')    || '';
             }
         } catch (e) {
             // localStorage blocked — fall back to defaults
@@ -81,15 +89,17 @@ window.theme = {
         // Whitelists
         const allowedBaseColors = [
             'Zinc', 'Slate', 'Gray', 'Neutral', 'Stone',
-            'Luma', 'Mist', 'Mauve', 'Taupe', 'Olive'
+            'Mist', 'Mauve', 'Taupe', 'Olive'
         ];
         const allowedPrimaryColors = [
             'Default', 'Red', 'Rose', 'Orange', 'Amber', 'Yellow', 'Lime', 'Green', 'Emerald',
             'Teal', 'Cyan', 'Sky', 'Blue', 'Indigo', 'Violet', 'Purple', 'Fuchsia', 'Pink'
         ];
-        const allowedStyles  = ['Default', 'Vega', 'Nova', 'Maia', 'Lyra', 'Mira'];
-        const allowedRadius  = ['None', 'Small', 'Medium', 'Large', 'Full'];
+        const allowedStyles  = ['Default', 'Vega', 'Nova', 'Maia', 'Lyra', 'Mira', 'Luma'];
+        const allowedRadius  = ['Default', 'None', 'Small', 'Medium', 'Large'];
         const allowedFonts   = ['System', 'Inter', 'Geist', 'CalSans', 'DmSans', 'PlusJakarta'];
+        const allowedMenuAccents = ['Subtle', 'Bold'];
+        const allowedMenuColors  = ['Default', 'Inverted', 'DefaultTranslucent', 'InvertedTranslucent'];
 
         /** @param {string[]} list @param {string} val @param {string} fallback */
         function validated(list, val, fallback) {
@@ -101,13 +111,25 @@ window.theme = {
         const validStyle   = validated(allowedStyles,        savedStyle,        '');
         const validRadius  = validated(allowedRadius,        savedRadius,       '');
         const validFont    = validated(allowedFonts,         savedFont,         '');
+        const validMenuAccent = validated(allowedMenuAccents, savedMenuAccent,  '');
+        const validMenuColor  = validated(allowedMenuColors,  savedMenuColor,   '');
 
         html.classList.add('base-' + validBase.toLowerCase());
 
         if (validPrimary !== 'Default') html.classList.add('primary-' + validPrimary.toLowerCase());
-        if (validStyle && validStyle !== 'Default') html.classList.add('style-'  + validStyle.toLowerCase());
-        if (validRadius && validRadius !== 'Medium') html.classList.add('radius-' + validRadius.toLowerCase());
+        if (validStyle) html.classList.add('style-' + validStyle.toLowerCase());
+        if (validRadius && validRadius !== 'Default') html.classList.add('radius-' + validRadius.toLowerCase());
         if (validFont && validFont !== 'System') html.classList.add('font-' + validFont.toLowerCase());
+
+        const menuColorClassMap = {
+            'Default': '',
+            'Inverted': 'menu-color-inverted',
+            'DefaultTranslucent': 'menu-color-default-translucent',
+            'InvertedTranslucent': 'menu-color-inverted-translucent'
+        };
+        if (validMenuAccent && validMenuAccent !== 'Subtle') html.classList.add('menu-accent-' + validMenuAccent.toLowerCase());
+        const menuColorClass = menuColorClassMap[validMenuColor] || '';
+        if (menuColorClass) html.classList.add(menuColorClass);
 
         if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
             html.classList.add('dark');

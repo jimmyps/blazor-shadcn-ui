@@ -74,6 +74,34 @@
             </div>
 
             <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuAccent"]</h4>
+                <div class="grid grid-cols-2 gap-1">
+                    @foreach (var accent in Enum.GetValues<MenuAccent>())
+                    {
+                        <button @onclick="() => OnMenuAccentSelected(accent)"
+                                class="@GetOptionClass(_currentMenuAccent == accent)"
+                                title="@accent">
+                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuAccent.{accent}"]</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuColor"]</h4>
+                <div class="grid grid-cols-2 gap-1">
+                    @foreach (var menuColor in Enum.GetValues<MenuColor>())
+                    {
+                        <button @onclick="() => OnMenuColorSelected(menuColor)"
+                                class="@GetOptionClass(_currentMenuColor == menuColor)"
+                                title="@menuColor">
+                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuColor.{menuColor}"]</span>
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <div class="space-y-3">
                 <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
                 <div class="grid grid-cols-5 gap-2">
                     @foreach (var color in Enum.GetValues<BaseColor>())
@@ -146,6 +174,8 @@
     private StyleVariant _currentStyleVariant;
     private RadiusPreset _currentRadiusPreset;
     private FontPreset   _currentFontPreset;
+    private MenuAccent   _currentMenuAccent;
+    private MenuColor    _currentMenuColor;
 
     protected override async Task OnInitializedAsync()
     {
@@ -179,6 +209,16 @@
         await ThemeService.SetFontPresetAsync(font);
     }
 
+    private async Task OnMenuAccentSelected(MenuAccent accent)
+    {
+        await ThemeService.SetMenuAccentAsync(accent);
+    }
+
+    private async Task OnMenuColorSelected(MenuColor color)
+    {
+        await ThemeService.SetMenuColorAsync(color);
+    }
+
     private void HandleThemeChanged()
     {
         SyncFromService();
@@ -192,6 +232,8 @@
         _currentStyleVariant = ThemeService.CurrentStyleVariant;
         _currentRadiusPreset = ThemeService.CurrentRadiusPreset;
         _currentFontPreset   = ThemeService.CurrentFontPreset;
+        _currentMenuAccent   = ThemeService.CurrentMenuAccent;
+        _currentMenuColor    = ThemeService.CurrentMenuColor;
     }
 
     private string GetTriggerButtonClass()
@@ -209,7 +251,6 @@
             BaseColor.Gray   => "#374151",
             BaseColor.Neutral => "#262626",
             BaseColor.Stone  => "#292524",
-            BaseColor.Luma   => "#4c5fb0",
             BaseColor.Mist   => "#4a6fa5",
             BaseColor.Mauve  => "#7c6d8a",
             BaseColor.Taupe  => "#7a6a5a",
@@ -245,16 +286,16 @@
 
     private string GetOptionClass(bool isSelected)
     {
-        var baseClass = "flex items-center justify-center p-2 rounded-md border hover:bg-accent transition-colors cursor-pointer text-center";
-        var selectedClass = isSelected ? "bg-accent border-ring" : "border-transparent";
+        var baseClass = "flex items-center justify-center p-2 rounded-md border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer text-center";
+        var selectedClass = isSelected ? "bg-accent text-accent-foreground border-ring" : "border-transparent";
         return $"{baseClass} {selectedClass}";
     }
 
     private string GetBaseColorOptionClass(BaseColor color)
     {
         var isSelected = _currentBaseColor == color;
-        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent transition-colors cursor-pointer";
-        var selectedClass = isSelected ? "bg-accent" : "";
+        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer";
+        var selectedClass = isSelected ? "bg-accent text-accent-foreground" : "";
         return $"{baseClass} {selectedClass}";
     }
 
@@ -271,7 +312,6 @@
             BaseColor.Gray    => "bg-gray-500",
             BaseColor.Neutral => "bg-neutral-500",
             BaseColor.Stone   => "bg-stone-500",
-            BaseColor.Luma    => "bg-indigo-400",
             BaseColor.Mist    => "bg-sky-400",
             BaseColor.Mauve   => "bg-purple-400",
             BaseColor.Taupe   => "bg-amber-700",
@@ -285,8 +325,8 @@
     private string GetPrimaryColorOptionClass(PrimaryColor color)
     {
         var isSelected = _currentPrimaryColor == color;
-        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent transition-colors cursor-pointer";
-        var selectedClass = isSelected ? "bg-accent" : "";
+        var baseClass = "flex flex-col items-center gap-1 p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer";
+        var selectedClass = isSelected ? "bg-accent text-accent-foreground" : "";
         return $"{baseClass} {selectedClass}";
     }
 

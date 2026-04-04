@@ -38,6 +38,14 @@
     --sidebar-accent-foreground: oklch(0.2050 0 0);
     --sidebar-border: oklch(0.9220 0 0);
     --sidebar-ring: oklch(0.7080 0 0);
+    --surface:                    oklch(0.967 0 0);
+    --surface-foreground:         oklch(0.145 0 0);
+    --code:                       oklch(0.949 0.004 286);
+    --code-foreground:            oklch(0.145 0 0);
+    --code-highlight:             oklch(0.925 0.008 252);
+    --code-number:                oklch(0.556 0 0);
+    --selection:                  oklch(0.922 0.015 252);
+    --selection-foreground:       oklch(0.145 0 0);
     --alert-success: oklch(0.55 0.20 142);
     --alert-success-foreground: oklch(0.30 0.09 142);
     --alert-success-bg: oklch(0.993 0.003 142);
@@ -57,7 +65,24 @@
     --font-heading: var(--font-sans);
     --spacing-scale: 1;
     --tracking-normal: 0em;
-    --spacing: 0.25rem;
+    /* --spacing wired to --spacing-scale so style variants (Nova 0.85×, Maia 1.15×, Mira 0.7×) scale all padding/gap/margin */
+    --spacing: calc(0.25rem * var(--spacing-scale));
+    /* Runtime radius scale — overrideable by style variants and radius presets */
+    --radius-xs:  calc(var(--radius) * 0.5);
+    --radius-sm:  calc(var(--radius) * 0.75);
+    --radius-md:  calc(var(--radius) * 0.8);
+    --radius-lg:  calc(var(--radius) * 1.5);
+    --radius-xl:  calc(var(--radius) * 2);
+    --radius-2xl: calc(var(--radius) * 3);
+    --radius-3xl: calc(var(--radius) * 4);
+    --radius-4xl: calc(var(--radius) * 5);
+    /* Runtime shadow scale — overrideable by style variants */
+    --shadow-xs:  0 1px 1px 0px oklch(0 0 0 / 0.05);
+    --shadow-sm:  0 1px 3px 0 oklch(0 0 0 / 0.1), 0 1px 2px -1px oklch(0 0 0 / 0.1);
+    --shadow-md:  0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
+    --shadow-lg:  0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+    --shadow-xl:  0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px oklch(0 0 0 / 0.25);
   }
 
   .dark {
@@ -93,6 +118,14 @@
     --sidebar-accent-foreground: oklch(0.9850 0 0);
     --sidebar-border: oklch(0.2750 0 0);
     --sidebar-ring: oklch(0.4390 0 0);
+    --surface:                    oklch(0.269 0 0);
+    --surface-foreground:         oklch(0.985 0 0);
+    --code:                       oklch(0.230 0.006 264);
+    --code-foreground:            oklch(0.985 0 0);
+    --code-highlight:             oklch(0.260 0.010 252);
+    --code-number:                oklch(0.708 0 0);
+    --selection:                  oklch(0.325 0.015 252);
+    --selection-foreground:       oklch(0.985 0 0);
     --alert-success: oklch(0.60 0.18 142);
     --alert-success-foreground: oklch(0.90 0.06 142);
     --alert-success-bg: oklch(0.18 0.008 142);
@@ -225,17 +258,92 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-code: var(--code);
+  --color-code-foreground: var(--code-foreground);
+  --color-code-highlight: var(--code-highlight);
+  --color-code-number: var(--code-number);
+  --color-selection: var(--selection);
+  --color-selection-foreground: var(--selection-foreground);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
   --font-heading: var(--font-heading);
 
-  --radius-xs:  calc(var(--radius) * 0.5);
-  --radius-sm:  calc(var(--radius) * 0.75);
-  --radius-md:  var(--radius);
-  --radius-lg:  calc(var(--radius) * 1.5);
-  --radius-xl:  calc(var(--radius) * 2);
-  --radius-2xl: calc(var(--radius) * 3);
-  --radius-4xl: 9999px;
+  --radius-xs:  var(--radius-xs);
+  --radius-sm:  var(--radius-sm);
+  --radius-md:  var(--radius-md);
+  --radius-lg:  var(--radius-lg);
+  --radius-xl:  var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-3xl: var(--radius-3xl);
+  --radius-4xl: var(--radius-4xl);
+
+  --shadow-xs:  var(--shadow-xs);
+  --shadow-sm:  var(--shadow-sm);
+  --shadow-md:  var(--shadow-md);
+  --shadow-lg:  var(--shadow-lg);
+  --shadow-xl:  var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+
+  --breakpoint-3xl: 1600px;
+  --breakpoint-4xl: 2000px;
+}
+
+/* Text selection highlight using theme tokens */
+@layer base {
+  ::selection {
+    background-color: var(--selection);
+    color: var(--selection-foreground);
+  }
+}
+
+/* Menu Accent — unlayered so it beats @layer base base-color rules with same specificity */
+:root.menu-accent-bold {
+  --accent: var(--primary);
+  --accent-foreground: var(--primary-foreground);
+}
+
+/* Menu Color — unlayered so background-color overrides beat @layer utilities */
+
+/* Translucent default: glass effect with blur backdrop */
+:root.menu-color-default-translucent .bg-popover,
+:root.menu-color-default-translucent [data-slot="popover-content"],
+:root.menu-color-default-translucent [data-slot="dropdown-content"],
+:root.menu-color-default-translucent [data-slot="select-content"],
+:root.menu-color-default-translucent [data-slot="combobox-content"] {
+  background-color: color-mix(in oklch, var(--popover) 50%, transparent);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+/* Inverted: dark surface for menus in light mode */
+:root:not(.dark).menu-color-inverted .bg-popover,
+:root:not(.dark).menu-color-inverted [data-slot="popover-content"],
+:root:not(.dark).menu-color-inverted [data-slot="dropdown-content"],
+:root:not(.dark).menu-color-inverted [data-slot="select-content"],
+:root:not(.dark).menu-color-inverted [data-slot="combobox-content"] {
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --border: oklch(0.275 0 0);
+}
+
+/* Inverted translucent: dark glass effect */
+:root:not(.dark).menu-color-inverted-translucent .bg-popover,
+:root:not(.dark).menu-color-inverted-translucent [data-slot="popover-content"],
+:root:not(.dark).menu-color-inverted-translucent [data-slot="dropdown-content"],
+:root:not(.dark).menu-color-inverted-translucent [data-slot="select-content"],
+:root:not(.dark).menu-color-inverted-translucent [data-slot="combobox-content"] {
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --border: oklch(0.275 0 0);
+  background-color: color-mix(in oklch, oklch(0.145 0 0) 70%, transparent);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
 }

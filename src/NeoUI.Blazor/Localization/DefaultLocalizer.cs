@@ -202,7 +202,6 @@ public class DefaultLocalizer : ILocalizer
         ["ThemeSwitcher.Font"] = "Font",
 
         // ── ThemeSwitcher — BaseColor names ──────────────────────────────────
-        ["ThemeSwitcher.BaseColor.Luma"] = "Luma",
         ["ThemeSwitcher.BaseColor.Mist"] = "Mist",
         ["ThemeSwitcher.BaseColor.Mauve"] = "Mauve",
         ["ThemeSwitcher.BaseColor.Taupe"] = "Taupe",
@@ -215,13 +214,14 @@ public class DefaultLocalizer : ILocalizer
         ["ThemeSwitcher.Style.Maia"] = "Maia",
         ["ThemeSwitcher.Style.Lyra"] = "Lyra",
         ["ThemeSwitcher.Style.Mira"] = "Mira",
+        ["ThemeSwitcher.Style.Luma"] = "Luma",
 
         // ── ThemeSwitcher — RadiusPreset names ───────────────────────────────
-        ["ThemeSwitcher.Radius.None"] = "None",
-        ["ThemeSwitcher.Radius.Small"] = "Small",
-        ["ThemeSwitcher.Radius.Medium"] = "Medium",
-        ["ThemeSwitcher.Radius.Large"] = "Large",
-        ["ThemeSwitcher.Radius.Full"] = "Full",
+        ["ThemeSwitcher.Radius.Default"] = "Default",
+        ["ThemeSwitcher.Radius.None"]    = "None",
+        ["ThemeSwitcher.Radius.Small"]   = "Small",
+        ["ThemeSwitcher.Radius.Medium"]  = "Medium",
+        ["ThemeSwitcher.Radius.Large"]   = "Large",
 
         // ── ThemeSwitcher — FontPreset names ─────────────────────────────────
         ["ThemeSwitcher.Font.System"] = "System",
@@ -230,6 +230,18 @@ public class DefaultLocalizer : ILocalizer
         ["ThemeSwitcher.Font.CalSans"] = "Cal Sans",
         ["ThemeSwitcher.Font.DmSans"] = "DM Sans",
         ["ThemeSwitcher.Font.PlusJakarta"] = "Plus Jakarta",
+
+        // ── ThemeSwitcher — MenuAccent names ─────────────────────────────────
+        ["ThemeSwitcher.MenuAccent"] = "Menu Accent",
+        ["ThemeSwitcher.MenuAccent.Subtle"] = "Subtle",
+        ["ThemeSwitcher.MenuAccent.Bold"] = "Bold",
+
+        // ── ThemeSwitcher — MenuColor names ──────────────────────────────────
+        ["ThemeSwitcher.MenuColor"] = "Menu Color",
+        ["ThemeSwitcher.MenuColor.Default"] = "Default",
+        ["ThemeSwitcher.MenuColor.Inverted"] = "Inverted",
+        ["ThemeSwitcher.MenuColor.DefaultTranslucent"] = "Translucent",
+        ["ThemeSwitcher.MenuColor.InvertedTranslucent"] = "Dark Glass",
 
         // ── Timeline ─────────────────────────────────────────────────────────
         ["Timeline.AriaLabel"] = "Timeline",

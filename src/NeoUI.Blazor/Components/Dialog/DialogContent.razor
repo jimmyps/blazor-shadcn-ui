@@ -9,7 +9,7 @@
 *@
 
 <DialogPortal>
-    <DialogOverlay class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
+    <DialogOverlay data-slot="overlay" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
     <DialogContentPrimitive
         class="@GetClassNames()"

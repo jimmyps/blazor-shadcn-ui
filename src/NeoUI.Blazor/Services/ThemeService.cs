@@ -22,9 +22,6 @@ public enum BaseColor
     /// <summary>Stone color scheme — warm gray with brown undertones.</summary>
     Stone,
 
-    /// <summary>Luma color scheme — vibrant tinted neutral (flagship modern SaaS look).</summary>
-    Luma,
-
     /// <summary>Mist color scheme — cool blue-gray.</summary>
     Mist,
 
@@ -119,7 +116,10 @@ public enum StyleVariant
     Lyra,
 
     /// <summary>Mira — ultra-dense style for data-heavy tables.</summary>
-    Mira
+    Mira,
+
+    /// <summary>Luma — glassmorphism, modern SaaS aesthetic with soft blur overlays.</summary>
+    Luma
 }
 
 /// <summary>
@@ -127,20 +127,20 @@ public enum StyleVariant
 /// </summary>
 public enum RadiusPreset
 {
+    /// <summary>Uses the style variant's built-in radius — no explicit override.</summary>
+    Default,
+
     /// <summary>No rounding — square corners (--radius: 0rem).</summary>
     None,
 
-    /// <summary>Subtle rounding (--radius: 0.25rem).</summary>
+    /// <summary>Subtle rounding (--radius: 0.45rem).</summary>
     Small,
 
-    /// <summary>Medium rounding — default (--radius: 0.625rem).</summary>
+    /// <summary>Medium rounding (--radius: 0.625rem).</summary>
     Medium,
 
-    /// <summary>Generous rounding (--radius: 1rem).</summary>
-    Large,
-
-    /// <summary>Pill-shaped elements (--radius: 9999px).</summary>
-    Full
+    /// <summary>Generous rounding (--radius: 0.875rem).</summary>
+    Large
 }
 
 /// <summary>
@@ -168,13 +168,43 @@ public enum FontPreset
 }
 
 /// <summary>
-/// A portable, serializable record encoding all theme dimensions as a named preset.
+/// Menu accent intensity — controls whether hover/active states use accent or primary color.
+/// </summary>
+public enum MenuAccent
+{
+    /// <summary>Subtle — hover/active states use accent color (default).</summary>
+    Subtle,
+
+    /// <summary>Bold — hover/active states use primary color for higher contrast.</summary>
+    Bold
+}
+
+/// <summary>
+/// Menu color mode — controls translucency and inversion of popover/menu surfaces.
+/// </summary>
+public enum MenuColor
+{
+    /// <summary>Default — solid opaque menu background.</summary>
+    Default,
+
+    /// <summary>Inverted — menu uses dark/inverted background in light mode.</summary>
+    Inverted,
+
+    /// <summary>DefaultTranslucent — menu has translucent glassmorphism effect.</summary>
+    DefaultTranslucent,
+
+    /// <summary>InvertedTranslucent — menu is both inverted and translucent.</summary>
+    InvertedTranslucent
+}
+
+/// <summary>
+/// A portable, serializable recordencoding all theme dimensions as a named preset.
 /// </summary>
 /// <param name="Name">Human-readable name for the preset.</param>
 /// <param name="BaseColor">Base (neutral) color scheme.</param>
 /// <param name="PrimaryColor">Primary accent color.</param>
 /// <param name="StyleVariant">Visual style variant (radius + density character).</param>
-/// <param name="RadiusPreset">Explicit radius override. <see cref="RadiusPreset.Medium"/> means no override.</param>
+/// <param name="RadiusPreset">Explicit radius override. <see cref="RadiusPreset.Default"/> means use style variant's radius.</param>
 /// <param name="FontPreset">Font preset. <see cref="FontPreset.System"/> means no override.</param>
 /// <param name="IsDarkMode">Whether dark mode is active.</param>
 public record ThemePreset(
@@ -182,17 +212,19 @@ public record ThemePreset(
     BaseColor     BaseColor     = BaseColor.Zinc,
     PrimaryColor  PrimaryColor  = PrimaryColor.Default,
     StyleVariant  StyleVariant  = StyleVariant.Default,
-    RadiusPreset  RadiusPreset  = RadiusPreset.Medium,
+    RadiusPreset  RadiusPreset  = RadiusPreset.Default,
     FontPreset    FontPreset    = FontPreset.System,
-    bool          IsDarkMode    = false)
+    bool          IsDarkMode    = false,
+    MenuAccent    MenuAccent    = MenuAccent.Subtle,
+    MenuColor     MenuColor     = MenuColor.Default)
 {
     /// <summary>Clean, neutral default — the classic NeoUI look.</summary>
     public static readonly ThemePreset Default = new("Default");
 
-    /// <summary>Luma + Vega — modern SaaS, vibrant tinted neutrals with balanced style.</summary>
+    /// <summary>Luma — modern SaaS glassmorphism preset with Zinc base + Luma style.</summary>
     public static readonly ThemePreset Luma = new("Luma",
-        BaseColor: BaseColor.Luma,
-        StyleVariant: StyleVariant.Vega,
+        BaseColor: BaseColor.Zinc,
+        StyleVariant: StyleVariant.Luma,
         FontPreset: FontPreset.Inter);
 
     /// <summary>Nova — compact dashboard preset with Zinc base.</summary>
@@ -224,8 +256,10 @@ public class ThemeService
     private BaseColor _baseColor = BaseColor.Zinc;
     private PrimaryColor _primaryColor = PrimaryColor.Default;
     private StyleVariant _styleVariant = StyleVariant.Default;
-    private RadiusPreset _radiusPreset = RadiusPreset.Medium;
+    private RadiusPreset _radiusPreset = RadiusPreset.Default;
     private FontPreset _fontPreset = FontPreset.System;
+    private MenuAccent _menuAccent = MenuAccent.Subtle;
+    private MenuColor _menuColor = MenuColor.Default;
     private bool _isInitialized;
 
     /// <summary>Event raised when the theme changes.</summary>
@@ -248,6 +282,12 @@ public class ThemeService
 
     /// <summary>Gets the current font preset.</summary>
     public FontPreset CurrentFontPreset => _fontPreset;
+
+    /// <summary>Gets the current menu accent intensity.</summary>
+    public MenuAccent CurrentMenuAccent => _menuAccent;
+
+    /// <summary>Gets the current menu color mode.</summary>
+    public MenuColor CurrentMenuColor => _menuColor;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ThemeService"/> class.
@@ -274,6 +314,8 @@ public class ThemeService
             var savedStyle        = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "styleVariant");
             var savedRadius       = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "radiusPreset");
             var savedFont         = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "fontPreset");
+            var savedMenuAccent   = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "menuAccent");
+            var savedMenuColor    = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", "menuColor");
 
             _isDarkMode = !string.IsNullOrEmpty(savedTheme)
                 ? savedTheme == "dark"
@@ -294,6 +336,12 @@ public class ThemeService
             if (!string.IsNullOrEmpty(savedFont) && Enum.TryParse<FontPreset>(savedFont, true, out var fontPreset))
                 _fontPreset = fontPreset;
 
+            if (!string.IsNullOrEmpty(savedMenuAccent) && Enum.TryParse<MenuAccent>(savedMenuAccent, true, out var menuAccent))
+                _menuAccent = menuAccent;
+
+            if (!string.IsNullOrEmpty(savedMenuColor) && Enum.TryParse<MenuColor>(savedMenuColor, true, out var menuColor))
+                _menuColor = menuColor;
+
             await ApplyThemeAsync();
 
             _isInitialized = true;
@@ -304,8 +352,10 @@ public class ThemeService
             _baseColor     = BaseColor.Zinc;
             _primaryColor  = PrimaryColor.Default;
             _styleVariant  = StyleVariant.Default;
-            _radiusPreset  = RadiusPreset.Medium;
+            _radiusPreset  = RadiusPreset.Default;
             _fontPreset    = FontPreset.System;
+            _menuAccent    = MenuAccent.Subtle;
+            _menuColor     = MenuColor.Default;
 
             try { await ApplyThemeAsync(); } catch { }
 
@@ -382,6 +432,26 @@ public class ThemeService
         OnThemeChanged?.Invoke();
     }
 
+    /// <summary>Sets the menu accent intensity.</summary>
+    public async Task SetMenuAccentAsync(MenuAccent menuAccent)
+    {
+        if (_menuAccent == menuAccent) return;
+        _menuAccent = menuAccent;
+        await ApplyThemeAsync();
+        await SaveAsync("menuAccent", _menuAccent.ToString());
+        OnThemeChanged?.Invoke();
+    }
+
+    /// <summary>Sets the menu color mode.</summary>
+    public async Task SetMenuColorAsync(MenuColor menuColor)
+    {
+        if (_menuColor == menuColor) return;
+        _menuColor = menuColor;
+        await ApplyThemeAsync();
+        await SaveAsync("menuColor", _menuColor.ToString());
+        OnThemeChanged?.Invoke();
+    }
+
     /// <summary>
     /// Sets the complete theme (base color, primary color, and dark mode).
     /// Existing overloads remain unchanged for backward compatibility.
@@ -411,6 +481,8 @@ public class ThemeService
         _radiusPreset = preset.RadiusPreset;
         _fontPreset   = preset.FontPreset;
         _isDarkMode   = preset.IsDarkMode;
+        _menuAccent   = preset.MenuAccent;
+        _menuColor    = preset.MenuColor;
 
         await ApplyThemeAsync();
         await SaveAsync("theme",        _isDarkMode ? "dark" : "light");
@@ -419,6 +491,8 @@ public class ThemeService
         await SaveAsync("styleVariant", _styleVariant.ToString());
         await SaveAsync("radiusPreset", _radiusPreset.ToString());
         await SaveAsync("fontPreset",   _fontPreset.ToString());
+        await SaveAsync("menuAccent",   _menuAccent.ToString());
+        await SaveAsync("menuColor",    _menuColor.ToString());
 
         OnThemeChanged?.Invoke();
     }
@@ -437,15 +511,21 @@ public class ThemeService
                 primary = _primaryColor == PrimaryColor.Default
                               ? ""
                               : $"primary-{_primaryColor.ToString().ToLowerInvariant()}",
-                style   = _styleVariant == StyleVariant.Default
-                              ? ""
-                              : $"style-{_styleVariant.ToString().ToLowerInvariant()}",
-                radius  = _radiusPreset == RadiusPreset.Medium
+                style   = $"style-{_styleVariant.ToString().ToLowerInvariant()}",
+                radius  = _radiusPreset == RadiusPreset.Default
                               ? ""
                               : $"radius-{_radiusPreset.ToString().ToLowerInvariant()}",
                 font    = _fontPreset == FontPreset.System
                               ? ""
                               : $"font-{_fontPreset.ToString().ToLowerInvariant()}",
+                menuAccent = _menuAccent == MenuAccent.Subtle ? "" : "menu-accent-bold",
+                menuColor = _menuColor switch
+                {
+                    MenuColor.Inverted            => "menu-color-inverted",
+                    MenuColor.DefaultTranslucent  => "menu-color-default-translucent",
+                    MenuColor.InvertedTranslucent => "menu-color-inverted-translucent",
+                    _                             => ""
+                },
                 dark    = _isDarkMode
             });
         }

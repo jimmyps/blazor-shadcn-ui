@@ -4,5 +4,16 @@
   :root.style-lyra {
     --radius: 0rem;
     --spacing-scale: 1;
+
+    /* Flat design — no elevation, hard edges */
+    --shadow-xs: none;
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
+  }
+
+  :root.style-lyra [data-slot="overlay"] {
+    --blur-sm: 0px;
   }
 }

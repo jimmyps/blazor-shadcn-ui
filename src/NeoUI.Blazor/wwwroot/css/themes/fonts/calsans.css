@@ -1,4 +1,13 @@
 /* Font Preset: Cal Sans — geometric display heading paired with Inter body */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@font-face {
+  font-family: 'Cal Sans';
+  src: url('https://cdn.jsdelivr.net/npm/@calcom/calsans@1.0.2/fonts/CalSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 @layer base {
   :root.font-calsans {

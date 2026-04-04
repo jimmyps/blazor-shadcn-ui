@@ -4,5 +4,15 @@
   :root.style-vega {
     --radius: 0.625rem;
     --spacing-scale: 1;
+    /* Uses default shadow scale — balanced for professional use */
   }
+
+  :root.style-vega [data-slot="overlay"] {
+    --blur-sm: 2px;
+  }
+}
+
+/* Override --radius-md to match shadcn (1× base) — unlayered to beat @theme inline */
+:root.style-vega {
+  --radius-md: var(--radius);
 }

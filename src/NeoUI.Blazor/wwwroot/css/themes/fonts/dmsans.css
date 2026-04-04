@@ -1,4 +1,6 @@
 /* Font Preset: DM Sans — friendly, modern geometric sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..900;1,9..40,100..900&display=swap');
+
 
 @layer base {
   :root.font-dmsans {

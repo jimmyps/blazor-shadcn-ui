@@ -2,6 +2,6 @@
 
 @layer base {
   :root.radius-full {
-    --radius: 9999px;
+    --radius: calc(infinity * 1px);
   }
 }
