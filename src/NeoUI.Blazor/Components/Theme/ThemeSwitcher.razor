@@ -4,6 +4,40 @@
 
 @namespace NeoUI.Blazor
 
+@{
+    // Extracted fragment — shared between the Colors tab and the flat (ShowStyles=false) layout
+    RenderFragment colorsContent = @<text>
+        <div class="space-y-3">
+            <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
+            <div class="grid grid-cols-5 gap-2">
+                @foreach (var color in Enum.GetValues<BaseColor>())
+                {
+                    <button @onclick="() => OnBaseColorSelected(color)"
+                            class="@GetBaseColorOptionClass(color)"
+                            title="@color">
+                        <div class="@GetBaseColorVisualClass(color)"></div>
+                        <span class="text-xs mt-1">@color</span>
+                    </button>
+                }
+            </div>
+        </div>
+        <div class="space-y-3">
+            <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.ThemeColor"]</h4>
+            <div class="grid grid-cols-5 gap-2">
+                @foreach (var color in Enum.GetValues<PrimaryColor>())
+                {
+                    <button @onclick="() => OnPrimaryColorSelected(color)"
+                            class="@GetPrimaryColorOptionClass(color)"
+                            title="@color">
+                        <div class="@GetPrimaryColorVisualClass(color)"></div>
+                        <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
+                    </button>
+                }
+            </div>
+        </div>
+    </text>;
+}
+
 <TooltipProvider>
     <Popover>
         <Tooltip>
@@ -49,34 +83,7 @@
                         </TabsList>
 
                         <TabsContent Value="colors" Class="space-y-4 mt-4">
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
-                                <div class="grid grid-cols-5 gap-2">
-                                    @foreach (var color in Enum.GetValues<BaseColor>())
-                                    {
-                                        <button @onclick="() => OnBaseColorSelected(color)"
-                                                class="@GetBaseColorOptionClass(color)"
-                                                title="@color">
-                                            <div class="@GetBaseColorVisualClass(color)"></div>
-                                            <span class="text-xs mt-1">@color</span>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.ThemeColor"]</h4>
-                                <div class="grid grid-cols-5 gap-2">
-                                    @foreach (var color in Enum.GetValues<PrimaryColor>())
-                                    {
-                                        <button @onclick="() => OnPrimaryColorSelected(color)"
-                                                class="@GetPrimaryColorOptionClass(color)"
-                                                title="@color">
-                                            <div class="@GetPrimaryColorVisualClass(color)"></div>
-                                            <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
-                                        </button>
-                                    }
-                                </div>
-                            </div>
+                            @colorsContent
                         </TabsContent>
 
                         <TabsContent Value="styles" Class="space-y-4 mt-4">
@@ -155,34 +162,7 @@
                 else
                 {
                     <div class="space-y-4">
-                        <div class="space-y-3">
-                            <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
-                            <div class="grid grid-cols-5 gap-2">
-                                @foreach (var color in Enum.GetValues<BaseColor>())
-                                {
-                                    <button @onclick="() => OnBaseColorSelected(color)"
-                                            class="@GetBaseColorOptionClass(color)"
-                                            title="@color">
-                                        <div class="@GetBaseColorVisualClass(color)"></div>
-                                        <span class="text-xs mt-1">@color</span>
-                                    </button>
-                                }
-                            </div>
-                        </div>
-                        <div class="space-y-3">
-                            <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.ThemeColor"]</h4>
-                            <div class="grid grid-cols-5 gap-2">
-                                @foreach (var color in Enum.GetValues<PrimaryColor>())
-                                {
-                                    <button @onclick="() => OnPrimaryColorSelected(color)"
-                                            class="@GetPrimaryColorOptionClass(color)"
-                                            title="@color">
-                                        <div class="@GetPrimaryColorVisualClass(color)"></div>
-                                        <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
-                                    </button>
-                                }
-                            </div>
-                        </div>
+                        @colorsContent
                     </div>
                 }
 
