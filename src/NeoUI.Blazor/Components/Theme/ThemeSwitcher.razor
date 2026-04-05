@@ -79,7 +79,7 @@
                                          Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                                 @Localizer["ThemeSwitcher.Tab.Styles"]
                             </TabsTrigger>
-                            <SelectionIndicator />
+                            <SelectionIndicator @key="_currentStyleVariant" />
                         </TabsList>
 
                         <TabsContent Value="colors" Class="space-y-4 mt-4">
@@ -331,16 +331,16 @@
     // Standard text-only option button (font, menu accent, menu color)
     private string GetOptionClass(bool isSelected)
     {
-        var baseClass = "flex items-center justify-center p-2 rounded-md border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer text-center";
-        var selectedClass = isSelected ? "bg-accent text-accent-foreground border-ring" : "border-transparent";
+        var baseClass = "flex items-center justify-center p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer text-center";
+        var selectedClass = isSelected ? "bg-accent text-accent-foreground" : "";
         return $"{baseClass} {selectedClass}";
     }
 
     // Icon + label option button (radius, style variant)
     private string GetIconOptionClass(bool isSelected)
     {
-        var baseClass = "flex flex-col items-center justify-center p-2 rounded-md border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer";
-        var selectedClass = isSelected ? "bg-accent text-accent-foreground border-ring" : "border-transparent";
+        var baseClass = "flex flex-col items-center justify-center p-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer";
+        var selectedClass = isSelected ? "bg-accent text-accent-foreground" : "";
         return $"{baseClass} {selectedClass}";
     }
 
