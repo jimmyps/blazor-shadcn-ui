@@ -5,6 +5,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private static readonly IReadOnlyList<DemoPropRow> _themeSwitcherProps =
             [
+                new("ShowStyles", "bool", "false", "When true, adds a \"Styles & Layout\" tab exposing style variant, radius, font, and menu options alongside the default Colors tab."),
                 new("TriggerClass", "string?", "null", "Additional CSS classes merged onto the trigger Button."),
                 new("PopoverContentClass", "string?", "null", "Additional CSS classes merged onto the PopoverContent panel."),
                 new("Align", "PopoverAlign", "End", "Popover alignment relative to trigger."),
@@ -32,8 +33,11 @@ namespace NeoUI.Demo.Shared.Pages.Components
             ];
 
         private const string _demoCode = """
+                <!-- Colors only (default) -->
                 <ThemeSwitcher Align="PopoverAlign.Start" />
-                <DarkModeToggle />
+
+                <!-- Full v2 — tabbed with Styles & Layout -->
+                <ThemeSwitcher Align="PopoverAlign.Start" ShowStyles="true" />
                 """;
 
         private const string _darkModeToggleCode = """

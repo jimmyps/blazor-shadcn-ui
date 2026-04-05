@@ -807,6 +807,7 @@ The built-in `ThemeSwitcher` component renders a popover picker for all theme di
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `ShowStyles` | `bool` | `false` | When `true`, adds a **Styles & Layout** tab exposing style variant, radius, font, and menu options. Default `false` shows only the Colors tab (base + primary + dark mode). |
 | `Strategy` | `PositioningStrategy` | `Fixed` | `Fixed` escapes stacking contexts; use `Absolute` if fixed positioning causes issues |
 | `ZIndex` | `int` | `60` | CSS z-index for the popover panel |
 | `TriggerClass` | `string?` | `null` | Additional CSS classes for the trigger button |

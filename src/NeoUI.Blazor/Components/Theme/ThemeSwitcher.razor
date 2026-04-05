@@ -9,7 +9,7 @@
         <Tooltip>
             <TooltipTrigger>
                 <PopoverTrigger AsChild>
-                    <Button Variant="ButtonVariant.Outline" 
+                    <Button Variant="ButtonVariant.Outline"
                             Size="ButtonSize.Icon"
                             Class="@GetTriggerButtonClass()"
                             AriaLabel="@Localizer["ThemeSwitcher.ChangeTheme"]">
@@ -21,117 +21,173 @@
                 <p>@_currentBaseColor / @_currentPrimaryColor / @_currentStyleVariant</p>
             </TooltipContent>
         </Tooltip>
-    <PopoverContent Class="@($"w-96 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
-                    Align="@Align" Strategy="@Strategy" ZIndex="@ZIndex">
-        <div class="space-y-4">
-            <div class="space-y-2">
+        <PopoverContent Class="@($"w-96 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
+                        Align="@Align" Strategy="@Strategy" ZIndex="@ZIndex">
+            <div class="space-y-4">
+
+                @* Header: always shown *@
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-semibold">@Localizer["ThemeSwitcher.Settings"]</h3>
                     <DarkModeToggle />
                 </div>
-            </div>
 
-            <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Style"]</h4>
-                <div class="grid grid-cols-6 gap-1">
-                    @foreach (var variant in Enum.GetValues<StyleVariant>())
-                    {
-                        <button @onclick="() => OnStyleVariantSelected(variant)"
-                                class="@GetOptionClass(_currentStyleVariant == variant)"
-                                title="@variant">
-                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.Style.{variant}"]</span>
-                        </button>
-                    }
-                </div>
-            </div>
+                @* ShowStyles=true: tabbed layout using Tabs + SelectionIndicator *@
+                @* ShowStyles=false (default): flat colors-only layout *@
+                @if (ShowStyles)
+                {
+                    <Tabs DefaultValue="colors">
+                        <TabsList Class="grid w-full grid-cols-2">
+                            <TabsTrigger Value="colors"
+                                         Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                                @Localizer["ThemeSwitcher.Tab.Colors"]
+                            </TabsTrigger>
+                            <TabsTrigger Value="styles"
+                                         Class="relative z-10 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                                @Localizer["ThemeSwitcher.Tab.Styles"]
+                            </TabsTrigger>
+                            <SelectionIndicator />
+                        </TabsList>
 
-            <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BorderRadius"]</h4>
-                <div class="grid grid-cols-5 gap-1">
-                    @foreach (var preset in Enum.GetValues<RadiusPreset>())
-                    {
-                        <button @onclick="() => OnRadiusPresetSelected(preset)"
-                                class="@GetOptionClass(_currentRadiusPreset == preset)"
-                                title="@preset">
-                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.Radius.{preset}"]</span>
-                        </button>
-                    }
-                </div>
-            </div>
+                        <TabsContent Value="colors" Class="space-y-4 mt-4">
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
+                                <div class="grid grid-cols-5 gap-2">
+                                    @foreach (var color in Enum.GetValues<BaseColor>())
+                                    {
+                                        <button @onclick="() => OnBaseColorSelected(color)"
+                                                class="@GetBaseColorOptionClass(color)"
+                                                title="@color">
+                                            <div class="@GetBaseColorVisualClass(color)"></div>
+                                            <span class="text-xs mt-1">@color</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.ThemeColor"]</h4>
+                                <div class="grid grid-cols-5 gap-2">
+                                    @foreach (var color in Enum.GetValues<PrimaryColor>())
+                                    {
+                                        <button @onclick="() => OnPrimaryColorSelected(color)"
+                                                class="@GetPrimaryColorOptionClass(color)"
+                                                title="@color">
+                                            <div class="@GetPrimaryColorVisualClass(color)"></div>
+                                            <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </TabsContent>
 
-            <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Font"]</h4>
-                <div class="grid grid-cols-3 gap-1">
-                    @foreach (var font in Enum.GetValues<FontPreset>())
-                    {
-                        <button @onclick="() => OnFontPresetSelected(font)"
-                                class="@GetOptionClass(_currentFontPreset == font)"
-                                title="@font">
-                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.Font.{font}"]</span>
-                        </button>
-                    }
-                </div>
-            </div>
+                        <TabsContent Value="styles" Class="space-y-4 mt-4">
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Style"]</h4>
+                                <div class="grid grid-cols-4 gap-1">
+                                    @foreach (var variant in Enum.GetValues<StyleVariant>())
+                                    {
+                                        <button @onclick="() => OnStyleVariantSelected(variant)"
+                                                class="@GetIconOptionClass(_currentStyleVariant == variant)"
+                                                title="@variant">
+                                            <div style="@GetStyleVariantOuterStyle(variant); border: 1.5px solid currentColor; padding: 2px; width: 32px; height: 22px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                                                <div style="@GetStyleVariantInnerStyle(variant); background: currentColor; width: 100%; height: 100%;"></div>
+                                            </div>
+                                            <span class="text-[10px] mt-1 truncate">@Localizer[$"ThemeSwitcher.Style.{variant}"]</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BorderRadius"]</h4>
+                                <div class="grid grid-cols-5 gap-1">
+                                    @foreach (var preset in Enum.GetValues<RadiusPreset>())
+                                    {
+                                        <button @onclick="() => OnRadiusPresetSelected(preset)"
+                                                class="@GetIconOptionClass(_currentRadiusPreset == preset)"
+                                                title="@preset">
+                                            <div style="width: 18px; height: 18px; @GetRadiusCornerStyle(preset); border-top: 2px solid currentColor; border-left: 2px solid currentColor;"></div>
+                                            <span class="text-[10px] mt-1 truncate">@Localizer[$"ThemeSwitcher.Radius.{preset}"]</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Font"]</h4>
+                                <div class="grid grid-cols-3 gap-1">
+                                    @foreach (var font in Enum.GetValues<FontPreset>())
+                                    {
+                                        <button @onclick="() => OnFontPresetSelected(font)"
+                                                class="@GetOptionClass(_currentFontPreset == font)"
+                                                title="@font">
+                                            <span class="text-xs truncate" style="font-family: @GetFontFamilyString(font)">@Localizer[$"ThemeSwitcher.Font.{font}"]</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuAccent"]</h4>
+                                <div class="grid grid-cols-2 gap-1">
+                                    @foreach (var accent in Enum.GetValues<MenuAccent>())
+                                    {
+                                        <button @onclick="() => OnMenuAccentSelected(accent)"
+                                                class="@GetOptionClass(_currentMenuAccent == accent)"
+                                                title="@accent">
+                                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuAccent.{accent}"]</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuColor"]</h4>
+                                <div class="grid grid-cols-2 gap-1">
+                                    @foreach (var menuColor in Enum.GetValues<MenuColor>())
+                                    {
+                                        <button @onclick="() => OnMenuColorSelected(menuColor)"
+                                                class="@GetOptionClass(_currentMenuColor == menuColor)"
+                                                title="@menuColor">
+                                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuColor.{menuColor}"]</span>
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
+                }
+                else
+                {
+                    <div class="space-y-4">
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
+                            <div class="grid grid-cols-5 gap-2">
+                                @foreach (var color in Enum.GetValues<BaseColor>())
+                                {
+                                    <button @onclick="() => OnBaseColorSelected(color)"
+                                            class="@GetBaseColorOptionClass(color)"
+                                            title="@color">
+                                        <div class="@GetBaseColorVisualClass(color)"></div>
+                                        <span class="text-xs mt-1">@color</span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.ThemeColor"]</h4>
+                            <div class="grid grid-cols-5 gap-2">
+                                @foreach (var color in Enum.GetValues<PrimaryColor>())
+                                {
+                                    <button @onclick="() => OnPrimaryColorSelected(color)"
+                                            class="@GetPrimaryColorOptionClass(color)"
+                                            title="@color">
+                                        <div class="@GetPrimaryColorVisualClass(color)"></div>
+                                        <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
 
-            <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuAccent"]</h4>
-                <div class="grid grid-cols-2 gap-1">
-                    @foreach (var accent in Enum.GetValues<MenuAccent>())
-                    {
-                        <button @onclick="() => OnMenuAccentSelected(accent)"
-                                class="@GetOptionClass(_currentMenuAccent == accent)"
-                                title="@accent">
-                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuAccent.{accent}"]</span>
-                        </button>
-                    }
-                </div>
             </div>
-
-            <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuColor"]</h4>
-                <div class="grid grid-cols-2 gap-1">
-                    @foreach (var menuColor in Enum.GetValues<MenuColor>())
-                    {
-                        <button @onclick="() => OnMenuColorSelected(menuColor)"
-                                class="@GetOptionClass(_currentMenuColor == menuColor)"
-                                title="@menuColor">
-                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuColor.{menuColor}"]</span>
-                        </button>
-                    }
-                </div>
-            </div>
-
-            <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BaseColor"]</h4>
-                <div class="grid grid-cols-5 gap-2">
-                    @foreach (var color in Enum.GetValues<BaseColor>())
-                    {
-                        <button @onclick="() => OnBaseColorSelected(color)"
-                                class="@GetBaseColorOptionClass(color)"
-                                title="@color">
-                            <div class="@GetBaseColorVisualClass(color)"></div>
-                            <span class="text-xs mt-1">@color</span>
-                        </button>
-                    }
-                </div>
-            </div>
-
-            <div class="space-y-3">
-                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.ThemeColor"]</h4>
-                <div class="grid grid-cols-5 gap-2">
-                    @foreach (var color in Enum.GetValues<PrimaryColor>())
-                    {
-                        <button @onclick="() => OnPrimaryColorSelected(color)"
-                                class="@GetPrimaryColorOptionClass(color)"
-                                title="@color">
-                            <div class="@GetPrimaryColorVisualClass(color)"></div>
-                            <span class="text-xs mt-1 truncate">@GetShortColorName(color)</span>
-                        </button>
-                    }
-                </div>
-            </div>
-        </div>
-    </PopoverContent>
+        </PopoverContent>
     </Popover>
 </TooltipProvider>
 
@@ -168,6 +224,14 @@
     /// </summary>
     [Parameter]
     public PopoverAlign Align { get; set; } = PopoverAlign.End;
+
+    /// <summary>
+    /// When true, a "Styles &amp; Layout" tab is added alongside the "Colors" tab,
+    /// exposing style variant, radius, font, and menu options.
+    /// Default is false — shows only the color pickers (base + primary) and dark mode toggle.
+    /// </summary>
+    [Parameter]
+    public bool ShowStyles { get; set; } = false;
 
     private BaseColor    _currentBaseColor;
     private PrimaryColor _currentPrimaryColor;
@@ -246,16 +310,16 @@
     {
         var baseColorValue = _currentBaseColor switch
         {
-            BaseColor.Zinc   => "#27272a",
-            BaseColor.Slate  => "#1e293b",
-            BaseColor.Gray   => "#374151",
+            BaseColor.Zinc    => "#27272a",
+            BaseColor.Slate   => "#1e293b",
+            BaseColor.Gray    => "#374151",
             BaseColor.Neutral => "#262626",
-            BaseColor.Stone  => "#292524",
-            BaseColor.Mist   => "#4a6fa5",
-            BaseColor.Mauve  => "#7c6d8a",
-            BaseColor.Taupe  => "#7a6a5a",
-            BaseColor.Olive  => "#5a6b4a",
-            _                => "#27272a"
+            BaseColor.Stone   => "#292524",
+            BaseColor.Mist    => "#4a6fa5",
+            BaseColor.Mauve   => "#7c6d8a",
+            BaseColor.Taupe   => "#7a6a5a",
+            BaseColor.Olive   => "#5a6b4a",
+            _                 => "#27272a"
         };
 
         var primaryColorValue = _currentPrimaryColor switch
@@ -284,9 +348,18 @@
         return $"background: {baseColorValue}; border: 2px solid {primaryColorValue};";
     }
 
+    // Standard text-only option button (font, menu accent, menu color)
     private string GetOptionClass(bool isSelected)
     {
         var baseClass = "flex items-center justify-center p-2 rounded-md border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer text-center";
+        var selectedClass = isSelected ? "bg-accent text-accent-foreground border-ring" : "border-transparent";
+        return $"{baseClass} {selectedClass}";
+    }
+
+    // Icon + label option button (radius, style variant)
+    private string GetIconOptionClass(bool isSelected)
+    {
+        var baseClass = "flex flex-col items-center justify-center p-2 rounded-md border hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer";
         var selectedClass = isSelected ? "bg-accent text-accent-foreground border-ring" : "border-transparent";
         return $"{baseClass} {selectedClass}";
     }
@@ -335,7 +408,7 @@
         var isSelected = _currentPrimaryColor == color;
         var baseClass = "size-6 rounded-full border-2 border-background transition-all";
         var selectedClass = isSelected ? "ring-2 ring-ring ring-offset-2" : "";
-        
+
         var colorClass = color switch
         {
             PrimaryColor.Default  => "bg-gray-600",
@@ -362,14 +435,59 @@
         return $"{baseClass} {colorClass} {selectedClass}";
     }
 
-    private string GetShortColorName(PrimaryColor color)
+    private string GetShortColorName(PrimaryColor color) => color.ToString();
+
+    // Radius — quarter-corner inline style (top-left corner only shows the curve)
+    private string GetRadiusCornerStyle(RadiusPreset preset) => preset switch
     {
-        return color.ToString();
-    }
+        RadiusPreset.None    => "border-top-left-radius: 0px",
+        RadiusPreset.Small   => "border-top-left-radius: 0.45rem",
+        RadiusPreset.Medium  => "border-top-left-radius: 0.625rem",
+        RadiusPreset.Large   => "border-top-left-radius: 0.875rem",
+        RadiusPreset.Default => "border-top-left-radius: 0.625rem",
+        _                    => "border-top-left-radius: 0.625rem"
+    };
+
+    // Font — CSS font-family string for inline rendering
+    private string GetFontFamilyString(FontPreset preset) => preset switch
+    {
+        FontPreset.System      => "system-ui, sans-serif",
+        FontPreset.Inter       => "'Inter', sans-serif",
+        FontPreset.Geist       => "'Geist', sans-serif",
+        FontPreset.CalSans     => "'Cal Sans', sans-serif",
+        FontPreset.DmSans      => "'DM Sans', sans-serif",
+        FontPreset.PlusJakarta => "'Plus Jakarta Sans', sans-serif",
+        _                      => "system-ui, sans-serif"
+    };
+
+    // Style variant — outer card border-radius character
+    private string GetStyleVariantOuterStyle(StyleVariant variant) => variant switch
+    {
+        StyleVariant.Default => "border-radius: 0.625rem",
+        StyleVariant.Vega    => "border-radius: 0.625rem",
+        StyleVariant.Nova    => "border-radius: 0.375rem",
+        StyleVariant.Maia    => "border-radius: 0.875rem",
+        StyleVariant.Lyra    => "border-radius: 0rem",
+        StyleVariant.Mira    => "border-radius: 0.375rem",
+        StyleVariant.Luma    => "border-radius: 0.75rem; opacity: 0.85",
+        _                    => "border-radius: 0.625rem"
+    };
+
+    // Style variant — inner button border-radius character
+    private string GetStyleVariantInnerStyle(StyleVariant variant) => variant switch
+    {
+        StyleVariant.Default => "border-radius: 0.375rem; opacity: 0.45",
+        StyleVariant.Vega    => "border-radius: 0.375rem; opacity: 0.45",
+        StyleVariant.Nova    => "border-radius: 0.25rem; opacity: 0.45",
+        StyleVariant.Maia    => "border-radius: 0.75rem; opacity: 0.45",
+        StyleVariant.Lyra    => "border-radius: 0rem; opacity: 0.45",
+        StyleVariant.Mira    => "border-radius: 0.25rem; opacity: 0.45",
+        StyleVariant.Luma    => "border-radius: 0.625rem; opacity: 0.40",
+        _                    => "border-radius: 0.375rem; opacity: 0.45"
+    };
 
     public void Dispose()
     {
         ThemeService.OnThemeChanged -= HandleThemeChanged;
     }
 }
-

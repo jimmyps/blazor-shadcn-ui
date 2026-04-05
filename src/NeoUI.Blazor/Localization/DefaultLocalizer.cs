@@ -243,6 +243,10 @@ public class DefaultLocalizer : ILocalizer
         ["ThemeSwitcher.MenuColor.DefaultTranslucent"] = "Translucent",
         ["ThemeSwitcher.MenuColor.InvertedTranslucent"] = "Dark Glass",
 
+        // ── ThemeSwitcher — Tab names ─────────────────────────────────────────
+        ["ThemeSwitcher.Tab.Colors"] = "Colors",
+        ["ThemeSwitcher.Tab.Styles"] = "Styles & Layout",
+
         // ── Timeline ─────────────────────────────────────────────────────────
         ["Timeline.AriaLabel"] = "Timeline",
         ["Timeline.NoItems"] = "No timeline items.",
