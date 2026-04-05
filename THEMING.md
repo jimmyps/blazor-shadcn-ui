@@ -360,20 +360,63 @@ Apply in C#:
 await ThemeService.SetBaseColorAsync(BaseColor.Luma);
 ```
 
+> **Note — Two things named "Luma":** `BaseColor.Luma` is a chromatic neutral palette (blue-indigo tint). `StyleVariant.Luma` is a separate glassmorphism visual style. They are independent and can be mixed freely. The built-in `ThemePreset.Luma` combines both.
+
+---
+
+### Primary Colors
+
+17 named primary accent colors replace `--primary` / `--primary-foreground` system-wide:
+
+`Red` · `Rose` · `Orange` · `Amber` · `Yellow` · `Lime` · `Green` · `Emerald` · `Teal` · `Cyan` · `Sky` · `Blue` · `Indigo` · `Violet` · `Purple` · `Fuchsia` · `Pink`
+
+The `Default` primary color (matching each base color's neutral) requires no CSS file.
+
+```html
+<!-- In production, include only the primary colors you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/blue.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/violet.css" />
+```
+
+```csharp
+await ThemeService.SetPrimaryColorAsync(PrimaryColor.Blue);
+```
+
 ---
 
 ### Style Variants
 
-Six named visual styles control `--radius` and `--spacing-scale` together, giving each a distinct character:
+Seven named visual styles control `--radius`, `--spacing-scale`, and shadow values together, giving each a distinct character:
 
 | Style | `--radius` | `--spacing-scale` | Character |
 |---|---|---|---|
-| `Default` | *(unchanged)* | `1` | Standard NeoUI |
+| `Default` | *(unchanged)* | `1` | **Backward-compatible** — preserves pre-v2 radius ratios |
 | `Vega` | `0.625rem` | `1` | Professional, balanced |
 | `Nova` | `0.375rem` | `0.85` | Compact, dashboard/admin |
 | `Maia` | `1rem` | `1.15` | Spacious, consumer-friendly |
 | `Lyra` | `0rem` | `1` | Sharp/boxy, developer tooling |
 | `Mira` | `0.25rem` | `0.7` | Ultra-dense, data-heavy |
+| `Luma` | `0.75rem` | `1` | Glassmorphism, modern SaaS |
+
+The `Default` style uses the pre-v2 pixel-subtraction radius scale (`calc(var(--radius) - 4px)`, etc.) rather than the new proportional scale. Apps that don't set a style variant remain on `Default` automatically — **no visual change after upgrading**.
+
+Each non-default style also ships with **custom shadow values tuned to its persona**:
+
+| Style | Shadow character |
+|---|---|
+| `Default` | Tailwind defaults (unchanged) |
+| `Vega` | Tailwind defaults — balanced for professional use |
+| `Nova` | Crisp, tight shadows — suits compact admin interfaces |
+| `Maia` | Elevated, deeper shadows — adds depth to the spacious rounded aesthetic |
+| `Lyra` | All shadows `none` — flat, shadowless for sharp tooling UIs |
+| `Mira` | Minimal single-layer shadows — ultra-subtle for dense data views |
+| `Luma` | Soft, diffuse double-layer shadows — glassmorphism aesthetic |
+
+The `--spacing-scale` variable multiplies internal component padding, gaps, and margins. You can override it directly in your theme CSS if you want a custom density independent of any preset:
+
+```css
+:root { --spacing-scale: 0.9; }  /* slightly tighter than default */
+```
 
 Load the style CSS files you want available:
 
@@ -384,6 +427,7 @@ Load the style CSS files you want available:
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/maia.css" />
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/lyra.css" />
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/mira.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/luma.css" />
 ```
 
 Apply in C#:
@@ -391,6 +435,34 @@ Apply in C#:
 ```csharp
 await ThemeService.SetStyleVariantAsync(StyleVariant.Nova);
 ```
+
+#### Luma Style — Extra Overrides
+
+The `Luma` style goes beyond `--radius` + `--spacing-scale`. It adds three additional glassmorphism touches:
+
+**1. Soft diffuse shadow scale** — replaces Tailwind's default sharp shadows with multi-layer, low-opacity OKLCH shadows suited for glass surfaces:
+
+| Variable | Value |
+|---|---|
+| `--shadow-sm` | `0 2px 8px oklch(0 0 0/0.06), 0 1px 2px oklch(0 0 0/0.04)` |
+| `--shadow-md` | `0 4px 16px oklch(0 0 0/0.08), 0 1px 4px oklch(0 0 0/0.04)` |
+| `--shadow-lg` | `0 8px 24px oklch(0 0 0/0.10), 0 2px 8px oklch(0 0 0/0.05)` |
+| `--shadow-xl` | `0 16px 40px oklch(0 0 0/0.12), 0 4px 12px oklch(0 0 0/0.06)` |
+
+**2. Semi-transparent form inputs** — softens input/textarea borders and fills:
+```css
+input, textarea {
+  background-color: color-mix(in oklch, var(--background) 60%, transparent);
+  border-color:     color-mix(in oklch, var(--border) 70%, transparent);
+}
+```
+
+**3. Stronger overlay blur** — increases modal/sheet backdrop blur from the default thin tint to 4px:
+```css
+[data-slot="overlay"] { --blur-sm: 4px; }
+```
+
+Applies to Dialog, AlertDialog, Sheet, and Drawer overlays.
 
 ---
 
@@ -401,10 +473,10 @@ Independent named radius overrides. When both a Style Variant and a Radius Prese
 | Preset | `--radius` | `RadiusPreset` value |
 |---|---|---|
 | `None` | `0rem` | `RadiusPreset.None` |
-| `Small` | `0.25rem` | `RadiusPreset.Small` |
+| `Small` | `0.45rem` | `RadiusPreset.Small` |
 | `Medium` | `0.625rem` (default — no file) | `RadiusPreset.Medium` |
-| `Large` | `1rem` | `RadiusPreset.Large` |
-| `Full` | `9999px` (pill) | `RadiusPreset.Full` |
+| `Large` | `0.875rem` | `RadiusPreset.Large` |
+| `Full` | `calc(infinity * 1px)` (pill) | `RadiusPreset.Full` |
 
 ```html
 <!-- In production, include only the radius presets you use -->
@@ -454,19 +526,57 @@ await ThemeService.SetFontPresetAsync(FontPreset.Inter);
 
 ---
 
-### ThemePreset — Named Presets
+### Menu Accent
 
-`ThemePreset` is a portable C# record that bundles all six theme dimensions into a single named unit. Apply it with `ApplyPresetAsync`.
+Controls the intensity of hover and active states on menu items (DropdownMenu, Select, Combobox, Popover).
+
+| Value | `--accent` remapped to | Effect |
+|---|---|---|
+| `Subtle` | `--accent` (default) | Soft, low-contrast hover |
+| `Bold` | `--primary` | High-contrast hover — primary brand color |
+
+```csharp
+await ThemeService.SetMenuAccentAsync(MenuAccent.Bold);
+```
+
+`Bold` works by remapping `--accent → --primary` and `--accent-foreground → --primary-foreground` at the root level. All components that use `bg-accent` / `text-accent-foreground` for hover states respond automatically. This is a good pairing with a vibrant primary color (e.g. `PrimaryColor.Blue`).
+
+---
+
+### Menu Color
+
+Controls the background treatment of every floating surface — Popover, DropdownMenu, Select, and Combobox content panels.
+
+| Value | Background | Blur | Dark mode |
+|---|---|---|---|
+| `Default` | Solid `--popover` | None | ✅ |
+| `Inverted` | Dark surface — `oklch(0.145 0 0)` | None | Light mode only (no-op in dark) |
+| `DefaultTranslucent` | `--popover` at 50% opacity | `blur(18px) saturate(150%)` | ✅ |
+| `InvertedTranslucent` | Dark surface at 70% opacity | `blur(18px) saturate(150%)` | Light mode only |
+
+```csharp
+await ThemeService.SetMenuColorAsync(MenuColor.DefaultTranslucent);
+```
+
+`Inverted` and `InvertedTranslucent` are light-mode-only — they are scoped to `:root:not(.dark)` and have no effect in dark mode (dark surfaces are already inverted by definition).
+
+The translucent modes use `backdrop-filter` directly on the menu element (not a pseudo-element). The filter value is stored in a CSS custom property to work around a Tailwind v4 minifier issue that strips spaces between filter functions, and to ensure correct `-webkit-` vendoring.
+
+Pairs well with a transparent or blurred page background for a full glassmorphism effect.
+
+---
+
+`ThemePreset` is a portable C# record that bundles all eight theme dimensions into a single named unit. Apply it with `ApplyPresetAsync`.
 
 **Built-in presets:**
 
-| Preset | Base | Style | Radius | Font |
-|---|---|---|---|---|
-| `ThemePreset.Default` | Zinc | Default | Medium | System |
-| `ThemePreset.Luma` | Luma | Vega | Medium | Inter |
-| `ThemePreset.Nova` | Zinc | Nova | Small | Inter |
-| `ThemePreset.Maia` | Mauve | Maia | Large | Plus Jakarta |
-| `ThemePreset.Lyra` | Slate | Lyra | None | System |
+| Preset | Base | Style | Radius | Font | Menu Accent | Menu Color |
+|---|---|---|---|---|---|---|
+| `ThemePreset.Default` | Zinc | Default | Medium | System | Subtle | Default |
+| `ThemePreset.Luma` | Zinc | Luma | Medium | Inter | Subtle | Default |
+| `ThemePreset.Nova` | Zinc | Nova | Small | Geist | Subtle | Default |
+| `ThemePreset.Maia` | Mauve | Maia | Large | Plus Jakarta | Subtle | Default |
+| `ThemePreset.Lyra` | Slate | Lyra | None | Geist | Subtle | Default |
 
 Usage:
 
@@ -474,17 +584,19 @@ Usage:
 // Apply a built-in preset
 await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
 
-// Build a custom preset
-var corporate = new ThemePreset(
-    Name:         "Corporate",
-    BaseColor:    BaseColor.Slate,
+// Build a custom preset — all eight dimensions in one place
+var glassDash = new ThemePreset(
+    Name:         "Glass Dashboard",
+    BaseColor:    BaseColor.Luma,
     PrimaryColor: PrimaryColor.Blue,
-    StyleVariant: StyleVariant.Nova,
-    RadiusPreset: RadiusPreset.Small,
+    StyleVariant: StyleVariant.Luma,
+    RadiusPreset: RadiusPreset.Medium,
     FontPreset:   FontPreset.Inter,
+    MenuAccent:   MenuAccent.Bold,
+    MenuColor:    MenuColor.DefaultTranslucent,
     IsDarkMode:   false);
 
-await ThemeService.ApplyPresetAsync(corporate);
+await ThemeService.ApplyPresetAsync(glassDash);
 ```
 
 ---
@@ -617,17 +729,103 @@ Theme variables defined outside `@layer` always override library defaults:
 
 ```
 Priority (highest to lowest):
-1. Your theme file (no @layer)     ← Your customizations win
-2. @layer utilities
-3. @layer components
-4. @layer base                      ← Library defaults
+1. Your theme file (no @layer)         ← Your customizations win
+2. Menu color / accent rules (unlayered) ← Menu surface overrides
+3. @layer utilities
+4. @layer components
+5. @layer base                          ← Library defaults
 ```
+
+Menu color and menu accent rules are intentionally placed outside any `@layer` so they can override `@layer base` base-color variable definitions at the same specificity.
 
 This means you only need to define the variables you want to customize.
 
 ---
 
-## Migrating from HSL
+## ThemeService API Reference
+
+Complete list of `ThemeService` members:
+
+### Properties
+
+| Property | Type | Description |
+|---|---|---|
+| `IsDarkMode` | `bool` | Whether dark mode is currently active |
+| `CurrentBaseColor` | `BaseColor` | Active base color |
+| `CurrentPrimaryColor` | `PrimaryColor` | Active primary color |
+| `CurrentStyleVariant` | `StyleVariant` | Active visual style variant |
+| `CurrentRadiusPreset` | `RadiusPreset` | Active radius preset |
+| `CurrentFontPreset` | `FontPreset` | Active font preset |
+| `CurrentMenuAccent` | `MenuAccent` | Active menu accent intensity |
+| `CurrentMenuColor` | `MenuColor` | Active menu color/surface mode |
+| `OnThemeChanged` | `event Action?` | Raised after any theme change |
+
+### Methods
+
+| Method | Description |
+|---|---|
+| `InitializeAsync()` | Restore persisted theme from `localStorage`. Call on app startup. |
+| `ToggleThemeAsync()` | Toggle dark/light mode and persist. |
+| `SetThemeAsync(bool isDark)` | Set dark mode to a specific state and persist. |
+| `SetBaseColorAsync(BaseColor)` | Set base neutral palette. |
+| `SetPrimaryColorAsync(PrimaryColor)` | Set primary accent color. |
+| `SetStyleVariantAsync(StyleVariant)` | Set visual style variant. |
+| `SetRadiusPresetAsync(RadiusPreset)` | Set radius override. |
+| `SetFontPresetAsync(FontPreset)` | Set font pairing. |
+| `SetMenuAccentAsync(MenuAccent)` | Set menu item hover intensity. |
+| `SetMenuColorAsync(MenuColor)` | Set menu/popover surface mode. |
+| `ApplyPresetAsync(ThemePreset)` | Apply all dimensions atomically from a preset record. |
+
+### localStorage Keys
+
+`theme.js` reads and writes these keys to persist and restore the full theme state before Blazor boots (preventing FOUC):
+
+| Key | Values | Dimension |
+|---|---|---|
+| `theme` | `"dark"` / `"light"` | Dark mode |
+| `baseColor` | e.g. `"Zinc"`, `"Luma"` | Base color |
+| `primaryColor` | e.g. `"Default"`, `"Blue"` | Primary color |
+| `styleVariant` | e.g. `"Nova"`, `"Luma"` | Style variant |
+| `radiusPreset` | e.g. `"Default"`, `"Full"` | Radius preset |
+| `fontPreset` | e.g. `"System"`, `"Inter"` | Font preset |
+| `menuAccent` | `"Subtle"` / `"Bold"` | Menu accent |
+| `menuColor` | e.g. `"Default"`, `"DefaultTranslucent"` | Menu color |
+
+`theme.js` must load before Blazor to apply CSS classes synchronously and prevent a flash of unstyled content on page load.
+
+---
+
+## ThemeSwitcher Component
+
+The built-in `ThemeSwitcher` component renders a popover picker for all theme dimensions. Drop it anywhere in your layout:
+
+```razor
+<ThemeSwitcher />
+```
+
+### Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Strategy` | `PositioningStrategy` | `Fixed` | `Fixed` escapes stacking contexts; use `Absolute` if fixed positioning causes issues |
+| `ZIndex` | `int` | `60` | CSS z-index for the popover panel |
+| `TriggerClass` | `string?` | `null` | Additional CSS classes for the trigger button |
+| `PopoverContentClass` | `string?` | `null` | Additional CSS classes for the popover panel |
+| `Align` | `PopoverAlign` | `End` | Popover alignment: `Start`, `Center`, or `End` |
+
+---
+
+NeoUI does not require Tailwind — `components.css` is a self-contained pre-built stylesheet. However, if your app uses Tailwind v4, you must add `@theme inline` to your Tailwind build input to prevent generated utilities from hardcoding computed color values that would override NeoUI's runtime CSS variable changes:
+
+```css
+/* your-app/styles/app.css  (Tailwind build input) */
+@import "tailwindcss";
+@theme inline;   /* ← ensures utilities use var(--color-*) not hardcoded oklch() */
+```
+
+Without `@theme inline`, Tailwind v4 generates utilities with hardcoded values (e.g. `color: oklch(0.145 0 0)`) that are written after `components.css` in the final stylesheet and permanently override the runtime variable changes made by `ThemeService`.
+
+
 
 If you have an existing shadcn/ui theme using HSL format:
 

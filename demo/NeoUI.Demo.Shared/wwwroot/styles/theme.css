@@ -58,31 +58,7 @@
     --alert-danger: oklch(0.55 0.22 27);
     --alert-danger-foreground: oklch(0.30 0.12 27);
     --alert-danger-bg: oklch(0.993 0.003 27);
-    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --radius: 0.625rem;
-    --font-heading: var(--font-sans);
-    --spacing-scale: 1;
-    --tracking-normal: 0em;
-    /* --spacing wired to --spacing-scale so style variants (Nova 0.85×, Maia 1.15×, Mira 0.7×) scale all padding/gap/margin */
-    --spacing: calc(0.25rem * var(--spacing-scale));
-    /* Runtime radius scale — overrideable by style variants and radius presets */
-    --radius-xs:  calc(var(--radius) * 0.5);
-    --radius-sm:  calc(var(--radius) * 0.75);
-    --radius-md:  calc(var(--radius) * 0.8);
-    --radius-lg:  calc(var(--radius) * 1.5);
-    --radius-xl:  calc(var(--radius) * 2);
-    --radius-2xl: calc(var(--radius) * 3);
-    --radius-3xl: calc(var(--radius) * 4);
-    --radius-4xl: calc(var(--radius) * 5);
-    /* Runtime shadow scale — overrideable by style variants */
-    --shadow-xs:  0 1px 1px 0px oklch(0 0 0 / 0.05);
-    --shadow-sm:  0 1px 3px 0 oklch(0 0 0 / 0.1), 0 1px 2px -1px oklch(0 0 0 / 0.1);
-    --shadow-md:  0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
-    --shadow-lg:  0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
-    --shadow-xl:  0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
-    --shadow-2xl: 0 25px 50px -12px oklch(0 0 0 / 0.25);
   }
 
   .dark {
@@ -224,7 +200,9 @@
     }
 }
 
-/* Tailwind v4 Theme Integration */
+/* Tailwind v4 Theme Integration — must also be in the consumer's Tailwind build
+   so that app.css utilities (loaded after components.css) use var() references
+   rather than hardcoded values that would override the library's wiring. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -292,58 +270,3 @@
   --breakpoint-4xl: 2000px;
 }
 
-/* Text selection highlight using theme tokens */
-@layer base {
-  ::selection {
-    background-color: var(--selection);
-    color: var(--selection-foreground);
-  }
-}
-
-/* Menu Accent — unlayered so it beats @layer base base-color rules with same specificity */
-:root.menu-accent-bold {
-  --accent: var(--primary);
-  --accent-foreground: var(--primary-foreground);
-}
-
-/* Menu Color — unlayered so background-color overrides beat @layer utilities */
-
-/* Translucent default: glass effect with blur backdrop */
-:root.menu-color-default-translucent .bg-popover,
-:root.menu-color-default-translucent [data-slot="popover-content"],
-:root.menu-color-default-translucent [data-slot="dropdown-content"],
-:root.menu-color-default-translucent [data-slot="select-content"],
-:root.menu-color-default-translucent [data-slot="combobox-content"] {
-  background-color: color-mix(in oklch, var(--popover) 50%, transparent);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-}
-
-/* Inverted: dark surface for menus in light mode */
-:root:not(.dark).menu-color-inverted .bg-popover,
-:root:not(.dark).menu-color-inverted [data-slot="popover-content"],
-:root:not(.dark).menu-color-inverted [data-slot="dropdown-content"],
-:root:not(.dark).menu-color-inverted [data-slot="select-content"],
-:root:not(.dark).menu-color-inverted [data-slot="combobox-content"] {
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --border: oklch(0.275 0 0);
-}
-
-/* Inverted translucent: dark glass effect */
-:root:not(.dark).menu-color-inverted-translucent .bg-popover,
-:root:not(.dark).menu-color-inverted-translucent [data-slot="popover-content"],
-:root:not(.dark).menu-color-inverted-translucent [data-slot="dropdown-content"],
-:root:not(.dark).menu-color-inverted-translucent [data-slot="select-content"],
-:root:not(.dark).menu-color-inverted-translucent [data-slot="combobox-content"] {
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --border: oklch(0.275 0 0);
-  background-color: color-mix(in oklch, oklch(0.145 0 0) 70%, transparent);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-}
