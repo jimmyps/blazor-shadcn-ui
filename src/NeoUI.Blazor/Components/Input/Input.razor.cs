@@ -1,4 +1,5 @@
 using NeoUI.Blazor.Extensions;
+using NeoUI.Blazor.Services;
 using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -90,6 +91,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// </summary>
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     /// <summary>
     /// Gets or sets when the input should update its bound value.
@@ -421,6 +425,8 @@ public partial class Input : ComponentBase, IAsyncDisposable
         "transition-[color,box-shadow]",
         // Medium screens and up: smaller text
         "md:text-sm",
+        // StyleVariant class overrides (layer 2 — before user Class so Class always wins)
+        _styleVariant.GetClasses("Input.Root"),
         // Custom classes (if provided)
         Class
     );

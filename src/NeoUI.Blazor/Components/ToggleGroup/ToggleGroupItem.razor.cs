@@ -10,6 +10,9 @@ public partial class ToggleGroupItem : ComponentBase
     [CascadingParameter]
     private ToggleGroup? ParentGroup { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets the value of this toggle item.
     /// </summary>
@@ -50,6 +53,7 @@ public partial class ToggleGroupItem : ComponentBase
         "disabled:pointer-events-none disabled:opacity-50",
         "hover:bg-muted hover:text-muted-foreground",
         "h-10",
+        _styleVariant.GetClasses("ToggleGroup.Item"),
         IsSelected ? "bg-accent text-accent-foreground" : "bg-transparent",
         Class
     );

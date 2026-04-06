@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using NeoUI.Blazor.Services;
 
 namespace NeoUI.Blazor;
 
@@ -58,6 +59,9 @@ public partial class Card : ComponentBase
     [Parameter]
     public string? Class { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the computed CSS classes for the card element.
     /// </summary>
@@ -68,6 +72,8 @@ public partial class Card : ComponentBase
     private string CssClass => ClassNames.cn(
         // Base card styles (from shadcn/ui)
         "rounded-lg border bg-card text-card-foreground shadow-sm",
+        // StyleVariant class overrides (layer 2 — before user Class so Class always wins)
+        _styleVariant.GetClasses("Card.Root"),
         // Custom classes (if provided)
         Class
     );

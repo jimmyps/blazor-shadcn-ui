@@ -104,14 +104,14 @@
     /* Theme v2 — default values (overridden by style/radius/font theme files) */
     --tracking-normal: 0em;
     --radius: 0.625rem;
-    --radius-xs:  calc(var(--radius) * 0.5);
-    --radius-sm:  calc(var(--radius) * 0.75);
+    --radius-xs:  calc(var(--radius) * 0.4);
+    --radius-sm:  calc(var(--radius) * 0.6);
     --radius-md:  calc(var(--radius) * 0.8);
-    --radius-lg:  calc(var(--radius) * 1.5);
-    --radius-xl:  calc(var(--radius) * 2);
-    --radius-2xl: calc(var(--radius) * 3);
-    --radius-3xl: calc(var(--radius) * 4);
-    --radius-4xl: calc(var(--radius) * 5);
+    --radius-lg:  var(--radius);
+    --radius-xl:  calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
     --font-heading: var(--font-sans);
     --spacing-scale: 1;
     --spacing: calc(0.25rem * var(--spacing-scale));
@@ -244,7 +244,7 @@
 :root.menu-color-default-translucent [data-slot="dropdown-content"],
 :root.menu-color-default-translucent [data-slot="select-content"],
 :root.menu-color-default-translucent [data-slot="combobox-content"] {
-  background-color: color-mix(in oklch, var(--popover) 50%, transparent);
+  background-color: color-mix(in oklch, var(--popover) 70%, transparent);
   backdrop-filter: var(--menu-translucent-backdrop);
 }
 

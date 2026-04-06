@@ -1,6 +1,7 @@
 @inherits LayoutComponentBase
 <PageTitle>NeoUI Blazor Demo</PageTitle>
 
+<AppProvider>
 <SidebarProvider DefaultOpen="true">
     <Sidebar Collapsible="true" AutoDetectActive="true" Class="duration-500 ease-cubic-in-out [&>aside]:overflow-hidden">
         <SidebarHeader>
@@ -260,6 +261,8 @@
 
 <ToastViewport Position="ToastPosition.BottomRight" />
 <SpotlightCommandPalette @ref="_spotlightRef" />
+</AppProvider>
+
 <DialogHost />
 
 @* Use separate portal hosts for better performance (prevents render cascades) *@

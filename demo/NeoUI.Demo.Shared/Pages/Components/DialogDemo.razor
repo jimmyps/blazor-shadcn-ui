@@ -17,8 +17,8 @@
         Description="A basic dialog with title, description, and action buttons.">
         <DemoBlock Code="@_simpleCode">
             <Dialog>
-                <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                    Open Dialog
+                <DialogTrigger AsChild>
+                    <Button>Open Dialog</Button>
                 </DialogTrigger>
 
                 <DialogContent>
@@ -39,9 +39,7 @@
         Description="Dialog with action buttons in the footer using DialogFooter component.">
         <DemoBlock Code="@_footerCode">
             <Dialog>
-                <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                    Edit Profile
-                </DialogTrigger>
+                <DialogTrigger>Edit Profile</DialogTrigger>
 
                 <DialogContent>
                     <DialogHeader>
@@ -71,10 +69,7 @@
                     </div>
 
                     <DialogFooter>
-                        <button type="submit"
-                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                            Save changes
-                        </button>
+                        <Button Type="ButtonType.Submit">Save changes</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -86,10 +81,7 @@
         Description="Control the dialog open state programmatically using bind-Open two-way binding.">
         <DemoBlock Code="@_controlledCode">
             <div class="flex gap-2">
-                <button @onclick="() => isDialogOpen = true"
-                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                    Open Dialog
-                </button>
+                <Button OnClick="@(() => isDialogOpen = true)">Open Dialog</Button>
             </div>
 
             <Dialog @bind-Open="isDialogOpen">
@@ -109,14 +101,8 @@
                     </div>
 
                     <DialogFooter>
-                        <button @onclick="() => isDialogOpen = false"
-                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
-                            Cancel
-                        </button>
-                        <button @onclick="HandleSave"
-                                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                            Save
-                        </button>
+                        <Button Variant="ButtonVariant.Outline" OnClick="@(() => isDialogOpen = false)">Cancel</Button>
+                        <Button OnClick="HandleSave">Save</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -128,9 +114,7 @@
         Description="Customize the dialog width using the Class parameter.">
         <DemoBlock Code="@_customWidthCode">
             <Dialog>
-                <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                    Open Wide Dialog
-                </DialogTrigger>
+                <DialogTrigger>Open Wide Dialog</DialogTrigger>
 
                 <DialogContent Class="max-w-3xl">
                     <DialogHeader>
@@ -156,9 +140,7 @@
         Description='Hide the default close button using ShowClose="false".'>
         <DemoBlock Code="@_noCloseCode">
             <Dialog>
-                <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                    Open Dialog
-                </DialogTrigger>
+                <DialogTrigger>Open Dialog</DialogTrigger>
 
                 <DialogContent ShowClose="false">
                     <DialogHeader>
@@ -170,12 +152,12 @@
                     </DialogHeader>
 
                     <DialogFooter Class="mt-4">
-                        <DialogClosePrimitive class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
-                            Cancel
-                        </DialogClosePrimitive>
-                        <DialogClosePrimitive class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                            Confirm
-                        </DialogClosePrimitive>
+                        <DialogClose AsChild>
+                            <Button Variant="ButtonVariant.Outline">Cancel</Button>
+                        </DialogClose>
+                        <DialogClose AsChild>
+                            <Button>Confirm</Button>
+                        </DialogClose>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
@@ -195,9 +177,7 @@
                             DialogTrigger renders its own button element with inline classes.
                         </p>
                         <Dialog>
-                            <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                                Open Dialog
-                            </DialogTrigger>
+                            <DialogTrigger>Open Dialog</DialogTrigger>
                             <DialogContent>
                                 <DialogHeader>
                                     <DialogTitle>Without AsChild</DialogTitle>
@@ -271,9 +251,7 @@
         Description="Dialog containing a Combobox for selecting items. Tests nested portal behavior.">
         <DemoBlock Code="@_comboboxCode">
             <Dialog>
-                <DialogTrigger class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                    Open Dialog with Combobox
-                </DialogTrigger>
+                <DialogTrigger>Open Dialog with Combobox</DialogTrigger>
 
                 <DialogContent>
                     <DialogHeader>
@@ -334,54 +312,54 @@
         <!-- Grid of trigger buttons -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             <!-- Demo 1: User Profile Settings -->
-            <button @onclick="() => showUserProfileDialog = true"
-                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+            <Button Variant="ButtonVariant.Outline" OnClick="@(() => showUserProfileDialog = true)"
+                    Class="flex flex-col items-center justify-center gap-3 p-6 h-auto rounded-lg border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
                 <LucideIcon Name="user-cog" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
                 <div class="text-center">
                     <div class="font-semibold">User Profile Settings</div>
                     <div class="text-xs text-muted-foreground">Comprehensive form validation</div>
                 </div>
-            </button>
+            </Button>
 
             <!-- Demo 2: Subscription Plan Selection -->
-            <button @onclick="() => showSubscriptionDialog = true"
-                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+            <Button Variant="ButtonVariant.Outline" OnClick="@(() => showSubscriptionDialog = true)"
+                    Class="flex flex-col items-center justify-center gap-3 p-6 h-auto rounded-lg border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
                 <LucideIcon Name="credit-card" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
                 <div class="text-center">
                     <div class="font-semibold">Subscription Plan</div>
                     <div class="text-xs text-muted-foreground">Dynamic pricing calculator</div>
                 </div>
-            </button>
+            </Button>
 
             <!-- Demo 3: Team Member Invite -->
-            <button @onclick="() => showTeamInviteDialog = true"
-                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+            <Button Variant="ButtonVariant.Outline" OnClick="@(() => showTeamInviteDialog = true)"
+                    Class="flex flex-col items-center justify-center gap-3 p-6 h-auto rounded-lg border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
                 <LucideIcon Name="user-plus" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
                 <div class="text-center">
                     <div class="font-semibold">Team Member Invite</div>
                     <div class="text-xs text-muted-foreground">Role-based access control</div>
                 </div>
-            </button>
+            </Button>
 
             <!-- Demo 4: Product Configuration -->
-            <button @onclick="() => showProductConfigDialog = true"
-                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+            <Button Variant="ButtonVariant.Outline" OnClick="@(() => showProductConfigDialog = true)"
+                    Class="flex flex-col items-center justify-center gap-3 p-6 h-auto rounded-lg border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
                 <LucideIcon Name="package" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
                 <div class="text-center">
                     <div class="font-semibold">Product Configuration</div>
                     <div class="text-xs text-muted-foreground">E-commerce customization</div>
                 </div>
-            </button>
+            </Button>
 
             <!-- Demo 5: Nested Dialog -->
-            <button @onclick="() => showProjectDialog = true"
-                    class="flex flex-col items-center justify-center gap-3 p-6 rounded-lg border-2 border-input bg-background hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
+            <Button Variant="ButtonVariant.Outline" OnClick="@(() => showProjectDialog = true)"
+                    Class="flex flex-col items-center justify-center gap-3 p-6 h-auto rounded-lg border-2 hover:border-primary hover:bg-primary/5 transition-all duration-200 group">
                 <LucideIcon Name="layers" Size="32" Class="text-primary group-hover:scale-110 transition-transform" />
                 <div class="text-center">
                     <div class="font-semibold">Create Project</div>
                     <div class="text-xs text-muted-foreground">Nested dialog behavior</div>
                 </div>
-            </button>
+            </Button>
         </div>
 
         <!-- Demo 1: User Profile Settings Dialog -->

@@ -2,7 +2,6 @@
 
 @layer base {
   :root.style-mira {
-    --radius: 0.25rem;
     --spacing-scale: 0.7;
 
     /* Minimal elevation — ultra-dense UIs avoid visual noise */

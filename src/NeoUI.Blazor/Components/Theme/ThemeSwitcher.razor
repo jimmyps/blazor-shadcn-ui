@@ -55,7 +55,7 @@
                 <p>@_currentBaseColor / @_currentPrimaryColor / @_currentStyleVariant</p>
             </TooltipContent>
         </Tooltip>
-        <PopoverContent Class="@($"w-96 shadow-lg{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
+        <PopoverContent Class="@($"w-96 shadow-lg sm:max-h-[90vh] sm:overflow-hidden{(string.IsNullOrEmpty(PopoverContentClass) ? "" : $" {PopoverContentClass}")}")"
                         Align="@Align" Strategy="@Strategy" ZIndex="@ZIndex">
             <div class="space-y-4">
 
@@ -82,88 +82,92 @@
                             <SelectionIndicator @key="_currentStyleVariant" />
                         </TabsList>
 
-                        <TabsContent Value="colors" Class="space-y-4 mt-4">
-                            @colorsContent
-                        </TabsContent>
+                        <ScrollArea ShowHorizontalScrollbar="false" Class="mt-4 -mx-4 sm:h-[calc(90vh-10rem)]">
+                            <TabsContent Value="colors" Class="space-y-4 mt-0 px-4">
+                                @colorsContent
+                            </TabsContent>
 
-                        <TabsContent Value="styles" Class="space-y-4 mt-4">
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Style"]</h4>
-                                <div class="grid grid-cols-4 gap-1">
-                                    @foreach (var variant in Enum.GetValues<StyleVariant>())
-                                    {
-                                        <button @onclick="() => OnStyleVariantSelected(variant)"
-                                                class="@GetIconOptionClass(_currentStyleVariant == variant)"
-                                                title="@variant">
-                                            <div style="@GetStyleVariantOuterStyle(variant); border: 1.5px solid currentColor; padding: 2px; width: 32px; height: 22px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
-                                                <div style="@GetStyleVariantInnerStyle(variant); background: currentColor; width: 100%; height: 100%;"></div>
-                                            </div>
-                                            <span class="text-[10px] mt-1 truncate">@Localizer[$"ThemeSwitcher.Style.{variant}"]</span>
-                                        </button>
-                                    }
+                            <TabsContent Value="styles" Class="space-y-4 mt-0 px-4">
+                                <div class="space-y-3">
+                                    <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Style"]</h4>
+                                    <div class="grid grid-cols-4 gap-1">
+                                        @foreach (var variant in Enum.GetValues<StyleVariant>())
+                                        {
+                                            <button @onclick="() => OnStyleVariantSelected(variant)"
+                                                    class="@GetIconOptionClass(_currentStyleVariant == variant)"
+                                                    title="@variant">
+                                                <div style="@GetStyleVariantOuterStyle(variant); border: 1.5px solid currentColor; padding: 2px; width: 32px; height: 22px; display: flex; align-items: center; justify-content: center; box-sizing: border-box;">
+                                                    <div style="@GetStyleVariantInnerStyle(variant); background: currentColor; width: 100%; height: 100%;"></div>
+                                                </div>
+                                                <span class="text-[10px] mt-1 truncate">@Localizer[$"ThemeSwitcher.Style.{variant}"]</span>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BorderRadius"]</h4>
-                                <div class="grid grid-cols-5 gap-1">
-                                    @foreach (var preset in Enum.GetValues<RadiusPreset>())
-                                    {
-                                        <button @onclick="() => OnRadiusPresetSelected(preset)"
-                                                class="@GetIconOptionClass(_currentRadiusPreset == preset)"
-                                                title="@preset">
-                                            <div style="width: 18px; height: 18px; @GetRadiusCornerStyle(preset); border-top: 2px solid currentColor; border-left: 2px solid currentColor;"></div>
-                                            <span class="text-[10px] mt-1 truncate">@Localizer[$"ThemeSwitcher.Radius.{preset}"]</span>
-                                        </button>
-                                    }
+                                <div class="space-y-3">
+                                    <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.BorderRadius"]</h4>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        @foreach (var preset in Enum.GetValues<RadiusPreset>())
+                                        {
+                                            <button @onclick="() => OnRadiusPresetSelected(preset)"
+                                                    class="@GetIconOptionClass(_currentRadiusPreset == preset)"
+                                                    title="@preset">
+                                                <div style="width: 18px; height: 18px; @GetRadiusCornerStyle(preset); border-top: 2px solid currentColor; border-left: 2px solid currentColor;"></div>
+                                                <span class="text-[10px] mt-1 truncate">@Localizer[$"ThemeSwitcher.Radius.{preset}"]</span>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Font"]</h4>
-                                <div class="grid grid-cols-3 gap-1">
-                                    @foreach (var font in Enum.GetValues<FontPreset>())
-                                    {
-                                        <button @onclick="() => OnFontPresetSelected(font)"
-                                                class="@GetOptionClass(_currentFontPreset == font)"
-                                                title="@font">
-                                            <span class="text-xs truncate" style="font-family: @GetFontFamilyString(font)">@Localizer[$"ThemeSwitcher.Font.{font}"]</span>
-                                        </button>
-                                    }
+                                <div class="space-y-3">
+                                    <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.Font"]</h4>
+                                    <div class="grid grid-cols-3 gap-1">
+                                        @foreach (var font in Enum.GetValues<FontPreset>())
+                                        {
+                                            <button @onclick="() => OnFontPresetSelected(font)"
+                                                    class="@GetOptionClass(_currentFontPreset == font)"
+                                                    title="@font">
+                                                <span class="text-xs truncate" style="font-family: @GetFontFamilyString(font)">@Localizer[$"ThemeSwitcher.Font.{font}"]</span>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuAccent"]</h4>
-                                <div class="grid grid-cols-2 gap-1">
-                                    @foreach (var accent in Enum.GetValues<MenuAccent>())
-                                    {
-                                        <button @onclick="() => OnMenuAccentSelected(accent)"
-                                                class="@GetOptionClass(_currentMenuAccent == accent)"
-                                                title="@accent">
-                                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuAccent.{accent}"]</span>
-                                        </button>
-                                    }
+                                <div class="space-y-3">
+                                    <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuAccent"]</h4>
+                                    <div class="grid grid-cols-2 gap-1">
+                                        @foreach (var accent in Enum.GetValues<MenuAccent>())
+                                        {
+                                            <button @onclick="() => OnMenuAccentSelected(accent)"
+                                                    class="@GetOptionClass(_currentMenuAccent == accent)"
+                                                    title="@accent">
+                                                <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuAccent.{accent}"]</span>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="space-y-3">
-                                <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuColor"]</h4>
-                                <div class="grid grid-cols-2 gap-1">
-                                    @foreach (var menuColor in Enum.GetValues<MenuColor>())
-                                    {
-                                        <button @onclick="() => OnMenuColorSelected(menuColor)"
-                                                class="@GetOptionClass(_currentMenuColor == menuColor)"
-                                                title="@menuColor">
-                                            <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuColor.{menuColor}"]</span>
-                                        </button>
-                                    }
+                                <div class="space-y-3">
+                                    <h4 class="text-xs font-medium text-muted-foreground uppercase tracking-wide">@Localizer["ThemeSwitcher.MenuColor"]</h4>
+                                    <div class="grid grid-cols-2 gap-1">
+                                        @foreach (var menuColor in Enum.GetValues<MenuColor>())
+                                        {
+                                            <button @onclick="() => OnMenuColorSelected(menuColor)"
+                                                    class="@GetOptionClass(_currentMenuColor == menuColor)"
+                                                    title="@menuColor">
+                                                <span class="text-xs truncate">@Localizer[$"ThemeSwitcher.MenuColor.{menuColor}"]</span>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        </TabsContent>
+                            </TabsContent>
+                        </ScrollArea>
                     </Tabs>
                 }
                 else
                 {
-                    <div class="space-y-4">
-                        @colorsContent
-                    </div>
+                    <ScrollArea EnableScrollShadows="true" ShowHorizontalScrollbar="false" Class="-mx-4 sm:h-[calc(90vh-6rem)]">
+                        <div class="space-y-4 px-4">
+                            @colorsContent
+                        </div>
+                    </ScrollArea>
                 }
 
             </div>
@@ -213,13 +217,13 @@
     [Parameter]
     public bool ShowStyles { get; set; } = false;
 
-    private BaseColor    _currentBaseColor;
+    private BaseColor _currentBaseColor;
     private PrimaryColor _currentPrimaryColor;
     private StyleVariant _currentStyleVariant;
     private RadiusPreset _currentRadiusPreset;
-    private FontPreset   _currentFontPreset;
-    private MenuAccent   _currentMenuAccent;
-    private MenuColor    _currentMenuColor;
+    private FontPreset _currentFontPreset;
+    private MenuAccent _currentMenuAccent;
+    private MenuColor _currentMenuColor;
 
     protected override async Task OnInitializedAsync()
     {
@@ -271,13 +275,13 @@
 
     private void SyncFromService()
     {
-        _currentBaseColor    = ThemeService.CurrentBaseColor;
+        _currentBaseColor = ThemeService.CurrentBaseColor;
         _currentPrimaryColor = ThemeService.CurrentPrimaryColor;
         _currentStyleVariant = ThemeService.CurrentStyleVariant;
         _currentRadiusPreset = ThemeService.CurrentRadiusPreset;
-        _currentFontPreset   = ThemeService.CurrentFontPreset;
-        _currentMenuAccent   = ThemeService.CurrentMenuAccent;
-        _currentMenuColor    = ThemeService.CurrentMenuColor;
+        _currentFontPreset = ThemeService.CurrentFontPreset;
+        _currentMenuAccent = ThemeService.CurrentMenuAccent;
+        _currentMenuColor = ThemeService.CurrentMenuColor;
     }
 
     private string GetTriggerButtonClass()
@@ -290,39 +294,39 @@
     {
         var baseColorValue = _currentBaseColor switch
         {
-            BaseColor.Zinc    => "#27272a",
-            BaseColor.Slate   => "#1e293b",
-            BaseColor.Gray    => "#374151",
+            BaseColor.Zinc => "#27272a",
+            BaseColor.Slate => "#1e293b",
+            BaseColor.Gray => "#374151",
             BaseColor.Neutral => "#262626",
-            BaseColor.Stone   => "#292524",
-            BaseColor.Mist    => "#4a6fa5",
-            BaseColor.Mauve   => "#7c6d8a",
-            BaseColor.Taupe   => "#7a6a5a",
-            BaseColor.Olive   => "#5a6b4a",
-            _                 => "#27272a"
+            BaseColor.Stone => "#292524",
+            BaseColor.Mist => "#4a6fa5",
+            BaseColor.Mauve => "#7c6d8a",
+            BaseColor.Taupe => "#7a6a5a",
+            BaseColor.Olive => "#5a6b4a",
+            _ => "#27272a"
         };
 
         var primaryColorValue = _currentPrimaryColor switch
         {
-            PrimaryColor.Default  => baseColorValue,
-            PrimaryColor.Red      => "#dc2626",
-            PrimaryColor.Rose     => "#e11d48",
-            PrimaryColor.Orange   => "#ea580c",
-            PrimaryColor.Amber    => "#d97706",
-            PrimaryColor.Yellow   => "#ca8a04",
-            PrimaryColor.Lime     => "#65a30d",
-            PrimaryColor.Green    => "#16a34a",
-            PrimaryColor.Emerald  => "#059669",
-            PrimaryColor.Teal     => "#0d9488",
-            PrimaryColor.Cyan     => "#0891b2",
-            PrimaryColor.Sky      => "#0284c7",
-            PrimaryColor.Blue     => "#2563eb",
-            PrimaryColor.Indigo   => "#4f46e5",
-            PrimaryColor.Violet   => "#7c3aed",
-            PrimaryColor.Purple   => "#9333ea",
-            PrimaryColor.Fuchsia  => "#c026d3",
-            PrimaryColor.Pink     => "#db2777",
-            _                     => baseColorValue
+            PrimaryColor.Default => baseColorValue,
+            PrimaryColor.Red => "#dc2626",
+            PrimaryColor.Rose => "#e11d48",
+            PrimaryColor.Orange => "#ea580c",
+            PrimaryColor.Amber => "#d97706",
+            PrimaryColor.Yellow => "#ca8a04",
+            PrimaryColor.Lime => "#65a30d",
+            PrimaryColor.Green => "#16a34a",
+            PrimaryColor.Emerald => "#059669",
+            PrimaryColor.Teal => "#0d9488",
+            PrimaryColor.Cyan => "#0891b2",
+            PrimaryColor.Sky => "#0284c7",
+            PrimaryColor.Blue => "#2563eb",
+            PrimaryColor.Indigo => "#4f46e5",
+            PrimaryColor.Violet => "#7c3aed",
+            PrimaryColor.Purple => "#9333ea",
+            PrimaryColor.Fuchsia => "#c026d3",
+            PrimaryColor.Pink => "#db2777",
+            _ => baseColorValue
         };
 
         return $"background: {baseColorValue}; border: 2px solid {primaryColorValue};";
@@ -360,16 +364,16 @@
 
         var colorClass = color switch
         {
-            BaseColor.Zinc    => "bg-zinc-500",
-            BaseColor.Slate   => "bg-slate-500",
-            BaseColor.Gray    => "bg-gray-500",
+            BaseColor.Zinc => "bg-zinc-500",
+            BaseColor.Slate => "bg-slate-500",
+            BaseColor.Gray => "bg-gray-500",
             BaseColor.Neutral => "bg-neutral-500",
-            BaseColor.Stone   => "bg-stone-500",
-            BaseColor.Mist    => "bg-sky-400",
-            BaseColor.Mauve   => "bg-purple-400",
-            BaseColor.Taupe   => "bg-amber-700",
-            BaseColor.Olive   => "bg-lime-700",
-            _                 => "bg-zinc-500"
+            BaseColor.Stone => "bg-stone-500",
+            BaseColor.Mist => "bg-sky-400",
+            BaseColor.Mauve => "bg-purple-400",
+            BaseColor.Taupe => "bg-amber-700",
+            BaseColor.Olive => "bg-lime-700",
+            _ => "bg-zinc-500"
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
@@ -391,25 +395,25 @@
 
         var colorClass = color switch
         {
-            PrimaryColor.Default  => "bg-gray-600",
-            PrimaryColor.Red      => "bg-red-600",
-            PrimaryColor.Rose     => "bg-rose-600",
-            PrimaryColor.Orange   => "bg-orange-600",
-            PrimaryColor.Amber    => "bg-amber-600",
-            PrimaryColor.Yellow   => "bg-yellow-500",
-            PrimaryColor.Lime     => "bg-lime-500",
-            PrimaryColor.Green    => "bg-green-600",
-            PrimaryColor.Emerald  => "bg-emerald-600",
-            PrimaryColor.Teal     => "bg-teal-600",
-            PrimaryColor.Cyan     => "bg-cyan-600",
-            PrimaryColor.Sky      => "bg-sky-600",
-            PrimaryColor.Blue     => "bg-blue-600",
-            PrimaryColor.Indigo   => "bg-indigo-600",
-            PrimaryColor.Violet   => "bg-violet-600",
-            PrimaryColor.Purple   => "bg-purple-600",
-            PrimaryColor.Fuchsia  => "bg-fuchsia-600",
-            PrimaryColor.Pink     => "bg-pink-600",
-            _                     => "bg-gray-600"
+            PrimaryColor.Default => "bg-gray-600",
+            PrimaryColor.Red => "bg-red-600",
+            PrimaryColor.Rose => "bg-rose-600",
+            PrimaryColor.Orange => "bg-orange-600",
+            PrimaryColor.Amber => "bg-amber-600",
+            PrimaryColor.Yellow => "bg-yellow-500",
+            PrimaryColor.Lime => "bg-lime-500",
+            PrimaryColor.Green => "bg-green-600",
+            PrimaryColor.Emerald => "bg-emerald-600",
+            PrimaryColor.Teal => "bg-teal-600",
+            PrimaryColor.Cyan => "bg-cyan-600",
+            PrimaryColor.Sky => "bg-sky-600",
+            PrimaryColor.Blue => "bg-blue-600",
+            PrimaryColor.Indigo => "bg-indigo-600",
+            PrimaryColor.Violet => "bg-violet-600",
+            PrimaryColor.Purple => "bg-purple-600",
+            PrimaryColor.Fuchsia => "bg-fuchsia-600",
+            PrimaryColor.Pink => "bg-pink-600",
+            _ => "bg-gray-600"
         };
 
         return $"{baseClass} {colorClass} {selectedClass}";
@@ -420,50 +424,50 @@
     // Radius — quarter-corner inline style (top-left corner only shows the curve)
     private string GetRadiusCornerStyle(RadiusPreset preset) => preset switch
     {
-        RadiusPreset.None    => "border-top-left-radius: 0px",
-        RadiusPreset.Small   => "border-top-left-radius: 0.45rem",
-        RadiusPreset.Medium  => "border-top-left-radius: 0.625rem",
-        RadiusPreset.Large   => "border-top-left-radius: 0.875rem",
+        RadiusPreset.None => "border-top-left-radius: 0px",
+        RadiusPreset.Small => "border-top-left-radius: 0.45rem",
+        RadiusPreset.Medium => "border-top-left-radius: 0.625rem",
+        RadiusPreset.Large => "border-top-left-radius: 0.875rem",
         RadiusPreset.Default => "border-top-left-radius: 0.625rem",
-        _                    => "border-top-left-radius: 0.625rem"
+        _ => "border-top-left-radius: 0.625rem"
     };
 
     // Font — CSS font-family string for inline rendering
     private string GetFontFamilyString(FontPreset preset) => preset switch
     {
-        FontPreset.System      => "system-ui, sans-serif",
-        FontPreset.Inter       => "'Inter', sans-serif",
-        FontPreset.Geist       => "'Geist', sans-serif",
-        FontPreset.CalSans     => "'Cal Sans', sans-serif",
-        FontPreset.DmSans      => "'DM Sans', sans-serif",
+        FontPreset.System => "system-ui, sans-serif",
+        FontPreset.Inter => "'Inter', sans-serif",
+        FontPreset.Geist => "'Geist', sans-serif",
+        FontPreset.CalSans => "'Cal Sans', sans-serif",
+        FontPreset.DmSans => "'DM Sans', sans-serif",
         FontPreset.PlusJakarta => "'Plus Jakarta Sans', sans-serif",
-        _                      => "system-ui, sans-serif"
+        _ => "system-ui, sans-serif"
     };
 
     // Style variant — outer card border-radius character
     private string GetStyleVariantOuterStyle(StyleVariant variant) => variant switch
     {
         StyleVariant.Default => "border-radius: 0.625rem",
-        StyleVariant.Vega    => "border-radius: 0.625rem",
-        StyleVariant.Nova    => "border-radius: 0.375rem",
-        StyleVariant.Maia    => "border-radius: 0.875rem",
-        StyleVariant.Lyra    => "border-radius: 0rem",
-        StyleVariant.Mira    => "border-radius: 0.375rem",
-        StyleVariant.Luma    => "border-radius: 0.75rem; opacity: 0.85",
-        _                    => "border-radius: 0.625rem"
+        StyleVariant.Vega => "border-radius: 0.625rem",
+        StyleVariant.Nova => "border-radius: 0.375rem",
+        StyleVariant.Maia => "border-radius: 0.875rem",
+        StyleVariant.Lyra => "border-radius: 0rem",
+        StyleVariant.Mira => "border-radius: 0.375rem",
+        StyleVariant.Luma => "border-radius: 0.75rem; opacity: 0.85",
+        _ => "border-radius: 0.625rem"
     };
 
     // Style variant — inner button border-radius character
     private string GetStyleVariantInnerStyle(StyleVariant variant) => variant switch
     {
         StyleVariant.Default => "border-radius: 0.375rem; opacity: 0.45",
-        StyleVariant.Vega    => "border-radius: 0.375rem; opacity: 0.45",
-        StyleVariant.Nova    => "border-radius: 0.25rem; opacity: 0.45",
-        StyleVariant.Maia    => "border-radius: 0.75rem; opacity: 0.45",
-        StyleVariant.Lyra    => "border-radius: 0rem; opacity: 0.45",
-        StyleVariant.Mira    => "border-radius: 0.25rem; opacity: 0.45",
-        StyleVariant.Luma    => "border-radius: 0.625rem; opacity: 0.40",
-        _                    => "border-radius: 0.375rem; opacity: 0.45"
+        StyleVariant.Vega => "border-radius: 0.375rem; opacity: 0.45",
+        StyleVariant.Nova => "border-radius: 0.25rem; opacity: 0.45",
+        StyleVariant.Maia => "border-radius: 0.75rem; opacity: 0.45",
+        StyleVariant.Lyra => "border-radius: 0rem; opacity: 0.45",
+        StyleVariant.Mira => "border-radius: 0.25rem; opacity: 0.45",
+        StyleVariant.Luma => "border-radius: 0.625rem; opacity: 0.40",
+        _ => "border-radius: 0.375rem; opacity: 0.45"
     };
 
     public void Dispose()

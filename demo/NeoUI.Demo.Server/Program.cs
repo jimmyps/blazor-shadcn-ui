@@ -6,7 +6,7 @@ using NeoUI.Demo.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents(options => options.DetailedErrors = true);
 
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();

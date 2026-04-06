@@ -15,7 +15,9 @@
         LockScroll="true"
         role="alertdialog"
         @attributes="AdditionalAttributes">
-        @ChildContent
+        <CascadingValue Name="StyleVariant" Value="_styleVariant" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
     </DialogContentPrimitive>
 </DialogPortal>
 
@@ -31,6 +33,9 @@
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     /// <summary>
     /// Whether the alert dialog can be closed with the Escape key.
@@ -84,7 +89,8 @@
         "animate-duration-300 animate-ease-cubic-out",
 
         // Responsive
-        "sm:rounded-lg",
+        "rounded-lg",
+        _styleVariant.GetClasses("Dialog.Content"),
         // Custom classes
         Class
     );

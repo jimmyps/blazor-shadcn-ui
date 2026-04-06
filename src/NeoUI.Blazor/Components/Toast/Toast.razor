@@ -121,6 +121,9 @@ public string? Class { get; set; }
 [Parameter(CaptureUnmatchedValues = true)]
 public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+[CascadingParameter(Name = "StyleVariant")]
+private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
 private string _elementId = "";
 private IJSObjectReference? _jsModule;
 
@@ -252,9 +255,7 @@ public async ValueTask DisposeAsync()
 
         var sizeClass = GetSizeClass();
         var variantClass = GetVariantClass();
-        var classValue = string.IsNullOrEmpty(Class) 
-            ? $"{baseClass} {sizeClass} {variantClass}" 
-            : $"{baseClass} {sizeClass} {variantClass} {Class}";
+        var classValue = ClassNames.cn(baseClass, sizeClass, variantClass, _styleVariant.GetClasses("Toast.Root"), Class);
 
         var attributes = new Dictionary<string, object>
         {

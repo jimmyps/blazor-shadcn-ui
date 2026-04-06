@@ -8,7 +8,9 @@
 <SelectContentPrimitive TValue="TValue"
                                                class="@OuterCssClass">
     <div @ref="_scrollRef" @onscroll="HandleScroll" class="@InnerCssClass">
-        @ChildContent
+        <CascadingValue Name="StyleVariant" Value="_styleVariant" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
         @if (IsLoading)
         {
             <div class="flex items-center justify-center py-2">
@@ -33,6 +35,9 @@
     /// </summary>
     [CascadingParameter]
     private SelectContext<TValue>? Context { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
 
     /// <summary>
@@ -80,13 +85,17 @@
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
         "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
         "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        _styleVariant.GetClasses("SelectContent.Root"),
         Class
     );
 
     /// <summary>
     /// Inner container: scrollable area with max height.
     /// </summary>
-    private static string InnerCssClass => "max-h-60 overflow-auto p-1 [&::-webkit-scrollbar]:hidden";
+    private string InnerCssClass => ClassNames.cn(
+        "max-h-60 overflow-auto p-1 [&::-webkit-scrollbar]:hidden",
+        _styleVariant.GetClasses("SelectContent.Inner")
+    );
 
     private async Task HandleScroll()
     {

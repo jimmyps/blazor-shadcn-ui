@@ -116,8 +116,12 @@ public partial class ToggleGroup : ComponentBase
             : Values?.Contains(itemValue) ?? false;
     }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string CssClass => ClassNames.cn(
         "inline-flex items-center justify-center rounded-md",
+        _styleVariant.GetClasses("ToggleGroup.Root"),
         Class
     );
 }

@@ -45,6 +45,9 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// <summary>Additional CSS classes for the wrapper element.</summary>
     [Parameter] public string? Class { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>Size applied to every <see cref="FilterChip"/> rendered by this builder.</summary>
     [Parameter] public FilterChipSize ChipSize { get; set; } = FilterChipSize.Small;
 
@@ -194,6 +197,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// <summary>CSS classes for the preset tab bar container, sized to match <see cref="ChipSize"/>.</summary>
     private string TabsContainerClass => ClassNames.cn(
         "inline-flex items-center rounded-md bg-muted p-0.5",
+        _styleVariant.GetClasses("Tabs.List"),
         ChipSize switch
         {
             FilterChipSize.Small  => "h-8",
@@ -216,6 +220,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         return ClassNames.cn(
             "inline-flex items-center gap-1 whitespace-nowrap rounded-sm px-2.5 text-sm font-medium transition-all",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            _styleVariant.GetClasses("Tabs.Trigger"),
             itemHeight,
             isActive
                 ? "bg-background text-foreground shadow-sm"

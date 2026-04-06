@@ -56,6 +56,9 @@ public partial class TimePickerBase : ComponentBase
     [CascadingParameter]
     protected EditContext? EditContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    protected StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// The selected time.
     /// </summary>
@@ -316,10 +319,7 @@ public partial class TimePickerBase : ComponentBase
         if (!SelectedTime.HasValue)
             classes.Add("text-muted-foreground");
 
-        if (!string.IsNullOrEmpty(Class))
-            classes.Add(Class);
-
-        return ClassNames.cn(classes.ToArray());
+        return ClassNames.cn([.. classes, _styleVariant.GetClasses("Button.Root"), Class]);
     }
 
     /// <summary>

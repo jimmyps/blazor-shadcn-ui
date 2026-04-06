@@ -127,6 +127,9 @@ public partial class DataView<TItem> : ComponentBase
     [Inject]
     private ILocalizer Localizer { get; set; } = default!;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string EffectiveLoadingText => LoadingText ?? Localizer["DataView.Loading"];
     private string EffectiveEmptyText => EmptyText ?? Localizer["DataView.NoResultsFound"];
 

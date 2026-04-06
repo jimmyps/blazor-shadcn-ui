@@ -69,6 +69,9 @@ public partial class Slider : ComponentBase
     [Parameter]
     public string? Class { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private async Task OnInputAsync(ChangeEventArgs e)
     {
         if (double.TryParse(e.Value?.ToString(), out var newValue))
@@ -92,16 +95,45 @@ public partial class Slider : ComponentBase
         Class
     );
 
+    /// <summary>
+    /// Computes an inline CSS gradient for the active track fill (WebKit).
+    /// The filled portion (left of thumb) uses --primary; the rest uses --input.
+    /// </summary>
+    private string TrackStyle
+    {
+        get
+        {
+            var pct = Max > Min ? ((Value - Min) / (Max - Min)) * 100 : 0;
+            return $"background: linear-gradient(to right, var(--primary) {pct:F1}%, var(--input) {pct:F1}%)";
+        }
+    }
+
     private string CssClass => ClassNames.cn(
-        "w-full h-2 bg-secondary rounded-full appearance-none cursor-pointer",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        "[&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5",
-        "[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary",
+        // Track — no bg-* class, gradient is applied via inline style
+        "w-full h-2 rounded-full appearance-none cursor-default outline-none",
+        // Firefox: active progress and track via moz pseudo-elements
+        "[&::-moz-range-track]:bg-input [&::-moz-range-track]:rounded-full [&::-moz-range-track]:h-2",
+        "[&::-moz-range-progress]:bg-primary [&::-moz-range-progress]:rounded-full",
+        // WebKit thumb — base: circle, bg-background, border-primary
+        "[&::-webkit-slider-thumb]:appearance-none",
+        "[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4",
+        "[&::-webkit-slider-thumb]:rounded-full",
+        "[&::-webkit-slider-thumb]:bg-white",
         "[&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary",
-        "[&::-webkit-slider-thumb]:transition-colors [&::-webkit-slider-thumb]:cursor-pointer",
-        "[&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full",
-        "[&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary",
-        "[&::-moz-range-thumb]:transition-colors [&::-moz-range-thumb]:cursor-pointer",
-        Disabled ? "opacity-50 cursor-not-allowed" : ""
+        "[&::-webkit-slider-thumb]:shadow-sm",
+        "[&::-webkit-slider-thumb]:cursor-pointer",
+        "[&::-webkit-slider-thumb]:transition-[color,box-shadow,background-color]",
+        // Hover/focus ring — only when not disabled (uses native :disabled selector)
+        "[&:not(:disabled)::-webkit-slider-thumb:hover]:ring-2 [&:not(:disabled)::-webkit-slider-thumb:hover]:ring-ring/50",
+        "[&:not(:disabled):focus-visible::-webkit-slider-thumb]:ring-2 [&:not(:disabled):focus-visible::-webkit-slider-thumb]:ring-ring/50",
+        // Firefox thumb — mirror WebKit shape
+        "[&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4",
+        "[&::-moz-range-thumb]:rounded-full",
+        "[&::-moz-range-thumb]:bg-white",
+        "[&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary",
+        "[&::-moz-range-thumb]:shadow-sm",
+        "[&::-moz-range-thumb]:cursor-pointer",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        _styleVariant.GetClasses("Slider.Root")
     );
 }

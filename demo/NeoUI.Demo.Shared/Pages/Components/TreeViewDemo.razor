@@ -10,16 +10,15 @@
 
     <DemoSection Title="Basic" Description="Nested file tree. Click a node to select it; selected item's ID is reported below.">
         <DemoBlock Code="@TreeViewDemoCode.Basic">
-            <div class="border rounded-md p-3 max-w-xs">
-                <TreeView TItem="FileNode"
-                          Items="@_fileTree"
-                          ChildrenProperty="@(n => n.Children)"
-                          ValueField="@(n => n.Path)"
-                          TextField="@(n => n.Name)"
-                          IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
-                          SelectionMode="TreeSelectionMode.Single"
-                          @bind-SelectedValue="_selectedPath" />
-            </div>
+            <TreeView TItem="FileNode"
+                      Items="@_fileTree"
+                      ChildrenProperty="@(n => n.Children)"
+                      ValueField="@(n => n.Path)"
+                      TextField="@(n => n.Name)"
+                      IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
+                      SelectionMode="TreeSelectionMode.Single"
+                      Class="max-w-xs"
+                      @bind-SelectedValue="_selectedPath" />
             @if (!string.IsNullOrEmpty(_selectedPath))
             {
                 <p class="mt-2 text-sm text-muted-foreground">Selected: <strong>@_selectedPath</strong></p>
@@ -29,17 +28,16 @@
 
     <DemoSection Title="Checkboxes" Description="Checkbox state is tracked via CheckedValues. Nodes show check, empty, or indeterminate state.">
         <DemoBlock Code="@TreeViewDemoCode.Checkboxes">
-            <div class="border rounded-md p-3 max-w-xs">
-                <TreeView TItem="OrgNode"
-                          Items="@_orgTree"
-                          ChildrenProperty="@(n => n.Reports)"
-                          ValueField="@(n => n.Id)"
-                          TextField="@(n => n.Name)"
-                          IconField="@(n => n.Reports?.Count > 0 ? "users" : "user")"
-                          Checkable="true"
-                          DefaultExpandAll="true"
-                          @bind-CheckedValues="_checkedPeople" />
-            </div>
+            <TreeView TItem="OrgNode"
+                      Items="@_orgTree"
+                      ChildrenProperty="@(n => n.Reports)"
+                      ValueField="@(n => n.Id)"
+                      TextField="@(n => n.Name)"
+                      IconField="@(n => n.Reports?.Count > 0 ? "users" : "user")"
+                      Checkable="true"
+                      DefaultExpandAll="true"
+                      Class="max-w-xs"
+                      @bind-CheckedValues="_checkedPeople" />
             <p class="mt-2 text-sm text-muted-foreground">
                 @if (_checkedPeople.Count == 0)
                 {
@@ -96,6 +94,7 @@
                                   Checkable="true"
                                   PropagateChecks="true"
                                   DefaultExpandAll="true"
+                                  Class="border-0 rounded-none p-0"
                                   @bind-CheckedValues="_installFeatures" />
                     </div>
 
@@ -132,16 +131,15 @@
 
     <DemoSection Title="Multi-Select" Description="SelectionMode.Multiple + Ctrl/Cmd lets you select several nodes.">
         <DemoBlock Code="@TreeViewDemoCode.MultiSelect">
-            <div class="border rounded-md p-3 max-w-xs">
-                <TreeView TItem="OrgNode"
-                          Items="@_orgTree"
-                          ChildrenProperty="@(n => n.Reports)"
-                          ValueField="@(n => n.Id)"
-                          TextField="@(n => n.Name)"
-                          SelectionMode="TreeSelectionMode.Multiple"
-                          DefaultExpandAll="true"
-                          @bind-SelectedValues="_selectedPeople" />
-            </div>
+            <TreeView TItem="OrgNode"
+                      Items="@_orgTree"
+                      ChildrenProperty="@(n => n.Reports)"
+                      ValueField="@(n => n.Id)"
+                      TextField="@(n => n.Name)"
+                      SelectionMode="TreeSelectionMode.Multiple"
+                      DefaultExpandAll="true"
+                      Class="max-w-xs"
+                      @bind-SelectedValues="_selectedPeople" />
             @if (_selectedPeople?.Count > 0)
             {
                 <p class="mt-2 text-sm text-muted-foreground">
@@ -153,16 +151,15 @@
 
     <DemoSection Title="Flat Data with ParentField" Description="Pass a flat list — ValueField + ParentField build the hierarchy.">
         <DemoBlock Code="@TreeViewDemoCode.FlatData">
-            <div class="border rounded-md p-3 max-w-xs">
-                <TreeView TItem="CategoryNode"
-                          Items="@_categories"
-                          ValueField="@(c => c.Id)"
-                          ParentField="@(c => c.ParentId)"
-                          TextField="@(c => c.Label)"
-                          IconField="@(c => c.ParentId == null ? "layers" : "tag")"
-                          SelectionMode="TreeSelectionMode.Single"
-                          @bind-SelectedValue="_selectedCategory" />
-            </div>
+            <TreeView TItem="CategoryNode"
+                      Items="@_categories"
+                      ValueField="@(c => c.Id)"
+                      ParentField="@(c => c.ParentId)"
+                      TextField="@(c => c.Label)"
+                      IconField="@(c => c.ParentId == null ? "layers" : "tag")"
+                      SelectionMode="TreeSelectionMode.Single"
+                      Class="max-w-xs"
+                      @bind-SelectedValue="_selectedCategory" />
             @if (!string.IsNullOrEmpty(_selectedCategory))
             {
                 var cat = _categories.FirstOrDefault(c => c.Id == _selectedCategory);
@@ -173,16 +170,15 @@
 
     <DemoSection Title="Expand All &amp; Show Lines" Description="DefaultExpandAll opens every node; ShowLines draws connecting guides.">
         <DemoBlock Code="@TreeViewDemoCode.Lines">
-            <div class="border rounded-md p-3 max-w-xs">
-                <TreeView TItem="FileNode"
-                          Items="@_fileTree"
-                          ChildrenProperty="@(n => n.Children)"
-                          ValueField="@(n => n.Path)"
-                          TextField="@(n => n.Name)"
-                          IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
-                          DefaultExpandAll="true"
-                          ShowLines="true" />
-            </div>
+            <TreeView TItem="FileNode"
+                      Items="@_fileTree"
+                      ChildrenProperty="@(n => n.Children)"
+                      ValueField="@(n => n.Path)"
+                      TextField="@(n => n.Name)"
+                      IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
+                      DefaultExpandAll="true"
+                      ShowLines="true"
+                      Class="max-w-xs" />
         </DemoBlock>
     </DemoSection>
 
@@ -190,50 +186,46 @@
         <DemoBlock Code="@TreeViewDemoCode.Search">
             <div class="space-y-2 max-w-xs">
                 <Input @bind-Value="_searchText" Placeholder="Search nodes…" Class="h-8 text-sm" />
-                <div class="border rounded-md p-3">
-                    <TreeView TItem="FileNode"
-                              Items="@_fileTree"
-                              ChildrenProperty="@(n => n.Children)"
-                              ValueField="@(n => n.Path)"
-                              TextField="@(n => n.Name)"
-                              IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
-                              SearchText="@_searchText"
-                              DefaultExpandAll="true" />
-                </div>
+                <TreeView TItem="FileNode"
+                          Items="@_fileTree"
+                          ChildrenProperty="@(n => n.Children)"
+                          ValueField="@(n => n.Path)"
+                          TextField="@(n => n.Name)"
+                          IconField="@(n => n.Children?.Count > 0 ? "folder" : "file")"
+                          SearchText="@_searchText"
+                          DefaultExpandAll="true" />
             </div>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection Title="Loading &amp; Error States" Description="Pass LoadingNodes and ErrorNodes to show per-node async feedback. OnRetryLoad fires when the user clicks Retry.">
         <DemoBlock Code="@TreeViewDemoCode.LoadingError">
-            <div class="border rounded-md p-3 max-w-xs">
-                <TreeView TItem="LazyNode"
-                          Items="@_lazyRoots"
-                          ChildrenProperty="@(n => _childrenDict.TryGetValue(n.Id, out var c) ? c : n.Children)"
-                          HasChildrenField="@(n => n.HasChildren)"
-                          ValueField="@(n => n.Id)"
-                          TextField="@(n => n.Label)"
-                          IconField="@(n => n.HasChildren ? "folder" : "file")"
-                          LoadingNodes="@_loadingNodes"
-                          ErrorNodes="@_errorNodes"
-                          OnNodeExpand="@HandleNodeExpand"
-                          OnRetryLoad="@HandleRetryLoad" />
-            </div>
+            <TreeView TItem="LazyNode"
+                      Items="@_lazyRoots"
+                      ChildrenProperty="@(n => _childrenDict.TryGetValue(n.Id, out var c) ? c : n.Children)"
+                      HasChildrenField="@(n => n.HasChildren)"
+                      ValueField="@(n => n.Id)"
+                      TextField="@(n => n.Label)"
+                      IconField="@(n => n.HasChildren ? "folder" : "file")"
+                      LoadingNodes="@_loadingNodes"
+                      ErrorNodes="@_errorNodes"
+                      OnNodeExpand="@HandleNodeExpand"
+                      Class="max-w-xs"
+                      OnRetryLoad="@HandleRetryLoad" />
             <p class="mt-2 text-xs text-muted-foreground">Expand a folder → simulates loading → error → click Retry to succeed.</p>
         </DemoBlock>
     </DemoSection>
 
     <DemoSection Title="Load Children Async" Description="Set LoadChildrenAsync and the tree manages loading, error and caching automatically — no extra state needed.">
         <DemoBlock Code="@TreeViewDemoCode.LoadChildrenAsync">
-            <div class="border rounded-md p-3 max-w-xs">
-                <TreeView TItem="LazyNode"
-                          Items="@_lazyRoots2"
-                          HasChildrenField="@(n => n.HasChildren)"
-                          ValueField="@(n => n.Id)"
-                          TextField="@(n => n.Label)"
-                          IconField="@(n => n.HasChildren ? "folder" : "file")"
-                          LoadChildrenAsync="@FetchChildren" />
-            </div>
+            <TreeView TItem="LazyNode"
+                      Items="@_lazyRoots2"
+                      HasChildrenField="@(n => n.HasChildren)"
+                      ValueField="@(n => n.Id)"
+                      TextField="@(n => n.Label)"
+                      IconField="@(n => n.HasChildren ? "folder" : "file")"
+                      Class="max-w-xs"
+                      LoadChildrenAsync="@FetchChildren" />
             <p class="mt-2 text-xs text-muted-foreground">Children are fetched once and cached. Retry clears the cache for that node.</p>
         </DemoBlock>
     </DemoSection>

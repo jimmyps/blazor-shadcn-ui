@@ -39,6 +39,9 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class FileUpload : ComponentBase, IAsyncDisposable
 {
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Tracks the ID of the first invalid input to ensure only one tooltip is shown.
     /// </summary>
@@ -264,6 +267,7 @@ public partial class FileUpload : ComponentBase, IAsyncDisposable
     /// </summary>
     private string DropZoneCssClass => ClassNames.cn(
         "relative rounded-lg border-2 border-dashed transition-colors",
+        _styleVariant.GetClasses("FileUpload.DropZone"),
         _isDragging
             ? "border-primary bg-primary/5"
             : "border-border hover:border-muted-foreground/50",

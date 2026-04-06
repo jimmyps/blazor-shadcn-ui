@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 using NeoUI.Blazor.Primitives;
 using NeoUI.Blazor.Primitives.Services;
+using NeoUI.Blazor.Services;
 namespace NeoUI.Blazor;
 
 /// <summary>
@@ -160,6 +161,9 @@ public partial class Button : ComponentBase
     [CascadingParameter(Name = "TriggerContext")]
     public TriggerContext? TriggerContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Reference to the button element for positioning support when used with AsChild.
     /// </summary>
@@ -182,6 +186,7 @@ public partial class Button : ComponentBase
         "transition-colors focus-visible:outline-none focus-visible:ring-2",
         "focus-visible:ring-ring focus-visible:ring-offset-2",
         "disabled:opacity-50 disabled:pointer-events-none",
+        "active:not-aria-[haspopup]:translate-y-px",
         // Variant-specific styles
         Variant switch
         {
@@ -204,6 +209,10 @@ public partial class Button : ComponentBase
             ButtonSize.IconLarge => "h-11 w-11",
             _ => "h-10 px-4 py-2"
         },
+        // StyleVariant class overrides (layer 2 — before user Class so Class always wins)
+        _styleVariant.GetClasses("Button.Root"),
+        // Restore visible border for Outline variant (StyleVariant may set border-transparent for Default)
+        Variant == ButtonVariant.Outline ? "border-input" : null,
         // Custom classes (if provided)
         Class
     );

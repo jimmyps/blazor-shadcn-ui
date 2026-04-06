@@ -2,7 +2,6 @@
 
 @layer base {
   :root.style-luma {
-    --radius: 0.75rem;
     --spacing-scale: 1;
 
     /* Soft, diffuse shadows — glassmorphism aesthetic */

@@ -2,7 +2,6 @@
 
 @layer base {
   :root.style-maia {
-    --radius: 1rem;
     --spacing-scale: 1.15;
 
     /* More elevated shadows — adds depth to the spacious, rounded aesthetic */

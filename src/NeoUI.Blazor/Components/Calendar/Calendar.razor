@@ -111,6 +111,9 @@
     private bool _isDropdownFocused;
     private bool _hasFocus;
     private bool _needsRefocus;
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
     
     /// <summary>
     /// Programmatically focuses the calendar container.
@@ -591,21 +594,21 @@
         }
     }
 
-    private string GetPrevNavButtonClass()
-    {
-        return "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors " +
-               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
-               "disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground " +
-               "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1";
-    }
+    private string GetPrevNavButtonClass() => ClassNames.cn(
+        "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute left-1",
+        _styleVariant.GetClasses("Calendar.NavButton")
+    );
 
-    private string GetNextNavButtonClass()
-    {
-        return "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors " +
-               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
-               "disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground " +
-               "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1";
-    }
+    private string GetNextNavButtonClass() => ClassNames.cn(
+        "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 absolute right-1",
+        _styleVariant.GetClasses("Calendar.NavButton")
+    );
 
     private string GetDayClass(DateOnly date)
     {
@@ -651,22 +654,26 @@
             classes.Add("text-muted-foreground opacity-50");
         }
 
-        return string.Join(" ", classes);
+        classes.Add(_styleVariant.GetClasses("Calendar.Day"));
+        return ClassNames.cn(classes.ToArray());
     }
 
-    private string GetDropdownClass()
-    {
-        return "h-7 px-2 text-sm font-medium rounded-md border border-input bg-background " +
-               "hover:bg-accent hover:text-accent-foreground cursor-pointer " +
-               "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
-    }
+    private string GetDropdownClass() => ClassNames.cn(
+        "h-7 px-2 text-sm font-medium rounded-md border border-input bg-background",
+        "hover:bg-accent hover:text-accent-foreground cursor-pointer",
+        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        _styleVariant.GetClasses("Calendar.Dropdown")
+    );
 
     private Dictionary<string, object> GetAttributes()
     {
         // Apply border, shadow, default cursor, and intrinsic width at container level
         // Using inline-block for intrinsic width since w-fit may not be in Tailwind build
-        var baseClass = "inline-block bg-background no-focus-ring p-3 rounded-md border shadow-sm cursor-default";
-        var classValue = string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
+        var classValue = ClassNames.cn(
+            "inline-block bg-background no-focus-ring p-3 rounded-md border shadow-sm cursor-default",
+            _styleVariant.GetClasses("Calendar.Root"),
+            Class
+        );
 
         var attributes = new Dictionary<string, object>
         {

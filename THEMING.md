@@ -258,13 +258,13 @@ NeoUI v2 uses a **7-step proportional scale** driven by a single `--radius` base
 
 | Variable | Multiplier | Example at default (0.625rem) |
 |---|---|---|
-| `--radius-xs` | `× 0.5` | `0.3125rem` |
-| `--radius-sm` | `× 0.75` | `0.469rem` |
-| `--radius-md` | `× 1` (base) | `0.625rem` |
-| `--radius-lg` | `× 1.5` | `0.9375rem` |
-| `--radius-xl` | `× 2` | `1.25rem` |
-| `--radius-2xl` | `× 3` | `1.875rem` |
-| `--radius-4xl` | `9999px` | full pill |
+| `--radius-xs` | `× 0.4` | `0.25rem` |
+| `--radius-sm` | `× 0.6` | `0.375rem` |
+| `--radius-md` | `× 0.8` | `0.5rem` |
+| `--radius-lg` | `× 1` (base) | `0.625rem` |
+| `--radius-xl` | `× 1.4` | `0.875rem` |
+| `--radius-2xl` | `× 1.8` | `1.125rem` |
+| `--radius-4xl` | `× 2.6` | `1.625rem` (pill via `RadiusPreset.Full` override) |
 
 The base `--radius` is set to `0.625rem` by default (aligning with shadcn/ui).
 
@@ -380,6 +380,79 @@ The `Default` primary color (matching each base color's neutral) requires no CSS
 
 ```csharp
 await ThemeService.SetPrimaryColorAsync(PrimaryColor.Blue);
+```
+
+---
+
+---
+
+### Style Variant Class Override System
+
+Beyond CSS custom properties, NeoUI implements a **component-level class override system** that makes style variants the most sophisticated in any Blazor component library. Every component participates in a 3-layer merge pipeline:
+
+```
+Layer 1  Base component classes       Sensible defaults, backward-compatible
+    ↓
+Layer 2  Variant override classes     StyleVariantExtensions.GetClasses("Component.Key")
+    ↓
+Layer 3  User Class prop              Always wins — ClassNames.cn / tailwind-merge
+```
+
+Each layer is merged via a custom C# `tailwind-merge` implementation that resolves Tailwind class conflicts — so a variant's `rounded-3xl` correctly replaces the base `rounded-md`, and any class you pass via the `Class` parameter wins over both. **No inline styles, no specificity hacks, no `!important`.**
+
+#### What This Enables
+
+- **Faithful shadcn fidelity**: Components render exactly as shadcn/ui intends for each style variant, including shapes and proportions that are impossible to achieve through `--radius` alone
+- **Full user overridability**: Pass any Tailwind class via `Class="..."` — it always layers on top of both base and variant classes
+- **Zero breaking changes**: Components that don't set a `StyleVariant` cascade parameter receive `Default` — identical to pre-v2 behavior
+
+#### Luma — The Flagship Variant
+
+`StyleVariant.Luma` demonstrates the full power of the system. Rather than simply adjusting `--radius`, Luma applies distinct per-component overrides that collectively produce a glassmorphism SaaS aesthetic:
+
+| Component | Luma class overrides |
+|---|---|
+| `Card`, `Dialog`, `Popover` | `rounded-3xl` / `rounded-4xl` containers |
+| `Button`, `Input`, `Badge` | `rounded-full` pill shapes |
+| `Slider` thumb | Wider pill (`w-6`), soft shadow, hover ring expansion |
+| `RangeSlider` handles | Orientation-aware pill via `data-[orientation=horizontal]:w-6` |
+| `Switch` thumb | Slightly oversized, elevated shadow |
+| `DropdownMenu` content | `rounded-2xl` with enhanced shadow |
+| `Tabs` trigger | `rounded-2xl` |
+| `Pagination` link | `rounded-full` |
+| `ToggleGroup` | `rounded-4xl` container, `rounded-3xl` items |
+| `FileUpload` drop zone | `rounded-4xl` |
+| `MarkdownEditor`, `RichTextEditor` | `rounded-3xl` container |
+
+Other variants (`Nova`, `Maia`, `Lyra`, `Mira`, `Vega`) similarly apply tuned overrides for their respective personas: Nova is crisp and tight, Maia is spacious and rounded, Lyra is flat and square.
+
+#### CSS Selector Patterns
+
+Component class strings use native CSS selectors via Tailwind arbitrary variants — no C# variant-name checks inside component code:
+
+**Orientation-aware sizing:**
+```
+data-[orientation=horizontal]:w-6 data-[orientation=vertical]:h-6
+```
+The component sets `data-orientation="horizontal|vertical"` on the element; the variant key owns the visual response.
+
+**Disabled state suppression:**
+```
+not-aria-disabled:hover:ring-2      @* for div elements with aria-disabled *@
+[&:not(:disabled)::-webkit-slider-thumb:hover]:ring-2   @* for native inputs *@
+```
+No C# `if (!Disabled)` conditionals — CSS handles it, sourced from the element's own `disabled` / `aria-disabled` attributes.
+
+> **Blazor tip:** Always use `@(Disabled ? "true" : "false")` for ARIA boolean attributes. Blazor's default `@Disabled` serializes as `"True"` (capital T), which does not match Tailwind's `aria-disabled:` selector.
+
+#### User Class Override Example
+
+```razor
+@* Base: rounded-md from component *@
+@* Luma variant: rounded-full from variant key *@
+@* User: rounded-lg wins last — overrides both *@
+
+<Button Class="rounded-lg">Custom shape</Button>
 ```
 
 ---

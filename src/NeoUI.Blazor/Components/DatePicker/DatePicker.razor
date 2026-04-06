@@ -33,6 +33,9 @@ private bool _isOpen;
 private DateOnly? _selectedDate;
 private DateOnly? _lastNotifiedDate;
 
+[CascadingParameter(Name = "StyleVariant")]
+private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
 private System.Globalization.CultureInfo EffectiveCulture =>
     Culture ?? System.Globalization.CultureInfo.CurrentCulture;
 
@@ -216,10 +219,7 @@ private System.Globalization.CultureInfo EffectiveCulture =>
         classes.Add(GetButtonVariantClass());
         classes.Add(GetButtonSizeClass());
 
-        if (!string.IsNullOrEmpty(Class))
-            classes.Add(Class);
-
-        return ClassNames.cn(classes.ToArray());
+        return ClassNames.cn([.. classes, _styleVariant.GetClasses("Button.Root"), Class]);
     }
 
     private string GetButtonVariantClass()
@@ -275,18 +275,11 @@ private System.Globalization.CultureInfo EffectiveCulture =>
 
     private string GetPopoverContentClass()
     {
-        return "w-auto !p-0 border-0 shadow-none";
+        return "w-auto !p-0";
     }
 
     private string GetCalendarClass()
     {
-        var classes = new List<string> { "!shadow-md" };
-
-        if (!string.IsNullOrEmpty(CalendarClass))
-        {
-            classes.Add(CalendarClass);
-        }
-
-        return ClassNames.cn(classes.ToArray());
+        return ClassNames.cn("border-0 shadow-none", CalendarClass);
     }
 }
