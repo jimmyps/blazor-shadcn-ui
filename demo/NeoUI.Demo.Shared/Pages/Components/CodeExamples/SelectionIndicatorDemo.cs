@@ -61,6 +61,30 @@ namespace NeoUI.Demo.Shared.Pages.Components
             }
             """;
 
+        private const string _dropdownHoverCode =
+            """
+            @* Regular items have no persistent state — indicator works purely on hover.
+               HoverTarget scopes hover to [role=menuitem] so labels/separators are skipped. *@
+
+            <DropdownMenu>
+                <DropdownMenuTrigger AsChild="true">
+                    <Button Variant="ButtonVariant.Outline">Create New</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent Class="w-44">
+                    <DropdownMenuLabel>Create New</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">Document</DropdownMenuItem>
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">Folder</DropdownMenuItem>
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">Image</DropdownMenuItem>
+                    <DropdownMenuItem Class="relative z-1 hover:bg-transparent focus:bg-transparent">Link</DropdownMenuItem>
+                    <SelectionIndicator
+                        Hover="true"
+                        HoverTarget="[role=menuitem]"
+                        Class="inset-x-1 bg-accent rounded-sm shadow-none" />
+                </DropdownMenuContent>
+            </DropdownMenu>
+            """;
+
         private const string _dropdownCode =
             """
             <DropdownMenu>

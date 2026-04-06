@@ -1,0 +1,29 @@
+@namespace NeoUI.Blazor
+
+<button
+    type="button"
+    class="@CssClass"
+    aria-label="@(!string.IsNullOrEmpty(Label) ? Label : Value)"
+    aria-current="@(IsActive ? "page" : null)"
+    @onclick="HandleClick">
+    <span class="relative inline-flex">
+        @if (IconContent is not null)
+        {
+            @IconContent
+        }
+        else if (!string.IsNullOrEmpty(Icon))
+        {
+            <LucideIcon Name="@Icon" Size="24" />
+        }
+        @if (BadgeCount > 0 || (BadgeCount == 0 && ShowZeroBadge))
+        {
+            <span class="@BadgeCssClass" aria-label="@BadgeCount notifications">
+                @(BadgeCount > MaxBadgeCount ? $"{MaxBadgeCount}+" : BadgeCount.ToString())
+            </span>
+        }
+    </span>
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span class="text-[10px] leading-none mt-0.5 font-medium">@Label</span>
+    }
+</button>

@@ -73,6 +73,26 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection
+        Title="Scrollable"
+        Description="Enable horizontal scrolling for many options in a constrained width. Ideal for mobile filter bars.">
+        <DemoBlock Code="@_scrollableCode">
+            <div class="space-y-4 max-w-xs">
+                <p class="text-xs text-muted-foreground">Resize the window — items scroll instead of wrapping.</p>
+                <ToggleGroup Type="ToggleGroupType.Single" Scrollable="true" @bind-Value="scrollableFilter">
+                    <ToggleGroupItem Value="all">All</ToggleGroupItem>
+                    <ToggleGroupItem Value="design">Design</ToggleGroupItem>
+                    <ToggleGroupItem Value="frontend">Frontend</ToggleGroupItem>
+                    <ToggleGroupItem Value="backend">Backend</ToggleGroupItem>
+                    <ToggleGroupItem Value="devops">DevOps</ToggleGroupItem>
+                    <ToggleGroupItem Value="mobile">Mobile</ToggleGroupItem>
+                    <ToggleGroupItem Value="security">Security</ToggleGroupItem>
+                </ToggleGroup>
+                <p class="text-sm text-muted-foreground">Filter: @scrollableFilter</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_toggleGroupProps" />
     </DemoSection>
@@ -84,6 +104,7 @@
     private string? alignment = "left";
     private List<string>? styles = new();
     private List<string>? formatting = new();
+    private string? scrollableFilter = "all";
 
     private string GetFormattingClass()
     {

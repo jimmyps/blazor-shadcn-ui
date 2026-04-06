@@ -47,8 +47,9 @@
 
     /// <summary>
     /// When <c>true</c>, the indicator also slides to whichever item the pointer is currently
-    /// hovering over, then snaps back to the selected item on mouse leave.
-    /// Useful in menus or lists where you want a visual hover highlight.
+    /// hovering over or has keyboard focus on, then snaps back to the selected item when the
+    /// pointer/focus leaves the container.
+    /// Useful in menus or lists where you want a unified visual hover + focus highlight.
     /// </summary>
     [Parameter]
     public bool Hover { get; set; }

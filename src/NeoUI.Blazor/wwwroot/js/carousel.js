@@ -41,6 +41,7 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
     let startPos = 0;
     let currentTranslate = 0;
     let prevTranslate = 0;
+    let dragMoved = false;
     let autoPlayTimer = null;
     let animationId = null;
 
@@ -207,6 +208,7 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
         if (!enableDrag) return;
         
         isDragging = true;
+        dragMoved = false;
         startPos = isHorizontal ? clientX : clientY;
         
         if (animationId) {
@@ -222,6 +224,7 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
 
         const currentPos = isHorizontal ? clientX : clientY;
         const delta = currentPos - startPos;
+        if (Math.abs(delta) > 5) dragMoved = true;
         currentTranslate = prevTranslate + delta;
 
         setContainerPosition(currentTranslate);
@@ -247,6 +250,19 @@ export function initCarousel(carouselElement, viewportElement, containerElement,
             // Snap back to current slide
             scrollToSlide(currentIndex, true);
         }
+
+        // Suppress the click event the browser fires after a drag gesture
+        if (dragMoved) {
+            const suppressClick = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                containerElement.removeEventListener('click', suppressClick, true);
+            };
+            containerElement.addEventListener('click', suppressClick, true);
+            // Safety fallback: remove suppressor after 500ms in case click never fires
+            setTimeout(() => containerElement.removeEventListener('click', suppressClick, true), 500);
+        }
+        dragMoved = false;
 
         if (autoPlay) {
             startAutoPlay();
