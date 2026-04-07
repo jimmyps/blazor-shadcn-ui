@@ -56,6 +56,10 @@ internal static class NovaClasses
             ["InputGroup.Root"]       = "rounded-lg",
             ["InputOtp.Slot"]         = "first:rounded-l-lg last:rounded-r-lg",
             ["HoverCard.Content"]     = "rounded-xl",
+            ["NavigationMenu.Content"]  = "rounded-xl",
+            ["NavigationMenu.Viewport"] = "rounded-xl",
+            ["NavigationMenu.Trigger"]  = "rounded-lg",
+            ["NavigationMenu.Link"]     = "rounded-lg",
             // Nova: thinner h-1 track, smaller round thumb (size-3)
             ["Slider.Root"]           = "h-1 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3",
             // Composite editors

@@ -27,6 +27,8 @@ internal static class VegaClasses
             ["SelectContent.Root"]    = "rounded-md",
             ["DropdownMenu.Content"]  = "rounded-md",
             ["Popover.Content"]       = "rounded-md",
+            ["NavigationMenu.Content"]  = "rounded-md",
+            ["NavigationMenu.Viewport"] = "rounded-md",
             ["Dialog.Content"]        = "rounded-xl",
             ["Tabs.List"]             = "rounded-lg",
             ["Tabs.Trigger"]          = "rounded-md",

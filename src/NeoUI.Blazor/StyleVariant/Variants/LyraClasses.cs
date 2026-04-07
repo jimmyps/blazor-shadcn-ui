@@ -56,6 +56,10 @@ internal static class LyraClasses
             ["InputGroup.Root"]       = "rounded-none",
             ["InputOtp.Slot"]         = "first:rounded-l-none last:rounded-r-none",
             ["HoverCard.Content"]     = "rounded-none",
+            ["NavigationMenu.Content"]  = "rounded-none",
+            ["NavigationMenu.Viewport"] = "rounded-none",
+            ["NavigationMenu.Trigger"]  = "rounded-none",
+            ["NavigationMenu.Link"]     = "rounded-none",
             // Lyra: boxy h-1 track, small square thumb (size-3 rounded-none)
             ["Slider.Root"]           = "rounded-none h-1 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-none [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:rounded-none",
             // Composite editors

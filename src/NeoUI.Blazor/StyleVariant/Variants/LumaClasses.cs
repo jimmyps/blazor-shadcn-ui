@@ -67,6 +67,10 @@ internal static class LumaClasses
             ["InputGroup.Root"]       = "rounded-3xl bg-input/50 border-transparent",
             ["InputOtp.Slot"]         = "first:rounded-l-3xl last:rounded-r-3xl",
             ["HoverCard.Content"]     = "rounded-2xl shadow-2xl",
+            ["NavigationMenu.Content"]  = "rounded-3xl shadow-2xl",
+            ["NavigationMenu.Viewport"] = "rounded-3xl shadow-2xl",
+            ["NavigationMenu.Trigger"]  = "rounded-4xl",
+            ["NavigationMenu.Link"]     = "rounded-2xl px-3 py-2",
             // Composite editors
             ["FileUpload.DropZone"]   = "rounded-4xl",
             ["MarkdownEditor.Root"]   = "rounded-3xl",

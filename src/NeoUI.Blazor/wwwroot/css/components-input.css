@@ -243,7 +243,8 @@
 :root.menu-color-default-translucent [data-slot="popover-content"],
 :root.menu-color-default-translucent [data-slot="dropdown-content"],
 :root.menu-color-default-translucent [data-slot="select-content"],
-:root.menu-color-default-translucent [data-slot="combobox-content"] {
+:root.menu-color-default-translucent [data-slot="combobox-content"],
+:root.menu-color-default-translucent [data-slot="navigation-menu-viewport"] {
   background-color: color-mix(in oklch, var(--popover) 70%, transparent);
   backdrop-filter: var(--menu-translucent-backdrop);
 }
@@ -253,7 +254,8 @@
 :root:not(.dark).menu-color-inverted [data-slot="popover-content"],
 :root:not(.dark).menu-color-inverted [data-slot="dropdown-content"],
 :root:not(.dark).menu-color-inverted [data-slot="select-content"],
-:root:not(.dark).menu-color-inverted [data-slot="combobox-content"] {
+:root:not(.dark).menu-color-inverted [data-slot="combobox-content"],
+:root:not(.dark).menu-color-inverted [data-slot="navigation-menu-viewport"] {
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --accent: oklch(0.269 0 0);
@@ -266,7 +268,8 @@
 :root:not(.dark).menu-color-inverted-translucent [data-slot="popover-content"],
 :root:not(.dark).menu-color-inverted-translucent [data-slot="dropdown-content"],
 :root:not(.dark).menu-color-inverted-translucent [data-slot="select-content"],
-:root:not(.dark).menu-color-inverted-translucent [data-slot="combobox-content"] {
+:root:not(.dark).menu-color-inverted-translucent [data-slot="combobox-content"],
+:root:not(.dark).menu-color-inverted-translucent [data-slot="navigation-menu-viewport"] {
   --popover: oklch(0.145 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --accent: oklch(0.269 0 0);

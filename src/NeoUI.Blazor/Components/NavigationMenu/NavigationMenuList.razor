@@ -23,10 +23,13 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string GetClass() =>
         ClassNames.cn(
-            // Base list layout
             "group flex flex-1 list-none items-center justify-center space-x-1",
+            _styleVariant.GetClasses("NavigationMenu.List"),
             Class
         );
 }

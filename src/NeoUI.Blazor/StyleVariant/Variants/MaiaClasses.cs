@@ -56,6 +56,10 @@ internal static class MaiaClasses
             ["InputGroup.Root"]       = "rounded-4xl bg-input/30 border-transparent",
             ["InputOtp.Slot"]         = "first:rounded-l-4xl last:rounded-r-4xl",
             ["HoverCard.Content"]     = "rounded-2xl shadow-2xl",
+            ["NavigationMenu.Content"]  = "rounded-2xl shadow-2xl",
+            ["NavigationMenu.Viewport"] = "rounded-2xl shadow-2xl",
+            ["NavigationMenu.Trigger"]  = "rounded-4xl",
+            ["NavigationMenu.Link"]     = "rounded-xl",
             // Maia: thicker h-3 track, larger rounded-4xl thumb (size-5)
             ["Slider.Root"]           = "h-3 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-8 [&::-webkit-slider-thumb]:rounded-4xl [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-8 [&::-moz-range-thumb]:rounded-4xl",
             // Composite editors

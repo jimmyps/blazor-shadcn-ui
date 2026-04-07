@@ -98,9 +98,9 @@
                             </NavigationMenuContent>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
-                            <NavigationMenuLink Href="/components" Class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none">
-                                Documentation
-                            </NavigationMenuLink>
+                            <NavigationMenuTrigger AsChild>
+                                <LinkButton Variant="ButtonVariant.Ghost" Href="/components">Documentation</LinkButton>
+                            </NavigationMenuTrigger>
                         </NavigationMenuItem>
                     </NavigationMenuList>
                 </NavigationMenu>
@@ -115,19 +115,19 @@
             <NavigationMenu>
                 <NavigationMenuList>
                     <NavigationMenuItem>
-                        <NavigationMenuLink Href="/" Class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none">
-                            Home
-                        </NavigationMenuLink>
+                        <NavigationMenuTrigger AsChild>
+                            <LinkButton Variant="ButtonVariant.Ghost" Href="/">Home</LinkButton>
+                        </NavigationMenuTrigger>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <NavigationMenuLink Href="/components" Class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none">
-                            Components
-                        </NavigationMenuLink>
+                        <NavigationMenuTrigger AsChild>
+                            <LinkButton Variant="ButtonVariant.Ghost" Href="/components">Components</LinkButton>
+                        </NavigationMenuTrigger>
                     </NavigationMenuItem>
                     <NavigationMenuItem>
-                        <NavigationMenuLink Href="/primitives" Class="group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none">
-                            Primitives
-                        </NavigationMenuLink>
+                        <NavigationMenuTrigger AsChild>
+                            <LinkButton Variant="ButtonVariant.Ghost" Href="/primitives">Primitives</LinkButton>
+                        </NavigationMenuTrigger>
                     </NavigationMenuItem>
                 </NavigationMenuList>
             </NavigationMenu>

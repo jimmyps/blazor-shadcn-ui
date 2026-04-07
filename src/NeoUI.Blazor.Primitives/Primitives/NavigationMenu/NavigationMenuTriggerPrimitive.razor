@@ -2,21 +2,30 @@
 @implements IDisposable
 
 @* NavigationMenuTriggerPrimitive - button that opens the content panel *@
-<button type="button"
-        id="@ItemContext.TriggerId"
-        @onclick="HandleClick"
-        @onmouseenter="HandleMouseEnter"
-        @onmouseleave="HandleMouseLeave"
-        @onkeydown="HandleKeyDown"
-        @onkeydown:preventDefault="@_shouldPreventDefault"
-        @attributes="AdditionalAttributes"
-        role="menuitem"
-        aria-haspopup="true"
-        aria-expanded="@IsActive.ToString().ToLowerInvariant()"
-        aria-controls="@ItemContext.ContentId"
-        data-state="@(IsActive ? "open" : "closed")">
-    @ChildContent
-</button>
+@if (AsChild)
+{
+    <CascadingValue Value="TriggerContext" Name="TriggerContext">
+        @ChildContent
+    </CascadingValue>
+}
+else
+{
+    <button type="button"
+            id="@ItemContext.TriggerId"
+            @onclick="HandleClick"
+            @onmouseenter="HandleMouseEnter"
+            @onmouseleave="HandleMouseLeave"
+            @onkeydown="HandleKeyDown"
+            @onkeydown:preventDefault="@_shouldPreventDefault"
+            @attributes="AdditionalAttributes"
+            role="menuitem"
+            aria-haspopup="true"
+            aria-expanded="@IsActive.ToString().ToLowerInvariant()"
+            aria-controls="@ItemContext.ContentId"
+            data-state="@(IsActive ? "open" : "closed")">
+        @ChildContent
+    </button>
+}
 
 @code {
     [CascadingParameter]
@@ -36,6 +45,24 @@
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    /// <summary>
+    /// When true, the trigger does not render its own button element.
+    /// Instead, it passes trigger behavior via TriggerContext to child components.
+    /// </summary>
+    [Parameter]
+    public bool AsChild { get; set; } = false;
+
+    private TriggerContext TriggerContext => new()
+    {
+        TriggerId = ItemContext.TriggerId,
+        IsOpen = IsActive,
+        Toggle = HandleClick,
+        OnMouseEnter = HandleMouseEnter,
+        OnMouseLeave = HandleMouseLeave,
+        AriaHasPopup = "menu",
+        AriaControls = ItemContext.ContentId,
+    };
 
     private bool IsActive => Context?.IsItemActive(ItemContext?.Value ?? string.Empty) ?? false;
     private bool _shouldPreventDefault = false;

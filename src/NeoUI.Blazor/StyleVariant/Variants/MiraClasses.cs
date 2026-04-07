@@ -57,6 +57,10 @@ internal static class MiraClasses
             ["InputGroup.Root"]       = "rounded-md",
             ["InputOtp.Slot"]         = "first:rounded-l-md last:rounded-r-md",
             ["HoverCard.Content"]     = "rounded-lg",
+            ["NavigationMenu.Content"]  = "rounded-lg",
+            ["NavigationMenu.Viewport"] = "rounded-lg",
+            ["NavigationMenu.Trigger"]  = "rounded-md",
+            ["NavigationMenu.Link"]     = "rounded-md",
             // Composite editors
             ["FileUpload.DropZone"]   = "rounded-xl",
             ["MarkdownEditor.Root"]   = "rounded-md",

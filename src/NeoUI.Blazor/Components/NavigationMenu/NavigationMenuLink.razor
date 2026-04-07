@@ -66,16 +66,13 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string GetClass()
-    {
-        var baseClass = "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors " +
-                       "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground";
-        
-        if (Active == true)
-        {
-            baseClass += " bg-accent text-accent-foreground";
-        }
-        
-        return string.IsNullOrEmpty(Class) ? baseClass : $"{baseClass} {Class}";
-    }
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
+    private string GetClass() => ClassNames.cn(
+        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors",
+        "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+        Active == true ? "bg-accent text-accent-foreground" : null,
+        _styleVariant.GetClasses("NavigationMenu.Link"),
+        Class);
 }
