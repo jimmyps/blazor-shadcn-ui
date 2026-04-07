@@ -116,6 +116,7 @@ function positionIndicator(indicator, container, selector, instant, transition, 
  *                                    Useful for nested menus where items exist at varying depths.
  */
 export function init(indicator, selector, hoverEnabled, hoverTarget) {
+    if (!indicator) return;
     const container = indicator.parentElement;
     if (!container) return;
 

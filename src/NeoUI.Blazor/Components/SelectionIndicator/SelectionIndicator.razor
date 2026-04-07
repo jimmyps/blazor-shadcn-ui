@@ -34,6 +34,7 @@
 @code {
     private ElementReference _ref;
     private IJSObjectReference? _module;
+    private bool _disposed;
 
     [CascadingParameter(Name = "StyleVariant")]
     private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
@@ -86,11 +87,13 @@
         _module ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor/js/selection-indicator.js");
 
+        if (_disposed) return;
         await _module.InvokeVoidAsync("init", _ref, Selector, Hover, HoverTarget);
     }
 
     public async ValueTask DisposeAsync()
     {
+        _disposed = true;
         if (_module is null) return;
         try { await _module.InvokeVoidAsync("dispose", _ref); } catch { }
         await _module.DisposeAsync();
