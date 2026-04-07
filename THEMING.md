@@ -241,6 +241,51 @@ Colors for the Alert component variants. **Library provides defaults** - overrid
 
 ---
 
+### Extended Token Variables (v4.0.0)
+
+Eight new semantic variables introduced in Theme v2. All NeoUI base-color CSS files define these. If you write a fully custom theme, include them.
+
+| Variable | Description | Used By |
+|----------|-------------|---------|
+| `--surface` | Slightly elevated layer between `--background` and `--card` | Surface backgrounds, subtle containers |
+| `--surface-foreground` | Text on `--surface` backgrounds | |
+| `--code` | Code block background | `CodeBlock`, inline `<code>` |
+| `--code-foreground` | Code block text color | |
+| `--code-highlight` | Highlighted line background inside code blocks | Active/focused code lines |
+| `--code-number` | Line numbers and dimmed token color | Gutter numbers, comment tokens |
+| `--selection` | Text selection highlight color | `::selection` pseudo-element (set globally in `components.css`) |
+| `--selection-foreground` | Text color on selection highlight | |
+
+```css
+/* Light mode */
+:root {
+  --surface:                  oklch(0.967 0 0);
+  --surface-foreground:       oklch(0.145 0 0);
+  --code:                     oklch(0.949 0.004 286);
+  --code-foreground:          oklch(0.145 0 0);
+  --code-highlight:           oklch(0.925 0.008 252);
+  --code-number:              oklch(0.556 0 0);
+  --selection:                oklch(0.922 0.015 252);
+  --selection-foreground:     oklch(0.145 0 0);
+}
+
+/* Dark mode */
+.dark {
+  --surface:                  oklch(0.269 0 0);
+  --surface-foreground:       oklch(0.985 0 0);
+  --code:                     oklch(0.230 0.006 264);
+  --code-foreground:          oklch(0.985 0 0);
+  --code-highlight:           oklch(0.260 0.010 252);
+  --code-number:              oklch(0.708 0 0);
+  --selection:                oklch(0.325 0.015 252);
+  --selection-foreground:     oklch(0.985 0 0);
+}
+```
+
+> **Note:** `--selection` and `--selection-foreground` are applied globally via `::selection { background-color: var(--selection); color: var(--selection-foreground); }` in `components.css`. If these variables are missing from your theme, text selection will appear invisible.
+
+---
+
 ### Sidebar Colors
 
 Colors specifically for the Sidebar component.
