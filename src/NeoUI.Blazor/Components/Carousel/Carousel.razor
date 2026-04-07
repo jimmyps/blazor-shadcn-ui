@@ -99,6 +99,13 @@
     public bool ShowIndicators { get; set; } = false;
 
     /// <summary>
+    /// Position of dot indicators. Default is <see cref="CarouselDotsPosition.Auto"/>,
+    /// which places dots at the bottom for horizontal and right for vertical carousels.
+    /// </summary>
+    [Parameter]
+    public CarouselDotsPosition DotsPosition { get; set; } = CarouselDotsPosition.Auto;
+
+    /// <summary>
     /// Whether to enable auto-play. Default is false.
     /// </summary>
     [Parameter]
@@ -322,11 +329,20 @@
 
     private string GetIndicatorsClass()
     {
+        var pos = DotsPosition == CarouselDotsPosition.Auto
+            ? (Orientation == CarouselOrientation.Horizontal ? CarouselDotsPosition.Bottom : CarouselDotsPosition.Right)
+            : DotsPosition;
+
         return ClassNames.cn(
             "absolute z-10 flex gap-2",
-            Orientation == CarouselOrientation.Horizontal
-                ? "bottom-4 left-1/2 -translate-x-1/2"
-                : "right-4 top-1/2 -translate-y-1/2 flex-col"
+            pos switch
+            {
+                CarouselDotsPosition.Bottom => "bottom-4 left-1/2 -translate-x-1/2",
+                CarouselDotsPosition.Top    => "top-4 left-1/2 -translate-x-1/2",
+                CarouselDotsPosition.Left   => "left-4 top-1/2 -translate-y-1/2 flex-col",
+                CarouselDotsPosition.Right  => "right-4 top-1/2 -translate-y-1/2 flex-col",
+                _                           => "bottom-4 left-1/2 -translate-x-1/2"
+            }
         );
     }
 

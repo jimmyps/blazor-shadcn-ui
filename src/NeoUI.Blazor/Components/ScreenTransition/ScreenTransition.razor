@@ -1,0 +1,86 @@
+@namespace NeoUI.Blazor
+
+@*
+    ScreenTransition — direction-aware animated screen wrapper for in-component navigation.
+
+    Unlike PageTransition (which hooks into NavigationManager), ScreenTransition is fully
+    self-contained. The parent controls the transition direction by setting Direction before
+    changing the Key.
+
+    Directions:
+      None → no animation (initial render)
+      Tab  → fade only (tab bar stays static outside ScreenTransition; only content fades)
+      Push → fade + slide in from right (drilling into a detail screen)
+      Pop  → fade + slide in from left (going back)
+
+    Usage:
+      <ScreenTransition Direction="@_dir" Key="@_currentScreen" Class="flex-1 flex flex-col min-h-0">
+          <!-- render the current screen component here -->
+      </ScreenTransition>
+
+    The parent must set Direction BEFORE changing Key (i.e. before navigating).
+*@
+
+@if (Direction == ScreenTransitionDirection.None)
+{
+    <div @key="@Key" class="@Class">@ChildContent</div>
+}
+else
+{
+    <Motion @key="@Key"
+            Trigger="@MotionTrigger.OnAppear"
+            Class="@Class"
+            DisableOnPrerender="true">
+        <Presets>
+            <FadeIn Duration="@Duration" />
+            @if (Direction == ScreenTransitionDirection.Push)
+            {
+                <SlideInFromRight From="@SlideDistance" Duration="@Duration" />
+            }
+            else if (Direction == ScreenTransitionDirection.Pop)
+            {
+                <SlideInFromLeft From="@(-SlideDistance)" Duration="@Duration" />
+            }
+        </Presets>
+        <ChildContent>@ChildContent</ChildContent>
+    </Motion>
+}
+
+@code {
+    /// <summary>
+    /// Change this value to trigger the transition. Use an enum, string, or any object.
+    /// When Key changes, the content is unmounted and remounted with the selected animation.
+    /// </summary>
+    [Parameter]
+    public object? Key { get; set; }
+
+    /// <summary>
+    /// Direction of the transition. Set this BEFORE changing Key.
+    /// </summary>
+    [Parameter]
+    public ScreenTransitionDirection Direction { get; set; } = ScreenTransitionDirection.None;
+
+    /// <summary>
+    /// Transition duration in seconds. Default: 0.28
+    /// </summary>
+    [Parameter]
+    public double Duration { get; set; } = 0.28;
+
+    /// <summary>
+    /// Slide distance in pixels for Push/Pop transitions. Default: 40
+    /// </summary>
+    [Parameter]
+    public double SlideDistance { get; set; } = 40;
+
+    /// <summary>
+    /// CSS classes applied to the wrapper element.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// The screen content to animate.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

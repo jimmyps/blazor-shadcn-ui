@@ -6,6 +6,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
         private static readonly IReadOnlyList<DemoPropRow> _carouselProps =
             [
                 new("ShowIndicators",   "bool",                 "false",      "Show dot indicators below the carousel."),
+                new("DotsPosition",     "CarouselDotsPosition", "Auto",       "Position of dot indicators. Auto resolves based on Orientation."),
                 new("ShowNavigation",   "bool",                 "true",       "Show previous/next arrow buttons."),
                 new("AutoPlay",         "bool",                 "false",      "Automatically advance slides."),
                 new("AutoPlayInterval", "int",                  "3000",       "Interval in ms between auto-play advances."),
@@ -90,6 +91,24 @@ namespace NeoUI.Demo.Shared.Pages.Components
         private const string _noNavCode =
                 """
                 <Carousel ShowNavigation="false" ShowIndicators="true" EnableDrag="true">
+                    <!-- CarouselItems... -->
+                </Carousel>
+                """;
+
+        private const string _dotsPositionCode =
+                """
+                <!-- Dots at the bottom (default for horizontal) -->
+                <Carousel ShowIndicators="true" ShowNavigation="false" DotsPosition="CarouselDotsPosition.Bottom">
+                    <!-- CarouselItems... -->
+                </Carousel>
+
+                <!-- Dots at the top -->
+                <Carousel ShowIndicators="true" ShowNavigation="false" DotsPosition="CarouselDotsPosition.Top">
+                    <!-- CarouselItems... -->
+                </Carousel>
+
+                <!-- Dots on the right (useful for vertical carousels) -->
+                <Carousel Orientation="CarouselOrientation.Vertical" ShowIndicators="true" DotsPosition="CarouselDotsPosition.Right">
                     <!-- CarouselItems... -->
                 </Carousel>
                 """;

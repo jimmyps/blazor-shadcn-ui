@@ -109,7 +109,7 @@ function positionIndicator(indicator, container, selector, instant, transition, 
  *
  * @param {HTMLElement} indicator   - The indicator div rendered by SelectionIndicator.razor
  * @param {string}  selector        - CSS selector for the active item
- * @param {boolean} hoverEnabled    - When true, the indicator also follows mouse hover
+ * @param {boolean} hoverEnabled    - When true, the indicator also follows mouse hover and keyboard focus
  * @param {string|null} hoverTarget - Optional CSS selector used to resolve the hover target.
  *                                    When set, uses e.target.closest(hoverTarget) instead of
  *                                    walking up to the direct child of the container.
@@ -173,19 +173,50 @@ export function init(indicator, selector, hoverEnabled, hoverTarget) {
             }
             if (!el || el === indicator) return;
             indicator.dataset.siHover = '';
-            applyPosition(indicator, container, el, false, transition, fixedHeight);
+            // Snap on first hover if indicator has no position yet (no active selector match),
+            // otherwise animate. Mirrors the behaviour of containers with an initial active item.
+            const snap = indicator.style.opacity !== '1';
+            applyPosition(indicator, container, el, snap, transition, fixedHeight);
         };
 
-        const onMouseLeave = () => {
+        const snapBack = () => {
             delete indicator.dataset.siHover;
             positionIndicator(indicator, container, selector, false, transition, fixedHeight);
         };
 
+        const onMouseLeave = snapBack;
+
+        // ── Keyboard focus tracking (shares same highlight state as hover) ──────
+        const onFocusIn = (e) => {
+            let el;
+            if (hoverTarget) {
+                el = e.target.closest(hoverTarget);
+                if (!el || el === container || !container.contains(el)) return;
+            } else {
+                el = e.target;
+                while (el && el.parentElement !== container) el = el.parentElement;
+            }
+            if (!el || el === indicator) return;
+            indicator.dataset.siHover = '';
+            const snap = indicator.style.opacity !== '1';
+            applyPosition(indicator, container, el, snap, transition, fixedHeight);
+        };
+
+        const onFocusOut = (e) => {
+            // Only snap back when focus leaves the container entirely
+            if (container.contains(e.relatedTarget)) return;
+            snapBack();
+        };
+
         container.addEventListener('mouseover', onMouseOver);
         container.addEventListener('mouseleave', onMouseLeave);
+        container.addEventListener('focusin', onFocusIn);
+        container.addEventListener('focusout', onFocusOut);
         hoverHandlers.push(
             () => container.removeEventListener('mouseover', onMouseOver),
             () => container.removeEventListener('mouseleave', onMouseLeave),
+            () => container.removeEventListener('focusin', onFocusIn),
+            () => container.removeEventListener('focusout', onFocusOut),
         );
     }
 

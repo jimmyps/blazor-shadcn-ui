@@ -53,8 +53,9 @@ public partial class ToggleGroupItem : ComponentBase
         "disabled:pointer-events-none disabled:opacity-50",
         "hover:bg-muted hover:text-muted-foreground",
         "h-10",
-        _styleVariant.GetClasses("ToggleGroup.Item"),
+        ParentGroup?.Scrollable == true ? "shrink-0" : null,
         IsSelected ? "bg-accent text-accent-foreground" : "bg-transparent",
+        _styleVariant.GetClasses("ToggleGroup.Item"),
         Class
     );
 }

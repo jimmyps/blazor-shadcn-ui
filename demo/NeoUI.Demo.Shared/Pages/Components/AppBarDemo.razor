@@ -1,0 +1,96 @@
+@page "/components/app-bar"
+
+<PageTitle>AppBar - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="AppBar"
+        Description="Mobile-style top application bar with a centered title, optional back button, and a right-side action slot." />
+
+    @* ── Basic ──────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Basic"
+        Description="A simple AppBar with only a title.">
+        <DemoBlock Code="@_basicCode">
+            <div class="w-full max-w-sm border rounded-xl overflow-hidden">
+                <AppBar Title="My App" />
+                <div class="p-4 text-sm text-muted-foreground">Page content</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── With Back Button ────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="With Back Button"
+        Description="Provide OnBack to render a back chevron on the left. BackLabel sets the accessible aria-label.">
+        <DemoBlock Code="@_backCode">
+            <div class="w-full max-w-sm border rounded-xl overflow-hidden">
+                <AppBar Title="Order Details" OnBack="@(() => {})" />
+                <div class="p-4 text-sm text-muted-foreground">Page content</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── With Right Content ──────────────────────────────────────────────── *@
+    <DemoSection
+        Title="With Right Content"
+        Description="Use the RightContent fragment to place icon buttons, avatars, or any action in the right zone.">
+        <DemoBlock Code="@_rightCode">
+            <div class="w-full max-w-sm border rounded-xl overflow-hidden">
+                <AppBar Title="Messages" OnBack="@(() => {})">
+                    <RightContent>
+                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-9 w-9">
+                            <LucideIcon Name="search" Class="h-4 w-4" />
+                        </Button>
+                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Icon" Class="h-9 w-9">
+                            <LucideIcon Name="ellipsis-vertical" Class="h-4 w-4" />
+                        </Button>
+                    </RightContent>
+                </AppBar>
+                <div class="p-4 text-sm text-muted-foreground">Page content</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Transparent Mode ────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Transparent Mode"
+        Description="Transparent=true removes the background and bottom border, intended for placement over hero images or full-bleed content.">
+        <DemoBlock Code="@_transparentCode">
+            <div class="w-full max-w-sm rounded-xl overflow-hidden relative bg-gradient-to-br from-violet-500 to-indigo-500 text-white">
+                <AppBar Title="Profile"
+                        Transparent="true"
+                        OnBack="@(() => {})"
+                        Class="text-white [&_button]:text-white [&_button]:hover:bg-white/20" />
+                <div class="p-6 pt-0 text-sm opacity-80">Hero content beneath the bar</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom Title ────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Custom Title"
+        Description="TitleContent replaces the plain text title with any render fragment — useful for branding logos or multi-line headings.">
+        <DemoBlock Code="@_customTitleCode">
+            <div class="w-full max-w-sm border rounded-xl overflow-hidden">
+                <AppBar OnBack="@(() => {})">
+                    <TitleContent>
+                        <div class="flex flex-col items-center leading-tight">
+                            <span class="text-sm font-semibold">Jimmy Petrus</span>
+                            <span class="text-xs text-muted-foreground">Online</span>
+                        </div>
+                    </TitleContent>
+                </AppBar>
+                <div class="p-4 text-sm text-muted-foreground">Chat content</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────────────────── *@
+    <DemoSection Title="API Reference" Description="AppBar parameters.">
+        <DemoPropsTable Rows="_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>

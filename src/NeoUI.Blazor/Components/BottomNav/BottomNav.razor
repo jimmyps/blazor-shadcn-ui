@@ -1,0 +1,7 @@
+@namespace NeoUI.Blazor
+
+<div class="@CssClass" role="navigation" aria-label="@AriaLabel">
+    <CascadingValue Value="this">
+        @ChildContent
+    </CascadingValue>
+</div>

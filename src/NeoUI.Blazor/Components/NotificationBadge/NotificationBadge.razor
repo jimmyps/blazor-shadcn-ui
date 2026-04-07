@@ -1,0 +1,14 @@
+@namespace NeoUI.Blazor
+
+<span class="relative inline-flex">
+    @ChildContent
+    @if (IsVisible)
+    {
+        <span class="@BadgeCssClass" aria-label="@AriaLabel">
+            @if (!Dot)
+            {
+                @DisplayCount
+            }
+        </span>
+    }
+</span>

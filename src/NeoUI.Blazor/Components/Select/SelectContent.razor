@@ -5,30 +5,59 @@
 @implements IAsyncDisposable
 
 @* Styled SelectContent wrapper around SelectContent primitive *@
-<SelectContentPrimitive TValue="TValue"
-                                               class="@OuterCssClass">
-    <div @ref="_scrollRef" @onscroll="HandleScroll" class="@InnerCssClass">
-        <CascadingValue Name="StyleVariant" Value="_styleVariant" IsFixed="true">
-            @ChildContent
-        </CascadingValue>
-        @if (IsLoading)
-        {
-            <div class="flex items-center justify-center py-2">
-                <Spinner Size="SpinnerSize.Small" />
+
+@if (Presentation == SelectPresentation.BottomSheet)
+{
+    @* BottomSheet: delegate to Drawer for consistent slide-up behaviour *@
+    <Drawer Open="@(Context?.IsOpen == true)" OpenChanged="@HandleOpenChangedAsync" Direction="DrawerDirection.Bottom">
+        <DrawerContent ShowHandle="true">
+            <div @ref="_scrollRef" @onscroll="HandleScroll" class="px-1 pb-4">
+                @ChildContent
+                @if (IsLoading)
+                {
+                    <div class="flex items-center justify-center py-2">
+                        <Spinner Size="SpinnerSize.Small" />
+                    </div>
+                }
+                else if (!string.IsNullOrEmpty(EndOfListMessage))
+                {
+                    <div class="py-2 text-center text-xs text-muted-foreground">
+                        @EndOfListMessage
+                    </div>
+                }
             </div>
-        }
-        else if (!string.IsNullOrEmpty(EndOfListMessage))
-        {
-            <div class="py-2 text-center text-xs text-muted-foreground">
-                @EndOfListMessage
-            </div>
-        }
-    </div>
-</SelectContentPrimitive>
+        </DrawerContent>
+    </Drawer>
+}
+else
+{
+    <SelectContentPrimitive TValue="TValue"
+                            class="@OuterCssClass">
+        <div @ref="_scrollRef" @onscroll="HandleScroll" class="@InnerCssClass">
+            <CascadingValue Name="StyleVariant" Value="_styleVariant" IsFixed="true">
+               @ChildContent
+            </CascadingValue>
+          
+            @if (IsLoading)
+            {
+                <div class="flex items-center justify-center py-2">
+                    <Spinner Size="SpinnerSize.Small" />
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(EndOfListMessage))
+            {
+                <div class="py-2 text-center text-xs text-muted-foreground">
+                    @EndOfListMessage
+                </div>
+            }
+        </div>
+    </SelectContentPrimitive>
+}
 
 @code {
     private ElementReference _scrollRef;
     private IJSObjectReference? _jsModule;
+    private bool _prevIsOpen = false;
 
     /// <summary>
     /// Cascading parameter to infer TValue from parent Select context.
@@ -39,9 +68,17 @@
     [CascadingParameter(Name = "StyleVariant")]
     private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
+    /// <summary>
+    /// Gets or sets how the select content is presented.
+    /// <see cref="SelectPresentation.Popover"/> (default) anchors a floating dropdown below the trigger.
+    /// <see cref="SelectPresentation.BottomSheet"/> slides up from the bottom of the viewport using a Drawer.
+    /// </summary>
+    [Parameter]
+    public SelectPresentation Presentation { get; set; } = SelectPresentation.Popover;
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the content container.
+    /// Only applies in <see cref="SelectPresentation.Popover"/> mode.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
@@ -85,6 +122,7 @@
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
         "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
         "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        "[&::-webkit-scrollbar]:hidden",
         _styleVariant.GetClasses("SelectContent.Root"),
         Class
     );
@@ -96,6 +134,25 @@
         "max-h-60 overflow-auto p-1 [&::-webkit-scrollbar]:hidden",
         _styleVariant.GetClasses("SelectContent.Inner")
     );
+
+    protected override void OnParametersSet()
+    {
+        var isOpen = Context?.IsOpen == true;
+        if (Presentation == SelectPresentation.BottomSheet && isOpen && !_prevIsOpen)
+        {
+            // Clear stale registrations so items register fresh on each open.
+            // (DrawerContent mounts/unmounts items on open/close unlike ForceMount.)
+            Context?.ClearItems();
+        }
+        _prevIsOpen = isOpen;
+    }
+
+    private Task HandleOpenChangedAsync(bool open)
+    {
+        if (!open)
+            Context?.Close();
+        return Task.CompletedTask;
+    }
 
     private async Task HandleScroll()
     {

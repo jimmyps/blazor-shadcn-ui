@@ -1,0 +1,114 @@
+@page "/components/section-header"
+
+<PageTitle>SectionHeader - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="SectionHeader"
+        Description="A title row with an optional &quot;view all&quot; link and separator line. Eliminates repetitive layout boilerplate in content-heavy screens like dashboards and e-commerce listings." />
+
+    @* ── Basic ──────────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Basic"
+        Description="A simple title with the default separator line below.">
+        <DemoBlock Code="@_basicCode">
+            <div class="w-full max-w-sm space-y-3">
+                <SectionHeader Title="Recent Orders" />
+                <div class="text-sm text-muted-foreground">Content here…</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── With View All ───────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="With View All"
+        Description="Provide OnViewAll to render a button on the right. ViewAllText adds optional label text next to the chevron.">
+        <DemoBlock Code="@_viewAllCode">
+            <div class="w-full max-w-sm space-y-3">
+                <SectionHeader Title="Featured Products"
+                               OnViewAll="@(() => {})"
+                               ViewAllText="See all" />
+                <div class="text-sm text-muted-foreground">Products grid here…</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Icon Only ───────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Chevron Only"
+        Description="Omit ViewAllText to show just the chevron icon — useful when space is limited.">
+        <DemoBlock Code="@_chevronOnlyCode">
+            <div class="w-full max-w-sm space-y-3">
+                <SectionHeader Title="Trending Now" OnViewAll="@(() => {})" />
+                <div class="text-sm text-muted-foreground">Content here…</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── No Separator ────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="No Separator"
+        Description="ShowSeparator=false removes the divider line for a more compact look.">
+        <DemoBlock Code="@_noSepCode">
+            <div class="w-full max-w-sm space-y-2">
+                <SectionHeader Title="Popular" OnViewAll="@(() => {})" ViewAllText="All" ShowSeparator="false" />
+                <div class="text-sm text-muted-foreground">Content here…</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── Custom Title ────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="Custom Title Content"
+        Description="TitleContent replaces the plain title text with any render fragment — icons, badges, or multi-line headings.">
+        <DemoBlock Code="@_customTitleCode">
+            <div class="w-full max-w-sm space-y-3">
+                <SectionHeader OnViewAll="@(() => {})" ViewAllText="All">
+                    <TitleContent>
+                        <div class="flex items-center gap-2">
+                            <LucideIcon Name="flame" Class="h-4 w-4 text-orange-500" />
+                            <span>Hot Deals</span>
+                            <Badge Variant="BadgeVariant.Destructive" Class="text-[10px] px-1.5 py-0">NEW</Badge>
+                        </div>
+                    </TitleContent>
+                </SectionHeader>
+                <div class="text-sm text-muted-foreground">Deals content here…</div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── In Context ──────────────────────────────────────────────────────── *@
+    <DemoSection
+        Title="In Context"
+        Description="Multiple SectionHeaders composing a typical mobile screen layout.">
+        <DemoBlock Code="@_contextCode">
+            <div class="w-full max-w-sm space-y-6 p-4 border rounded-xl bg-background">
+                <SectionHeader Title="Continue Shopping" OnViewAll="@(() => {})" ViewAllText="See all" />
+                <div class="flex gap-3">
+                    <div class="h-16 w-14 rounded-md bg-muted" />
+                    <div class="h-16 w-14 rounded-md bg-muted" />
+                    <div class="h-16 w-14 rounded-md bg-muted" />
+                </div>
+                <SectionHeader Title="Recommended For You" OnViewAll="@(() => {})" />
+                <div class="flex gap-3">
+                    <div class="h-24 flex-1 rounded-md bg-muted" />
+                    <div class="h-24 flex-1 rounded-md bg-muted" />
+                </div>
+                <SectionHeader Title="Categories" ShowSeparator="false" />
+                <div class="flex gap-2 flex-wrap">
+                    <Badge Variant="BadgeVariant.Outline">Electronics</Badge>
+                    <Badge Variant="BadgeVariant.Outline">Clothing</Badge>
+                    <Badge Variant="BadgeVariant.Outline">Books</Badge>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    @* ── API Reference ───────────────────────────────────────────────────── *@
+    <DemoSection Title="API Reference" Description="SectionHeader parameters.">
+        <DemoPropsTable Rows="_props" />
+    </DemoSection>
+
+    <DemoPageNav />
+</div>
