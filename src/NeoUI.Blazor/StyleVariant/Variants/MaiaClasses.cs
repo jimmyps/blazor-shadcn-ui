@@ -12,6 +12,7 @@ internal static class MaiaClasses
             ["Button.Root"]           = "rounded-4xl focus-visible:ring-[3px] focus-visible:ring-ring/50",
             ["Badge.Root"]            = "rounded-4xl",
             ["Card.Root"]             = "rounded-2xl",
+            ["Alert.Root"]            = "rounded-2xl",
             ["Input.Root"]            = "rounded-4xl h-9 px-3 bg-input/30 focus-visible:ring-[3px]",
             ["SelectTrigger.Root"]    = "rounded-4xl px-3 bg-input/30 focus-visible:ring-[3px]",
             // Phase 2 components
@@ -20,13 +21,17 @@ internal static class MaiaClasses
             ["Switch.Root"]           = "focus-visible:ring-[3px] focus-visible:ring-ring/50",
             ["NativeSelect.Root"]     = "rounded-4xl h-9 pl-3 bg-input/30 focus-visible:ring-[3px]",
             ["SelectContent.Root"]    = "rounded-2xl shadow-2xl",
+            ["SelectContent.Inner"]   = "p-1.5",
             ["SelectItem.Root"]       = "rounded-xl",
             ["Menu.CheckboxItem"]     = "rounded-xl",
             ["Menu.RadioItem"]        = "rounded-xl",
+            ["Menu.SubTrigger"]       = "rounded-xl",
+            ["Menu.Inner"]            = "p-1.5",
             ["ContextMenu.Content"]   = "rounded-2xl shadow-2xl",
             ["ContextMenu.SubContent"] = "rounded-2xl shadow-2xl",
             ["Menubar.Content"]       = "rounded-2xl shadow-2xl",
             ["Menubar.SubContent"]    = "rounded-2xl shadow-2xl",
+            ["Menubar.Trigger"]       = "rounded-4xl px-3",
             ["Menubar.Item"]          = "rounded-xl",
             ["ContextMenu.Item"]      = "rounded-xl",
             ["DropdownMenu.Trigger"]  = "rounded-4xl",
@@ -75,5 +80,12 @@ internal static class MaiaClasses
             // Sidebar
             ["Sidebar.MenuButton"]    = "rounded-xl",
             ["Sidebar.Trigger"]       = "rounded-xl",
+            // Sheet / Drawer — Maia: friendly rounded corners on interior edge
+            ["Sheet.Content"]         = "data-[side=left]:rounded-r-2xl data-[side=right]:rounded-l-2xl data-[side=top]:rounded-b-2xl data-[side=bottom]:rounded-t-2xl",
+            ["Drawer.Content"]        = "data-[direction=left]:rounded-r-2xl data-[direction=right]:rounded-l-2xl data-[direction=top]:rounded-b-2xl data-[direction=bottom]:rounded-t-2xl",
+            // RadioGroup
+            ["RadioGroup.Item"]       = "focus-visible:ring-[3px] focus-visible:ring-ring/50",
+            // Progress — Maia: slightly thinner track
+            ["Progress.Root"]         = "h-3",
         };
 }

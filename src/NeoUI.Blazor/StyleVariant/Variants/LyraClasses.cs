@@ -21,13 +21,17 @@ internal static class LyraClasses
             ["Switch.Root"]           = "focus-visible:ring-1",
             ["NativeSelect.Root"]     = "rounded-none h-8 text-xs focus-visible:ring-1",
             ["SelectContent.Root"]    = "rounded-none",
+            ["SelectContent.Inner"]   = "p-1",
             ["SelectItem.Root"]       = "rounded-none",
             ["Menu.CheckboxItem"]     = "rounded-none",
             ["Menu.RadioItem"]        = "rounded-none",
+            ["Menu.SubTrigger"]       = "rounded-none",
+            ["Menu.Inner"]            = "p-1",
             ["ContextMenu.Content"]   = "rounded-none",
             ["ContextMenu.SubContent"] = "rounded-none",
             ["Menubar.Content"]       = "rounded-none",
             ["Menubar.SubContent"]    = "rounded-none",
+            ["Menubar.Trigger"]       = "rounded-none",
             ["Menubar.Item"]          = "rounded-none",
             ["ContextMenu.Item"]      = "rounded-none",
             ["DropdownMenu.Trigger"]  = "rounded-none",
@@ -76,5 +80,14 @@ internal static class LyraClasses
             // Sidebar
             ["Sidebar.MenuButton"]    = "rounded-none",
             ["Sidebar.Trigger"]       = "rounded-none",
+            // Sheet / Drawer — Lyra: sharp, no rounding
+            ["Sheet.Content"]         = "rounded-none",
+            ["Drawer.Content"]        = "rounded-none",
+            // RadioGroup — Lyra: square radio buttons
+            ["RadioGroup.Item"]       = "rounded-none focus-visible:ring-1",
+            // Avatar — Lyra: square avatars
+            ["Avatar.Root"]           = "rounded-none",
+            // Progress — Lyra: boxy, thin
+            ["Progress.Root"]         = "h-2 rounded-none",
         };
 }

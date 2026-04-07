@@ -19,6 +19,7 @@
     <div @ref="_contentRef"
          class="@CssClass"
          data-state="open"
+         data-direction="@Context?.Direction.ToString().ToLower()"
          role="dialog"
          aria-modal="true"
          tabindex="-1"
@@ -42,6 +43,9 @@
 
     [CascadingParameter]
     public Drawer? Context { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     [Parameter]
     public string? Class { get; set; }
@@ -189,6 +193,7 @@
         "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
         DirectionClasses,
+        _styleVariant.GetClasses("Drawer.Content"),
         Class
     );
 }

@@ -33,6 +33,9 @@
     [CascadingParameter]
     private SheetContext? Context { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// The content to render inside the sheet.
     /// </summary>
@@ -113,6 +116,6 @@
             _ => "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm"
         };
 
-        return ClassNames.cn(baseClasses, sideClasses, Class);
+        return ClassNames.cn(baseClasses, sideClasses, _styleVariant.GetClasses("Sheet.Content"), Class);
     }
 }

@@ -134,6 +134,7 @@ public partial class Slider : ComponentBase
         "[&::-moz-range-thumb]:shadow-sm",
         "[&::-moz-range-thumb]:cursor-pointer",
         "disabled:opacity-50 disabled:cursor-not-allowed",
-        _styleVariant.GetClasses("Slider.Root")
+        _styleVariant.GetClasses("Slider.Root"),
+        Class
     );
 }

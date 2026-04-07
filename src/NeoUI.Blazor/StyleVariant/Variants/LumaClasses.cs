@@ -55,7 +55,6 @@ internal static class LumaClasses
             ["Tabs.List"]             = "rounded-3xl",
             ["Tabs.Trigger"]          = "rounded-2xl",
             ["DataView.SegmentedControl"] = "rounded-3xl",
-            ["Tabs.Trigger"]          = "rounded-2xl",
             ["SelectionIndicator.Root"] = "rounded-2xl",
             ["Calendar.Root"]         = "rounded-2xl",
             ["Calendar.Day"]          = "rounded-full",
@@ -91,5 +90,10 @@ internal static class LumaClasses
             // Sidebar
             ["Sidebar.MenuButton"]    = "rounded-xl",
             ["Sidebar.Trigger"]       = "rounded-xl",
+            // Sheet / Drawer — Luma: round only the interior edge using data-side/data-direction
+            ["Sheet.Content"]         = "data-[side=left]:rounded-r-2xl data-[side=right]:rounded-l-2xl data-[side=top]:rounded-b-2xl data-[side=bottom]:rounded-t-2xl",
+            ["Drawer.Content"]        = "data-[direction=left]:rounded-r-2xl data-[direction=right]:rounded-l-2xl data-[direction=top]:rounded-b-2xl data-[direction=bottom]:rounded-t-2xl",
+            // RadioGroup
+            ["RadioGroup.Item"]       = "focus-visible:ring-3 focus-visible:ring-ring/30",
         };
 }

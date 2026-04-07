@@ -65,6 +65,9 @@ public partial class Avatar : ComponentBase
     [Parameter]
     public string? Class { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string CssClass => ClassNames.cn(
         "relative flex shrink-0 overflow-hidden rounded-full",
         Size switch
@@ -74,5 +77,6 @@ public partial class Avatar : ComponentBase
             AvatarSize.ExtraLarge => "h-16 w-16 text-lg",
             _ => "h-10 w-10 text-sm"
         },
+        _styleVariant.GetClasses("Avatar.Root"),
         Class);
 }

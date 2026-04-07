@@ -12,6 +12,7 @@ internal static class NovaClasses
             ["Button.Root"]           = "rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50",
             ["Badge.Root"]            = "rounded-4xl",
             ["Card.Root"]             = "rounded-xl",
+            ["Alert.Root"]            = "rounded-xl",
             ["Input.Root"]            = "rounded-lg px-2.5 focus-visible:ring-3",
             ["SelectTrigger.Root"]    = "rounded-lg pl-2.5 focus-visible:ring-3",
             // Phase 2 components
@@ -20,17 +21,23 @@ internal static class NovaClasses
             ["Switch.Root"]           = "focus-visible:ring-3 focus-visible:ring-ring/50",
             ["NativeSelect.Root"]     = "rounded-lg h-9 focus-visible:ring-3 focus-visible:ring-ring/50",
             ["SelectContent.Root"]    = "rounded-xl",
+            ["SelectContent.Inner"]   = "p-1",
+            ["SelectItem.Root"]       = "rounded-lg",
             ["Menu.CheckboxItem"]     = "rounded-lg",
             ["Menu.RadioItem"]        = "rounded-lg",
+            ["Menu.SubTrigger"]       = "rounded-lg",
+            ["Menu.Inner"]            = "p-1",
             ["ContextMenu.Content"]   = "rounded-xl",
             ["ContextMenu.SubContent"] = "rounded-xl",
             ["Menubar.Content"]       = "rounded-xl",
             ["Menubar.SubContent"]    = "rounded-xl",
+            ["Menubar.Trigger"]       = "rounded-lg px-2.5",
             ["Menubar.Item"]          = "rounded-lg",
             ["ContextMenu.Item"]      = "rounded-lg",
             ["DropdownMenu.Trigger"]  = "rounded-lg",
             ["DropdownMenu.Content"]  = "rounded-xl",
             ["DropdownMenu.SubContent"] = "rounded-xl",
+            ["DropdownMenu.Item"]     = "rounded-lg",
             ["Popover.Content"]       = "rounded-xl",
             ["Dialog.Content"]        = "rounded-xl",
             ["Dialog.Close"]          = "rounded-lg",
@@ -73,5 +80,12 @@ internal static class NovaClasses
             // Sidebar
             ["Sidebar.MenuButton"]    = "rounded-sm",
             ["Sidebar.Trigger"]       = "rounded-sm",
+            // Sheet / Drawer
+            ["Sheet.Content"]         = "data-[side=left]:rounded-r-xl data-[side=right]:rounded-l-xl data-[side=top]:rounded-b-xl data-[side=bottom]:rounded-t-xl",
+            ["Drawer.Content"]        = "data-[direction=left]:rounded-r-xl data-[direction=right]:rounded-l-xl data-[direction=top]:rounded-b-xl data-[direction=bottom]:rounded-t-xl",
+            // RadioGroup
+            ["RadioGroup.Item"]       = "focus-visible:ring-3",
+            // Progress — Nova: thinner track, subtle rounding
+            ["Progress.Root"]         = "h-2 rounded-sm",
         };
 }

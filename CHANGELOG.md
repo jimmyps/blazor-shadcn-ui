@@ -34,24 +34,28 @@ The following components have been fully integrated into the style variant syste
 **Layout & Containers**
 - `Card`, `CardHeader`, `CardContent`, `CardFooter`
 - `Dialog` (Content, Header, Footer, Title, Description, Overlay)
-- `Sheet`, `Drawer`
+- `Sheet`, `Drawer` (side-aware rounding via `data-side` / `data-direction` CSS attributes)
 - `Popover`, `HoverCard`
 - `Collapsible`
+- `Sidebar`
 
 **Navigation & Menus**
 - `DropdownMenu` (Content, Item, SubContent)
 - `CascadeMenu`
+- `ContextMenu`
+- `Menubar`
 - `NavigationMenu`
 - `Tabs` (List, Trigger, Content)
 - `Pagination` (Link)
 - `Breadcrumb`
+- `TreeView`
 
 **Form Inputs**
 - `Button` (all variants — includes Outline border preservation logic)
 - `Input`, `Textarea`, `Label`
 - `Select`, `Combobox`
-- `Checkbox`, `RadioGroup`
-- `Switch`
+- `Checkbox`, `RadioGroup`, `RadioGroupItem`
+- `Switch`, `Toggle`, `ToggleButton`
 - `Slider`, `RangeSlider`
 - `InputOTP`
 - `CurrencyInput`, `NumberInput`
@@ -61,14 +65,15 @@ The following components have been fully integrated into the style variant syste
 **Rich Editors & Display**
 - `MarkdownEditor`, `RichTextEditor`
 - `Calendar`, `DatePicker`, `DateRangePicker`, `TimePicker`
-- `Command`
+- `Command`, `SpotlightCommandPalette`
 - `Badge`, `Avatar`
-- `Alert`, `Tooltip`
+- `Alert`, `Tooltip`, `Toast`
 
 **Data & Selection**
 - `ToggleGroup`, `ToggleGroupItem`
 - `FilterBuilder` (preset tabs)
 - `DataGrid` / `DataTable`
+- `DataView` (segmented control)
 - `Progress`
 
 #### Luma Variant — Comprehensive Glassmorphism at Component Level
@@ -114,6 +119,23 @@ The custom C# `TailwindMerge` implementation was extended to resolve additional 
 - **`rounded-l/r/t/b/*` side-specific radius** — `first:rounded-l-md` and `first:rounded-l-3xl` now resolve to the last-specified value
 - **`[&::-webkit-slider-thumb:hover]:ring-*` pseudo-element variants** — extracts modifier and base correctly for conflict resolution
 - **`data-[orientation=*]:w-*` / `data-[state=*]:*` arbitrary variants** — last-class-wins for orientation/state-driven sizing
+
+#### `AppProvider` — StyleVariant Cascade Host
+
+`StyleVariant` propagates to components via a Blazor `CascadingValue`. `AppProvider` owns that cascade and also initializes `ThemeService` on startup:
+
+```razor
+@* MainLayout.razor — wrap everything inside AppProvider *@
+<AppProvider>
+    @Body
+    @* Portal hosts MUST be inside AppProvider to receive StyleVariant *@
+    <ToastViewport />
+    <SpotlightCommandPalette />
+    <DialogHost />
+</AppProvider>
+```
+
+Components placed **outside** `AppProvider` receive `StyleVariant.Default` permanently — they can't receive the cascade. `Dialog`, `Sheet`, `Drawer`, and `Popover` content panels are exempt because they re-emit the cascade internally when rendering into their portals.
 
 ---
 

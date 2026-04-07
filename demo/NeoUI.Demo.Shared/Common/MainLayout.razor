@@ -2,268 +2,265 @@
 <PageTitle>NeoUI Blazor Demo</PageTitle>
 
 <AppProvider>
-<SidebarProvider DefaultOpen="true">
-    <Sidebar Collapsible="true" AutoDetectActive="true" Class="duration-500 ease-cubic-in-out [&>aside]:overflow-hidden">
-        <SidebarHeader>
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    <SidebarMenuButton Href="" AsChild="@SidebarMenuButtonElement.Anchor" Size="@SidebarMenuButtonSize.Large" class="data-[state=collapsed]:justify-center">
-                        <div class="flex aspect-square size-8 items-center justify-center rounded-lg">
-                            <img src="_content/NeoUI.Demo.Shared/images/neoui-logo.png" alt="NeoUI Blazor" class="size-8 rounded-lg" />
-                        </div>
-                        <div class="grid flex-1 text-left text-lg leading-tight">
-                            <span class="truncate font-bold">Neo<span class="font-medium ml-0.2">UI</span></span>
-                        </div>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarHeader>
+    <SidebarProvider DefaultOpen="true">
+        <Sidebar Collapsible="true" AutoDetectActive="true" Class="duration-500 ease-cubic-in-out [&>aside]:overflow-hidden">
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton Href="" AsChild="@SidebarMenuButtonElement.Anchor" Size="@SidebarMenuButtonSize.Large" class="data-[state=collapsed]:justify-center">
+                            <div class="flex aspect-square size-8 items-center justify-center rounded-lg">
+                                <img src="_content/NeoUI.Demo.Shared/images/neoui-logo.png" alt="NeoUI Blazor" class="size-8 rounded-lg" />
+                            </div>
+                            <div class="grid flex-1 text-left text-lg leading-tight">
+                                <span class="truncate font-bold">Neo<span class="font-medium ml-0.2">UI</span></span>
+                            </div>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
 
-        @* 
+            @*
             ScrollArea Customization Example:
             Wrap SidebarContent with ScrollArea for a polished scrolling experience
             with custom styled scrollbars instead of native browser scrollbars.
             This is optional - remove ScrollArea to use native scrolling.
         *@
-        <ScrollArea Class="flex-1" EnableScrollShadows="true">
-            <SidebarContent>
-            <!-- Top-level Navigation -->
-                <SidebarGroup>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton Href="" AsChild="@SidebarMenuButtonElement.Anchor" Match="NavLinkMatch.All" Tooltip="Home">
-                                <LucideIcon Name="house" Size="18" />
-                                <span>Home</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
+            <ScrollArea Class="flex-1" EnableScrollShadows="true">
+                <SidebarContent>
+                    <!-- Top-level Navigation -->
+                    <SidebarGroup>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Href="" AsChild="@SidebarMenuButtonElement.Anchor" Match="NavLinkMatch.All" Tooltip="Home">
+                                    <LucideIcon Name="house" Size="18" />
+                                    <span>Home</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
 
-                        <SidebarMenuItem>
-                            <SidebarMenuButton Href="architecture" Tooltip="Architecture">
-                                <LucideIcon Name="layers" Size="18" />
-                                <span>Architecture</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Href="architecture" Tooltip="Architecture">
+                                    <LucideIcon Name="layers" Size="18" />
+                                    <span>Architecture</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
 
-                        <SidebarMenuItem>
-                            <SidebarMenuButton Href="primitives" Match="NavLinkMatch.All" Tooltip="Primitives">
-                                <LucideIcon Name="panel-left" Size="18" />
-                                <span>Primitives</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-
-                        <SidebarMenuItem>
-                            <SidebarMenuButton Href="components" Match="NavLinkMatch.All" Tooltip="Components">
-                                <LucideIcon Name="layout-grid" Size="18" />
-                                <span>Components</span>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroup>
-
-                <!-- Primitives Section with Collapsible Submenu (registry-driven) -->
-                <SidebarGroup>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarCollapsibleGroup StateKey="sidebar-primitives-menu">
-                                <SidebarMenuButton Tooltip="Primitives">
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Href="primitives" Match="NavLinkMatch.All" Tooltip="Primitives">
                                     <LucideIcon Name="panel-left" Size="18" />
                                     <span>Primitives</span>
-                                    <SidebarMenuChevron>
-                                        <LucideIcon Name="chevron-right" Size="16" />
-                                    </SidebarMenuChevron>
                                 </SidebarMenuButton>
-                                <CollapsibleContent>
-                                    <SidebarMenuSub>
-                                        @foreach (var entry in ComponentRegistry.Primitives.OrderBy(e => e.Title))
-                                        {
-                                            <SidebarMenuSubItem>
-                                                <SidebarMenuSubButton Href="@entry.Route">
-                                                    <span>@entry.Title</span>
-                                                </SidebarMenuSubButton>
-                                            </SidebarMenuSubItem>
-                                        }
-                                    </SidebarMenuSub>
-                                </CollapsibleContent>
-                            </SidebarCollapsibleGroup>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroup>
+                            </SidebarMenuItem>
 
-                <!-- Components Section with Collapsible Submenu (registry-driven) -->
-                <SidebarGroup>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarCollapsibleGroup StateKey="sidebar-components-menu">
-                                <SidebarMenuButton Tooltip="Components">
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Href="components" Match="NavLinkMatch.All" Tooltip="Components">
                                     <LucideIcon Name="layout-grid" Size="18" />
                                     <span>Components</span>
-                                    <SidebarMenuChevron>
-                                        <LucideIcon Name="chevron-right" Size="16" />
-                                    </SidebarMenuChevron>
                                 </SidebarMenuButton>
-                                <CollapsibleContent>
-                                    <SidebarMenuSub>
-                                        @foreach (var entry in ComponentRegistry.Components.Where(e => !e.IsSubPage).OrderBy(e => e.Title))
-                                        {
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+
+                    <!-- Primitives Section with Collapsible Submenu (registry-driven) -->
+                    <SidebarGroup>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarCollapsibleGroup StateKey="sidebar-primitives-menu">
+                                    <SidebarMenuButton Tooltip="Primitives">
+                                        <LucideIcon Name="panel-left" Size="18" />
+                                        <span>Primitives</span>
+                                        <SidebarMenuChevron>
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </SidebarMenuChevron>
+                                    </SidebarMenuButton>
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
+                                            @foreach (var entry in ComponentRegistry.Primitives.OrderBy(e => e.Title))
+                                            {
+                                                <SidebarMenuSubItem>
+                                                    <SidebarMenuSubButton Href="@entry.Route">
+                                                        <span>@entry.Title</span>
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                            }
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
+                                </SidebarCollapsibleGroup>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+
+                    <!-- Components Section with Collapsible Submenu (registry-driven) -->
+                    <SidebarGroup>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarCollapsibleGroup StateKey="sidebar-components-menu">
+                                    <SidebarMenuButton Tooltip="Components">
+                                        <LucideIcon Name="layout-grid" Size="18" />
+                                        <span>Components</span>
+                                        <SidebarMenuChevron>
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </SidebarMenuChevron>
+                                    </SidebarMenuButton>
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
+                                            @foreach (var entry in ComponentRegistry.Components.Where(e => !e.IsSubPage).OrderBy(e => e.Title))
+                                            {
+                                                <SidebarMenuSubItem>
+                                                    <SidebarMenuSubButton Href="@entry.Route" Match="@(entry.ExactNavMatch? NavLinkMatch.All: NavLinkMatch.Prefix)">
+                                                        <span>@entry.Title</span>
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                            }
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
+                                </SidebarCollapsibleGroup>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+
+                    <!-- Chart Section with Collapsible Submenu (registry-driven) -->
+                    <SidebarGroup>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarCollapsibleGroup StateKey="sidebar-chart-menu">
+                                    <SidebarMenuButton Tooltip="Chart">
+                                        <LucideIcon Name="line-chart" Size="18" />
+                                        <span>Chart</span>
+                                        <SidebarMenuChevron>
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </SidebarMenuChevron>
+                                    </SidebarMenuButton>
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
                                             <SidebarMenuSubItem>
-                                                <SidebarMenuSubButton Href="@entry.Route" Match="@(entry.ExactNavMatch ? NavLinkMatch.All : NavLinkMatch.Prefix)">
-                                                    <span>@entry.Title</span>
+                                                <SidebarMenuSubButton Href="components/chart" Match="NavLinkMatch.All">
+                                                    <span>Overview</span>
                                                 </SidebarMenuSubButton>
                                             </SidebarMenuSubItem>
-                                        }
-                                    </SidebarMenuSub>
-                                </CollapsibleContent>
-                            </SidebarCollapsibleGroup>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroup>
+                                            @foreach (var entry in ComponentRegistry.Components.Where(e => e.Category == ComponentCategories.Charts && e.IsSubPage))
+                                            {
+                                                <SidebarMenuSubItem>
+                                                    <SidebarMenuSubButton Href="@entry.Route">
+                                                        <span>@entry.Title</span>
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                            }
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
+                                </SidebarCollapsibleGroup>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
 
-                <!-- Chart Section with Collapsible Submenu (registry-driven) -->
-                <SidebarGroup>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarCollapsibleGroup StateKey="sidebar-chart-menu">
-                                <SidebarMenuButton Tooltip="Chart">
-                                    <LucideIcon Name="line-chart" Size="18" />
-                                    <span>Chart</span>
-                                    <SidebarMenuChevron>
-                                        <LucideIcon Name="chevron-right" Size="16" />
-                                    </SidebarMenuChevron>
-                                </SidebarMenuButton>
-                                <CollapsibleContent>
-                                    <SidebarMenuSub>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="components/chart" Match="NavLinkMatch.All">
-                                                <span>Overview</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        @foreach (var entry in ComponentRegistry.Components.Where(e => e.Category == ComponentCategories.Charts && e.IsSubPage))
-                                        {
+                    <!-- Data Grid Section with Collapsible Submenu (registry-driven) -->
+                    <SidebarGroup>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarCollapsibleGroup StateKey="sidebar-grid-menu">
+                                    <SidebarMenuButton Tooltip="Data Grid">
+                                        <LucideIcon Name="table-2" Size="18" />
+                                        <span>Data Grid</span>
+                                        <SidebarMenuChevron>
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </SidebarMenuChevron>
+                                    </SidebarMenuButton>
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
+                                            @foreach (var entry in ComponentRegistry.Components.Where(e => e.Category == ComponentCategories.DataDisplay && e.IsSubPage && e.Slug.StartsWith("datagrid/")))
+                                            {
+                                                <SidebarMenuSubItem>
+                                                    <SidebarMenuSubButton Href="@entry.Route">
+                                                        <span>@entry.Title</span>
+                                                    </SidebarMenuSubButton>
+                                                </SidebarMenuSubItem>
+                                            }
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
+                                </SidebarCollapsibleGroup>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
+
+                    <!-- Icons Section with Collapsible Submenu -->
+                    <SidebarGroup>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarCollapsibleGroup StateKey="sidebar-icons-menu">
+                                    <SidebarMenuButton Tooltip="Icons">
+                                        <LucideIcon Name="smile" Size="18" />
+                                        <span>Icons</span>
+                                        <SidebarMenuChevron>
+                                            <LucideIcon Name="chevron-right" Size="16" />
+                                        </SidebarMenuChevron>
+                                    </SidebarMenuButton>
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
                                             <SidebarMenuSubItem>
-                                                <SidebarMenuSubButton Href="@entry.Route">
-                                                    <span>@entry.Title</span>
+                                                <SidebarMenuSubButton Href="icons/lucide">
+                                                    <span>Lucide Icons</span>
                                                 </SidebarMenuSubButton>
                                             </SidebarMenuSubItem>
-                                        }
-                                    </SidebarMenuSub>
-                                </CollapsibleContent>
-                            </SidebarCollapsibleGroup>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroup>
-
-                <!-- Data Grid Section with Collapsible Submenu (registry-driven) -->
-                <SidebarGroup>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarCollapsibleGroup StateKey="sidebar-grid-menu">
-                                <SidebarMenuButton Tooltip="Data Grid">
-                                    <LucideIcon Name="table-2" Size="18" />
-                                    <span>Data Grid</span>
-                                    <SidebarMenuChevron>
-                                        <LucideIcon Name="chevron-right" Size="16" />
-                                    </SidebarMenuChevron>
-                                </SidebarMenuButton>
-                                <CollapsibleContent>
-                                    <SidebarMenuSub>
-                                        @foreach (var entry in ComponentRegistry.Components.Where(e => e.Category == ComponentCategories.DataDisplay && e.IsSubPage && e.Slug.StartsWith("datagrid/")))
-                                        {
                                             <SidebarMenuSubItem>
-                                                <SidebarMenuSubButton Href="@entry.Route">
-                                                    <span>@entry.Title</span>
+                                                <SidebarMenuSubButton Href="icons/heroicons">
+                                                    <span>Heroicons</span>
                                                 </SidebarMenuSubButton>
                                             </SidebarMenuSubItem>
-                                        }
-                                    </SidebarMenuSub>
-                                </CollapsibleContent>
-                            </SidebarCollapsibleGroup>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroup>
+                                            <SidebarMenuSubItem>
+                                                <SidebarMenuSubButton Href="icons/feather">
+                                                    <span>Feather Icons</span>
+                                                </SidebarMenuSubButton>
+                                            </SidebarMenuSubItem>
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
+                                </SidebarCollapsibleGroup>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
 
-                <!-- Icons Section with Collapsible Submenu -->
-                <SidebarGroup>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarCollapsibleGroup StateKey="sidebar-icons-menu">
-                                <SidebarMenuButton Tooltip="Icons">
-                                    <LucideIcon Name="smile" Size="18" />
-                                    <span>Icons</span>
-                                    <SidebarMenuChevron>
-                                        <LucideIcon Name="chevron-right" Size="16" />
-                                    </SidebarMenuChevron>
-                                </SidebarMenuButton>
-                                <CollapsibleContent>
-                                    <SidebarMenuSub>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="icons/lucide">
-                                                <span>Lucide Icons</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="icons/heroicons">
-                                                <span>Heroicons</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                        <SidebarMenuSubItem>
-                                            <SidebarMenuSubButton Href="icons/feather">
-                                                <span>Feather Icons</span>
-                                            </SidebarMenuSubButton>
-                                        </SidebarMenuSubItem>
-                                    </SidebarMenuSub>
-                                </CollapsibleContent>
-                            </SidebarCollapsibleGroup>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
-                </SidebarGroup>
+                </SidebarContent>
+            </ScrollArea>
+        </Sidebar>
 
-            </SidebarContent>
-        </ScrollArea>
-    </Sidebar>
+        <SidebarInset ResetScrollOnNavigation="true">
+            <header class="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4 z-10 focus:outline-none">
+                <SidebarTrigger />
+                <HeaderBreadcrumb />
+                <div class="ml-auto flex items-center gap-4">
+                    <Button Variant="ButtonVariant.Outline"
+                            Size="ButtonSize.Small"
+                            OnClick="@OpenSpotlight"
+                            Class="hidden sm:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-72 justify-start">
+                        <LucideIcon Name="search" Size="16" />
+                        <span>Search components</span>
+                        <div class="ml-auto flex items-center gap-1">
+                            <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">@_modifierKey</kbd>
+                            <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
+                        </div>
+                    </Button>
+                    <Button Variant="ButtonVariant.Outline"
+                            Size="ButtonSize.Icon"
+                            OnClick="@OpenSpotlight"
+                            Class="sm:hidden"
+                            AriaLabel="Search components">
+                        <LucideIcon Name="search" Size="16" />
+                    </Button>
+                    <ThemeSwitcher ShowStyles />
+                    <DarkModeToggle />
+                </div>
+            </header>
 
-    <SidebarInset ResetScrollOnNavigation="true">
-        <header class="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4 z-10 focus:outline-none">
-            <SidebarTrigger />
-            <HeaderBreadcrumb />
-            <div class="ml-auto flex items-center gap-4">
-                <Button 
-                    Variant="ButtonVariant.Outline" 
-                    Size="ButtonSize.Small"
-                    OnClick="@OpenSpotlight"
-                    Class="hidden sm:flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-72 justify-start">
-                    <LucideIcon Name="search" Size="16" />
-                    <span>Search components</span>
-                    <div class="ml-auto flex items-center gap-1">
-                        <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">@_modifierKey</kbd>
-                        <kbd class="px-1.5 py-0.5 text-xs bg-muted/50 border border-border/40 rounded font-mono">K</kbd>
-                    </div>
-                </Button>
-                <Button 
-                    Variant="ButtonVariant.Outline" 
-                    Size="ButtonSize.Icon"
-                    OnClick="@OpenSpotlight"
-                    Class="sm:hidden"
-                    AriaLabel="Search components">
-                    <LucideIcon Name="search" Size="16" />
-                </Button>
-                <ThemeSwitcher ShowStyles />
-                <DarkModeToggle />
+            <div class="flex-1 p-6 md:p-8">
+                <RenderStateProvider>
+                    @Body
+                </RenderStateProvider>
             </div>
-        </header>
+        </SidebarInset>
+    </SidebarProvider>
 
-        <div class="flex-1 p-6 md:p-8">
-            <RenderStateProvider>
-                @Body
-            </RenderStateProvider>
-        </div>
-    </SidebarInset>
-</SidebarProvider>
-
-<ToastViewport Position="ToastPosition.BottomRight" />
-<SpotlightCommandPalette @ref="_spotlightRef" />
+    <ToastViewport Position="ToastPosition.BottomRight" />
+    <SpotlightCommandPalette @ref="_spotlightRef" />
+    <DialogHost />
 </AppProvider>
-
-<DialogHost />
 
 @* Use separate portal hosts for better performance (prevents render cascades) *@
 <ContainerPortalHost />

@@ -16,6 +16,51 @@ NeoUI uses CSS custom properties (variables) for theming, following the [shadcn/
 <link href="_content/NeoUI.Blazor/components.css" rel="stylesheet" />
 ```
 
+---
+
+## App Setup
+
+To enable NeoUI's `StyleVariant` system and `ThemeService` in your Blazor app, wrap your layout with `<AppProvider>`:
+
+```razor
+@* MainLayout.razor *@
+@inherits LayoutComponentBase
+
+<AppProvider>
+    @* ... sidebar, header, nav, etc. ... *@
+
+    @Body
+
+    @* ⚠️ Portal hosts must be INSIDE AppProvider — see note below *@
+    <ToastViewport />
+    <SpotlightCommandPalette />
+    <DialogHost />
+</AppProvider>
+```
+
+`AppProvider` does two things:
+
+1. **Initializes** `ThemeService` and restores the persisted theme from `localStorage` on startup (preventing a flash of unstyled content)
+2. **Broadcasts** the active `StyleVariant` as a named `CascadingValue` — every component in the tree reads it to apply per-variant Tailwind classes
+
+### Portal Hosts Must Be Inside `AppProvider`
+
+Components that render through a Blazor portal — such as `ToastViewport`, `SpotlightCommandPalette`, and `DialogHost` — must be placed **inside** `</AppProvider>` to receive the `StyleVariant` cascade. Components placed outside the `AppProvider` boundary always receive `StyleVariant.Default` regardless of what the user has selected.
+
+```razor
+@* ✅ Correct — all portal hosts inside AppProvider *@
+<AppProvider>
+    @Body
+    <ToastViewport />           @* receives active StyleVariant ✓ *@
+    <SpotlightCommandPalette /> @* receives active StyleVariant ✓ *@
+    <DialogHost />              @* receives active StyleVariant ✓ *@
+</AppProvider>
+```
+
+> **Note:** `Dialog`, `Sheet`, `Drawer`, and `Popover` content panels already re-emit the `CascadingValue` internally when they render into their own portals, so they work correctly regardless of where their trigger is placed.
+
+---
+
 ## Color Format
 
 NeoUI uses the [OKLCH color space](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) for perceptually uniform colors:
@@ -916,3 +961,93 @@ Use a color converter tool or keep using HSL - both formats work:
 ```css
 --primary: hsl(222.2 47.4% 11.2%);
 ```
+
+---
+
+## Migrating to Theme v2
+
+Theme v2 is **fully backward-compatible** — apps that don't opt in see zero visual change after upgrading.
+
+### Step 1 — Add `<AppProvider>` to your layout
+
+Wrap your `MainLayout.razor` body with `<AppProvider>` (see [App Setup](#app-setup) above). This is required for `StyleVariant` to propagate to components. If you don't use style variants, you can still add it — `AppProvider` also calls `ThemeService.InitializeAsync()` which restores the persisted theme and prevents FOUC.
+
+```razor
+@* Before (v1) *@
+@inherits LayoutComponentBase
+<div class="...">
+    @Body
+    <ToastViewport />
+</div>
+
+@* After (v2) *@
+@inherits LayoutComponentBase
+<AppProvider>
+    <div class="...">
+        @Body
+    </div>
+    <ToastViewport />         @* inside AppProvider *@
+    <DialogHost />            @* inside AppProvider *@
+</AppProvider>
+```
+
+### Step 2 — Load theme CSS files
+
+Add links for the style variants, radius presets, and fonts you want to expose. Load them in the correct order (see [CSS Load Order](#css-load-order)):
+
+```html
+<!-- Style variants (include only what you expose to users) -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/luma.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/nova.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/maia.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/lyra.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/mira.css" />
+
+<!-- Radius presets -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/none.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/large.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/full.css" />
+
+<!-- Font presets -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/inter.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/geist.css" />
+```
+
+### Step 3 — Apply a preset or let users choose
+
+Apply a built-in preset on startup:
+
+```csharp
+// Anywhere after ThemeService is available — or let AppProvider handle it
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
+```
+
+Or expose the built-in picker to your users:
+
+```razor
+@* Colors tab only (default) *@
+<ThemeSwitcher />
+
+@* Full picker — colors + style variant + radius + font + menu options *@
+<ThemeSwitcher ShowStyles="true" />
+```
+
+### Step 4 — Tailwind v4 apps only
+
+If your app uses Tailwind v4, add `@theme inline` to your CSS entry point:
+
+```css
+@import "tailwindcss";
+@theme inline; /* prevents hardcoded color values from overriding CSS variables at runtime */
+```
+
+### What changed visually
+
+| | v1 behaviour | v2 behaviour |
+|---|---|---|
+| Default appearance | Unchanged | Unchanged — `StyleVariant.Default` preserves all pre-v2 radius ratios |
+| Rounded corners | Driven by `--radius` alone | Optionally driven by per-component Tailwind classes via `StyleVariant` |
+| Input height / density | Fixed | Optionally compact via `StyleVariant.Mira` / `StyleVariant.Nova` |
+| Shadows | Tailwind defaults | Optionally style-specific via the loaded style CSS |
+| `ThemeService.InitializeAsync()` | Called manually | Called automatically by `AppProvider` |
