@@ -54,7 +54,7 @@ window.theme = {
 
     /**
      * Initializes theme before Blazor loads to prevent FOUC (Flash of Unstyled Content).
-     * Reads all 6 persisted localStorage keys and applies them immediately.
+     * Reads all 8 persisted localStorage keys and applies them immediately.
      */
     initialize: function() {
         let savedTheme        = null;
@@ -108,7 +108,7 @@ window.theme = {
 
         const validBase    = validated(allowedBaseColors,    savedBaseColor,    'Zinc');
         const validPrimary = validated(allowedPrimaryColors, savedPrimaryColor, 'Default');
-        const validStyle   = validated(allowedStyles,        savedStyle,        '');
+        const validStyle   = validated(allowedStyles,        savedStyle,        'Default');
         const validRadius  = validated(allowedRadius,        savedRadius,       '');
         const validFont    = validated(allowedFonts,         savedFont,         '');
         const validMenuAccent = validated(allowedMenuAccents, savedMenuAccent,  '');

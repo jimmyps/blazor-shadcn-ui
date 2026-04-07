@@ -17,7 +17,7 @@ Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind 
 - **📱 Responsive**: Mobile-first design with touch gesture support
 - **🎨 Style Variant System**: 3-layer CSS merge pipeline — base classes → per-variant overrides → user Class prop. 50+ components wired. tailwind-merge ensures user overrides always win.
 - **🎭 7 Style Presets**: Luma (glassmorphism), Nova (compact), Maia (spacious), Lyra (sharp), Mira (ultra-dense), Vega (balanced), Default (backward-compatible)
-- **🌈 8 Theme Dimensions**: Style variant, base color (14 options), primary color (17 options), radius preset (4 options), font preset (6 options), menu color (4 options), menu accent (2 options), dark mode
+- **🌈 8 Theme Dimensions**: Style variant, base color (9 options), primary color (17 options), radius preset (4 options), font preset (6 options), menu color (4 options), menu accent (2 options), dark mode
 
 ## 📦 Installation
 

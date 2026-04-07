@@ -103,7 +103,7 @@ public partial class Slider : ComponentBase
     {
         get
         {
-            var pct = Max > Min ? ((Value - Min) / (Max - Min)) * 100 : 0;
+            var pct = Max > Min ? Math.Clamp(((Value - Min) / (Max - Min)) * 100, 0.0, 100.0) : 0;
             var pctStr = pct.ToString("F1", System.Globalization.CultureInfo.InvariantCulture);
             return $"background: linear-gradient(to right, var(--primary) {pctStr}%, var(--input) {pctStr}%)";
         }
