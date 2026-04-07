@@ -11,6 +11,9 @@
 </TabsTriggerPrimitive>
 
 @code {
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// The value that identifies this tab.
     /// Used to match with TabsContent components.
@@ -41,5 +44,6 @@
         "ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "disabled:pointer-events-none disabled:opacity-50",
         "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+        _styleVariant.GetClasses("Tabs.Trigger"),
         Class);
 }

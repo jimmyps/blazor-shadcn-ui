@@ -53,6 +53,9 @@ public partial class RadioGroupItem<TValue> : ComponentBase
     [CascadingParameter]
     private RadioGroupContext<TValue>? Context { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets the value associated with this radio item.
     /// </summary>
@@ -153,6 +156,7 @@ public partial class RadioGroupItem<TValue> : ComponentBase
                 "disabled:cursor-not-allowed disabled:opacity-50",
                 // Layout for centering the inner circle
                 "flex items-center justify-center",
+                _styleVariant.GetClasses("RadioGroup.Item"),
                 // Custom classes (if provided)
                 Class
             );

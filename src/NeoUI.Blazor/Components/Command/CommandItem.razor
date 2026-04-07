@@ -26,6 +26,9 @@
     [CascadingParameter(Name = "CommandGroupId")]
     public string? GroupId { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the item.
     /// </summary>
@@ -77,6 +80,7 @@
         !Disabled && Context?.IsKeyboardNavigating != true ? "hover:bg-accent hover:text-accent-foreground" : null,
         Disabled ? "opacity-50 cursor-not-allowed" : null,
         _isFocused ? "bg-accent text-accent-foreground" : null,
+        _styleVariant.GetClasses("Command.Item"),
         Class
     );
 

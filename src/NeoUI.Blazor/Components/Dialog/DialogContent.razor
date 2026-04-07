@@ -9,7 +9,7 @@
 *@
 
 <DialogPortal>
-    <DialogOverlay class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
+    <DialogOverlay data-slot="overlay" class="@GetOverlayClass()" style="@($"z-index: {GetEffectiveOverlayZIndex()}")" />
 
     <DialogContentPrimitive
         class="@GetClassNames()"
@@ -19,21 +19,26 @@
         LockScroll="@LockScroll"
         OnEscapeKeyDown="@OnEscapeKeyDown"
         @attributes="AdditionalAttributes">
-            @ChildContent
+            <CascadingValue Name="StyleVariant" Value="_styleVariant" IsFixed="true">
+                @ChildContent
 
-            @if (ShowClose)
-            {
-                <DialogClosePrimitive class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-                    <LucideIcon Name="x" Class="h-4 w-4" />
-                    <span class="sr-only">@Localizer["Dialog.Close"]</span>
-                </DialogClosePrimitive>
-            }
+                @if (ShowClose)
+                {
+                    <DialogClosePrimitive class="@GetCloseClass()">
+                        <LucideIcon Name="x" Class="h-4 w-4" />
+                        <span class="sr-only">@Localizer["Dialog.Close"]</span>
+                    </DialogClosePrimitive>
+                }
+            </CascadingValue>
         </DialogContentPrimitive>
 </DialogPortal>
 
 @code {
     [CascadingParameter]
     private DialogContext Context { get; set; } = null!;
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     /// <summary>
     /// The content to render inside the dialog.
@@ -157,7 +162,7 @@
             "fixed p-6 gap-4 left-[50%] top-[50%] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%]",
             "border border-border/60 dark:border-border/40 dark:ring-1 dark:ring-white/10",
             "shadow-xl dark:shadow-2xl",
-            "sm:rounded-lg"
+            "rounded-lg"
         };
 
         // Apply variant-specific background and scroll shadow styling
@@ -182,8 +187,13 @@
             });
         }
 
-        return ClassNames.cn(baseClasses.Append(Class).ToArray());
+        return ClassNames.cn(baseClasses.Append(_styleVariant.GetClasses("Dialog.Content")).Append(Class).ToArray());
     }
+
+    private string GetCloseClass() => ClassNames.cn(
+        "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground",
+        _styleVariant.GetClasses("Dialog.Close")
+    );
 
     /// <summary>
     /// Gets the computed CSS classes for the dialog overlay/backdrop.

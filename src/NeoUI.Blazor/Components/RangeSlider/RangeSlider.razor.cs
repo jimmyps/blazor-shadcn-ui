@@ -185,6 +185,9 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string ContainerCssClass => ClassNames.cn(
         "relative w-full",
         Orientation == SliderOrientation.Vertical ? "h-64 flex flex-col" : "",
@@ -212,7 +215,7 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
     /// Gets the CSS class for the slider track.
     /// </summary>
     private string TrackCssClass => ClassNames.cn(
-        "absolute bg-secondary rounded-full",
+        "absolute rounded-full bg-input/90",
         Orientation == SliderOrientation.Horizontal 
             ? "w-full h-2 left-0" 
             : "h-full w-2 bottom-0"
@@ -229,13 +232,30 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
     );
 
     /// <summary>
-    /// Gets the CSS class for the draggable handle.
+    /// Half the handle size in pixels, used to center the handle over its track position.
+    /// Varies per variant: Nova = 6px (h-3), Maia = 10px (h-5), others = 8px (h-4).
+    /// </summary>
+    private int HandleHalfSizePx => _styleVariant switch
+    {
+        StyleVariant.Luma => 12,  // w-6 = 24px → half = 12px
+        StyleVariant.Nova => 6,   // h-3 w-3 = 12px → half = 6px
+        StyleVariant.Maia => 10,  // h-5 w-5 = 20px → half = 10px
+        _                 => 8,   // h-4 w-4 = 16px → half = 8px
+    };
+
+    /// <summary>
+    /// Gets the CSS class for the draggable handle — base is a circle (h-4 w-4).
+    /// Variant key <c>Slider.Handle</c> overrides size, bg, shadow, and ring per style.
     /// </summary>
     private string HandleCssClass => ClassNames.cn(
-        "absolute z-10 h-5 w-5 rounded-full border-2 border-primary bg-background",
-        "ring-offset-background transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-        !Disabled ? "hover:bg-accent cursor-grab active:cursor-grabbing" : "cursor-not-allowed opacity-50"
+        "absolute z-10 rounded-full bg-white border-2 border-primary shadow-sm",
+        "h-4 w-4",
+        _styleVariant.GetClasses("Slider.Handle"),
+        "transition-[color,box-shadow,background-color]",
+        "focus-visible:outline-none not-aria-disabled:focus-visible:ring-2 not-aria-disabled:focus-visible:ring-ring/50",
+        "not-aria-disabled:hover:ring-2 not-aria-disabled:hover:ring-ring/50",
+        "not-aria-disabled:cursor-grab not-aria-disabled:active:cursor-grabbing",
+        "aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
     );
 
     /// <summary>
@@ -298,14 +318,11 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         get
         {
             var percent = GetPercentage(MinValue);
+            var half = HandleHalfSizePx;
             if (Orientation == SliderOrientation.Horizontal)
-            {
-                return $"left: calc({percent}% - 10px);";
-            }
+                return $"left: calc({percent}% - {half}px);";
             else
-            {
-                return $"bottom: calc({percent}% - 10px);";
-            }
+                return $"bottom: calc({percent}% - {half}px);";
         }
     }
 
@@ -317,14 +334,11 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
         get
         {
             var percent = GetPercentage(MaxValue);
+            var half = HandleHalfSizePx;
             if (Orientation == SliderOrientation.Horizontal)
-            {
-                return $"left: calc({percent}% - 10px);";
-            }
+                return $"left: calc({percent}% - {half}px);";
             else
-            {
-                return $"bottom: calc({percent}% - 10px);";
-            }
+                return $"bottom: calc({percent}% - {half}px);";
         }
     }
 

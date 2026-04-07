@@ -35,7 +35,7 @@ public partial class CardTitle : ComponentBase
     /// </summary>
     private string CssClass => ClassNames.cn(
         // Base title styles (from shadcn/ui)
-        "text-2xl font-semibold leading-none tracking-tight",
+        "text-2xl font-medium leading-none tracking-tight",
         // Custom classes (if provided)
         Class
     );

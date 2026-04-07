@@ -14,8 +14,10 @@
                                                             Strategy="@Strategy"
                                                             MatchTriggerWidth="@MatchTriggerWidth"
                                                             ZIndex="@ZIndex">
-    <div class="p-1">
-        @ChildContent
+    <div class="@InnerCssClass">
+        <CascadingValue Name="StyleVariant" Value="_styleVariant" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
     </div>
 </DropdownMenuContentPrimitive>
 
@@ -39,6 +41,9 @@
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     /// <summary>
     /// Whether pressing Escape should close the dropdown menu.
@@ -116,17 +121,14 @@
     [Parameter]
     public string? Style { get; set; }
 
-    private string CssClass
-    {
-        get
-        {
-            var baseClasses = $"z-{ZIndex} min-w-[8rem] no-focus-ring overflow-hidden rounded-md border bg-popover " +
-                            "text-popover-foreground shadow-md " +
-                            "data-[state=open]:animate-in data-[state=closed]:animate-out " +
-                            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 " +
-                            "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95";
+    private string CssClass => ClassNames.cn(
+        $"z-{ZIndex} min-w-[8rem] no-focus-ring overflow-hidden rounded-md border bg-popover",
+        "text-popover-foreground shadow-md",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        _styleVariant.GetClasses("DropdownMenu.Content"),
+        Class);
 
-            return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
-        }
-    }
+    private string InnerCssClass => ClassNames.cn("p-1", _styleVariant.GetClasses("Menu.Inner"));
 }

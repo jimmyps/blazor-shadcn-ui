@@ -97,6 +97,9 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the cascaded EditContext from an EditForm.
     /// </summary>
@@ -422,6 +425,8 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
         "transition-[color,box-shadow]",
         // Medium screens and up: smaller text
         "md:text-sm",
+        // StyleVariant overrides
+        _styleVariant.GetClasses("Input.Root"),
         // Custom classes (if provided)
         Class
     );

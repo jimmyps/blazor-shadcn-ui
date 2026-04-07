@@ -15,6 +15,9 @@ Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind 
 - **🔧 Fully Customizable**: Override styles with custom CSS or Tailwind classes
 - **🔒 Type-Safe**: Full C# type safety with IntelliSense support
 - **📱 Responsive**: Mobile-first design with touch gesture support
+- **🎨 Style Variant System**: 3-layer CSS merge pipeline — base classes → per-variant overrides → user Class prop. 50+ components wired. tailwind-merge ensures user overrides always win.
+- **🎭 7 Style Presets**: Luma (glassmorphism), Nova (compact), Maia (spacious), Lyra (sharp), Mira (ultra-dense), Vega (balanced), Default (backward-compatible)
+- **🌈 8 Theme Dimensions**: Style variant, base color (14 options), primary color (17 options), radius preset (4 options), font preset (6 options), menu color (4 options), menu accent (2 options), dark mode
 
 ## 📦 Installation
 
@@ -126,6 +129,56 @@ builder.Services.AddNeoUIComponents();
 ```
 
 Both options work for Blazor Server, WebAssembly, and Auto mode.
+
+## 🎨 Theme v2 — Style Variant System
+
+NeoUI v4 introduces a **3-layer CSS merge pipeline** that faithfully maps shadcn/ui style variants to Blazor components while keeping developer overrides fully functional:
+
+```
+Layer 1: Base classes (backward-compatible defaults)
+    ↓ ClassNames.cn (tailwind-merge)
+Layer 2: StyleVariant.GetClasses("Component.Key")
+    ↓ ClassNames.cn (tailwind-merge)
+Layer 3: User-supplied Class parameter (always wins)
+```
+
+### AppProvider Setup
+
+Wrap your layout to enable the StyleVariant cascade and automatic theme initialization:
+
+```razor
+<AppProvider>
+    @Body
+    <ToastViewport />
+    <DialogHost />
+</AppProvider>
+```
+
+### Apply a Preset
+
+```csharp
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
+```
+
+### Show the Full Picker
+
+```razor
+<ThemeSwitcher ShowStyles="true" />
+```
+
+### Available Style Variants
+
+| Variant | Character |
+|---|---|
+| `Default` | Backward-compatible — no visual change |
+| `Luma` | Glassmorphism SaaS — pill shapes, frosted glass |
+| `Nova` | Compact — tight dashboard/admin aesthetic |
+| `Maia` | Spacious — generous rounding, consumer apps |
+| `Lyra` | Sharp — flat boxy look, developer tooling |
+| `Mira` | Ultra-dense — minimal spacing, data-heavy UIs |
+| `Vega` | Professional balanced — polished defaults |
+
+See [THEMING.md](../../THEMING.md) for the full guide including CSS load order, migration steps, and per-component override patterns.
 
 ## ⚡ Project Template
 
@@ -337,27 +390,11 @@ Add smooth animations with 20+ presets:
 
 ## 🎨 Theming
 
-NeoUI uses CSS variables for theming, compatible with shadcn/ui themes. You can use any theme from:
+NeoUI uses OKLCH-based CSS variables for theming, compatible with shadcn/ui themes. You can use any theme from:
 - [shadcn/ui themes](https://ui.shadcn.com/themes)
 - [tweakcn.com](https://tweakcn.com)
 
-Or create your own by defining CSS variables:
-
-```css
-:root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --primary: 222.2 47.4% 11.2%;
-  --primary-foreground: 210 40% 98%;
-  /* ... and more */
-}
-
-.dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  /* ... dark mode colors */
-}
-```
+NeoUI v4 adds the **Style Variant System** on top of this foundation — 7 named variants that go beyond color to control shape, density, and surface treatment. See [THEMING.md](../../THEMING.md) for the full guide including the 3-layer CSS merge pipeline, AppProvider setup, and migration steps.
 
 ## 🔧 Customization
 
@@ -427,7 +464,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Version**: 3.8.2
+- **Current Version**: 4.0.0
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

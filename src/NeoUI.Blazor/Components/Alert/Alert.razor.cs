@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using NeoUI.Blazor.Services;
 
 namespace NeoUI.Blazor;
 
@@ -78,6 +79,9 @@ public partial class Alert : ComponentBase
     [Parameter]
     public bool AccentBorder { get; set; } = false;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the computed CSS classes for the alert element.
     /// </summary>
@@ -107,6 +111,8 @@ public partial class Alert : ComponentBase
                 : "border-alert-danger/30 bg-alert-danger-bg [&>svg]:text-alert-danger",
             _ => "bg-background text-foreground"
         },
+        // StyleVariant class overrides (layer 2 — before user Class so Class always wins)
+        _styleVariant.GetClasses("Alert.Root"),
         // Custom classes (if provided)
         Class
     );

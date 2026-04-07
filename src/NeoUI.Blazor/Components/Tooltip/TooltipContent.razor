@@ -12,6 +12,9 @@
     [CascadingParameter]
     private TooltipContext? Context { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// The content to render inside the tooltip.
     /// </summary>
@@ -99,6 +102,7 @@
                 // Entrance animations
                 "animate-in fade-in-0 zoom-in-95",
                 slideClass,
+                _styleVariant.GetClasses("Tooltip.Content"),
                 Class
             );
         }

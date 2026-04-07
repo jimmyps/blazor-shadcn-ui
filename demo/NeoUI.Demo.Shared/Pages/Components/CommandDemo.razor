@@ -134,7 +134,7 @@
     @if (isPaletteOpen)
     {
         <div class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" @onclick="ClosePalette">
-            <div class="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%]" @onclick="StopClick">
+            <div class="fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%]" @onclick:stopPropagation="true">
                 <div class="overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md">
                     <CommandContent OnValueChange="HandlePaletteValueChange">
                         <CommandInput Placeholder="Type a command or search..." />
@@ -528,7 +528,6 @@
 
     private void OpenPalette() => isPaletteOpen = true;
     private void ClosePalette() => isPaletteOpen = false;
-    private void StopClick(MouseEventArgs e) { /* stop propagation handled by ordering */ }
 
     private void HandlePaletteValueChange(string value)
     {

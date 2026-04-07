@@ -15,6 +15,9 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
         LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogJsInitializationFailed)),
             "Failed to initialize RichTextEditor JS: {Message}");
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     [Inject]
     private ILogger<RichTextEditor> Logger { get; set; } = default!;
 
@@ -726,6 +729,7 @@ public partial class RichTextEditor : ComponentBase, IAsyncDisposable
     /// </summary>
     private string ContainerCssClass => ClassNames.cn(
         "flex flex-col rounded-md border border-input bg-background",
+        _styleVariant.GetClasses("RichTextEditor.Root"),
         "focus-within:border-ring focus-within:ring-[2px] focus-within:ring-ring/50",
         "shadow-xs transition-[color,box-shadow]",
         ClassNames.when(AriaInvalid == true, "border-destructive ring-destructive/20"),

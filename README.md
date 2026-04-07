@@ -34,6 +34,83 @@ NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor appli
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
+## ✨ What's New in v4
+
+### 🎨 Theme v2 — The Most Sophisticated Blazor Theming System
+
+v4 brings NeoUI in full parity with shadcn/ui's April 2026 customisation model — and surpasses it with the most comprehensive shadcn-inspired theming system available for Blazor.
+
+#### Style Variant System — 3-Layer CSS Merge Pipeline
+
+Every major component now participates in a **3-layer CSS merge** that faithfully renders shadcn/ui style variants while preserving the Blazor developer experience:
+
+```
+Layer 1: Base component classes  (sensible, backward-compatible defaults)
+    ↓
+Layer 2: StyleVariant overrides  (per-variant Tailwind classes via StyleVariant.GetClasses("Component.Key"))
+    ↓
+Layer 3: User Class prop          (always wins — merged via tailwind-merge)
+```
+
+**50+ components fully wired** — Button, Input, Card, Dialog, Sheet, Drawer, Tabs, Select, Combobox, DropdownMenu, ContextMenu, Menubar, Calendar, Command, Sidebar, TreeView, Toast, Tooltip, RadioGroup, Slider, RangeSlider, Switch, Toggle, ToggleGroup, Progress, Avatar, Badge, Alert, DataGrid, DataView, and more.
+
+#### 7 Named Style Variants
+
+| Variant | Character | `--radius` |
+|---|---|---|
+| `Default` | Backward-compatible — no visual change | unchanged |
+| `Vega` | Professional, balanced | `0.625rem` |
+| `Nova` | Compact, dashboard/admin | `0.375rem` |
+| `Maia` | Spacious, consumer-friendly | `1rem` |
+| `Lyra` | Sharp/boxy, developer tooling | `0rem` |
+| `Mira` | Ultra-dense, data-heavy | `0.25rem` |
+| `Luma` | Glassmorphism, modern SaaS | `0.75rem` |
+
+`Luma` goes furthest — pill-shaped containers, frosted inputs, stronger overlay blur, per-component shadow tuning — matching shadcn's Luma style exactly.
+
+#### Full Theme Dimension Expansion
+
+| Dimension | Options |
+|---|---|
+| Style Variant | Default, Vega, Nova, Maia, Lyra, Mira, Luma |
+| Base Color | Zinc, Slate, Gray, Neutral, Stone + **Mist, Mauve, Taupe, Olive** (new) |
+| Primary Color | 17 colors |
+| Radius Preset | None, Small, Medium, Large |
+| Font Preset | System, Inter, Geist, CalSans, DmSans, PlusJakarta |
+| Menu Color | Default, Inverted, DefaultTranslucent (glassmorphism), InvertedTranslucent |
+| Menu Accent | Subtle, Bold |
+| Dark Mode | Light / Dark |
+
+#### ThemeSwitcher Redesign
+
+The `ThemeSwitcher` trigger now shows a **two-tone color swatch** reflecting the current base + primary color pair. Add `ShowStyles="true"` to expose the full visual picker with animated tabs:
+
+```razor
+@* Minimal — colors + dark mode *@
+<ThemeSwitcher />
+
+@* Full picker — all 8 theme dimensions with visual previews *@
+<ThemeSwitcher ShowStyles="true" />
+```
+
+#### AppProvider — Required Setup
+
+Wrap your layout with `<AppProvider>` to enable StyleVariant propagation and automatic theme initialization:
+
+```razor
+@* MainLayout.razor *@
+<AppProvider>
+    @Body
+    @* Portal hosts must be inside AppProvider *@
+    <ToastViewport />
+    <DialogHost />
+</AppProvider>
+```
+
+#### Backward Compatible
+
+`StyleVariant.Default` preserves all pre-v4 radius ratios — **existing apps see zero visual change after upgrading**. Theme v2 is entirely opt-in.
+
 ## 🚀 Getting Started
 
 ### 📦 Installation
@@ -69,24 +146,25 @@ dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-base
 @using NeoUI.Icons.Feather     @* 286 minimalist icons *@
 ```
 
-2. **Add PortalHost to your layout:**
+2. **Wrap your layout with `AppProvider`:**
 
-   For overlay components (Dialog, Sheet, Popover, etc.) to work correctly, add portal hosts to your root layout:
+   `AppProvider` initializes `ThemeService` and propagates the active `StyleVariant` to all components. Portal hosts must be placed inside it:
 
 ```razor
 @inherits LayoutComponentBase
 
-<div class="min-h-screen bg-background">
+<AppProvider>
     <!-- Your layout content -->
     @Body
-</div>
 
-@* RECOMMENDED: Use separate portal hosts for better performance *@
+    <!-- Portal hosts must be inside AppProvider -->
+    <ToastViewport />
+    <DialogHost />
+</AppProvider>
+
+@* For overlay components to work correctly *@
 <ContainerPortalHost />
 <OverlayPortalHost />
-
-@* OR: Use legacy single host (backward compatible) *@
-@* <PortalHost /> *@
 ```
 
 3. **Add CSS and scripts to your `App.razor`:**
@@ -280,42 +358,33 @@ NeoUI supports all standard shadcn/ui CSS variables:
 
 NeoUI automatically supports dark mode by applying the `.dark` class to the `<html>` element. All components will automatically switch to dark mode colors when this class is present.
 
-### 🎨 Dynamic Theme Customization (NEW)
+### 🎨 Theme v2 — Dynamic Multi-Dimensional Theming
 
-NeoUI now includes a **complete theme customization system** that allows users to dynamically switch between different color combinations at runtime:
+NeoUI includes a **complete runtime theme system** with 8 independently-configurable dimensions:
 
-**Features:**
-- **5 Base Colors** - Zinc, Slate, Gray, Neutral, Stone (foundational UI colors)
-- **17 Primary Colors** - Red, Rose, Orange, Amber, Yellow, Lime, Green, Emerald, Teal, Cyan, Sky, Blue, Indigo, Violet, Purple, Fuchsia, Pink
-- **85 Theme Combinations** (5 base × 17 primary colors)
-- **Live Theme Preview** - Changes apply instantly without page reload
-- **LocalStorage Persistence** - User preferences saved and restored across sessions
-- **Dark/Light Mode Toggle** - Seamless switching between themes
-- **CSP-Compliant** - Uses named JavaScript functions for Content Security Policy compatibility
-- **FOUC-Free** - `theme.js` (included in NuGet package) applies saved classes before Blazor loads
+**ThemeService** — inject anywhere to read or change the theme programmatically:
 
-The theme system includes:
-- **ThemeSwitcher Component** - Visual color picker with preview swatches in a popover panel
-- **DarkModeToggle Component** - Switch with sun/moon icons for theme mode
-- **ThemeService** - C# service for programmatic theme management
-- **Tooltip Support** - Shows current theme selection on hover
+```csharp
+// Apply a built-in preset
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
 
-> **Setup:** The `theme.js` script is already included in the `App.razor` setup above. No separate initialization call is needed — it auto-applies the saved theme on script load.
-
-Example usage:
-```razor
-@inject ThemeService ThemeService
-
-<!-- Add theme switcher to your layout -->
-<ThemeSwitcher />
-
-<!-- Or control programmatically -->
-<Button @onclick="async () => await ThemeService.SetPrimaryColorAsync(PrimaryColor.Purple)">
-    Purple Theme
-</Button>
+// Or set individual dimensions
+await ThemeService.SetStyleVariantAsync(StyleVariant.Nova);
+await ThemeService.SetBaseColorAsync(BaseColor.Mauve);
+await ThemeService.SetMenuColorAsync(MenuColor.DefaultTranslucent);
 ```
 
-See the [CHANGELOG](CHANGELOG.md) for complete implementation details.
+**ThemeSwitcher component** — expose the full visual picker to your users:
+
+```razor
+@* Colors + dark mode only (default) *@
+<ThemeSwitcher />
+
+@* Full picker with style, radius, font, and menu controls *@
+<ThemeSwitcher ShowStyles="true" />
+```
+
+> **Setup:** `theme.js` (included automatically) applies saved theme classes before Blazor loads — no FOUC. Wrap your layout in `<AppProvider>` so components receive the active `StyleVariant` cascade. See [THEMING.md](THEMING.md) for the full guide.
 
 ## 💅 Styling
 
@@ -564,6 +633,8 @@ All primitives are fully accessible, keyboard-navigable, and provide complete co
 - **Pure Blazor** - No JavaScript dependencies, no Node.js required
 - **🎨 Icon Library Options** - 3 separate icon packages (Lucide, Heroicons, Feather) with 3,200+ total icons
 - **Form Validation Ready** - Works seamlessly with Blazor's form validation
+- **🎨 Style Variant System** - 3-layer CSS merge pipeline with 7 named style variants (Luma, Nova, Maia, Lyra, Mira, Vega, Default); 50+ components fully wired
+- **🎭 Luma Glassmorphism** - Comprehensive glassmorphism variant: pill containers, frosted inputs, enhanced overlays — exact Blazor port of shadcn's Luma style
 
 ## 📄 License
 
@@ -590,7 +661,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Version**: 3.9.0
+- **Current Version**: 4.0.0
 - **Target Framework**: .NET 10
 - **Package IDs**: 
   - `NeoUI.Blazor`

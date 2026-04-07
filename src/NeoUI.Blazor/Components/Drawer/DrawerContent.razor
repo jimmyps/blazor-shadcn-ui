@@ -11,6 +11,7 @@
 {
     @* Overlay *@
     <div class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+         data-slot="overlay"
          data-state="open"
          @onclick="HandleOverlayClick">
     </div>
@@ -20,6 +21,7 @@
          class="@CssClass"
          style="@InitialSnapStyle"
          data-state="open"
+         data-direction="@Context?.Direction.ToString().ToLower()"
          role="dialog"
          aria-modal="true"
          tabindex="-1"
@@ -52,6 +54,9 @@
 
     [CascadingParameter]
     public Drawer? Context { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     [Parameter]
     public string? Class { get; set; }
@@ -247,6 +252,7 @@
         "fixed z-50 gap-4 bg-background shadow-lg transition ease-in-out flex flex-col overflow-hidden",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
         DirectionClasses,
+        _styleVariant.GetClasses("Drawer.Content"),
         Class
     );
 

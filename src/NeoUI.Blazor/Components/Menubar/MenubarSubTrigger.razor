@@ -42,6 +42,9 @@
     [Parameter]
     public bool Inset { get; set; } = false;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string CssClass => ClassNames.cn(
         "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
         "focus:bg-accent focus:text-accent-foreground",
@@ -49,5 +52,6 @@
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
         Inset ? "pl-8" : null,
         !Disabled ? "hover:bg-accent hover:text-accent-foreground" : null,
+        _styleVariant.GetClasses("Menu.SubTrigger"),
         Class);
 }

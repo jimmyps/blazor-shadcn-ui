@@ -1,10 +1,10 @@
 @namespace NeoUI.Blazor
 @*
     Styled DialogTrigger component wrapper.
-    Renders the trigger button for opening the dialog.
+    Renders as a styled button (Default variant) that opens the dialog.
 *@
 
-<DialogTriggerPrimitive AsChild="@AsChild" @attributes="AdditionalAttributes">
+<DialogTriggerPrimitive AsChild="@AsChild" class="@CssClass" @attributes="AdditionalAttributes">
     @ChildContent
 </DialogTriggerPrimitive>
 
@@ -24,8 +24,29 @@
     public bool AsChild { get; set; } = false;
 
     /// <summary>
+    /// Additional CSS classes to apply to the trigger button.
+    /// </summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
+    /// <summary>
     /// Additional attributes to apply to the trigger button.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CssClass => ClassNames.cn(
+        "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium",
+        "transition-colors focus-visible:outline-none focus-visible:ring-2",
+        "focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:opacity-50 disabled:pointer-events-none",
+        "active:not-aria-[haspopup]:translate-y-px",
+        "bg-primary text-primary-foreground hover:bg-primary/90",
+        "h-10 px-4 py-2",
+        _styleVariant.GetClasses("Button.Root"),
+        Class
+    );
 }

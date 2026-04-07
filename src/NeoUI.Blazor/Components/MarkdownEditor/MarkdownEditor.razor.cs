@@ -18,6 +18,9 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
     private string _activeTab = "write";
     private bool _shouldPreventKeydown;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -101,6 +104,7 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
     /// </summary>
     private string ContainerCssClass => ClassNames.cn(
         "flex flex-col rounded-md border border-input bg-background",
+        _styleVariant.GetClasses("MarkdownEditor.Root"),
         "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
         ClassNames.when(AriaInvalid == true, "border-destructive ring-destructive/20"),
         ClassNames.when(Disabled, "opacity-50 cursor-not-allowed"),
@@ -386,6 +390,7 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
             "!shadow-none !ring-0 !ring-offset-0",
             // Base styles
             "px-3 py-1 text-sm font-medium transition-colors rounded-sm",
+            _styleVariant.GetClasses("Tabs.Trigger"),
             // Active state - white background, inactive - transparent
             isActive
                 ? "bg-background text-foreground shadow-sm"

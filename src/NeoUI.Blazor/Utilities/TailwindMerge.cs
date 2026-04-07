@@ -123,6 +123,7 @@ public static class TailwindMerge
         ["rounded-xl"] = "border-radius",
         ["rounded-2xl"] = "border-radius",
         ["rounded-3xl"] = "border-radius",
+        ["rounded-4xl"] = "border-radius",
         ["rounded-full"] = "border-radius",
 
         // Opacity
@@ -159,6 +160,21 @@ public static class TailwindMerge
     private static readonly Regex TranslateRegex = new(@"^-?(translate-x|translate-y|translate)-(.+)$", RegexOptions.Compiled);
     private static readonly Regex PositionRegex = new(@"^-?(top|right|bottom|left|inset|inset-x|inset-y)-(.+)$", RegexOptions.Compiled);
     private static readonly Regex ShadowRegex = new(@"^shadow(-(.+))?$", RegexOptions.Compiled);
+
+    // Ring utilities (ring-width and ring-color are separate conflict groups)
+    // Ring-width: ring, ring-{N}, or ring-[{CSS-dimension}] (dimension = value starting with digit, e.g. ring-[2px])
+    private static readonly Regex RingWidthRegex = new(@"^ring(-\d+|-\[\d[\d.]*[a-z%]*\])?$", RegexOptions.Compiled);
+    // Ring-color: ring-{color-name} or ring-[{arbitrary-color}]; excludes ring-offset-* and dimension arbitrary values
+    private static readonly Regex RingColorRegex = new(@"^ring-(?!offset-)([a-z]+(?:-\d+)?|\[(?!\d)[^\]]+\])(?:/[\w]+)?$", RegexOptions.Compiled);
+
+    // Rounded fallback for values not enumerated in TailwindGroups (e.g. arbitrary rounded-[1rem])
+    private static readonly Regex RoundedPresetRegex = new(@"^rounded(-[a-z0-9]+|\[.+\])?$", RegexOptions.Compiled);
+
+    // Side-specific rounded corners: rounded-l-*, rounded-r-*, rounded-t-*, rounded-b-*, rounded-tl-*, etc.
+    private static readonly Regex RoundedSideRegex = new(@"^rounded-(l|r|t|b|tl|tr|bl|br)(-[a-z0-9]+|\[.+\])?$", RegexOptions.Compiled);
+
+    // Font-size with line-height modifier: text-xs/relaxed, text-sm/tight, etc.
+    private static readonly Regex FontSizeLineHeightRegex = new(@"^text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)/.+$", RegexOptions.Compiled);
 
     // Cache for utility group lookups to avoid repeated regex evaluation
     private static readonly ConcurrentDictionary<string, string?> _utilityGroupCache = new();
@@ -415,6 +431,31 @@ public static class TailwindMerge
         // Check shadow utilities (shadow, shadow-sm, shadow-md, shadow-lg, shadow-xl, shadow-2xl, shadow-inner, shadow-none)
         if (ShadowRegex.IsMatch(baseClass))
             return CombineModifiersWithGroup(modifiers, "box-shadow");
+
+        // Check side-specific rounded corners first (rounded-l-*, rounded-r-*, rounded-tl-*, etc.)
+        // Must come before RoundedPresetRegex since rounded-l alone would ambiguously match both
+        var roundedSideMatch = RoundedSideRegex.Match(baseClass);
+        if (roundedSideMatch.Success)
+        {
+            var side = roundedSideMatch.Groups[1].Value;
+            return CombineModifiersWithGroup(modifiers, $"border-radius-{side}");
+        }
+
+        // Check rounded fallback (catches arbitrary values like rounded-[1rem] not in TailwindGroups)
+        if (RoundedPresetRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "border-radius");
+
+        // Check ring-width utilities (ring, ring-0, ring-1, ring-2, ring-3, ring-4, ring-8)
+        if (RingWidthRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "ring-width");
+
+        // Check ring-color utilities (ring-ring, ring-ring/30, ring-primary, etc.)
+        if (RingColorRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "ring-color");
+
+        // Check font-size with line-height modifier (text-xs/relaxed, text-sm/tight, etc.)
+        if (FontSizeLineHeightRegex.IsMatch(baseClass))
+            return CombineModifiersWithGroup(modifiers, "font-size");
 
         // Unknown utility
         return null;

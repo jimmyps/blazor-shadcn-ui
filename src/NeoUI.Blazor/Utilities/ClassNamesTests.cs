@@ -95,7 +95,71 @@ public static class ClassNamesTests
             ClassNames.cn("px-4 py-2", "bg-white", "px-8"),
             "py-2 bg-white px-8");
 
+        Console.WriteLine("\n=== Tailwind Merge — new utilities ===\n");
+        TestMerge();
         Console.WriteLine("\n=== All Tests Complete ===");
+    }
+
+    private static void TestMerge()
+    {
+        // Rounded-4xl and other newer preset values
+        Test("rounded-4xl overrides rounded-md",
+            ClassNames.cn("rounded-md", "rounded-4xl"),
+            "rounded-4xl");
+
+        Test("rounded-md overrides rounded-4xl (order matters)",
+            ClassNames.cn("rounded-4xl", "rounded-md"),
+            "rounded-md");
+
+        Test("rounded-none overrides rounded-4xl",
+            ClassNames.cn("rounded-4xl", "rounded-none"),
+            "rounded-none");
+
+        // Ring-width conflict
+        // ring-[2px] is a ring-WIDTH (dimension value), must NOT conflict with ring-ring/50 (color)
+        Test("ring-[2px] does not conflict with ring-ring/50",
+            ClassNames.cn("focus-visible:ring-[2px] focus-visible:ring-ring/50"),
+            "focus-visible:ring-[2px] focus-visible:ring-ring/50");
+
+        // ring-3 overrides ring-[2px] (both are ring-width)
+        Test("ring-3 overrides ring-[2px]",
+            ClassNames.cn("focus-visible:ring-[2px]", "focus-visible:ring-3"),
+            "focus-visible:ring-3");
+
+        Test("ring-3 overrides ring-2 with focus-visible modifier",
+            ClassNames.cn("focus-visible:ring-2", "focus-visible:ring-3"),
+            "focus-visible:ring-3");
+
+        Test("ring-1 overrides ring-2",
+            ClassNames.cn("focus-visible:ring-2", "focus-visible:ring-1"),
+            "focus-visible:ring-1");
+
+        // Ring-color conflict
+        Test("ring-ring/30 overrides ring-ring",
+            ClassNames.cn("focus-visible:ring-ring", "focus-visible:ring-ring/30"),
+            "focus-visible:ring-ring/30");
+
+        Test("ring-ring/50 overrides ring-ring",
+            ClassNames.cn("focus-visible:ring-ring", "focus-visible:ring-ring/50"),
+            "focus-visible:ring-ring/50");
+
+        // Font-size with line-height modifier
+        Test("text-xs/relaxed overrides text-sm",
+            ClassNames.cn("text-sm", "text-xs/relaxed"),
+            "text-xs/relaxed");
+
+        Test("text-sm overrides text-xs/relaxed",
+            ClassNames.cn("text-xs/relaxed", "text-sm"),
+            "text-sm");
+
+        // StyleVariant scenario: base + registry override
+        Test("StyleVariant rounded-4xl overrides base rounded-md",
+            ClassNames.cn(
+                "inline-flex items-center rounded-md text-sm font-medium",
+                "focus-visible:ring-2 focus-visible:ring-ring",
+                "rounded-4xl border border-transparent focus-visible:ring-3 focus-visible:ring-ring/30"
+            ),
+            "inline-flex items-center text-sm font-medium border border-transparent rounded-4xl focus-visible:ring-3 focus-visible:ring-ring/30");
     }
 
     private static void Test(string testName, string actual, string expected)

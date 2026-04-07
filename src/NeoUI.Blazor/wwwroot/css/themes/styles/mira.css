@@ -1,0 +1,18 @@
+/* Mira Visual Style — ultra-dense, data-heavy tables */
+
+@layer base {
+  :root.style-mira {
+    --spacing-scale: 0.7;
+
+    /* Minimal elevation — ultra-dense UIs avoid visual noise */
+    --shadow-xs: none;
+    --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.06);
+    --shadow-md: 0 2px 4px 0 oklch(0 0 0 / 0.08);
+    --shadow-lg: 0 4px 8px -2px oklch(0 0 0 / 0.10);
+    --shadow-xl: 0 8px 16px -4px oklch(0 0 0 / 0.12);
+  }
+
+  :root.style-mira [data-slot="overlay"] {
+    --blur-sm: 0px;
+  }
+}

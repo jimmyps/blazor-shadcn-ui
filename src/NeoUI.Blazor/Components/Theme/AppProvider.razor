@@ -1,0 +1,36 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Blazor.Services
+@implements IDisposable
+
+<CascadingValue Value="@_styleVariant" Name="StyleVariant" IsFixed="false">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    /// <summary>
+    /// Gets or sets the content to be wrapped by the provider.
+    /// Typically wraps the top-level Routes or router outlet.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Inject]
+    private ThemeService ThemeService { get; set; } = default!;
+
+    private StyleVariant _styleVariant = StyleVariant.Default;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ThemeService.InitializeAsync();
+        _styleVariant = ThemeService.CurrentStyleVariant;
+        ThemeService.OnThemeChanged += OnThemeChanged;
+    }
+
+    private void OnThemeChanged()
+    {
+        _styleVariant = ThemeService.CurrentStyleVariant;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() => ThemeService.OnThemeChanged -= OnThemeChanged;
+}

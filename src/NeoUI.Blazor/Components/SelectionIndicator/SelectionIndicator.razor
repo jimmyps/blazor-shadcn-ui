@@ -35,6 +35,9 @@
     private ElementReference _ref;
     private IJSObjectReference? _module;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// CSS selector used to find the active element within the parent container.
     /// Defaults to <c>[data-state=active]</c>, which matches Tabs, RadioGroup, Select, etc.
@@ -73,6 +76,7 @@
     private string CssClass => ClassNames.cn(
         "absolute rounded-sm bg-background shadow-sm pointer-events-none z-0",
         "[--si-duration:350ms] [--si-easing:cubic-bezier(0.34,1.26,0.64,1)]",
+        _styleVariant.GetClasses("SelectionIndicator.Root"),
         Class);
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

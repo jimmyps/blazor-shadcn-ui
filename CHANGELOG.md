@@ -2,6 +2,355 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-4-2 — Theme v2: Full Dimension Expansion (Style, Radius, Font, Menu, Luma) + Style Variant Component Wiring
+
+> **Release: `v4.0.0`**  
+> **Library change.** Affects `NeoUI.Blazor`. Additive — no breaking changes to existing API.
+
+---
+
+### 🎨 Style Variant Class Override System — Component-Level Wiring
+
+The most significant advancement in NeoUI v4 release. Every major component now participates in a **3-layer CSS merge pipeline** that faithfully translates shadcn/ui style variants into Blazor component rendering — while preserving the Blazor developer experience of full class overridability.
+
+#### The 3-Layer Merge Architecture
+
+```
+Layer 1: Base component classes  (sensible, backward-compatible defaults)
+    ↓
+Layer 2: Variant override classes (StyleVariant.GetClasses("Component.Key"))
+    ↓
+Layer 3: User-supplied Class prop  (always wins — via ClassNames.cn / tailwind-merge)
+```
+
+Each layer is merged using a custom C# `tailwind-merge` implementation that resolves Tailwind class conflicts correctly — so adding `rounded-xl` in a variant never leaves the base `rounded-md` in the DOM, and users can override both with their own class.
+
+This means **no inline style attributes, no conditional display logic, no specificity hacks** — just clean Tailwind classes that cascade predictably.
+
+#### Components Comprehensively Wired
+
+The following components have been fully integrated into the style variant system. Each receives per-variant Tailwind class overrides for shape, density, shadow, and interactive states:
+
+**Layout & Containers**
+- `Card`, `CardHeader`, `CardContent`, `CardFooter`
+- `Dialog` (Content, Header, Footer, Title, Description, Overlay)
+- `Sheet`, `Drawer` (side-aware rounding via `data-side` / `data-direction` CSS attributes)
+- `Popover`, `HoverCard`
+- `Collapsible`
+- `Sidebar`
+
+**Navigation & Menus**
+- `DropdownMenu` (Content, Item, SubContent)
+- `CascadeMenu`
+- `ContextMenu`
+- `Menubar`
+- `NavigationMenu`
+- `Tabs` (List, Trigger, Content)
+- `Pagination` (Link)
+- `Breadcrumb`
+- `TreeView`
+
+**Form Inputs**
+- `Button` (all variants — includes Outline border preservation logic)
+- `Input`, `Textarea`, `Label`
+- `Select`, `Combobox`
+- `Checkbox`, `RadioGroup`, `RadioGroupItem`
+- `Switch`, `Toggle`, `ToggleButton`
+- `Slider`, `RangeSlider`
+- `InputOTP`
+- `CurrencyInput`, `NumberInput`
+- `FileUpload`
+- `MultiSelect`
+
+**Rich Editors & Display**
+- `MarkdownEditor`, `RichTextEditor`
+- `Calendar`, `DatePicker`, `DateRangePicker`, `TimePicker`
+- `Command`, `SpotlightCommandPalette`
+- `Badge`, `Avatar`
+- `Alert`, `Tooltip`, `Toast`
+
+**Data & Selection**
+- `ToggleGroup`, `ToggleGroupItem`
+- `FilterBuilder` (preset tabs)
+- `DataGrid` / `DataTable`
+- `DataView` (segmented control)
+- `Progress`
+
+#### Luma Variant — Comprehensive Glassmorphism at Component Level
+
+`StyleVariant.Luma` goes furthest of all variants, applying distinct per-component overrides that produce a cohesive glassmorphism SaaS aesthetic:
+
+- **Pill-shaped containers** — Cards, Dialogs, Popovers, DropdownMenus, Inputs get progressively rounder radii (`rounded-3xl`/`rounded-4xl`) beyond what `--radius` alone can achieve
+- **Pill-shaped form controls** — Buttons, Inputs, Selects, Badges, Pagination links become fully rounded (`rounded-full`/`rounded-3xl`)
+- **Enhanced Slider thumb** — Wider pill thumb (`w-6`) with soft shadow, border-less ring, and hover ring expansion — mirroring shadcn's Luma slider exactly
+- **RangeSlider handles** — Orientation-aware pill via `data-[orientation=horizontal]:w-6 data-[orientation=vertical]:h-6` CSS selectors — no C# variant branching required
+- **Switch thumb** — Slightly oversized, elevated shadow for tactile depth
+- **Overlay blur** — Stronger backdrop blur on Dialog/Sheet/Drawer overlays
+- **Translucent inputs** — Semi-transparent input backgrounds with frosted border
+
+#### CSS Selector Patterns (No C# Branching)
+
+Two new patterns are standardized across all wired components:
+
+**`data-orientation` for orientation-aware variant styling:**
+```razor
+@* Component sets the attribute: *@
+<div data-orientation="@(Orientation == Horizontal ? "horizontal" : "vertical")">
+
+@* Variant key owns the visual logic — no C# checks: *@
+// LumaClasses: "data-[orientation=horizontal]:w-6 data-[orientation=vertical]:h-6"
+```
+
+**`aria-disabled` / native `:disabled` for hover suppression:**
+```razor
+@* RangeSlider handles — uses aria-disabled="true/false" (lowercase, for CSS matching): *@
+"not-aria-disabled:hover:ring-2 not-aria-disabled:hover:ring-ring/50"
+
+@* Slider — native input[disabled]: *@
+"[&:not(:disabled)::-webkit-slider-thumb:hover]:ring-2"
+```
+
+> **Important:** Blazor serializes `bool` as `"True"` (capital T). Always use `@(Disabled ? "true" : "false")` for ARIA boolean attributes when relying on Tailwind CSS selectors.
+
+#### TailwindMerge Enhancements
+
+The custom C# `TailwindMerge` implementation was extended to resolve additional conflict groups correctly:
+
+- **`rounded-l/r/t/b/*` side-specific radius** — `first:rounded-l-md` and `first:rounded-l-3xl` now resolve to the last-specified value
+- **`[&::-webkit-slider-thumb:hover]:ring-*` pseudo-element variants** — extracts modifier and base correctly for conflict resolution
+- **`data-[orientation=*]:w-*` / `data-[state=*]:*` arbitrary variants** — last-class-wins for orientation/state-driven sizing
+
+#### `AppProvider` — StyleVariant Cascade Host
+
+`StyleVariant` propagates to components via a Blazor `CascadingValue`. `AppProvider` owns that cascade and also initializes `ThemeService` on startup:
+
+```razor
+@* MainLayout.razor — wrap everything inside AppProvider *@
+<AppProvider>
+    @Body
+    @* Portal hosts MUST be inside AppProvider to receive StyleVariant *@
+    <ToastViewport />
+    <SpotlightCommandPalette />
+    <DialogHost />
+</AppProvider>
+```
+
+Components placed **outside** `AppProvider` receive `StyleVariant.Default` permanently — they can't receive the cascade. `Dialog`, `Sheet`, `Drawer`, and `Popover` content panels are exempt because they re-emit the cascade internally when rendering into their portals.
+
+---
+
+### 🎨 Introducing NeoUI Theme v2 — Full Dimension Expansion
+
+NeoUI now matches shadcn/ui's Dec 2025–Mar 2026 customisation model. Every new theme dimension follows the same end-to-end pattern: CSS file → enum → ThemeService → JS → localStorage → ThemeSwitcher → Localizer.
+
+#### ✨ New: Visual Style Variants (`StyleVariant` enum)
+
+Seven named styles that set `--radius` and `--spacing-scale` together for a coherent component character:
+
+| Style | `--radius` | `--spacing-scale` | Character |
+|---|---|---|---|
+| `Default` | *(unchanged)* | `1` | **Backward-compatible** — preserves pre-v2 radius ratios |
+| `Vega` | `0.625rem` | `1` | Professional, balanced |
+| `Nova` | `0.375rem` | `0.85` | Compact, dashboard/admin |
+| `Maia` | `1rem` | `1.15` | Spacious, consumer-friendly |
+| `Lyra` | `0rem` | `1` | Sharp/boxy, developer tooling |
+| `Mira` | `0.25rem` | `0.7` | Ultra-dense, data-heavy |
+| `Luma` | `0.75rem` | `1` | Glassmorphism, modern SaaS |
+
+The `Default` style uses the pre-v2 pixel-subtraction radius scale (`calc(var(--radius) - 4px/2px)`) rather than the new proportional scale — so **existing apps that don't set a style variant see no visual change after upgrading**.
+
+Each non-default style also ships with **custom `--shadow-*` values tuned to its persona**:
+
+| Style | Shadow character |
+|---|---|
+| `Vega` | Tailwind defaults — balanced |
+| `Nova` | Crisp, tight — compact admin feel |
+| `Maia` | Elevated, deeper — adds depth to the spacious rounded aesthetic |
+| `Lyra` | All `none` — fully flat, shadowless |
+| `Mira` | Minimal single-layer — ultra-subtle for dense data |
+| `Luma` | Soft, diffuse double-layer — glassmorphism |
+
+CSS files: `_content/NeoUI.Blazor/css/themes/styles/*.css`
+
+```csharp
+await ThemeService.SetStyleVariantAsync(StyleVariant.Nova);
+```
+
+The `Luma` style goes beyond `--radius` + `--spacing-scale` — see **Luma Style Variant** below.
+
+#### ✨ New: Radius Presets (`RadiusPreset` enum)
+
+Five named border-radius overrides independent of style variants:
+
+`None` (0rem) | `Small` (0.45rem) | `Medium` (0.625rem, default) | `Large` (0.875rem)
+
+CSS files: `_content/NeoUI.Blazor/css/themes/radius/*.css`
+
+```csharp
+await ThemeService.SetRadiusPresetAsync(RadiusPreset.Large);
+```
+
+#### ✨ New: Font Presets (`FontPreset` enum)
+
+Six curated font pairings that set both `--font-sans` and the new `--font-heading` variable:
+
+`System` | `Inter` | `Geist` | `CalSans` | `DmSans` | `PlusJakarta`
+
+CSS files: `_content/NeoUI.Blazor/css/themes/fonts/*.css`
+
+```csharp
+await ThemeService.SetFontPresetAsync(FontPreset.Inter);
+```
+
+#### ✨ New: Base Colors — Luma, Mist, Mauve, Taupe, Olive
+
+Five new chromatic neutral base palettes added alongside the existing Zinc/Slate/Gray/Neutral/Stone:
+
+- **Luma** — vibrant blue-indigo tinted neutral; flagship modern SaaS look
+- **Mist** — cool blue-gray
+- **Mauve** — warm purple-gray
+- **Taupe** — warm brownish-gray
+- **Olive** — muted green-gray
+
+CSS files: `_content/NeoUI.Blazor/css/themes/base/{luma,mist,mauve,taupe,olive}.css`
+
+#### ✨ New: `MenuColor` enum — Popover / Menu Surface Variants
+
+Four named modes that change the background treatment of every floating surface (Popover, DropdownMenu, Select, Combobox content):
+
+| Value | Effect | Light | Dark |
+|---|---|---|---|
+| `Default` | Solid opaque background | ✅ | ✅ |
+| `Inverted` | Dark (inverted) surface | Light mode only | no-op |
+| `DefaultTranslucent` | Glassmorphism — 50% opacity + `blur(18px) saturate(150%)` | ✅ | ✅ |
+| `InvertedTranslucent` | Dark glass — inverted + 70% opacity + `blur(18px) saturate(150%)` | Light mode only | no-op |
+
+```csharp
+await ThemeService.SetMenuColorAsync(MenuColor.DefaultTranslucent);
+```
+
+#### ✨ New: `MenuAccent` enum — Menu Item Hover Intensity
+
+Controls whether menu item hover/active states use the default `--accent` color or the higher-contrast `--primary` color:
+
+| Value | `--accent` remapped to | Effect |
+|---|---|---|
+| `Subtle` | `--accent` (default) | Soft, low-contrast hover |
+| `Bold` | `--primary` | High-contrast, primary brand hover |
+
+```csharp
+await ThemeService.SetMenuAccentAsync(MenuAccent.Bold);
+```
+
+#### ✨ New: `ThemePreset` Record
+
+A portable C# record bundling all eight theme dimensions. Five built-in named presets ship out of the box:
+
+```csharp
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);   // Zinc+Luma style+Inter
+await ThemeService.ApplyPresetAsync(ThemePreset.Nova);   // Zinc+Nova+Small+Geist
+await ThemeService.ApplyPresetAsync(ThemePreset.Maia);   // Mauve+Maia+Large+PlusJakarta
+await ThemeService.ApplyPresetAsync(ThemePreset.Lyra);   // Slate+Lyra+None+Geist
+
+// Custom preset — all dimensions in one place
+var glassDash = new ThemePreset(
+    Name:         "Glass Dashboard",
+    BaseColor:    BaseColor.Luma,
+    PrimaryColor: PrimaryColor.Blue,
+    StyleVariant: StyleVariant.Luma,
+    MenuAccent:   MenuAccent.Bold,
+    MenuColor:    MenuColor.DefaultTranslucent);
+await ThemeService.ApplyPresetAsync(glassDash);
+```
+
+#### ✨ New: Expanded `ThemeService` API
+
+| New member | Description |
+|---|---|
+| `CurrentStyleVariant` | Active `StyleVariant` |
+| `CurrentRadiusPreset` | Active `RadiusPreset` |
+| `CurrentFontPreset` | Active `FontPreset` |
+| `CurrentMenuAccent` | Active `MenuAccent` |
+| `CurrentMenuColor` | Active `MenuColor` |
+| `SetStyleVariantAsync(StyleVariant)` | Set + persist style |
+| `SetRadiusPresetAsync(RadiusPreset)` | Set + persist radius |
+| `SetFontPresetAsync(FontPreset)` | Set + persist font |
+| `SetMenuAccentAsync(MenuAccent)` | Set + persist menu accent |
+| `SetMenuColorAsync(MenuColor)` | Set + persist menu color mode |
+| `ApplyPresetAsync(ThemePreset)` | Apply all dimensions atomically |
+
+#### ✨ New: Luma Style Variant — Glassmorphism Extras
+
+Unlike other style variants, `StyleVariant.Luma` applies additional visual effects beyond radius:
+
+- **Soft diffuse shadow scale** — low-opacity multi-layer OKLCH shadows for glass surfaces (`--shadow-sm/md/lg/xl`)
+- **Semi-transparent form inputs** — `input`/`textarea` background and border use `color-mix` for a frosted look
+- **Stronger overlay blur** — `--blur-sm: 4px` on `[data-slot="overlay"]` (Dialog, AlertDialog, Sheet, Drawer)
+
+#### ✨ New: 7-step Radius Scale
+
+Replaced the old pixel-subtraction scale (`calc(var(--radius) - 2px)`) with a proportional multiplier scale safe at `--radius: 0rem`:
+
+| Variable | Multiplier | Example at default (0.625rem) |
+|---|---|---|
+| `--radius-xs` | `× 0.4` | `0.25rem` |
+| `--radius-sm` | `× 0.6` | `0.375rem` |
+| `--radius-md` | `× 0.8` | `0.5rem` |
+| `--radius-lg` | `× 1` (base) | `0.625rem` |
+| `--radius-xl` | `× 1.4` | `0.875rem` |
+| `--radius-2xl` | `× 1.8` | `1.125rem` |
+| `--radius-4xl` | `× 2.6` | `1.625rem` (or `9999px` via pill preset) |
+
+All steps scale to zero when `--radius: 0rem`, so the Lyra style works correctly across every component.
+
+#### ✨ New: `--font-heading` variable
+
+Added `--font-heading` as a first-class CSS variable (defaults to `var(--font-sans)`). Font presets set it independently to enable distinct heading typography.
+
+#### ✨ New: `ThemeSwitcher` — Visual Style Picker with Tabbed Layout
+
+`ThemeSwitcher` was redesigned from a simple color picker into a full theme control panel.
+
+**Trigger button** — a compact icon button that renders a two-tone circular swatch showing the current base color (fill) and primary color (border), giving instant visual feedback of the active theme state. Tooltip on hover shows `BaseColor / PrimaryColor / StyleVariant`.
+
+**`ShowStyles` parameter** (`bool`, default `false`) — toggles between two layouts:
+
+- `false` (default): flat layout showing only base + primary color pickers and dark mode toggle — minimal footprint for apps that don't expose style controls to users
+- `true`: tabbed layout with a **Colors** tab and a **Styles** tab, separated by an animated `SelectionIndicator`
+
+**Styles tab** contains five sections, all driven by `Enum.GetValues<T>()` — zero hardcoded items:
+
+| Section | Grid | Visual |
+|---|---|---|
+| **Style Variant** | 4-col | Mini-preview: outer card radius + inner element radius, each per-variant shape rendered inline |
+| **Border Radius** | 5-col | Quarter-corner illustration using `border-top` + `border-left` with per-preset `border-top-left-radius` |
+| **Font** | 3-col | Font name rendered live in its own typeface via inline `font-family` style |
+| **Menu Accent** | 2-col | Text label (Subtle / Bold) |
+| **Menu Color** | 2-col | Text label (Default / Inverted / etc.) |
+
+All selections are persisted and reactive — `ThemeService.OnThemeChanged` updates the UI immediately.
+
+```razor
+@* Minimal — colors + dark mode only *@
+<ThemeSwitcher />
+
+@* Full — exposes all theme dimensions *@
+<ThemeSwitcher ShowStyles="true" />
+
+@* Positioned popover *@
+<ThemeSwitcher ShowStyles="true" Align="PopoverAlign.Start" Strategy="PositioningStrategy.Fixed" />
+```
+
+---
+
+### 🔧 Fixes
+
+- **Backdrop-filter TW4 workaround** — Tailwind v4's minifier strips spaces in multi-function filter values (`blur(18px)saturate(150%)` is invalid). The translucent backdrop is stored in `--menu-translucent-backdrop` so the value is opaque to the minifier, and only the standard `backdrop-filter` property is written so TW4 auto-vendors `-webkit-backdrop-filter` correctly.
+- **AlertDialog overlay blur** — `[data-slot="overlay"]` blur override now applies to AlertDialog in addition to Dialog, Sheet, and Drawer.
+- **Menu CSS in library** — menu color, menu accent, and translucent backdrop CSS rules are compiled into `components.css` so all consumers get correct menu theming without copying CSS from the demo.
+
+---
+
 ## 2026-4-3 — Mobile-first components + ScreenTransition + component enhancements
 
 > **Release: `v3.9.0`**  

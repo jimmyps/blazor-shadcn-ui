@@ -197,6 +197,55 @@ public class DefaultLocalizer : ILocalizer
         ["ThemeSwitcher.Settings"] = "Theme Settings",
         ["ThemeSwitcher.BaseColor"] = "Base Color",
         ["ThemeSwitcher.ThemeColor"] = "Theme Color",
+        ["ThemeSwitcher.Style"] = "Style",
+        ["ThemeSwitcher.BorderRadius"] = "Border Radius",
+        ["ThemeSwitcher.Font"] = "Font",
+
+        // ── ThemeSwitcher — BaseColor names ──────────────────────────────────
+        ["ThemeSwitcher.BaseColor.Mist"] = "Mist",
+        ["ThemeSwitcher.BaseColor.Mauve"] = "Mauve",
+        ["ThemeSwitcher.BaseColor.Taupe"] = "Taupe",
+        ["ThemeSwitcher.BaseColor.Olive"] = "Olive",
+
+        // ── ThemeSwitcher — StyleVariant names ───────────────────────────────
+        ["ThemeSwitcher.Style.Default"] = "Default",
+        ["ThemeSwitcher.Style.Vega"] = "Vega",
+        ["ThemeSwitcher.Style.Nova"] = "Nova",
+        ["ThemeSwitcher.Style.Maia"] = "Maia",
+        ["ThemeSwitcher.Style.Lyra"] = "Lyra",
+        ["ThemeSwitcher.Style.Mira"] = "Mira",
+        ["ThemeSwitcher.Style.Luma"] = "Luma",
+
+        // ── ThemeSwitcher — RadiusPreset names ───────────────────────────────
+        ["ThemeSwitcher.Radius.Default"] = "Default",
+        ["ThemeSwitcher.Radius.None"]    = "None",
+        ["ThemeSwitcher.Radius.Small"]   = "Small",
+        ["ThemeSwitcher.Radius.Medium"]  = "Medium",
+        ["ThemeSwitcher.Radius.Large"]   = "Large",
+
+        // ── ThemeSwitcher — FontPreset names ─────────────────────────────────
+        ["ThemeSwitcher.Font.System"] = "System",
+        ["ThemeSwitcher.Font.Inter"] = "Inter",
+        ["ThemeSwitcher.Font.Geist"] = "Geist",
+        ["ThemeSwitcher.Font.CalSans"] = "Cal Sans",
+        ["ThemeSwitcher.Font.DmSans"] = "DM Sans",
+        ["ThemeSwitcher.Font.PlusJakarta"] = "Plus Jakarta",
+
+        // ── ThemeSwitcher — MenuAccent names ─────────────────────────────────
+        ["ThemeSwitcher.MenuAccent"] = "Menu Accent",
+        ["ThemeSwitcher.MenuAccent.Subtle"] = "Subtle",
+        ["ThemeSwitcher.MenuAccent.Bold"] = "Bold",
+
+        // ── ThemeSwitcher — MenuColor names ──────────────────────────────────
+        ["ThemeSwitcher.MenuColor"] = "Menu Color",
+        ["ThemeSwitcher.MenuColor.Default"] = "Default",
+        ["ThemeSwitcher.MenuColor.Inverted"] = "Inverted",
+        ["ThemeSwitcher.MenuColor.DefaultTranslucent"] = "Translucent",
+        ["ThemeSwitcher.MenuColor.InvertedTranslucent"] = "Dark Glass",
+
+        // ── ThemeSwitcher — Tab names ─────────────────────────────────────────
+        ["ThemeSwitcher.Tab.Colors"] = "Colors",
+        ["ThemeSwitcher.Tab.Styles"] = "Styles & Layout",
 
         // ── Timeline ─────────────────────────────────────────────────────────
         ["Timeline.AriaLabel"] = "Timeline",

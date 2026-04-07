@@ -86,16 +86,35 @@
     --chart-up: oklch(0.646 0.222 41.116); /* Green for upward movement */
     --chart-down: oklch(0.628 0.258 29.234); /* Red for downward movement */
     --chart-neutral: oklch(0.5 0 0); /* Gray for no change */
-    /* Map to Tailwind's default boxShadow scale */
-    --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.10);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.10);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    /* Default font stacks */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    /* Shadow scale (overrideable by style variants) */
+    --shadow-2xs: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+    --shadow-xs:  0 1px 1px 0px oklch(0 0 0 / 0.05);
+    --shadow-sm:  0 1px 3px 0 oklch(0 0 0 / 0.1), 0 1px 2px -1px oklch(0 0 0 / 0.1);
+    --shadow:     0 1px 3px 0 oklch(0 0 0 / 0.1), 0 1px 2px -1px oklch(0 0 0 / 0.1);
+    --shadow-md:  0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
+    --shadow-lg:  0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+    --shadow-xl:  0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px oklch(0 0 0 / 0.25);
     --blur-sm: 4px;
+    --menu-translucent-backdrop: blur(18px) saturate(150%);
+    /* Theme v2 — default values (overridden by style/radius/font theme files) */
+    --tracking-normal: 0em;
+    --radius: 0.625rem;
+    --radius-xs:  calc(var(--radius) * 0.4);
+    --radius-sm:  calc(var(--radius) * 0.6);
+    --radius-md:  calc(var(--radius) * 0.8);
+    --radius-lg:  var(--radius);
+    --radius-xl:  calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+    --font-heading: var(--font-sans);
+    --spacing-scale: 1;
+    --spacing: calc(0.25rem * var(--spacing-scale));
   }
 
   .dark {
@@ -105,15 +124,15 @@
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
 
-    /* Dark-mode tuned shadows (optional) */
-    --shadow-2xs: 0 1px 2px 0 rgba(0, 0, 0, 0.20);
-    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.20);
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.35), 0 1px 2px -1px rgba(0, 0, 0, 0.35);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.35);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.40), 0 4px 6px -4px rgba(0, 0, 0, 0.40);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.45), 0 10px 10px -5px rgba(0, 0, 0, 0.30);
-    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.60);
+    /* Dark-mode tuned shadows */
+    --shadow-2xs: 0 1px 2px 0 oklch(0 0 0 / 0.2);
+    --shadow-xs:  0 1px 1px 0px oklch(0 0 0 / 0.2);
+    --shadow-sm:  0 1px 2px 0 oklch(0 0 0 / 0.25);
+    --shadow:     0 1px 3px 0 oklch(0 0 0 / 0.35), 0 1px 2px -1px oklch(0 0 0 / 0.35);
+    --shadow-md:  0 4px 6px -1px oklch(0 0 0 / 0.35), 0 2px 4px -2px oklch(0 0 0 / 0.35);
+    --shadow-lg:  0 10px 15px -3px oklch(0 0 0 / 0.4), 0 4px 6px -4px oklch(0 0 0 / 0.4);
+    --shadow-xl:  0 20px 25px -5px oklch(0 0 0 / 0.45), 0 8px 10px -6px oklch(0 0 0 / 0.3);
+    --shadow-2xl: 0 25px 50px -12px oklch(0 0 0 / 0.6);
   }
 
   /* Reduced motion: zero out durations for accessibility */
@@ -124,6 +143,137 @@
       --dialog-overlay-duration: 0ms;
     }
   }
+}
+
+/* Tailwind v4 Theme Integration — wires runtime CSS vars to Tailwind utilities.
+   Must be in the library build so components.css works without consumer Tailwind. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-code: var(--code);
+  --color-code-foreground: var(--code-foreground);
+  --color-code-highlight: var(--code-highlight);
+  --color-code-number: var(--code-number);
+  --color-selection: var(--selection);
+  --color-selection-foreground: var(--selection-foreground);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+  --font-heading: var(--font-heading);
+
+  --radius-xs:  var(--radius-xs);
+  --radius-sm:  var(--radius-sm);
+  --radius-md:  var(--radius-md);
+  --radius-lg:  var(--radius-lg);
+  --radius-xl:  var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-3xl: var(--radius-3xl);
+  --radius-4xl: var(--radius-4xl);
+
+  --shadow-xs:  var(--shadow-xs);
+  --shadow-sm:  var(--shadow-sm);
+  --shadow-md:  var(--shadow-md);
+  --shadow-lg:  var(--shadow-lg);
+  --shadow-xl:  var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+
+  --breakpoint-3xl: 1600px;
+  --breakpoint-4xl: 2000px;
+}
+
+/* Text selection highlight using theme tokens */
+@layer base {
+  ::selection {
+    background-color: var(--selection);
+    color: var(--selection-foreground);
+  }
+}
+
+/* Menu Accent — unlayered so it beats @layer base base-color rules with same specificity */
+:root.menu-accent-bold {
+  --accent: var(--primary);
+  --accent-foreground: var(--primary-foreground);
+}
+
+/* Menu Color — unlayered so background-color overrides beat @layer utilities */
+
+/*
+ * Translucent menu: direct backdrop-filter on the element (not ::before pseudo-element as in shadcn).
+ * The pseudo-element approach splits compositing into two passes — background paints first,
+ * then the blur layer — causing a visible flicker on open. Direct backdrop-filter is a single
+ * composited pass and feels more natural. The filter value is stored in a CSS custom property
+ * to prevent Tailwind v4's minifier from stripping the space between filter functions
+ * (e.g. blur(18px)saturate(150%) is invalid), and to ensure TW4 auto-vendors -webkit-backdrop-filter
+ * correctly when only the standard property is written.
+ */
+:root.menu-color-default-translucent .bg-popover,
+:root.menu-color-default-translucent [data-slot="popover-content"],
+:root.menu-color-default-translucent [data-slot="dropdown-content"],
+:root.menu-color-default-translucent [data-slot="select-content"],
+:root.menu-color-default-translucent [data-slot="combobox-content"] {
+  background-color: color-mix(in oklch, var(--popover) 70%, transparent);
+  backdrop-filter: var(--menu-translucent-backdrop);
+}
+
+/* Inverted: dark surface for menus in light mode */
+:root:not(.dark).menu-color-inverted .bg-popover,
+:root:not(.dark).menu-color-inverted [data-slot="popover-content"],
+:root:not(.dark).menu-color-inverted [data-slot="dropdown-content"],
+:root:not(.dark).menu-color-inverted [data-slot="select-content"],
+:root:not(.dark).menu-color-inverted [data-slot="combobox-content"] {
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --border: oklch(0.275 0 0);
+}
+
+/* Inverted translucent: dark glass effect */
+:root:not(.dark).menu-color-inverted-translucent .bg-popover,
+:root:not(.dark).menu-color-inverted-translucent [data-slot="popover-content"],
+:root:not(.dark).menu-color-inverted-translucent [data-slot="dropdown-content"],
+:root:not(.dark).menu-color-inverted-translucent [data-slot="select-content"],
+:root:not(.dark).menu-color-inverted-translucent [data-slot="combobox-content"] {
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --border: oklch(0.275 0 0);
+  background-color: color-mix(in oklch, oklch(0.145 0 0) 70%, transparent);
+  backdrop-filter: var(--menu-translucent-backdrop);
 }
 
 /* Required for keyboard navigation visual feedback in Select/Combobox/DropdownMenu */
@@ -259,7 +409,7 @@
   [role="menu"] div:has(> a:focus-visible) {
     outline: 2px solid var(--ring);
     outline-offset: -2px;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md);
     background-color: var(--accent);
   }
 
@@ -624,7 +774,7 @@
   [data-slot="rich-text-editor"] .ql-editor .ql-code-block-container {
     background-color: var(--muted);
     padding: 0.75em 1em;
-    border-radius: 0.375rem;
+    border-radius: var(--radius-sm);
     overflow-x: auto;
     font-family: var(--font-mono, ui-monospace, monospace);
     font-size: 0.875em;

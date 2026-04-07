@@ -88,18 +88,14 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the cascaded EditContext from an EditForm.
     /// </summary>
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
-
-    /// <summary>
-    /// Gets or sets when the input should update its bound value.
-    /// </summary>
-    /// <remarks>
-    /// - Input: Updates value immediately on every keystroke
-    /// - Change: Updates value only when input loses focus (default)
     /// </remarks>
     [Parameter]
     public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
@@ -313,6 +309,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
         "aria-[invalid=true]:focus-visible:ring-destructive/30",
         "transition-[color,box-shadow]",
         "md:text-sm",
+        _styleVariant.GetClasses("Input.Root"),
         Class
     );
 

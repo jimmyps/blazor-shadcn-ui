@@ -56,6 +56,9 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
 
     // ── Parameters ────────────────────────────────────────────────────
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>Gets or sets the list of tags. Use @bind-Tags for two-way binding.</summary>
     [Parameter]
     public IReadOnlyList<string>? Tags { get; set; }
@@ -400,6 +403,7 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
         "focus-within:outline-none focus-within:ring-2 focus-within:ring-ring/50",
         _suggestionsOpen ? "ring-2 ring-ring/50" : null,
         Disabled ? "opacity-50 cursor-not-allowed" : null,
+        _styleVariant.GetClasses("TagInput.Root"),
         Class
     );
 

@@ -76,6 +76,9 @@
     [Parameter]
     public string? Class { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Size variant for the select.
     /// </summary>
@@ -120,6 +123,7 @@
         "transition-[color,box-shadow]",
         "appearance-none pr-8",
         SizeClasses,
+        _styleVariant.GetClasses("NativeSelect.Root"),
         Class
     );
 }

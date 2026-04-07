@@ -63,6 +63,9 @@ public partial class Switch : ComponentBase
     [CascadingParameter]
     private EditContext? CascadedEditContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets whether the switch is checked (on).
     /// </summary>
@@ -211,13 +214,16 @@ public partial class Switch : ComponentBase
         // Size variants
         Size switch
         {
-            SwitchSize.Small => "h-5 w-9",
+            SwitchSize.Small  => "h-5 w-9",
             SwitchSize.Medium => "h-6 w-11",
-            SwitchSize.Large => "h-7 w-14",
+            SwitchSize.Large  => "h-7 w-14",
             _ => "h-6 w-11"
         },
         // Checked state styling
         Checked ? "bg-primary" : "bg-input",
+        // StyleVariant overrides (common + size-specific)
+        _styleVariant.GetClasses("Switch.Root"),
+        _styleVariant.GetClasses($"Switch.Root.{SizeName}"),
         // Custom classes (if provided)
         Class
     );
@@ -237,24 +243,34 @@ public partial class Switch : ComponentBase
     {
         get
         {
-            // Size variants and translations
-            var (thumbSize, translateX) = Size switch
+            // Size-specific thumb dimensions; translate uses data-state CSS so variant keys can override cleanly
+            var (thumbSize, translate) = Size switch
             {
-                SwitchSize.Small => ("h-4 w-4", Checked ? "translate-x-4" : "translate-x-0"),
-                SwitchSize.Medium => ("h-5 w-5", Checked ? "translate-x-5" : "translate-x-0"),
-                SwitchSize.Large => ("h-6 w-6", Checked ? "translate-x-7" : "translate-x-0"),
-                _ => ("h-5 w-5", Checked ? "translate-x-5" : "translate-x-0")
+                SwitchSize.Small  => ("h-4 w-4", "data-[state=checked]:translate-x-4 data-[state=unchecked]:translate-x-0"),
+                SwitchSize.Medium => ("h-5 w-5", "data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"),
+                SwitchSize.Large  => ("h-6 w-6", "data-[state=checked]:translate-x-7 data-[state=unchecked]:translate-x-0"),
+                _ =>                 ("h-5 w-5", "data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0")
             };
 
             return ClassNames.cn(
                 // Base thumb styles
                 "pointer-events-none block rounded-full bg-background shadow-lg ring-0 transition-transform",
-                // Size and translation
+                // Size and state-driven translation
                 thumbSize,
-                translateX
+                translate,
+                // StyleVariant size-specific thumb override (can change size + translate)
+                _styleVariant.GetClasses($"Switch.Thumb.{SizeName}")
             );
         }
     }
+
+    private string SizeName => Size switch
+    {
+        SwitchSize.Small  => "Small",
+        SwitchSize.Medium => "Medium",
+        SwitchSize.Large  => "Large",
+        _ => "Medium"
+    };
 
     /// <summary>
     /// Handles the checked state change from the primitive and wraps form validation.

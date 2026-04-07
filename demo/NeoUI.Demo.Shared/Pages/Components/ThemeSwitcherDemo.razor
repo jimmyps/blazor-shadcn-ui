@@ -8,21 +8,20 @@
 
     <DemoPageHeader
         Title="Theme Switcher"
-        Description="An all-in-one popover panel that lets users pick a base color scheme and a primary accent color at runtime, with changes persisted across sessions via localStorage." />
+        Description="An all-in-one popover panel that lets users pick a base color scheme and a primary accent color at runtime. Enable ShowStyles to expose style variant, radius, font, and menu customisation via a second tab. Changes are persisted across sessions via localStorage." />
 
     <DemoSection
         Title="Demo"
-        Description="Click the circle button to open the theme panel. Changes apply immediately across the whole demo site.">
+        Description="Click the circle button to open the theme panel. Colors tab is always shown. Enable ShowStyles to reveal the Styles &amp; Layout tab.">
         <DemoBlock Code="@_demoCode">
-            <div class="flex items-center gap-6">
-                <ThemeSwitcher Align="PopoverAlign.Start" />
-                <div class="space-y-0.5">
-                    <p class="text-sm font-medium">Current theme</p>
-                    <p class="text-sm text-muted-foreground">
-                        Base: <span class="font-mono text-foreground">@ThemeService.CurrentBaseColor</span>
-                        &nbsp;/&nbsp;
-                        Primary: <span class="font-mono text-foreground">@ThemeService.CurrentPrimaryColor</span>
-                    </p>
+            <div class="flex flex-wrap items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <ThemeSwitcher Align="PopoverAlign.Start" />
+                    <span class="text-xs text-muted-foreground">Default (colors only)</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <ThemeSwitcher Align="PopoverAlign.Start" ShowStyles="true" />
+                    <span class="text-xs text-muted-foreground">ShowStyles=true (tabbed)</span>
                 </div>
             </div>
         </DemoBlock>

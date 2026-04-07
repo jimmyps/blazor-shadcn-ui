@@ -13,6 +13,9 @@ public partial class TreeItemNode<TItem> : ComponentBase
     [CascadingParameter]
     public TreeView<TItem>? ParentTree { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     [Parameter, EditorRequired]
     public TItem Item { get; set; } = default!;
 
@@ -126,7 +129,8 @@ public partial class TreeItemNode<TItem> : ComponentBase
     private string NodeCssClass => ClassNames.cn(
         "flex items-center gap-0.5 rounded-md px-1 py-1 cursor-pointer select-none",
         "hover:bg-accent hover:text-accent-foreground transition-colors",
-        IsSelected ? "bg-accent text-accent-foreground" : null
+        IsSelected ? "bg-accent text-accent-foreground" : null,
+        _styleVariant.GetClasses("TreeView.Row")
     );
 
     private string ChevronCssClass => ClassNames.cn(
@@ -135,7 +139,7 @@ public partial class TreeItemNode<TItem> : ComponentBase
     );
 
     private string ChevronWrapCssClass =>
-        "rounded-sm hover:bg-accent/80";
+        ClassNames.cn("rounded-sm hover:bg-accent/80", _styleVariant.GetClasses("TreeView.ChevronWrap"));
 
     private string CheckboxCssClass => ClassNames.cn(
         "h-3.5 w-3.5 rounded-sm border cursor-pointer flex items-center justify-center transition-colors",

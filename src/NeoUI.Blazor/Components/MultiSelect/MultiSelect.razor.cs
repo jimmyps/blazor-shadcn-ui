@@ -58,12 +58,16 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     private string? _lastPopoverWidth;
     private string? _lastClass;
     private bool _lastCachedIsOpen;
+    private StyleVariant _lastStyleVariant;
 
     /// <summary>
     /// Gets or sets the cascaded EditContext from a parent EditForm.
     /// </summary>
     [CascadingParameter]
     private EditContext? CascadedEditContext { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     /// <summary>
     /// Gets or sets the collection of items to display in the multiselect.
@@ -808,7 +812,8 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             if (_cachedTriggerCssClass != null &&
                 _lastPopoverWidth == PopoverWidth &&
                 _lastClass == Class &&
-                _lastCachedIsOpen == _isOpen)
+                _lastCachedIsOpen == _isOpen &&
+                _lastStyleVariant == _styleVariant)
             {
                 return _cachedTriggerCssClass;
             }
@@ -824,11 +829,13 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
                 _isOpen ? "ring-2 ring-ring/50" : "",
                 "min-h-9 px-3 py-1.5",
                 PopoverWidth,
+                _styleVariant.GetClasses("SelectTrigger.Root"),
                 Class);
 
             _lastPopoverWidth = PopoverWidth;
             _lastClass = Class;
             _lastCachedIsOpen = _isOpen;
+            _lastStyleVariant = _styleVariant;
 
             return _cachedTriggerCssClass;
         }
@@ -843,22 +850,26 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Gets the CSS class for the dropdown item.
     /// </summary>
-    private string ItemCssClass =>
-        "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none " +
-        "data-[focused=true]:bg-accent data-[focused=true]:text-accent-foreground " +
-        "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50";
+    private string ItemCssClass => ClassNames.cn(
+        "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none",
+        "data-[focused=true]:bg-accent data-[focused=true]:text-accent-foreground",
+        "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
+        _styleVariant.GetClasses("SelectItem.Root")
+    );
 
     /// <summary>
     /// Gets the CSS class for the checkbox.
     /// Uses data-state attribute from Checkbox primitive for checked/unchecked/indeterminate styling.
     /// </summary>
-    private string CheckboxCssClass =>
-        "h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background flex items-center justify-center " +
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 " +
-        "disabled:cursor-not-allowed disabled:opacity-50 " +
-        "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground " +
-        "data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground " +
-        "data-[state=unchecked]:bg-background";
+    private string CheckboxCssClass => ClassNames.cn(
+        "h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background flex items-center justify-center",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        "data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+        "data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground",
+        "data-[state=unchecked]:bg-background",
+        _styleVariant.GetClasses("Checkbox.Root")
+    );
 }
 
 /// <summary>

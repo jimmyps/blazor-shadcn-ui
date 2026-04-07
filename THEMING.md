@@ -16,6 +16,51 @@ NeoUI uses CSS custom properties (variables) for theming, following the [shadcn/
 <link href="_content/NeoUI.Blazor/components.css" rel="stylesheet" />
 ```
 
+---
+
+## App Setup
+
+To enable NeoUI's `StyleVariant` system and `ThemeService` in your Blazor app, wrap your layout with `<AppProvider>`:
+
+```razor
+@* MainLayout.razor *@
+@inherits LayoutComponentBase
+
+<AppProvider>
+    @* ... sidebar, header, nav, etc. ... *@
+
+    @Body
+
+    @* ⚠️ Portal hosts must be INSIDE AppProvider — see note below *@
+    <ToastViewport />
+    <SpotlightCommandPalette />
+    <DialogHost />
+</AppProvider>
+```
+
+`AppProvider` does two things:
+
+1. **Initializes** `ThemeService` and restores the persisted theme from `localStorage` on startup (preventing a flash of unstyled content)
+2. **Broadcasts** the active `StyleVariant` as a named `CascadingValue` — every component in the tree reads it to apply per-variant Tailwind classes
+
+### Portal Hosts Must Be Inside `AppProvider`
+
+Components that render through a Blazor portal — such as `ToastViewport`, `SpotlightCommandPalette`, and `DialogHost` — must be placed **inside** `</AppProvider>` to receive the `StyleVariant` cascade. Components placed outside the `AppProvider` boundary always receive `StyleVariant.Default` regardless of what the user has selected.
+
+```razor
+@* ✅ Correct — all portal hosts inside AppProvider *@
+<AppProvider>
+    @Body
+    <ToastViewport />           @* receives active StyleVariant ✓ *@
+    <SpotlightCommandPalette /> @* receives active StyleVariant ✓ *@
+    <DialogHost />              @* receives active StyleVariant ✓ *@
+</AppProvider>
+```
+
+> **Note:** `Dialog`, `Sheet`, `Drawer`, and `Popover` content panels already re-emit the `CascadingValue` internally when they render into their own portals, so they work correctly regardless of where their trigger is placed.
+
+---
+
 ## Color Format
 
 NeoUI uses the [OKLCH color space](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) for perceptually uniform colors:
@@ -254,29 +299,38 @@ Colors for data visualization components.
 
 #### Border Radius
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `--radius` | Base border radius | `0.5rem` |
+NeoUI v2 uses a **7-step proportional scale** driven by a single `--radius` base variable. All steps scale to zero when `--radius: 0rem`, so the Sharp/Lyra style works correctly.
 
-Components use this as a base:
-- `border-radius: var(--radius)` - Large (cards, dialogs)
-- `border-radius: calc(var(--radius) - 2px)` - Medium (buttons, inputs)
-- `border-radius: calc(var(--radius) - 4px)` - Small (badges, tags)
+| Variable | Multiplier | Example at default (0.625rem) |
+|---|---|---|
+| `--radius-xs` | `× 0.4` | `0.25rem` |
+| `--radius-sm` | `× 0.6` | `0.375rem` |
+| `--radius-md` | `× 0.8` | `0.5rem` |
+| `--radius-lg` | `× 1` (base) | `0.625rem` |
+| `--radius-xl` | `× 1.4` | `0.875rem` |
+| `--radius-2xl` | `× 1.8` | `1.125rem` |
+| `--radius-4xl` | `× 2.6` | `1.625rem` |
+
+The base `--radius` is set to `0.625rem` by default (aligning with shadcn/ui).
+
+Override for the whole app:
 
 ```css
 :root {
-  --radius: 0.5rem;    /* Rounded corners */
-  /* --radius: 0;      /* Sharp corners */
-  /* --radius: 1rem;   /* Very rounded */
+  --radius: 0.375rem;   /* Subtle — "Nova" look */
+  --radius: 1rem;       /* Generous — "Maia" look */
+  --radius: 0rem;       /* None — "Lyra" look */
 }
 ```
+
+Or use a **named radius preset** (see [Radius Presets](#radius-presets) below).
 
 #### Sidebar Dimensions
 
 **Library provides defaults** - override only if needed.
 
 | Variable | Description | Default |
-|----------|-------------|---------|
+|---|---|---|
 | `--sidebar-width` | Expanded sidebar width | `16rem` |
 | `--sidebar-width-mobile` | Mobile sidebar width | `18rem` |
 | `--sidebar-width-icon` | Collapsed (icon-only) width | `3rem` |
@@ -293,17 +347,403 @@ Components use this as a base:
 
 ### Typography
 
-| Variable | Description | Default Fallback |
-|----------|-------------|------------------|
-| `--font-sans` | Sans-serif font stack | `ui-sans-serif, system-ui, sans-serif` |
-| `--font-serif` | Serif font stack | `ui-serif, Georgia, serif` |
-| `--font-mono` | Monospace font stack | `ui-monospace, monospace` |
+| Variable | Description | Default |
+|---|---|---|
+| `--font-sans` | Body sans-serif font stack | system UI stack |
+| `--font-serif` | Serif font stack | system UI stack |
+| `--font-mono` | Monospace font stack | system UI stack |
+| `--font-heading` | Heading font (h1–h4) | falls back to `--font-sans` |
 
 ```css
 :root {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans:    'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Cal Sans', 'Inter', ui-sans-serif, sans-serif; /* distinct heading */
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
 }
+```
+
+Or use a **named font preset** (see [Font Presets](#font-presets) below).
+
+---
+
+## Theme v2 — Dimensions & Presets
+
+NeoUI v2 adds five new theme dimensions on top of the existing base color, primary color, and dark mode. Every dimension follows the same pattern end-to-end:
+
+```
+CSS file(s) → enum → ThemeService → JS apply → localStorage → ThemeSwitcher
+```
+
+---
+
+### Base Colors (v2 additions)
+
+Five new chromatic neutral base colors added in v2:
+
+| Name | Character | `BaseColor` enum value |
+|---|---|---|
+| `Luma` | Vibrant blue-indigo tinted neutral — flagship modern SaaS look | `BaseColor.Luma` |
+| `Mist` | Cool blue-gray | `BaseColor.Mist` |
+| `Mauve` | Warm purple-gray | `BaseColor.Mauve` |
+| `Taupe` | Warm brownish-gray | `BaseColor.Taupe` |
+| `Olive` | Muted green-gray | `BaseColor.Olive` |
+
+Load the CSS file for any base color you want available:
+
+```html
+<!-- In production, include only the base colors you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/luma.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/mist.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/mauve.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/taupe.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/olive.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetBaseColorAsync(BaseColor.Luma);
+```
+
+> **Note — Two things named "Luma":** `BaseColor.Luma` is a chromatic neutral palette (blue-indigo tint). `StyleVariant.Luma` is a separate glassmorphism visual style. They are independent and can be mixed freely. The built-in `ThemePreset.Luma` combines both.
+
+---
+
+### Primary Colors
+
+17 named primary accent colors replace `--primary` / `--primary-foreground` system-wide:
+
+`Red` · `Rose` · `Orange` · `Amber` · `Yellow` · `Lime` · `Green` · `Emerald` · `Teal` · `Cyan` · `Sky` · `Blue` · `Indigo` · `Violet` · `Purple` · `Fuchsia` · `Pink`
+
+The `Default` primary color (matching each base color's neutral) requires no CSS file.
+
+```html
+<!-- In production, include only the primary colors you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/blue.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/violet.css" />
+```
+
+```csharp
+await ThemeService.SetPrimaryColorAsync(PrimaryColor.Blue);
+```
+
+---
+
+---
+
+### Style Variant Class Override System
+
+Beyond CSS custom properties, NeoUI implements a **component-level class override system** that makes style variants the most sophisticated in any Blazor component library. Every component participates in a 3-layer merge pipeline:
+
+```
+Layer 1  Base component classes       Sensible defaults, backward-compatible
+    ↓
+Layer 2  Variant override classes     StyleVariantExtensions.GetClasses("Component.Key")
+    ↓
+Layer 3  User Class prop              Always wins — ClassNames.cn / tailwind-merge
+```
+
+Each layer is merged via a custom C# `tailwind-merge` implementation that resolves Tailwind class conflicts — so a variant's `rounded-3xl` correctly replaces the base `rounded-md`, and any class you pass via the `Class` parameter wins over both. **No inline styles, no specificity hacks, no `!important`.**
+
+#### What This Enables
+
+- **Faithful shadcn fidelity**: Components render exactly as shadcn/ui intends for each style variant, including shapes and proportions that are impossible to achieve through `--radius` alone
+- **Full user overridability**: Pass any Tailwind class via `Class="..."` — it always layers on top of both base and variant classes
+- **Zero breaking changes**: Components that don't set a `StyleVariant` cascade parameter receive `Default` — identical to pre-v2 behavior
+
+#### Luma — The Flagship Variant
+
+`StyleVariant.Luma` demonstrates the full power of the system. Rather than simply adjusting `--radius`, Luma applies distinct per-component overrides that collectively produce a glassmorphism SaaS aesthetic:
+
+| Component | Luma class overrides |
+|---|---|
+| `Card`, `Dialog`, `Popover` | `rounded-3xl` / `rounded-4xl` containers |
+| `Button`, `Input`, `Badge` | `rounded-full` pill shapes |
+| `Slider` thumb | Wider pill (`w-6`), soft shadow, hover ring expansion |
+| `RangeSlider` handles | Orientation-aware pill via `data-[orientation=horizontal]:w-6` |
+| `Switch` thumb | Slightly oversized, elevated shadow |
+| `DropdownMenu` content | `rounded-2xl` with enhanced shadow |
+| `Tabs` trigger | `rounded-2xl` |
+| `Pagination` link | `rounded-full` |
+| `ToggleGroup` | `rounded-4xl` container, `rounded-3xl` items |
+| `FileUpload` drop zone | `rounded-4xl` |
+| `MarkdownEditor`, `RichTextEditor` | `rounded-3xl` container |
+
+Other variants (`Nova`, `Maia`, `Lyra`, `Mira`, `Vega`) similarly apply tuned overrides for their respective personas: Nova is crisp and tight, Maia is spacious and rounded, Lyra is flat and square.
+
+#### CSS Selector Patterns
+
+Component class strings use native CSS selectors via Tailwind arbitrary variants — no C# variant-name checks inside component code:
+
+**Orientation-aware sizing:**
+```
+data-[orientation=horizontal]:w-6 data-[orientation=vertical]:h-6
+```
+The component sets `data-orientation="horizontal|vertical"` on the element; the variant key owns the visual response.
+
+**Disabled state suppression:**
+```
+not-aria-disabled:hover:ring-2      @* for div elements with aria-disabled *@
+[&:not(:disabled)::-webkit-slider-thumb:hover]:ring-2   @* for native inputs *@
+```
+No C# `if (!Disabled)` conditionals — CSS handles it, sourced from the element's own `disabled` / `aria-disabled` attributes.
+
+> **Blazor tip:** Always use `@(Disabled ? "true" : "false")` for ARIA boolean attributes. Blazor's default `@Disabled` serializes as `"True"` (capital T), which does not match Tailwind's `aria-disabled:` selector.
+
+#### User Class Override Example
+
+```razor
+@* Base: rounded-md from component *@
+@* Luma variant: rounded-full from variant key *@
+@* User: rounded-lg wins last — overrides both *@
+
+<Button Class="rounded-lg">Custom shape</Button>
+```
+
+---
+
+### Style Variants
+
+Seven named visual styles control `--radius`, `--spacing-scale`, and shadow values together, giving each a distinct character:
+
+| Style | `--radius` | `--spacing-scale` | Character |
+|---|---|---|---|
+| `Default` | *(unchanged)* | `1` | **Backward-compatible** — preserves pre-v2 radius ratios |
+| `Vega` | `0.625rem` | `1` | Professional, balanced |
+| `Nova` | `0.375rem` | `0.85` | Compact, dashboard/admin |
+| `Maia` | `1rem` | `1.15` | Spacious, consumer-friendly |
+| `Lyra` | `0rem` | `1` | Sharp/boxy, developer tooling |
+| `Mira` | `0.25rem` | `0.7` | Ultra-dense, data-heavy |
+| `Luma` | `0.75rem` | `1` | Glassmorphism, modern SaaS |
+
+The `Default` style uses the pre-v2 pixel-subtraction radius scale (`calc(var(--radius) - 4px)`, etc.) rather than the new proportional scale. Apps that don't set a style variant remain on `Default` automatically — **no visual change after upgrading**.
+
+Each non-default style also ships with **custom shadow values tuned to its persona**:
+
+| Style | Shadow character |
+|---|---|
+| `Default` | Tailwind defaults (unchanged) |
+| `Vega` | Tailwind defaults — balanced for professional use |
+| `Nova` | Crisp, tight shadows — suits compact admin interfaces |
+| `Maia` | Elevated, deeper shadows — adds depth to the spacious rounded aesthetic |
+| `Lyra` | All shadows `none` — flat, shadowless for sharp tooling UIs |
+| `Mira` | Minimal single-layer shadows — ultra-subtle for dense data views |
+| `Luma` | Soft, diffuse double-layer shadows — glassmorphism aesthetic |
+
+The `--spacing-scale` variable multiplies internal component padding, gaps, and margins. You can override it directly in your theme CSS if you want a custom density independent of any preset:
+
+```css
+:root { --spacing-scale: 0.9; }  /* slightly tighter than default */
+```
+
+Load the style CSS files you want available:
+
+```html
+<!-- In production, include only the styles you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/vega.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/nova.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/maia.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/lyra.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/mira.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/luma.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetStyleVariantAsync(StyleVariant.Nova);
+```
+
+#### Luma Style — Extra Overrides
+
+The `Luma` style goes beyond `--radius` + `--spacing-scale`. It adds three additional glassmorphism touches:
+
+**1. Soft diffuse shadow scale** — replaces Tailwind's default sharp shadows with multi-layer, low-opacity OKLCH shadows suited for glass surfaces:
+
+| Variable | Value |
+|---|---|
+| `--shadow-sm` | `0 2px 8px oklch(0 0 0/0.06), 0 1px 2px oklch(0 0 0/0.04)` |
+| `--shadow-md` | `0 4px 16px oklch(0 0 0/0.08), 0 1px 4px oklch(0 0 0/0.04)` |
+| `--shadow-lg` | `0 8px 24px oklch(0 0 0/0.10), 0 2px 8px oklch(0 0 0/0.05)` |
+| `--shadow-xl` | `0 16px 40px oklch(0 0 0/0.12), 0 4px 12px oklch(0 0 0/0.06)` |
+
+**2. Semi-transparent form inputs** — softens input/textarea borders and fills:
+```css
+input, textarea {
+  background-color: color-mix(in oklch, var(--background) 60%, transparent);
+  border-color:     color-mix(in oklch, var(--border) 70%, transparent);
+}
+```
+
+**3. Stronger overlay blur** — increases modal/sheet backdrop blur from the default thin tint to 4px:
+```css
+[data-slot="overlay"] { --blur-sm: 4px; }
+```
+
+Applies to Dialog, AlertDialog, Sheet, and Drawer overlays.
+
+---
+
+### Radius Presets
+
+Independent named radius overrides. When both a Style Variant and a Radius Preset are active, the Radius Preset wins (it is loaded after styles in the cascade).
+
+| Preset | `--radius` | `RadiusPreset` value |
+|---|---|---|
+| `None` | `0rem` | `RadiusPreset.None` |
+| `Small` | `0.45rem` | `RadiusPreset.Small` |
+| `Medium` | `0.625rem` (default — no file) | `RadiusPreset.Medium` |
+| `Large` | `0.875rem` | `RadiusPreset.Large` |
+
+```html
+<!-- In production, include only the radius presets you use -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/none.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/large.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetRadiusPresetAsync(RadiusPreset.Large);
+```
+
+---
+
+### Font Presets
+
+Curated font pairings that set both `--font-sans` and `--font-heading`. The `System` preset is the default (no CSS file needed).
+
+| Preset | Body | Heading | `FontPreset` value |
+|---|---|---|---|
+| `System` | System UI stack | Same as body | `FontPreset.System` |
+| `Inter` | Inter | Inter | `FontPreset.Inter` |
+| `Geist` | Geist | Geist | `FontPreset.Geist` |
+| `CalSans` | Inter | Cal Sans | `FontPreset.CalSans` |
+| `DmSans` | DM Sans | DM Sans | `FontPreset.DmSans` |
+| `PlusJakarta` | Plus Jakarta Sans | Plus Jakarta Sans | `FontPreset.PlusJakarta` |
+
+> **Note:** Font preset CSS files set `--font-sans` and `--font-heading` only. You must load the actual font faces separately (via Google Fonts, Bunny Fonts, or self-hosted).
+
+```html
+<!-- 1. Load the font face (example using Google Fonts) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<!-- 2. Load the NeoUI font preset CSS -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/inter.css" />
+```
+
+Apply in C#:
+
+```csharp
+await ThemeService.SetFontPresetAsync(FontPreset.Inter);
+```
+
+---
+
+### Menu Accent
+
+Controls the intensity of hover and active states on menu items (DropdownMenu, Select, Combobox, Popover).
+
+| Value | `--accent` remapped to | Effect |
+|---|---|---|
+| `Subtle` | `--accent` (default) | Soft, low-contrast hover |
+| `Bold` | `--primary` | High-contrast hover — primary brand color |
+
+```csharp
+await ThemeService.SetMenuAccentAsync(MenuAccent.Bold);
+```
+
+`Bold` works by remapping `--accent → --primary` and `--accent-foreground → --primary-foreground` at the root level. All components that use `bg-accent` / `text-accent-foreground` for hover states respond automatically. This is a good pairing with a vibrant primary color (e.g. `PrimaryColor.Blue`).
+
+---
+
+### Menu Color
+
+Controls the background treatment of every floating surface — Popover, DropdownMenu, Select, and Combobox content panels.
+
+| Value | Background | Blur | Dark mode |
+|---|---|---|---|
+| `Default` | Solid `--popover` | None | ✅ |
+| `Inverted` | Dark surface — `oklch(0.145 0 0)` | None | Light mode only (no-op in dark) |
+| `DefaultTranslucent` | `--popover` at 50% opacity | `blur(18px) saturate(150%)` | ✅ |
+| `InvertedTranslucent` | Dark surface at 70% opacity | `blur(18px) saturate(150%)` | Light mode only |
+
+```csharp
+await ThemeService.SetMenuColorAsync(MenuColor.DefaultTranslucent);
+```
+
+`Inverted` and `InvertedTranslucent` are light-mode-only — they are scoped to `:root:not(.dark)` and have no effect in dark mode (dark surfaces are already inverted by definition).
+
+The translucent modes use `backdrop-filter` directly on the menu element (not a pseudo-element). The filter value is stored in a CSS custom property to work around a Tailwind v4 minifier issue that strips spaces between filter functions, and to ensure correct `-webkit-` vendoring.
+
+Pairs well with a transparent or blurred page background for a full glassmorphism effect.
+
+---
+
+`ThemePreset` is a portable C# record that bundles all eight theme dimensions into a single named unit. Apply it with `ApplyPresetAsync`.
+
+**Built-in presets:**
+
+| Preset | Base | Style | Radius | Font | Menu Accent | Menu Color |
+|---|---|---|---|---|---|---|
+| `ThemePreset.Default` | Zinc | Default | Medium | System | Subtle | Default |
+| `ThemePreset.Luma` | Zinc | Luma | Medium | Inter | Subtle | Default |
+| `ThemePreset.Nova` | Zinc | Nova | Small | Geist | Subtle | Default |
+| `ThemePreset.Maia` | Mauve | Maia | Large | Plus Jakarta | Subtle | Default |
+| `ThemePreset.Lyra` | Slate | Lyra | None | Geist | Subtle | Default |
+
+Usage:
+
+```csharp
+// Apply a built-in preset
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
+
+// Build a custom preset — all eight dimensions in one place
+var glassDash = new ThemePreset(
+    Name:         "Glass Dashboard",
+    BaseColor:    BaseColor.Luma,
+    PrimaryColor: PrimaryColor.Blue,
+    StyleVariant: StyleVariant.Luma,
+    RadiusPreset: RadiusPreset.Medium,
+    FontPreset:   FontPreset.Inter,
+    MenuAccent:   MenuAccent.Bold,
+    MenuColor:    MenuColor.DefaultTranslucent,
+    IsDarkMode:   false);
+
+await ThemeService.ApplyPresetAsync(glassDash);
+```
+
+---
+
+### CSS Load Order
+
+Theme CSS files must be loaded in the following order so the cascade overrides work correctly:
+
+```html
+<!-- 1. Core component styles -->
+<link href="_content/NeoUI.Blazor/components.css" rel="stylesheet" />
+
+<!-- 2. Base color themes -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/zinc.css" />
+<!-- ... other base colors ... -->
+
+<!-- 3. Primary color themes -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/primary/blue.css" />
+<!-- ... other primary colors ... -->
+
+<!-- 4. Visual style variants (sets --radius + --spacing-scale) -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/nova.css" />
+
+<!-- 5. Radius presets (overrides style variant's --radius if present) -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
+
+<!-- 6. Font presets -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/inter.css" />
+
+<!-- 7. Theme JS — must come before Blazor boots to prevent FOUC -->
+<script src="_content/NeoUI.Blazor/js/theme.js"></script>
 ```
 
 ---
@@ -344,7 +784,7 @@ Here's a complete theme file with all variables:
   --popover-foreground: oklch(0.145 0 0);
 
   /* Sizing */
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 }
 
 .dark {
@@ -405,17 +845,104 @@ Theme variables defined outside `@layer` always override library defaults:
 
 ```
 Priority (highest to lowest):
-1. Your theme file (no @layer)     ← Your customizations win
-2. @layer utilities
-3. @layer components
-4. @layer base                      ← Library defaults
+1. Your theme file (no @layer)         ← Your customizations win
+2. Menu color / accent rules (unlayered) ← Menu surface overrides
+3. @layer utilities
+4. @layer components
+5. @layer base                          ← Library defaults
 ```
+
+Menu color and menu accent rules are intentionally placed outside any `@layer` so they can override `@layer base` base-color variable definitions at the same specificity.
 
 This means you only need to define the variables you want to customize.
 
 ---
 
-## Migrating from HSL
+## ThemeService API Reference
+
+Complete list of `ThemeService` members:
+
+### Properties
+
+| Property | Type | Description |
+|---|---|---|
+| `IsDarkMode` | `bool` | Whether dark mode is currently active |
+| `CurrentBaseColor` | `BaseColor` | Active base color |
+| `CurrentPrimaryColor` | `PrimaryColor` | Active primary color |
+| `CurrentStyleVariant` | `StyleVariant` | Active visual style variant |
+| `CurrentRadiusPreset` | `RadiusPreset` | Active radius preset |
+| `CurrentFontPreset` | `FontPreset` | Active font preset |
+| `CurrentMenuAccent` | `MenuAccent` | Active menu accent intensity |
+| `CurrentMenuColor` | `MenuColor` | Active menu color/surface mode |
+| `OnThemeChanged` | `event Action?` | Raised after any theme change |
+
+### Methods
+
+| Method | Description |
+|---|---|
+| `InitializeAsync()` | Restore persisted theme from `localStorage`. Call on app startup. |
+| `ToggleThemeAsync()` | Toggle dark/light mode and persist. |
+| `SetThemeAsync(bool isDark)` | Set dark mode to a specific state and persist. |
+| `SetBaseColorAsync(BaseColor)` | Set base neutral palette. |
+| `SetPrimaryColorAsync(PrimaryColor)` | Set primary accent color. |
+| `SetStyleVariantAsync(StyleVariant)` | Set visual style variant. |
+| `SetRadiusPresetAsync(RadiusPreset)` | Set radius override. |
+| `SetFontPresetAsync(FontPreset)` | Set font pairing. |
+| `SetMenuAccentAsync(MenuAccent)` | Set menu item hover intensity. |
+| `SetMenuColorAsync(MenuColor)` | Set menu/popover surface mode. |
+| `ApplyPresetAsync(ThemePreset)` | Apply all dimensions atomically from a preset record. |
+
+### localStorage Keys
+
+`theme.js` reads and writes these keys to persist and restore the full theme state before Blazor boots (preventing FOUC):
+
+| Key | Values | Dimension |
+|---|---|---|
+| `theme` | `"dark"` / `"light"` | Dark mode |
+| `baseColor` | e.g. `"Zinc"`, `"Luma"` | Base color |
+| `primaryColor` | e.g. `"Default"`, `"Blue"` | Primary color |
+| `styleVariant` | e.g. `"Nova"`, `"Luma"` | Style variant |
+| `radiusPreset` | e.g. `"Default"`, `"Full"` | Radius preset |
+| `fontPreset` | e.g. `"System"`, `"Inter"` | Font preset |
+| `menuAccent` | `"Subtle"` / `"Bold"` | Menu accent |
+| `menuColor` | e.g. `"Default"`, `"DefaultTranslucent"` | Menu color |
+
+`theme.js` must load before Blazor to apply CSS classes synchronously and prevent a flash of unstyled content on page load.
+
+---
+
+## ThemeSwitcher Component
+
+The built-in `ThemeSwitcher` component renders a popover picker for all theme dimensions. Drop it anywhere in your layout:
+
+```razor
+<ThemeSwitcher />
+```
+
+### Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ShowStyles` | `bool` | `false` | When `true`, adds a **Styles & Layout** tab exposing style variant, radius, font, and menu options. Default `false` shows only the Colors tab (base + primary + dark mode). |
+| `Strategy` | `PositioningStrategy` | `Fixed` | `Fixed` escapes stacking contexts; use `Absolute` if fixed positioning causes issues |
+| `ZIndex` | `int` | `60` | CSS z-index for the popover panel |
+| `TriggerClass` | `string?` | `null` | Additional CSS classes for the trigger button |
+| `PopoverContentClass` | `string?` | `null` | Additional CSS classes for the popover panel |
+| `Align` | `PopoverAlign` | `End` | Popover alignment: `Start`, `Center`, or `End` |
+
+---
+
+NeoUI does not require Tailwind — `components.css` is a self-contained pre-built stylesheet. However, if your app uses Tailwind v4, you must add `@theme inline` to your Tailwind build input to prevent generated utilities from hardcoding computed color values that would override NeoUI's runtime CSS variable changes:
+
+```css
+/* your-app/styles/app.css  (Tailwind build input) */
+@import "tailwindcss";
+@theme inline;   /* ← ensures utilities use var(--color-*) not hardcoded oklch() */
+```
+
+Without `@theme inline`, Tailwind v4 generates utilities with hardcoded values (e.g. `color: oklch(0.145 0 0)`) that are written after `components.css` in the final stylesheet and permanently override the runtime variable changes made by `ThemeService`.
+
+
 
 If you have an existing shadcn/ui theme using HSL format:
 
@@ -432,3 +959,92 @@ Use a color converter tool or keep using HSL - both formats work:
 ```css
 --primary: hsl(222.2 47.4% 11.2%);
 ```
+
+---
+
+## Migrating to Theme v2
+
+Theme v2 is **fully backward-compatible** — apps that don't opt in see zero visual change after upgrading.
+
+### Step 1 — Add `<AppProvider>` to your layout
+
+Wrap your `MainLayout.razor` body with `<AppProvider>` (see [App Setup](#app-setup) above). This is required for `StyleVariant` to propagate to components. If you don't use style variants, you can still add it — `AppProvider` also calls `ThemeService.InitializeAsync()` which restores the persisted theme and prevents FOUC.
+
+```razor
+@* Before (v1) *@
+@inherits LayoutComponentBase
+<div class="...">
+    @Body
+    <ToastViewport />
+</div>
+
+@* After (v2) *@
+@inherits LayoutComponentBase
+<AppProvider>
+    <div class="...">
+        @Body
+    </div>
+    <ToastViewport />         @* inside AppProvider *@
+    <DialogHost />            @* inside AppProvider *@
+</AppProvider>
+```
+
+### Step 2 — Load theme CSS files
+
+Add links for the style variants, radius presets, and fonts you want to expose. Load them in the correct order (see [CSS Load Order](#css-load-order)):
+
+```html
+<!-- Style variants (include only what you expose to users) -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/luma.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/nova.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/maia.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/lyra.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/styles/mira.css" />
+
+<!-- Radius presets -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/none.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/large.css" />
+
+<!-- Font presets -->
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/inter.css" />
+<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/geist.css" />
+```
+
+### Step 3 — Apply a preset or let users choose
+
+Apply a built-in preset on startup:
+
+```csharp
+// Anywhere after ThemeService is available — or let AppProvider handle it
+await ThemeService.ApplyPresetAsync(ThemePreset.Luma);
+```
+
+Or expose the built-in picker to your users:
+
+```razor
+@* Colors tab only (default) *@
+<ThemeSwitcher />
+
+@* Full picker — colors + style variant + radius + font + menu options *@
+<ThemeSwitcher ShowStyles="true" />
+```
+
+### Step 4 — Tailwind v4 apps only
+
+If your app uses Tailwind v4, add `@theme inline` to your CSS entry point:
+
+```css
+@import "tailwindcss";
+@theme inline; /* prevents hardcoded color values from overriding CSS variables at runtime */
+```
+
+### What changed visually
+
+| | v1 behaviour | v2 behaviour |
+|---|---|---|
+| Default appearance | Unchanged | Unchanged — `StyleVariant.Default` preserves all pre-v2 radius ratios |
+| Rounded corners | Driven by `--radius` alone | Optionally driven by per-component Tailwind classes via `StyleVariant` |
+| Input height / density | Fixed | Optionally compact via `StyleVariant.Mira` / `StyleVariant.Nova` |
+| Shadows | Tailwind defaults | Optionally style-specific via the loaded style CSS |
+| `ThemeService.InitializeAsync()` | Called manually | Called automatically by `AppProvider` |
