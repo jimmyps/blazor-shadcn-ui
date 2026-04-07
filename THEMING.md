@@ -309,7 +309,7 @@ NeoUI v2 uses a **7-step proportional scale** driven by a single `--radius` base
 | `--radius-lg` | `× 1` (base) | `0.625rem` |
 | `--radius-xl` | `× 1.4` | `0.875rem` |
 | `--radius-2xl` | `× 1.8` | `1.125rem` |
-| `--radius-4xl` | `× 2.6` | `1.625rem` (pill via `RadiusPreset.Full` override) |
+| `--radius-4xl` | `× 2.6` | `1.625rem` |
 
 The base `--radius` is set to `0.625rem` by default (aligning with shadcn/ui).
 
@@ -594,20 +594,18 @@ Independent named radius overrides. When both a Style Variant and a Radius Prese
 | `Small` | `0.45rem` | `RadiusPreset.Small` |
 | `Medium` | `0.625rem` (default — no file) | `RadiusPreset.Medium` |
 | `Large` | `0.875rem` | `RadiusPreset.Large` |
-| `Full` | `calc(infinity * 1px)` (pill) | `RadiusPreset.Full` |
 
 ```html
 <!-- In production, include only the radius presets you use -->
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/none.css" />
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/large.css" />
-<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/full.css" />
 ```
 
 Apply in C#:
 
 ```csharp
-await ThemeService.SetRadiusPresetAsync(RadiusPreset.Full);
+await ThemeService.SetRadiusPresetAsync(RadiusPreset.Large);
 ```
 
 ---
@@ -1007,7 +1005,6 @@ Add links for the style variants, radius presets, and fonts you want to expose. 
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/none.css" />
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/large.css" />
-<link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/full.css" />
 
 <!-- Font presets -->
 <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/fonts/inter.css" />

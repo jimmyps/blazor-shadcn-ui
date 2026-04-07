@@ -3,7 +3,7 @@ using NeoUI.Blazor.Services;
 namespace NeoUI.Blazor;
 
 /// <summary>
-/// Central registrymapping StyleVariant values to per-component Tailwind class overrides.
+/// Central registry mapping StyleVariant values to per-component Tailwind class overrides.
 /// Each entry is keyed by "ComponentName.Part" (e.g. "Button.Root", "Card.Header").
 /// Returns null when no override is defined — ClassNames.cn ignores null, so unregistered
 /// components and the Default variant are zero-cost no-ops.

@@ -3,7 +3,7 @@ using NeoUI.Blazor.Services;
 namespace NeoUI.Blazor;
 
 /// <summary>
-/// Extension methods for StyleVariantto enable fluent class lookups at component render time.
+/// Extension methods for StyleVariant to enable fluent class lookups at component render time.
 /// Usage: _styleVariant.GetClasses("Button.Root")
 /// </summary>
 public static class StyleVariantExtensions

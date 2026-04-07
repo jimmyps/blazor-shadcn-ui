@@ -182,12 +182,12 @@ The `Luma` style goes beyond `--radius` + `--spacing-scale` — see **Luma Style
 
 Five named border-radius overrides independent of style variants:
 
-`None` (0rem) | `Small` (0.45rem) | `Medium` (0.625rem, default) | `Large` (0.875rem) | `Full` (calc(infinity * 1px) pill)
+`None` (0rem) | `Small` (0.45rem) | `Medium` (0.625rem, default) | `Large` (0.875rem)
 
 CSS files: `_content/NeoUI.Blazor/css/themes/radius/*.css`
 
 ```csharp
-await ThemeService.SetRadiusPresetAsync(RadiusPreset.Full);
+await ThemeService.SetRadiusPresetAsync(RadiusPreset.Large);
 ```
 
 #### ✨ New: Font Presets (`FontPreset` enum)

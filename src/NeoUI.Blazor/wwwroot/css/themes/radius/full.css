@@ -1,7 +1,0 @@
-/* Radius Preset: Full — pill-shaped elements */
-
-@layer base {
-  :root.radius-full {
-    --radius: calc(infinity * 1px);
-  }
-}

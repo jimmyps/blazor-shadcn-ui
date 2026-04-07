@@ -81,7 +81,6 @@ namespace NeoUI.Demo.Shared.Pages.Components
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/gray.css" />
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/neutral.css" />
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/stone.css" />
-            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/luma.css" />
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/mist.css" />
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/mauve.css" />
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/base/taupe.css" />
@@ -126,7 +125,6 @@ namespace NeoUI.Demo.Shared.Pages.Components
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/none.css" />
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/small.css" />
             <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/large.css" />
-            <link rel="stylesheet" href="_content/NeoUI.Blazor/css/themes/radius/full.css" />
             """;
 
         private const string _fontPresetsCode =
