@@ -149,9 +149,11 @@
 
             _dotNetRef = DotNetObjectReference.Create(this);
 
-            // Pass trigger element to exclude it from click-outside detection
+            // Pass trigger element to exclude it, and the portal ID so all submenu panels
+            // (rendered as children in the same portal composite) are treated as "inside".
+            // Without this, WASM fires click-outside before the item's click handler.
             _clickOutsideCleanup = await _clickOutsideModule.InvokeAsync<IJSObjectReference>(
-                "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside", MenuContext.TriggerElement);
+                "onClickOutside", _contentRef, _dotNetRef, "HandleClickOutside", MenuContext.TriggerElement, MenuContext.ContentId);
         }
         catch (JSDisconnectedException)
         {
