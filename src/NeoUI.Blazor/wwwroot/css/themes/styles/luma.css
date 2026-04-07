@@ -1,0 +1,25 @@
+/* Luma Visual Style — glassmorphism, modern SaaS aesthetic */
+
+@layer base {
+  :root.style-luma {
+    --spacing-scale: 1;
+
+    /* Soft, diffuse shadows — glassmorphism aesthetic */
+    --shadow-sm: 0 2px 8px 0 oklch(0 0 0 / 0.06), 0 1px 2px 0 oklch(0 0 0 / 0.04);
+    --shadow-md: 0 4px 16px oklch(0 0 0 / 0.08), 0 1px 4px oklch(0 0 0 / 0.04);
+    --shadow-lg: 0 8px 24px oklch(0 0 0 / 0.10), 0 2px 8px oklch(0 0 0 / 0.05);
+    --shadow-xl: 0 16px 40px oklch(0 0 0 / 0.12), 0 4px 12px oklch(0 0 0 / 0.06);
+  }
+
+  /* Semi-transparent inputs — glassmorphism softens form elements */
+  :root.style-luma input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  :root.style-luma textarea {
+    background-color: color-mix(in oklch, var(--background) 60%, transparent);
+    border-color: color-mix(in oklch, var(--border) 70%, transparent);
+  }
+
+  /* Overlay blur — more pronounced for glassmorphism */
+  :root.style-luma [data-slot="overlay"] {
+    --blur-sm: 4px;
+  }
+}

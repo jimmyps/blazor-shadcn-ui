@@ -38,6 +38,14 @@
     --sidebar-accent-foreground: oklch(0.2050 0 0);
     --sidebar-border: oklch(0.9220 0 0);
     --sidebar-ring: oklch(0.7080 0 0);
+    --surface:                    oklch(0.967 0 0);
+    --surface-foreground:         oklch(0.145 0 0);
+    --code:                       oklch(0.949 0.004 286);
+    --code-foreground:            oklch(0.145 0 0);
+    --code-highlight:             oklch(0.925 0.008 252);
+    --code-number:                oklch(0.556 0 0);
+    --selection:                  oklch(0.922 0.015 252);
+    --selection-foreground:       oklch(0.145 0 0);
     --alert-success: oklch(0.55 0.20 142);
     --alert-success-foreground: oklch(0.30 0.09 142);
     --alert-success-bg: oklch(0.993 0.003 142);
@@ -50,12 +58,7 @@
     --alert-danger: oklch(0.55 0.22 27);
     --alert-danger-foreground: oklch(0.30 0.12 27);
     --alert-danger-bg: oklch(0.993 0.003 27);
-    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     --radius: 0.625rem;
-    --tracking-normal: 0em;
-    --spacing: 0.25rem;
   }
 
   .dark {
@@ -91,6 +94,14 @@
     --sidebar-accent-foreground: oklch(0.9850 0 0);
     --sidebar-border: oklch(0.2750 0 0);
     --sidebar-ring: oklch(0.4390 0 0);
+    --surface:                    oklch(0.269 0 0);
+    --surface-foreground:         oklch(0.985 0 0);
+    --code:                       oklch(0.230 0.006 264);
+    --code-foreground:            oklch(0.985 0 0);
+    --code-highlight:             oklch(0.260 0.010 252);
+    --code-number:                oklch(0.708 0 0);
+    --selection:                  oklch(0.325 0.015 252);
+    --selection-foreground:       oklch(0.985 0 0);
     --alert-success: oklch(0.60 0.18 142);
     --alert-success-foreground: oklch(0.90 0.06 142);
     --alert-success-bg: oklch(0.18 0.008 142);
@@ -189,7 +200,9 @@
     }
 }
 
-/* Tailwind v4 Theme Integration */
+/* Tailwind v4 Theme Integration — must also be in the consumer's Tailwind build
+   so that app.css utilities (loaded after components.css) use var() references
+   rather than hardcoded values that would override the library's wiring. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -223,13 +236,37 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-code: var(--code);
+  --color-code-foreground: var(--code-foreground);
+  --color-code-highlight: var(--code-highlight);
+  --color-code-number: var(--code-number);
+  --color-selection: var(--selection);
+  --color-selection-foreground: var(--selection-foreground);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
+  --font-heading: var(--font-heading);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xs:  var(--radius-xs);
+  --radius-sm:  var(--radius-sm);
+  --radius-md:  var(--radius-md);
+  --radius-lg:  var(--radius-lg);
+  --radius-xl:  var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+  --radius-3xl: var(--radius-3xl);
+  --radius-4xl: var(--radius-4xl);
+
+  --shadow-xs:  var(--shadow-xs);
+  --shadow-sm:  var(--shadow-sm);
+  --shadow-md:  var(--shadow-md);
+  --shadow-lg:  var(--shadow-lg);
+  --shadow-xl:  var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+
+  --breakpoint-3xl: 1600px;
+  --breakpoint-4xl: 2000px;
 }
+

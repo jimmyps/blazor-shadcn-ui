@@ -1,0 +1,7 @@
+/* Radius Preset: Medium — standard rounded corners (shadcn default) */
+
+@layer base {
+  :root.radius-medium {
+    --radius: 0.625rem;
+  }
+}

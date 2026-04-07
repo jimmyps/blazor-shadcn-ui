@@ -41,6 +41,9 @@ else
     [Parameter]
     public EventCallback OnClick { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private async Task HandleClick()
     {
         if (!Disabled)
@@ -56,6 +59,7 @@ else
             : "hover:bg-accent hover:text-accent-foreground",
         Size == PaginationLinkSize.Default ? "h-10 px-4 py-2" : "h-10 w-10",
         Disabled ? "pointer-events-none opacity-50" : null,
+        _styleVariant.GetClasses("Pagination.Link"),
         Class
     );
 }

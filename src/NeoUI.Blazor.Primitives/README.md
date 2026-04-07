@@ -429,7 +429,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Current Version**: 3.8.2
+- **Current Version**: 4.0.0
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives

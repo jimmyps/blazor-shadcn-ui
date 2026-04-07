@@ -29,6 +29,9 @@ else
     [CascadingParameter]
     private CollapsibleContext? CollapsibleContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// The button content.
     /// </summary>
@@ -236,6 +239,6 @@ else
             _ => ""
         };
 
-        return ClassNames.cn(baseClasses, sizeClasses, variantClasses, Class);
+        return ClassNames.cn(baseClasses, sizeClasses, variantClasses, _styleVariant.GetClasses("Sidebar.MenuButton"), Class);
     }
 }

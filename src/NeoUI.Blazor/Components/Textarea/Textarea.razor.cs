@@ -62,6 +62,9 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets when the input should update its bound value.
     /// </summary>
@@ -413,6 +416,8 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
         "transition-[color,box-shadow]",
         // Responsive text sizing
         "md:text-sm",
+        // StyleVariant overrides
+        _styleVariant.GetClasses("Textarea.Root"),
         // Custom classes (if provided)
         Class
     );

@@ -12,6 +12,9 @@ public partial class TreeItem<TItem> : ComponentBase
     [CascadingParameter]
     public TreeView<TItem>? ParentTree { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     // ── Item data ────────────────────────────────────────────────────
 
     /// <summary>The data item this node represents.</summary>
@@ -94,7 +97,8 @@ public partial class TreeItem<TItem> : ComponentBase
     private string RowCssClass => ClassNames.cn(
         "flex items-center gap-0.5 rounded-md px-1 py-1 cursor-pointer select-none",
         "hover:bg-accent hover:text-accent-foreground transition-colors",
-        IsSelected ? "bg-accent text-accent-foreground" : null
+        IsSelected ? "bg-accent text-accent-foreground" : null,
+        _styleVariant.GetClasses("TreeView.Row")
     );
 
     private string ToggleCssClass => "flex items-center justify-center w-4 h-4 shrink-0";

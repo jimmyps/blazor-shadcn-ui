@@ -91,18 +91,14 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
     [Inject]
     private ILogger<NumericInput<TValue>> Logger { get; set; } = default!;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the cascaded EditContext from an EditForm.
     /// </summary>
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
-
-    /// <summary>
-    /// Gets or sets when the input should update its bound value.
-    /// </summary>
-    /// <remarks>
-    /// - Input: Updates value immediately on every keystroke (default)
-    /// - Change: Updates value only when input loses focus
     /// </remarks>
     [Parameter]
     public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
@@ -382,6 +378,8 @@ public partial class NumericInput<TValue> : ComponentBase, IAsyncDisposable
         "transition-[color,box-shadow]",
         // Medium screens and up: smaller text
         "md:text-sm",
+        // StyleVariant overrides
+        _styleVariant.GetClasses("Input.Root"),
         // Custom classes (if provided)
         Class
     );

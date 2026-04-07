@@ -99,7 +99,7 @@
                         }
                         @if (CanToggleLayout)
                         {
-                            <div class="flex items-center gap-1 rounded-md border border-border p-1">
+                            <div class="@ClassNames.cn("flex items-center gap-1 rounded-md border border-border p-1", _styleVariant.GetClasses("DataView.SegmentedControl"))">
                                 <Button Variant="ButtonVariant.Ghost"
                                         Size="ButtonSize.Icon"
                                         OnClick="@(() => SetLayout(DataViewLayout.List))"

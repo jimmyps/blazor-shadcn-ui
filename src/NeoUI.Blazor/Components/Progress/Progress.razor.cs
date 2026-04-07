@@ -48,11 +48,15 @@ public partial class Progress : ComponentBase
     [Parameter]
     public string? Class { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the computed CSS classes for the progress element.
     /// </summary>
     private string CssClass => ClassNames.cn(
         "relative h-4 w-full overflow-hidden rounded-full bg-secondary",
+        _styleVariant.GetClasses("Progress.Root"),
         Class
     );
 

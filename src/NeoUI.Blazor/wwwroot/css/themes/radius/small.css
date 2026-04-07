@@ -1,0 +1,7 @@
+/* Radius Preset: Small — subtle rounded corners */
+
+@layer base {
+  :root.radius-small {
+    --radius: 0.45rem;
+  }
+}

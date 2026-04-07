@@ -152,6 +152,9 @@ public partial class TreeView<TItem> : ComponentBase, IAsyncDisposable
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     // ── Internal state ───────────────────────────────────────────────
 
     internal HashSet<string> EffectiveExpandedValues =>
@@ -465,7 +468,7 @@ public partial class TreeView<TItem> : ComponentBase, IAsyncDisposable
 
     // ── CSS ───────────────────────────────────────────────────────────
 
-    private string CssClass => ClassNames.cn("w-full text-sm", Class);
+    private string CssClass => ClassNames.cn("w-full text-sm border rounded-md p-3", _styleVariant.GetClasses("TreeView.Root"), Class);
 
     // ── IAsyncDisposable ─────────────────────────────────────────────
 

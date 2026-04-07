@@ -26,6 +26,9 @@
     [CascadingParameter]
     private MenubarRadioGroupContext<TValue>? RadioGroupContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// The content to display inside the radio item.
     /// </summary>
@@ -65,5 +68,6 @@
         "focus:bg-accent focus:text-accent-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
         !Disabled ? "hover:bg-accent hover:text-accent-foreground" : null,
+        _styleVariant.GetClasses("Menu.RadioItem"),
         Class);
 }

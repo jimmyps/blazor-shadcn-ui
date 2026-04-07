@@ -73,6 +73,9 @@ public partial class InputGroup : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the computed CSS classes for the input group container.
     /// </summary>
@@ -136,6 +139,9 @@ public partial class InputGroup : ComponentBase
 
         // Smooth transitions for state changes (matching Input component)
         "transition-[colors,box-shadow]",
+
+        // StyleVariant overrides
+        _styleVariant.GetClasses("InputGroup.Root"),
 
         // Custom classes
         Class

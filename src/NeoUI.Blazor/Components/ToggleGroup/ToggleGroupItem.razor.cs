@@ -10,6 +10,9 @@ public partial class ToggleGroupItem : ComponentBase
     [CascadingParameter]
     private ToggleGroup? ParentGroup { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets the value of this toggle item.
     /// </summary>
@@ -52,6 +55,7 @@ public partial class ToggleGroupItem : ComponentBase
         "h-10",
         ParentGroup?.Scrollable == true ? "shrink-0" : null,
         IsSelected ? "bg-accent text-accent-foreground" : "bg-transparent",
+        _styleVariant.GetClasses("ToggleGroup.Item"),
         Class
     );
 }

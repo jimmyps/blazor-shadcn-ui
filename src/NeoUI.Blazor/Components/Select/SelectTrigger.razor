@@ -1,6 +1,7 @@
 @typeparam TValue
 @namespace NeoUI.Blazor
 @attribute [CascadingTypeParameter(nameof(TValue))]
+@using NeoUI.Blazor.Services
 
 @* Styled SelectTrigger wrapper around SelectTrigger primitive *@
 <SelectTriggerPrimitive TValue="TValue"
@@ -18,6 +19,9 @@
     /// </summary>
     [CascadingParameter]
     private SelectContext<TValue>? Context { get; set; }
+
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     /// <summary>
     /// Gets or sets additional CSS classes to apply to the trigger button.
@@ -63,6 +67,8 @@
             ? ""
             : "data-[state=open]:ring-2 data-[state=open]:ring-ring/50 [&[aria-expanded=true]]:ring-2 [&[aria-expanded=true]]:ring-ring/50",
         "[&[aria-expanded=true]]:hover:bg-background",
+        // StyleVariant class overrides (layer 2 — before user Class so Class always wins)
+        _styleVariant.GetClasses("SelectTrigger.Root"),
         Class
     );
 }

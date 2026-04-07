@@ -30,6 +30,8 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Toggle : ComponentBase
 {
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; }
     /// <summary>
     /// Gets or sets whether the toggle is pressed.
     /// </summary>
@@ -115,6 +117,7 @@ public partial class Toggle : ComponentBase
             ToggleSize.Large => "h-11 px-5",
             _ => "h-10 px-3"
         },
+        _styleVariant.GetClasses("Toggle.Root"),
         Class
     );
 }

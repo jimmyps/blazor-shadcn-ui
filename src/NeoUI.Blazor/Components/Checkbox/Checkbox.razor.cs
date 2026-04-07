@@ -44,6 +44,9 @@ public partial class Checkbox : ComponentBase
     [CascadingParameter]
     private EditContext? CascadedEditContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets whether the checkbox is checked.
     /// </summary>
@@ -193,6 +196,7 @@ public partial class Checkbox : ComponentBase
         "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
         "focus-visible:ring-ring focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",
+        _styleVariant.GetClasses("Checkbox.Root"),
         (Checked || Indeterminate) ? "bg-primary text-primary-foreground" : "bg-background",
         Class);
 

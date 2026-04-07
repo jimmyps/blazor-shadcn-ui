@@ -1,0 +1,11 @@
+/* Font Preset: Geist — modern developer-friendly sans-serif by Vercel */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
+
+@layer base {
+  :root.font-geist {
+    --font-sans:    'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'Geist Mono', ui-monospace, 'Cascadia Code', monospace;
+  }
+}

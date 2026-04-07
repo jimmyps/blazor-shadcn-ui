@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using NeoUI.Blazor.Services;
 
 namespace NeoUI.Blazor;
 
@@ -58,6 +59,9 @@ public partial class Badge : ComponentBase
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets the computed CSS classes for the badge element.
     /// </summary>
@@ -81,6 +85,8 @@ public partial class Badge : ComponentBase
             BadgeVariant.Outline => "text-foreground",
             _ => "border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
         },
+        // StyleVariant class overrides (layer 2 — before user Class so Class always wins)
+        _styleVariant.GetClasses("Badge.Root"),
         // Custom classes (if provided)
         Class
     );

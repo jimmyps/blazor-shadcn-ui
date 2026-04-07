@@ -86,8 +86,12 @@
     /// <summary>
     /// Gets the computed CSS classes for the command container.
     /// </summary>
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string CssClass => ClassNames.cn(
         "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
+        _styleVariant.GetClasses("Command.Content"),
         Class
     );
 

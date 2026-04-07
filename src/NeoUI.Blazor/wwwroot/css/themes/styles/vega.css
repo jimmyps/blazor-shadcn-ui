@@ -1,0 +1,12 @@
+/* Vega Visual Style — professional, general-purpose */
+
+@layer base {
+  :root.style-vega {
+    --spacing-scale: 1;
+    /* Uses default shadow scale — balanced for professional use */
+  }
+
+  :root.style-vega [data-slot="overlay"] {
+    --blur-sm: 2px;
+  }
+}

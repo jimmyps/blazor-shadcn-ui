@@ -102,6 +102,9 @@ public partial class Combobox<TItem> : ComponentBase
     [Inject]
     private ILocalizer Localizer { get; set; } = default!;
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     private string EffectivePlaceholder => Placeholder ?? Localizer["Combobox.Placeholder"];
     private string EffectiveSearchPlaceholder => SearchPlaceholder ?? Localizer["Combobox.SearchPlaceholder"];
     private string EffectiveEmptyMessage => EmptyMessage ?? Localizer["Combobox.EmptyMessage"];
@@ -334,26 +337,15 @@ public partial class Combobox<TItem> : ComponentBase
     /// <summary>
     /// Gets the CSS class for the button element (styled like ButtonVariant.Outline).
     /// </summary>
-    private string ButtonCssClass
-    {
-        get
-        {
-            // Base button styles matching Button component
-            var baseStyles = "inline-flex items-center justify-between rounded-md text-sm " +
-                           "transition-colors focus-visible:outline-none focus-visible:ring-2 " +
-                           "focus-visible:ring-ring focus-visible:ring-offset-2 " +
-                           "disabled:opacity-50 disabled:pointer-events-none ";
-
-            // Outline variant styles (matching ButtonVariant.Outline)
-            var variantStyles = "border border-input bg-background hover:bg-accent hover:text-accent-foreground ";
-
-            // Size styles (matching ButtonSize.Small for more compact appearance)
-            var sizeStyles = "h-9 px-3 ";
-
-            // Default width (can be overridden by Class parameter)
-            var defaultWidth = string.IsNullOrWhiteSpace(Class) ? PopoverWidth : "";
-
-            return $"{baseStyles}{variantStyles}{sizeStyles}{defaultWidth}".Trim();
-        }
-    }
+    private string ButtonCssClass => ClassNames.cn(
+        "inline-flex items-center justify-between rounded-md text-sm",
+        "transition-colors focus-visible:outline-none focus-visible:ring-2",
+        "focus-visible:ring-ring focus-visible:ring-offset-2",
+        "disabled:opacity-50 disabled:pointer-events-none",
+        "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        "h-9 px-3",
+        string.IsNullOrWhiteSpace(Class) ? PopoverWidth : null,
+        _styleVariant.GetClasses("SelectTrigger.Root"),
+        Class
+    );
 }

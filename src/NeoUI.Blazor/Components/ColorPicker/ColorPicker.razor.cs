@@ -96,6 +96,9 @@ public partial class ColorPicker : ComponentBase, IAsyncDisposable
     [CascadingParameter]
     private EditContext? EditContext { get; set; }
 
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
     /// <summary>
     /// Gets or sets the selected color value as a string in the specified format.
     /// </summary>
@@ -206,6 +209,7 @@ public partial class ColorPicker : ComponentBase, IAsyncDisposable
         "focus:outline-none focus:ring-ring focus:ring-[2px] focus:ring-ring/50",
         "disabled:cursor-not-allowed disabled:opacity-50",
         "transition-colors",
+        _styleVariant.GetClasses("SelectTrigger.Root"),
         Class
     );
 

@@ -1,0 +1,17 @@
+/* Maia Visual Style — spacious, consumer-friendly */
+
+@layer base {
+  :root.style-maia {
+    --spacing-scale: 1.15;
+
+    /* More elevated shadows — adds depth to the spacious, rounded aesthetic */
+    --shadow-sm: 0 2px 6px 0 oklch(0 0 0 / 0.10), 0 1px 2px -1px oklch(0 0 0 / 0.08);
+    --shadow-md: 0 6px 12px -2px oklch(0 0 0 / 0.12), 0 3px 6px -2px oklch(0 0 0 / 0.08);
+    --shadow-lg: 0 12px 24px -4px oklch(0 0 0 / 0.14), 0 5px 10px -4px oklch(0 0 0 / 0.10);
+    --shadow-xl: 0 24px 40px -6px oklch(0 0 0 / 0.16), 0 8px 14px -6px oklch(0 0 0 / 0.12);
+  }
+
+  :root.style-maia [data-slot="overlay"] {
+    --blur-sm: 2px;
+  }
+}
