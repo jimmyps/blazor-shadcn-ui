@@ -29,6 +29,7 @@ internal static class LyraClasses
             ["Menu.Inner"]            = "p-1",
             ["ContextMenu.Content"]   = "rounded-none",
             ["ContextMenu.SubContent"] = "rounded-none",
+            ["Menubar.Root"]          = "rounded-none",
             ["Menubar.Content"]       = "rounded-none",
             ["Menubar.SubContent"]    = "rounded-none",
             ["Menubar.Trigger"]       = "rounded-none",

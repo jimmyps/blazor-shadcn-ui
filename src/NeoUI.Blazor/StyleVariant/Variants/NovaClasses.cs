@@ -29,6 +29,7 @@ internal static class NovaClasses
             ["Menu.Inner"]            = "p-1",
             ["ContextMenu.Content"]   = "rounded-xl",
             ["ContextMenu.SubContent"] = "rounded-xl",
+            ["Menubar.Root"]          = "rounded-xl",
             ["Menubar.Content"]       = "rounded-xl",
             ["Menubar.SubContent"]    = "rounded-xl",
             ["Menubar.Trigger"]       = "rounded-lg px-2.5",

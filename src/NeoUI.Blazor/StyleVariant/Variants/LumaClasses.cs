@@ -42,6 +42,7 @@ internal static class LumaClasses
             ["DropdownMenu.Item"]     = "rounded-2xl px-3 py-2",
             ["Menu.Inner"]            = "p-1.5",
             ["Menu.SubTrigger"]       = "rounded-2xl px-3 py-2",
+            ["Menubar.Root"]          = "rounded-full",
             ["Menubar.Trigger"]       = "rounded-2xl px-3",
             ["ContextMenu.Content"]   = "rounded-3xl shadow-2xl",
             ["ContextMenu.SubContent"] = "rounded-3xl shadow-2xl",

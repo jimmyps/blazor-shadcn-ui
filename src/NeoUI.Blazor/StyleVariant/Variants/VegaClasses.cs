@@ -30,5 +30,6 @@ internal static class VegaClasses
             ["Dialog.Content"]        = "rounded-xl",
             ["Tabs.List"]             = "rounded-lg",
             ["Tabs.Trigger"]          = "rounded-md",
+            ["Menubar.Root"]          = "rounded-lg",
         };
 }

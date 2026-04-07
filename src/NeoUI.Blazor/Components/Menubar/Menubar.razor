@@ -56,12 +56,11 @@
     [Parameter]
     public bool Loop { get; set; } = true;
 
-    private string CssClass
-    {
-        get
-        {
-            var baseClasses = "flex h-10 items-center space-x-1 rounded-md border bg-background p-1";
-            return string.IsNullOrWhiteSpace(Class) ? baseClasses : $"{baseClasses} {Class}";
-        }
-    }
+    [CascadingParameter(Name = "StyleVariant")]
+    private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
+
+    private string CssClass => ClassNames.cn(
+        "flex h-10 items-center space-x-1 rounded-md border bg-background p-1",
+        _styleVariant.GetClasses("Menubar.Root"),
+        Class);
 }

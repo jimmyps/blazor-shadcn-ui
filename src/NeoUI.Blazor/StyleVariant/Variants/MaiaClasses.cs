@@ -29,6 +29,7 @@ internal static class MaiaClasses
             ["Menu.Inner"]            = "p-1.5",
             ["ContextMenu.Content"]   = "rounded-2xl shadow-2xl",
             ["ContextMenu.SubContent"] = "rounded-2xl shadow-2xl",
+            ["Menubar.Root"]          = "rounded-4xl",
             ["Menubar.Content"]       = "rounded-2xl shadow-2xl",
             ["Menubar.SubContent"]    = "rounded-2xl shadow-2xl",
             ["Menubar.Trigger"]       = "rounded-4xl px-3",

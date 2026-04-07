@@ -32,6 +32,7 @@ internal static class MiraClasses
             ["DropdownMenu.Content"]  = "rounded-lg",
             ["DropdownMenu.SubContent"] = "rounded-lg",
             ["DropdownMenu.Item"]     = "rounded-md",
+            ["Menubar.Root"]          = "rounded-lg",
             ["Menubar.Trigger"]       = "rounded-md text-xs",
             ["Menubar.Content"]       = "rounded-lg",
             ["Menubar.SubContent"]    = "rounded-lg",
