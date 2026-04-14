@@ -227,13 +227,14 @@ public class ThemeService
 {
     private readonly IJSRuntime _jsRuntime;
     private bool _isDarkMode;
-    private BaseColor _baseColor = BaseColor.Zinc;
-    private PrimaryColor _primaryColor = PrimaryColor.Default;
-    private StyleVariant _styleVariant = StyleVariant.Default;
-    private RadiusPreset _radiusPreset = RadiusPreset.Default;
-    private FontPreset _fontPreset = FontPreset.System;
-    private MenuAccent _menuAccent = MenuAccent.Subtle;
-    private MenuColor _menuColor = MenuColor.Default;
+    private BaseColor _baseColor;
+    private PrimaryColor _primaryColor;
+    private StyleVariant _styleVariant;
+    private RadiusPreset _radiusPreset;
+    private FontPreset _fontPreset;
+    private MenuAccent _menuAccent;
+    private MenuColor _menuColor;
+    private readonly ThemePreset _defaults;
     private bool _isInitialized;
 
     /// <summary>Event raised when the theme changes.</summary>
@@ -267,9 +268,19 @@ public class ThemeService
     /// Initializes a new instance of the <see cref="ThemeService"/> class.
     /// </summary>
     /// <param name="jsRuntime">The JavaScript runtime for interop operations.</param>
-    public ThemeService(IJSRuntime jsRuntime)
+    /// <param name="defaults">Optional preset used as the app default theme when no localStorage preference exists.</param>
+    public ThemeService(IJSRuntime jsRuntime, ThemePreset? defaults = null)
     {
-        _jsRuntime = jsRuntime;
+        _jsRuntime    = jsRuntime;
+        _defaults     = defaults ?? ThemePreset.Default;
+        _isDarkMode   = _defaults.IsDarkMode;
+        _baseColor    = _defaults.BaseColor;
+        _primaryColor = _defaults.PrimaryColor;
+        _styleVariant = _defaults.StyleVariant;
+        _radiusPreset = _defaults.RadiusPreset;
+        _fontPreset   = _defaults.FontPreset;
+        _menuAccent   = _defaults.MenuAccent;
+        _menuColor    = _defaults.MenuColor;
     }
 
     /// <summary>
@@ -322,14 +333,14 @@ public class ThemeService
         }
         catch
         {
-            _isDarkMode    = false;
-            _baseColor     = BaseColor.Zinc;
-            _primaryColor  = PrimaryColor.Default;
-            _styleVariant  = StyleVariant.Default;
-            _radiusPreset  = RadiusPreset.Default;
-            _fontPreset    = FontPreset.System;
-            _menuAccent    = MenuAccent.Subtle;
-            _menuColor     = MenuColor.Default;
+            _isDarkMode   = _defaults.IsDarkMode;
+            _baseColor    = _defaults.BaseColor;
+            _primaryColor = _defaults.PrimaryColor;
+            _styleVariant = _defaults.StyleVariant;
+            _radiusPreset = _defaults.RadiusPreset;
+            _fontPreset   = _defaults.FontPreset;
+            _menuAccent   = _defaults.MenuAccent;
+            _menuColor    = _defaults.MenuColor;
 
             try { await ApplyThemeAsync(); } catch { }
 

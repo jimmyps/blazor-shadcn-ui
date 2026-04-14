@@ -14,7 +14,19 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddNeoUIComponents(this IServiceCollection services)
-        => AddNeoUIComponents(services, configureLocalizer: null);
+        => AddNeoUIComponents(services, defaultTheme: null, configureLocalizer: null);
+
+    /// <summary>
+    /// Adds NeoUI.Blazor components services with app-wide theme defaults.
+    /// These defaults apply only when no user preference is saved in localStorage.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="defaultTheme">A <see cref="ThemePreset"/> used as the app default theme.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddNeoUIComponents(
+        this IServiceCollection services,
+        ThemePreset defaultTheme)
+        => AddNeoUIComponents(services, defaultTheme, configureLocalizer: null);
 
     /// <summary>
     /// Adds NeoUI.Blazor components services to the service collection with optional localizer configuration.
@@ -37,7 +49,22 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddNeoUIComponents(
         this IServiceCollection services,
         Action<DefaultLocalizer>? configureLocalizer)
+        => AddNeoUIComponents(services, defaultTheme: null, configureLocalizer);
+
+    /// <summary>
+    /// Adds NeoUI.Blazor components services with full configuration of a default theme preset and localizer.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="defaultTheme">Optional <see cref="ThemePreset"/> used as the app default theme.</param>
+    /// <param name="configureLocalizer">Optional action to configure the <see cref="DefaultLocalizer"/>.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddNeoUIComponents(
+        this IServiceCollection services,
+        ThemePreset? defaultTheme,
+        Action<DefaultLocalizer>? configureLocalizer)
     {
+        // Register the default theme preset so ThemeService can seed its initial state
+        services.AddSingleton(defaultTheme ?? ThemePreset.Default);
         // Register localizer — consumers may replace this registration with a custom ILocalizer
         // implementation (e.g. a subclass that delegates to IStringLocalizer<T>).
         if (configureLocalizer is not null)
