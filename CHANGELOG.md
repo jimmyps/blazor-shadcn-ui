@@ -2,7 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-4-2 — Theme v2: Full Dimension Expansion (Style, Radius, Font, Menu, Luma) + Style Variant Component Wiring
+## 2026-4-14 — Default Theme Preset on Startup + ThemeSwitcher Polish
+
+> **Release: `v4.0.2`**  
+> **Library change.** Affects `NeoUI.Blazor`. Additive — no breaking changes to existing API.
+
+---
+
+### ✨ Enhancement — `AddNeoUIComponents`: `DefaultThemePreset` startup option
+
+A new `DefaultThemePreset` property on the `NeoUIComponentsOptions` object lets you specify a `ThemePreset` that `ThemeService` applies automatically on first load — before the user has set any preference and before any `localStorage` entry exists.
+
+```csharp
+// Program.cs
+builder.Services.AddNeoUIComponents(options =>
+{
+    options.DefaultThemePreset = ThemePreset.Luma;
+});
+```
+
+**Behaviour:**
+
+| Scenario | Result |
+|---|---|
+| First visit (no localStorage) | `DefaultThemePreset` is applied |
+| Returning visit (localStorage present) | Saved preference wins; `DefaultThemePreset` is ignored |
+| `DefaultThemePreset` not set (default) | Existing behaviour unchanged — theme initialises from localStorage or CSS defaults |
+
+`ThemeService` reads the option during its own initialisation (`InitializeAsync`). If a persisted theme is found in `localStorage` it takes priority; otherwise the default preset is applied via `ApplyPresetAsync` so all eight theme dimensions (base color, primary color, style variant, radius, font, menu accent, menu color, dark mode) are set atomically.
+
+**Affected files:** `ServiceCollectionExtensions.cs`, `ThemeService.cs`
+
+---
+
+### 🔧 Enhancement — `ThemeSwitcher` UI polish
+
+Minor visual refinements to the `ThemeSwitcher` popover panel to improve layout density and label clarity on the Styles tab. No API changes.
+
+---
+
+## 2026-4-2 — Theme v2: Full Dimension Expansion
 
 > **Release: `v4.0.0`**  
 > **Library change.** Affects `NeoUI.Blazor`. Additive — no breaking changes to existing API.
