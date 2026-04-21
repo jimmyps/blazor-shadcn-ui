@@ -346,9 +346,10 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     function handleBlur(e) {
         const currentRaw = getRawValue(element.value);
 
-        // If no real value was entered, clear the mask template so the
-        // HTML placeholder becomes visible again.
-        if (currentRaw === '') {
+        // Only clear back to empty on blur if a placeholder is configured —
+        // the placeholder will then become visible. Without a placeholder the
+        // mask template stays as a permanent format guide.
+        if (currentRaw === '' && element.placeholder) {
             element.value = '';
             lastValue = '';
         }

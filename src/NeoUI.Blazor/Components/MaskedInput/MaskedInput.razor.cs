@@ -340,10 +340,10 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
             if (string.IsNullOrEmpty(Mask))
                 return Value ?? string.Empty;
 
-            // Empty value → render as empty so HTML placeholder shows.
-            // JS handles the mask-template display on focus.
+            // Empty value: if a Placeholder is set, render empty so the placeholder
+            // attribute is visible; otherwise show the mask template as a permanent guide.
             if (string.IsNullOrEmpty(Value))
-                return string.Empty;
+                return string.IsNullOrEmpty(Placeholder) ? GenerateEmptyMask() : string.Empty;
 
             return ApplyMask(Value ?? string.Empty);
         }
