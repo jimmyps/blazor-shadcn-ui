@@ -280,10 +280,12 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     function handleFocus(e) {
         // Delay to let browser set initial cursor
         setTimeout(() => {
-            const value = element.value;
-            if (!value) return;
-            
-            const firstEmpty = getFirstEmptyPos(value);
+            // If field is empty (no real characters entered), show mask template
+            if (!element.value || getRawValue(element.value) === '') {
+                element.value = applyMask('');
+                lastValue = element.value;
+            }
+            const firstEmpty = getFirstEmptyPos(element.value);
             setCursor(firstEmpty);
         }, 0);
     }
@@ -342,9 +344,17 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     }
 
     function handleBlur(e) {
+        const currentRaw = getRawValue(element.value);
+
+        // If no real value was entered, clear the mask template so the
+        // HTML placeholder becomes visible again.
+        if (currentRaw === '') {
+            element.value = '';
+            lastValue = '';
+        }
+
         // If UpdateOn is Change, notify Blazor on blur
         if (updateOnChange) {
-            const currentRaw = getRawValue(element.value);
             if (currentRaw !== lastRawValue) {
                 lastRawValue = currentRaw;
                 dotNetHelper.invokeMethodAsync('OnValueChanged', currentRaw);

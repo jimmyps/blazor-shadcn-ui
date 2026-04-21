@@ -319,13 +319,20 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     private string? EffectiveName => Name ?? Id;
 
     /// <summary>
-    /// Gets the effective placeholder, hidden when ShowMask is enabled.
+    /// <summary>
+    /// Gets the effective placeholder — always delegates to the Placeholder parameter.
+    /// The JavaScript layer handles showing the mask template on focus.
     /// </summary>
-    private string? EffectivePlaceholder => !ShowMask || string.IsNullOrEmpty(Mask) ? Placeholder : null;
+    private string? EffectivePlaceholder => Placeholder;
 
     /// <summary>
     /// Gets the current masked display value shown to the user.
     /// </summary>
+    /// <remarks>
+    /// When the value is empty the field renders with an empty string so the
+    /// HTML placeholder attribute is visible. The JavaScript layer shows the
+    /// mask template on focus and clears back to empty on blur.
+    /// </remarks>
     private string CurrentDisplayValue
     {
         get
@@ -333,8 +340,10 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
             if (string.IsNullOrEmpty(Mask))
                 return Value ?? string.Empty;
 
-            if (string.IsNullOrEmpty(Value) && ShowMask)
-                return GenerateEmptyMask();
+            // Empty value → render as empty so HTML placeholder shows.
+            // JS handles the mask-template display on focus.
+            if (string.IsNullOrEmpty(Value))
+                return string.Empty;
 
             return ApplyMask(Value ?? string.Empty);
         }
