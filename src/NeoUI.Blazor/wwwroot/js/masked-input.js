@@ -226,18 +226,10 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
         const newValue = element.value;
         const cursorPos = element.selectionStart;
 
-        // Extract all valid characters from new input
-        let allChars = '';
-        for (let i = 0; i < newValue.length; i++) {
-            const char = newValue[i];
-            // Check if this character is valid for ANY editable position
-            for (const pos of positions) {
-                if (pos.isEditable && pos.pattern.test(char)) {
-                    allChars += char;
-                    break;
-                }
-            }
-        }
+        // Use getRawValue to extract only editable characters at their correct mask
+        // positions. This avoids including literal digit characters in the mask
+        // (e.g. the '1' in '+1 (000) 000-0000') which caused double-output bugs.
+        const allChars = getRawValue(newValue);
 
         // Calculate raw cursor position
         // How many editable chars were before cursor in old value
