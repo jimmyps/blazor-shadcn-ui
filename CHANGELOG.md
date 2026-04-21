@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-4-21 — MaskedInput & CurrencyInput Bug Fixes
+
+> **Release: `v4.0.3`**  
+> **Fixes apply to `NeoUI.Blazor`.** No breaking changes.
+
+---
+
+### 🐛 Fix — `MaskedInput`: double-character input for masks with literal digits
+
+Typing a single digit in an international phone number mask (e.g. `+1 (000) 000-0000`, `+44 0000 000000`, `+55 (00) 00000-0000`) produced double output — typing `2` would yield `12`. The root cause was `handleInput` in `masked-input.js` scanning every character in the new DOM value against editable-position patterns without checking mask position, so literal digit characters (the `1` in `+1`, `44` in `+44`, `55` in `+55`) were incorrectly included alongside the typed character. Fixed by replacing the faulty extraction loop with the existing `getRawValue()` helper, which iterates the parsed `positions` array and only collects characters at editable slots (`pos.isEditable`).
+
+---
+
+### 🐛 Fix — `MaskedInput`: mask template / placeholder visibility lifecycle
+
+Two related fixes to how the mask template and HTML `placeholder` attribute interact:
+
+- **When `Placeholder` is set:** `CurrentDisplayValue` now returns an empty string when `Value` is empty, making the HTML `placeholder` attribute visible (previously, literal prefix characters like `+` were emitted, suppressing the placeholder). The JS `handleFocus` handler shows `applyMask('')` as a format guide when the field is focused; `handleBlur` clears `element.value` to `''` so the HTML placeholder reappears on blur.
+- **When `Placeholder` is not set:** `CurrentDisplayValue` falls back to `GenerateEmptyMask()` so a permanent format guide is always visible. The JS `handleBlur` now only clears `element.value` when `element.placeholder` is set — without a placeholder the mask template stays visible at all times.
+
+---
+
+### 🐛 Fix — `CurrencyInput`: incorrect symbol-number spacing for IDR and MYR
+
+`Rp 100.000` was rendering as `Rp100.000` (missing space). Added a `SpaceAfterSymbol` property to `CurrencyDefinition` (default `false`) and set it to `true` for IDR and MYR in `CurrencyCatalog`. `CurrencyInput` now explicitly sets `CurrencyPositivePattern` (and the corresponding negative pattern) based on `SymbolBefore + SpaceAfterSymbol` instead of inheriting the culture default:
+
+| Pattern | Format | Currencies |
+|---|---|---|
+| `2` | `$ n` (symbol before, space) | IDR, MYR |
+| `0` | `$n` (symbol before, no space) | USD, EUR, GBP, … |
+| `3` | `n $` (symbol after, space) | VND |
+
+---
+
 ## 2026-4-14 — Default Theme Preset on Startup + ThemeSwitcher Polish
 
 > **Release: `v4.0.2`**  
