@@ -39,8 +39,8 @@ public static class CurrencyCatalog
         ["HKD"] = new() { Code = "HKD", Symbol = "$", DecimalPlaces = 2, CultureName = "zh-HK", Name = "Hong Kong Dollar" },
         ["TWD"] = new() { Code = "TWD", Symbol = "NT$", DecimalPlaces = 2, CultureName = "zh-TW", Name = "Taiwan Dollar" },
         ["THB"] = new() { Code = "THB", Symbol = "฿", DecimalPlaces = 2, CultureName = "th-TH", Name = "Thai Baht" },
-        ["MYR"] = new() { Code = "MYR", Symbol = "RM", DecimalPlaces = 2, CultureName = "ms-MY", Name = "Malaysian Ringgit" },
-        ["IDR"] = new() { Code = "IDR", Symbol = "Rp", DecimalPlaces = 0, CultureName = "id-ID", Name = "Indonesian Rupiah" },
+        ["MYR"] = new() { Code = "MYR", Symbol = "RM", DecimalPlaces = 2, CultureName = "ms-MY", Name = "Malaysian Ringgit", SpaceAfterSymbol = true },
+        ["IDR"] = new() { Code = "IDR", Symbol = "Rp", DecimalPlaces = 0, CultureName = "id-ID", Name = "Indonesian Rupiah", SpaceAfterSymbol = true },
         ["PHP"] = new() { Code = "PHP", Symbol = "₱", DecimalPlaces = 2, CultureName = "en-PH", Name = "Philippine Peso" },
         ["VND"] = new() { Code = "VND", Symbol = "₫", DecimalPlaces = 0, CultureName = "vi-VN", Name = "Vietnamese Dong", SymbolBefore = false },
 

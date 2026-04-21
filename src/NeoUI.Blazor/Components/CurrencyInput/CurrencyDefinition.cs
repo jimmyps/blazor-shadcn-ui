@@ -34,4 +34,10 @@ public class CurrencyDefinition
     /// Gets or sets whether the symbol appears before the amount.
     /// </summary>
     public bool SymbolBefore { get; init; } = true;
+
+    /// <summary>
+    /// Gets or sets whether a space is placed between the symbol and the amount.
+    /// For example, IDR formats as "Rp 100.000" (space), while USD formats as "$1.00" (no space).
+    /// </summary>
+    public bool SpaceAfterSymbol { get; init; } = false;
 }

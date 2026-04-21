@@ -520,8 +520,19 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
                     // Handle symbol positioning (for currencies like VND that have symbol after)
                     if (!currencyDef.SymbolBefore)
                     {
-                        numberFormat.CurrencyPositivePattern = 1; // n $
-                        numberFormat.CurrencyNegativePattern = 1; // -n $
+                        numberFormat.CurrencyPositivePattern = 3; // n $
+                        numberFormat.CurrencyNegativePattern = 8; // -n $
+                    }
+                    else if (currencyDef.SpaceAfterSymbol)
+                    {
+                        // e.g. IDR → "Rp 100.000", MYR → "RM 100.00"
+                        numberFormat.CurrencyPositivePattern = 2; // $ n
+                        numberFormat.CurrencyNegativePattern = 9; // -$ n
+                    }
+                    else
+                    {
+                        numberFormat.CurrencyPositivePattern = 0; // $n
+                        numberFormat.CurrencyNegativePattern = 1; // -$n
                     }
                     
                     return numericValue.ToString("C", numberFormat);
