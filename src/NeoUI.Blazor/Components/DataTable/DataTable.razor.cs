@@ -610,6 +610,17 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public EventCallback<string?> OnFilter { get; set; }
 
     /// <summary>
+    /// Gets or sets the global search text. Supports two-way binding via <c>@bind-GlobalSearchValue</c>.
+    /// Setting this externally (e.g. to <c>null</c> or <c>""</c>) clears the search box and resets filtering.
+    /// </summary>
+    [Parameter]
+    public string? GlobalSearchValue { get; set; }
+
+    /// <summary>Raised when the global search value changes (supports <c>@bind-GlobalSearchValue</c>).</summary>
+    [Parameter]
+    public EventCallback<string?> GlobalSearchValueChanged { get; set; }
+
+    /// <summary>
     /// When <c>true</c>, drag-to-resize handles appear on column headers, letting users adjust
     /// column widths at runtime. Per-column <c>Resizable</c> on <see cref="DataTableColumn{TData,TValue}"/>
     /// overrides this table-level default.
@@ -912,6 +923,14 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             _expandedRowsInternal = new HashSet<string>(ExpandedValues);
         }
 
+        // Sync externally-set GlobalSearchValue into internal state (supports @bind-GlobalSearchValue).
+        var incoming = GlobalSearchValue ?? string.Empty;
+        if (incoming != _globalSearchValue)
+        {
+            _globalSearchValue = incoming;
+            _tableState.Pagination.CurrentPage = 1;
+        }
+
         // Keep selection mode in sync with parameter
         _tableState.Selection.Mode = GetPrimitiveSelectionMode();
 
@@ -1211,6 +1230,9 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     private async Task HandleGlobalSearchChanged(string value)
     {
         _globalSearchValue = value;
+
+        if (GlobalSearchValueChanged.HasDelegate)
+            await GlobalSearchValueChanged.InvokeAsync(_globalSearchValue);
 
         if (OnFilter.HasDelegate)
             await OnFilter.InvokeAsync(_globalSearchValue);
