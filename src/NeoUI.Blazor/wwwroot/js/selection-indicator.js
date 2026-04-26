@@ -221,9 +221,27 @@ export function init(indicator, selector, hoverEnabled, hoverTarget) {
         );
     }
 
+    // ── Layout-shift tracking (collapsible expand/collapse) ─────────────────
+    // When a SidebarCollapsibleGroup expands or collapses, its grid-template-rows
+    // transition shifts items below it before the MutationObserver fires. Re-position
+    // after any layout-affecting transition ends so the indicator lands correctly.
+    const layoutProps = new Set(['grid-template-rows', 'height', 'max-height']);
+    const onLayoutTransitionEnd = (e) => {
+        if (e.target === indicator) return;           // ignore the indicator's own transitions
+        if (!layoutProps.has(e.propertyName)) return; // ignore colour / opacity / etc.
+        if ('siHover' in indicator.dataset) return;   // don't disturb an active hover highlight
+        positionIndicator(indicator, container, selector, false, transition, fixedHeight);
+    };
+    container.addEventListener('transitionend', onLayoutTransitionEnd);
+    container.addEventListener('transitioncancel', onLayoutTransitionEnd);
+
     instanceMap.set(indicator, {
         observer,
-        cleanup: () => hoverHandlers.forEach(fn => fn()),
+        cleanup: () => {
+            hoverHandlers.forEach(fn => fn());
+            container.removeEventListener('transitionend', onLayoutTransitionEnd);
+            container.removeEventListener('transitioncancel', onLayoutTransitionEnd);
+        },
     });
 }
 
