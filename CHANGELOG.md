@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-5-6 — FilterBuilder MaxTabs Overflow
+
+> **Release: `v4.0.11`**  
+> **Affects `NeoUI.Blazor`.** Additive — no breaking changes.
+
+---
+
+### ✨ Enhancement — `FilterBuilder`: `MaxTabs` overflow dropdown
+
+Added `MaxTabs` parameter (`int?`, default `null`) to `FilterBuilder`. When set and `PresetsVariant` is `Tabs`, the first `N` presets render as normal tabs; any remaining presets overflow into a **"More ▾"** dropdown appended as the last slot.
+
+- The More button label updates dynamically to the active overflow preset's name
+- Selecting a primary tab or "All" reverts the label back to "More"
+- Active overflow item shows a checkmark in the dropdown
+- `MaxTabs` is clamped to a minimum of 1
+- Has zero effect when `MaxTabs` is `null` or `PresetsVariant` is `Dropdown` — fully backward-compatible
+
+```razor
+<FilterBuilder ... PresetsVariant="FilterPresetsVariant.Tabs" MaxTabs="4">
+    ...
+</FilterBuilder>
+```
+
+---
+
 ## 2026-4-24 to 2026-5-5 — DataTable & Filter Enhancements
 
 > **Releases: `v4.0.4` → `v4.0.8`**  
