@@ -154,7 +154,7 @@
         </div>
 
         @* Clear button — always at far right, only visible when conditions are active *@
-        @if (_conditions.Any())
+        @if (_rootGroup.Conditions.Any() || (AllowGroups && _rootGroup.NestedGroups.Any()))
         {
             <Button Variant="ButtonVariant.Outline"
                     Size="ButtonSize.Small"
@@ -166,17 +166,30 @@
         }
     </div>
 
-    @* ── Active filter chips — one per row ── *@
-    @foreach (var condition in _conditions.ToList())
+    @if (AllowGroups)
     {
-        var cond = condition;
-        var fieldDef = _fields.FirstOrDefault(f => f.Field == cond.Field);
-        <div @key="cond.Id" class="mt-2">
-            <FilterChip Condition="@cond"
-                        FieldDefinition="@fieldDef"
-                        Size="@ChipSize"
-                        ConditionChanged="@HandleConditionChanged"
-                        OnRemove="@(() => RemoveCondition(cond))" />
+        <div class="mt-2">
+            <FilterGroupPanel Group="@_rootGroup"
+                              Fields="@_fields"
+                              ChipSize="@ChipSize"
+                              IsRoot="true"
+                              OnChanged="@NotifyFiltersChanged" />
         </div>
+    }
+    else
+    {
+        @* ── Active filter chips — one per row ── *@
+        @foreach (var condition in _rootGroup.Conditions.ToList())
+        {
+            var cond = condition;
+            var fieldDef = _fields.FirstOrDefault(f => f.Field == cond.Field);
+            <div @key="cond.Id" class="mt-2">
+                <FilterChip Condition="@cond"
+                            FieldDefinition="@fieldDef"
+                            Size="@ChipSize"
+                            ConditionChanged="@HandleConditionChanged"
+                            OnRemove="@(() => RemoveCondition(cond))" />
+            </div>
+        }
     }
 </div>

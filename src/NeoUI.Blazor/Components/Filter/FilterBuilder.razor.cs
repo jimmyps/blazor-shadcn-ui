@@ -12,7 +12,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 {
     private readonly List<FilterFieldDefinition> _fields = new();
     private readonly List<FilterPresetDefinition> _presets = new();
-    private List<FilterCondition> _conditions = new();
+    private FilterGroup _rootGroup = new();
     private HashSet<string> _lastEmittedIds = new();
     private string? _activePresetName;
 
@@ -61,6 +61,13 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// <summary>Size applied to every <see cref="FilterChip"/> rendered by this builder.</summary>
     [Parameter] public FilterChipSize ChipSize { get; set; } = FilterChipSize.Small;
 
+    /// <summary>
+    /// When true (default), the UI renders the root logic toggle (ALL of / ANY of)
+    /// and exposes the [+ Add group] button, enabling predicate-tree / nested-group editing.
+    /// Set to false to preserve the legacy flat-chip behaviour.
+    /// </summary>
+    [Parameter] public bool AllowGroups { get; set; } = true;
+
     // ── Computed ─────────────────────────────────────────────────────────────
 
     private string WrapperCssClass => ClassNames.cn(Class);
@@ -70,7 +77,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// is not in use. When tabs are showing the text is always hidden so the button stays
     /// icon-only and the toolbar width never shifts as the user switches presets.
     /// </summary>
-    private bool ShowButtonText => !_conditions.Any() && !(PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any());
+    private bool ShowButtonText => !_rootGroup.Conditions.Any() && !(PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any());
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 
@@ -78,8 +85,8 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     {
         if (Filters != null)
         {
-            _conditions = Filters.Conditions.Select(CloneCondition).ToList();
-            _lastEmittedIds = _conditions.Select(c => c.Id).ToHashSet();
+            _rootGroup = CloneGroup(Filters);
+            _lastEmittedIds = _rootGroup.Conditions.Select(c => c.Id).ToHashSet();
         }
     }
 
@@ -87,10 +94,10 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     {
         if (Filters == null) return;
         var externalIds = Filters.Conditions.Select(c => c.Id).ToHashSet();
-        if (!externalIds.SetEquals(_lastEmittedIds))
+        if (!externalIds.SetEquals(_lastEmittedIds) || !AreEquivalentGroups(Filters, _rootGroup))
         {
-            _conditions = Filters.Conditions.Select(CloneCondition).ToList();
-            _lastEmittedIds = _conditions.Select(c => c.Id).ToHashSet();
+            _rootGroup = CloneGroup(Filters);
+            _lastEmittedIds = _rootGroup.Conditions.Select(c => c.Id).ToHashSet();
         }
     }
 
@@ -129,7 +136,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
             Field = field.Field,
             Operator = field.DefaultOperator ?? field.Operators.FirstOrDefault()
         };
-        _conditions.Add(newCond);
+        _rootGroup.Conditions.Add(newCond);
         _ = NotifyFiltersChanged();
         StateHasChanged();
     }
@@ -144,7 +151,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         object value = field.Type == FilterFieldType.MultiSelect
             ? new List<string> { optionValue }
             : optionValue;
-        _conditions.Add(new FilterCondition
+        _rootGroup.Conditions.Add(new FilterCondition
         {
             Field = field.Field,
             Operator = field.DefaultOperator ?? field.Operators.FirstOrDefault(),
@@ -157,7 +164,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     private void RemoveCondition(FilterCondition condition)
     {
         _activePresetName = null;
-        _conditions.Remove(condition);
+        _rootGroup.Conditions.Remove(condition);
         _ = NotifyFiltersChanged();
         StateHasChanged();
     }
@@ -165,7 +172,8 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     private async Task ClearAll()
     {
         _activePresetName = null;
-        _conditions.Clear();
+        _rootGroup.Conditions.Clear();
+        _rootGroup.NestedGroups.Clear();
         await NotifyFiltersChanged();
         StateHasChanged();
     }
@@ -173,8 +181,9 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     private void ApplyPreset(FilterPresetDefinition preset)
     {
         _activePresetName = preset.Name;
-        _conditions.Clear();
-        _conditions.AddRange(preset.Filters.Conditions.Select(CloneCondition));
+        _rootGroup.Logic = preset.Filters.Logic;
+        _rootGroup.Conditions = preset.Filters.Conditions.Select(CloneCondition).ToList();
+        _rootGroup.NestedGroups = preset.Filters.NestedGroups.Select(CloneGroup).ToList();
         _ = NotifyFiltersChanged();
         StateHasChanged();
     }
@@ -187,13 +196,8 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
 
     private async Task NotifyFiltersChanged()
     {
-        var updated = new FilterGroup
-        {
-            Id = Filters?.Id ?? Guid.NewGuid().ToString(),
-            Logic = Filters?.Logic ?? LogicalOperator.And,
-            Conditions = _conditions.Select(CloneCondition).ToList(),
-            NestedGroups = Filters?.NestedGroups ?? new()
-        };
+        var updated = CloneGroup(_rootGroup);
+        updated.Id = Filters?.Id ?? _rootGroup.Id;
         _lastEmittedIds = updated.Conditions.Select(c => c.Id).ToHashSet();
 
         if (FiltersChanged.HasDelegate)
@@ -264,6 +268,14 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         Operator = c.Operator,
         Value = c.Value,
         SecondaryValue = c.SecondaryValue
+    };
+
+    private static FilterGroup CloneGroup(FilterGroup group) => new()
+    {
+        Id = group.Id,
+        Logic = group.Logic,
+        Conditions = group.Conditions.Select(CloneCondition).ToList(),
+        NestedGroups = group.NestedGroups.Select(CloneGroup).ToList()
     };
 
     public void RestoreMatchingPresetSelection(FilterGroup? filters = null)

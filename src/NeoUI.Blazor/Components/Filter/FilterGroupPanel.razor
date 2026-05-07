@@ -1,0 +1,224 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+
+<div class="@PanelCssClass">
+    <div class="flex items-center gap-2 text-xs text-muted-foreground font-medium mb-2">
+        @if (!IsRoot)
+        {
+            <span>Group ·</span>
+        }
+        <span>Match</span>
+        <Button Variant="@(Group.Logic == LogicalOperator.And ? ButtonVariant.Secondary : ButtonVariant.Ghost)"
+                Size="ButtonSize.Small"
+                Class="h-6 px-2 text-xs"
+                OnClick="@(() => SetLogic(LogicalOperator.And))">
+            <span class="inline-flex h-2 w-2 rounded-full border border-current @(Group.Logic == LogicalOperator.And ? "bg-current" : string.Empty)"></span>
+            <span class="ml-1">ALL of</span>
+        </Button>
+        <Button Variant="@(Group.Logic == LogicalOperator.Or ? ButtonVariant.Secondary : ButtonVariant.Ghost)"
+                Size="ButtonSize.Small"
+                Class="h-6 px-2 text-xs"
+                OnClick="@(() => SetLogic(LogicalOperator.Or))">
+            <span class="inline-flex h-2 w-2 rounded-full border border-current @(Group.Logic == LogicalOperator.Or ? "bg-current" : string.Empty)"></span>
+            <span class="ml-1">ANY of</span>
+        </Button>
+        @if (!IsRoot)
+        {
+            <button type="button"
+                    class="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                    @onclick="RemoveGroupAsync">
+                <LucideIcon Name="x" Size="12" />
+            </button>
+        }
+    </div>
+
+    @foreach (var condition in Group.Conditions.ToList())
+    {
+        var cond = condition;
+        var fieldDef = Fields.FirstOrDefault(f => f.Field == cond.Field);
+        <div @key="cond.Id" class="mt-2">
+            <FilterChip Condition="@cond"
+                        FieldDefinition="@fieldDef"
+                        Size="@ChipSize"
+                        ConditionChanged="@HandleConditionChanged"
+                        OnRemove="@(() => RemoveCondition(cond))" />
+        </div>
+    }
+
+    @foreach (var nestedGroup in Group.NestedGroups.ToList())
+    {
+        var group = nestedGroup;
+        <div @key="group.Id" class="mt-2">
+            <FilterGroupPanel Group="@group"
+                              Fields="@Fields"
+                              ChipSize="@ChipSize"
+                              IsRoot="false"
+                              MaxNestingDepth="@MaxNestingDepth"
+                              CurrentDepth="@(CurrentDepth + 1)"
+                              OnChanged="@OnChanged"
+                              OnRemoveGroup="@(() => RemoveNestedGroup(group))" />
+        </div>
+    }
+
+    <div class="flex items-center gap-2 mt-2">
+        <DropdownMenu>
+            <DropdownMenuTrigger>
+                <Button Variant="ButtonVariant.Outline"
+                        Size="ButtonSize.Small"
+                        Class="h-7 gap-1.5 px-2 text-xs">
+                    <LucideIcon Name="plus" Size="12" />
+                    <span>Add predicate</span>
+                    <LucideIcon Name="chevron-down" Size="12" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent Align="PopoverAlign.Start" Class="w-48">
+                @foreach (var field in Fields)
+                {
+                    var f = field;
+                    @if (f.Options != null && f.Options.Any())
+                    {
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>
+                                @if (!string.IsNullOrEmpty(f.Icon))
+                                {
+                                    <LucideIcon Name="@f.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
+                                }
+                                <span>@f.Label</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent>
+                                @foreach (var option in f.Options)
+                                {
+                                    var opt = option;
+                                    <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddConditionWithValue(f, opt.Value))">
+                                        @opt.Label
+                                    </DropdownMenuItem>
+                                }
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddCondition(f))">
+                                    <span class="text-xs text-muted-foreground">Custom...</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                    }
+                    else
+                    {
+                        <DropdownMenuItem OnClick="@((MouseEventArgs _) => AddCondition(f))">
+                            @if (!string.IsNullOrEmpty(f.Icon))
+                            {
+                                <LucideIcon Name="@f.Icon" Size="14" Class="mr-2 opacity-70 shrink-0" />
+                            }
+                            <span>@f.Label</span>
+                        </DropdownMenuItem>
+                    }
+                }
+            </DropdownMenuContent>
+        </DropdownMenu>
+
+        @if (CurrentDepth < MaxNestingDepth)
+        {
+            <Button Variant="ButtonVariant.Outline"
+                    Size="ButtonSize.Small"
+                    Class="h-7 gap-1.5 px-2 text-xs"
+                    OnClick="@AddGroupAsync">
+                <LucideIcon Name="plus" Size="12" />
+                <span>Add group</span>
+            </Button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public FilterGroup Group { get; set; } = new();
+    [Parameter, EditorRequired] public IReadOnlyList<FilterFieldDefinition> Fields { get; set; } = Array.Empty<FilterFieldDefinition>();
+    [Parameter] public FilterChipSize ChipSize { get; set; } = FilterChipSize.Small;
+    [Parameter] public bool IsRoot { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnChanged { get; set; }
+    [Parameter] public EventCallback OnRemoveGroup { get; set; }
+    [Parameter] public int MaxNestingDepth { get; set; } = 3;
+    [Parameter] public int CurrentDepth { get; set; }
+
+    private string PanelCssClass => IsRoot
+        ? string.Empty
+        : "border border-dashed rounded-md p-3 mt-2 ml-2 pl-3";
+
+    private async Task SetLogic(LogicalOperator logic)
+    {
+        if (Group.Logic == logic)
+        {
+            return;
+        }
+
+        Group.Logic = logic;
+        await NotifyChanged();
+    }
+
+    private async Task AddCondition(FilterFieldDefinition field)
+    {
+        Group.Conditions.Add(new FilterCondition
+        {
+            Field = field.Field,
+            Operator = field.DefaultOperator ?? field.Operators.FirstOrDefault()
+        });
+
+        await NotifyChanged();
+    }
+
+    private async Task AddConditionWithValue(FilterFieldDefinition field, string optionValue)
+    {
+        object value = field.Type == FilterFieldType.MultiSelect
+            ? new List<string> { optionValue }
+            : optionValue;
+
+        Group.Conditions.Add(new FilterCondition
+        {
+            Field = field.Field,
+            Operator = field.DefaultOperator ?? field.Operators.FirstOrDefault(),
+            Value = value
+        });
+
+        await NotifyChanged();
+    }
+
+    private async Task AddGroupAsync()
+    {
+        Group.NestedGroups.Add(new FilterGroup
+        {
+            Logic = LogicalOperator.Or
+        });
+
+        await NotifyChanged();
+    }
+
+    private async Task RemoveCondition(FilterCondition condition)
+    {
+        Group.Conditions.Remove(condition);
+        await NotifyChanged();
+    }
+
+    private async Task RemoveNestedGroup(FilterGroup group)
+    {
+        Group.NestedGroups.Remove(group);
+        await NotifyChanged();
+    }
+
+    private async Task HandleConditionChanged(FilterCondition _)
+    {
+        await NotifyChanged();
+    }
+
+    private async Task RemoveGroupAsync()
+    {
+        if (OnRemoveGroup.HasDelegate)
+        {
+            await OnRemoveGroup.InvokeAsync();
+        }
+    }
+
+    private async Task NotifyChanged()
+    {
+        if (OnChanged.HasDelegate)
+        {
+            await OnChanged.InvokeAsync();
+        }
+    }
+}
