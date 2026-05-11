@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-5-10 — Badge Semantic Variants
+
+> **Affects `NeoUI.Blazor`.** Additive — no breaking changes.
+
+---
+
+### ✨ Enhancement — `Badge`: semantic variants (`Muted`, `Success`, `Info`, `Warning`, `Danger`)
+
+Added five new `BadgeVariant` values to match the existing `Alert` variant palette:
+
+- **`Muted`** — neutral gray badge using `--muted` / `--muted-foreground`
+- **`Success`** — green badge using `--alert-success` / `--alert-success-foreground`
+- **`Info`** — blue badge using `--alert-info` / `--alert-info-foreground`
+- **`Warning`** — amber badge using `--alert-warning` / `--alert-warning-foreground`
+- **`Danger`** — red badge using `--alert-danger` / `--alert-danger-foreground`
+
+All new variants reuse the same CSS custom property tokens as `Alert`, ensuring visual consistency and full theme/dark-mode compatibility. The demo page has a new **Semantic Variants** section.
+
+```razor
+<Badge Variant="BadgeVariant.Success">Success</Badge>
+<Badge Variant="BadgeVariant.Warning">Warning</Badge>
+<Badge Variant="BadgeVariant.Danger">Danger</Badge>
+```
+
+---
+
 ## 2026-5-6 — FilterBuilder MaxTabs Overflow
 
 > **Release: `v4.0.11`**  

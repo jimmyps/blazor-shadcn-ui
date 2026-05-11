@@ -83,6 +83,11 @@ public partial class Badge : ComponentBase
             BadgeVariant.Secondary => "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
             BadgeVariant.Destructive => "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
             BadgeVariant.Outline => "text-foreground",
+            BadgeVariant.Muted => "border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
+            BadgeVariant.Success => "border-transparent bg-alert-success text-alert-success-foreground hover:bg-alert-success/80",
+            BadgeVariant.Info => "border-transparent bg-alert-info text-alert-info-foreground hover:bg-alert-info/80",
+            BadgeVariant.Warning => "border-transparent bg-alert-warning text-alert-warning-foreground hover:bg-alert-warning/80",
+            BadgeVariant.Danger => "border-transparent bg-alert-danger text-alert-danger-foreground hover:bg-alert-danger/80",
             _ => "border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
         },
         // StyleVariant class overrides (layer 2 — before user Class so Class always wins)

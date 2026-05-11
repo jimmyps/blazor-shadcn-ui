@@ -5,7 +5,7 @@ namespace NeoUI.Demo.Shared.Pages.Components
 
         private static readonly IReadOnlyList<DemoPropRow> _badgeProps =
             [
-                new("Variant",      "BadgeVariant",    "Default",  "Visual style variant. Options: Default, Secondary, Destructive, Outline."),
+                new("Variant",      "BadgeVariant",    "Default",  "Visual style variant. Options: Default, Secondary, Destructive, Outline, Muted, Success, Info, Warning, Danger."),
                 new("Class",        "string?",          null,       "Additional CSS classes to apply to the badge element."),
                 new("ChildContent", "RenderFragment?",  null,       "The content to display inside the badge (text, icons, numbers, etc.)."),
             ];
@@ -22,6 +22,27 @@ namespace NeoUI.Demo.Shared.Pages.Components
                 <Badge Variant="BadgeVariant.Secondary">Secondary</Badge>
                 <Badge Variant="BadgeVariant.Destructive">Destructive</Badge>
                 <Badge Variant="BadgeVariant.Outline">Outline</Badge>
+                <Badge Variant="BadgeVariant.Muted">Muted</Badge>
+                """;
+
+        private const string _semanticVariantsCode =
+                """
+                <Badge Variant="BadgeVariant.Success">
+                    <BadgeIcon><LucideIcon Name="check" /></BadgeIcon>
+                    Success
+                </Badge>
+                <Badge Variant="BadgeVariant.Info">
+                    <BadgeIcon><LucideIcon Name="info" /></BadgeIcon>
+                    Info
+                </Badge>
+                <Badge Variant="BadgeVariant.Warning">
+                    <BadgeIcon><LucideIcon Name="triangle-alert" /></BadgeIcon>
+                    Warning
+                </Badge>
+                <Badge Variant="BadgeVariant.Danger">
+                    <BadgeIcon><LucideIcon Name="circle-x" /></BadgeIcon>
+                    Danger
+                </Badge>
                 """;
 
         private const string _usageCode =
