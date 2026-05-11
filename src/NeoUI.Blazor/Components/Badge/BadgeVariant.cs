@@ -70,5 +70,33 @@ public enum BadgeVariant
     /// Uses --alert-danger and --alert-danger-foreground CSS variables.
     /// Indicates critical errors or destructive actions.
     /// </summary>
-    Danger
+    Danger,
+
+    /// <summary>
+    /// Soft success badge style with tinted green background.
+    /// Uses --alert-success-bg background, --alert-success border, and --alert-success text.
+    /// A subtler alternative to Success for less prominent status labels.
+    /// </summary>
+    SuccessSoft,
+
+    /// <summary>
+    /// Soft info badge style with tinted blue background.
+    /// Uses --alert-info-bg background, --alert-info border, and --alert-info text.
+    /// A subtler alternative to Info for less prominent informational labels.
+    /// </summary>
+    InfoSoft,
+
+    /// <summary>
+    /// Soft warning badge style with tinted amber background.
+    /// Uses --alert-warning-bg background, --alert-warning border, and --alert-warning text.
+    /// A subtler alternative to Warning for less prominent caution labels.
+    /// </summary>
+    WarningSoft,
+
+    /// <summary>
+    /// Soft danger badge style with tinted red background.
+    /// Uses --alert-danger-bg background, --alert-danger border, and --alert-danger text.
+    /// A subtler alternative to Danger for less prominent critical labels.
+    /// </summary>
+    DangerSoft
 }

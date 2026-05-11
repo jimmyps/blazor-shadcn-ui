@@ -13,12 +13,16 @@ All notable changes to this project will be documented in this file.
 Added five new `BadgeVariant` values to match the existing `Alert` variant palette:
 
 - **`Muted`** — neutral gray badge using `--muted` / `--muted-foreground`
-- **`Success`** — green badge using `--alert-success` / `--alert-success-foreground`
-- **`Info`** — blue badge using `--alert-info` / `--alert-info-foreground`
-- **`Warning`** — amber badge using `--alert-warning` / `--alert-warning-foreground`
-- **`Danger`** — red badge using `--alert-danger` / `--alert-danger-foreground`
+- **`Success`** — solid green badge (`text-white`)
+- **`Info`** — solid blue badge (`text-white`)
+- **`Warning`** — solid amber badge (`text-white`)
+- **`Danger`** — solid red badge (`text-white`)
+- **`SuccessSoft`** — tinted green background + accent border + accent text
+- **`InfoSoft`** — tinted blue background + accent border + accent text
+- **`WarningSoft`** — tinted amber background + accent border + accent text
+- **`DangerSoft`** — tinted red background + accent border + accent text
 
-All new variants reuse the same CSS custom property tokens as `Alert`, ensuring visual consistency and full theme/dark-mode compatibility. The demo page has a new **Semantic Variants** section.
+All new variants reuse the same CSS custom property tokens as `Alert`, ensuring visual consistency and full theme/dark-mode compatibility. The `--alert-*` CSS variables are now also defined as library defaults in `components-input.css` (previously only in the demo app). The demo page has new **Semantic Variants** and **Soft Variants** sections.
 
 ```razor
 <Badge Variant="BadgeVariant.Success">Success</Badge>

@@ -84,10 +84,14 @@ public partial class Badge : ComponentBase
             BadgeVariant.Destructive => "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
             BadgeVariant.Outline => "text-foreground",
             BadgeVariant.Muted => "border-transparent bg-muted text-muted-foreground hover:bg-muted/80",
-            BadgeVariant.Success => "border-transparent bg-alert-success text-alert-success-foreground hover:bg-alert-success/80",
-            BadgeVariant.Info => "border-transparent bg-alert-info text-alert-info-foreground hover:bg-alert-info/80",
-            BadgeVariant.Warning => "border-transparent bg-alert-warning text-alert-warning-foreground hover:bg-alert-warning/80",
-            BadgeVariant.Danger => "border-transparent bg-alert-danger text-alert-danger-foreground hover:bg-alert-danger/80",
+            BadgeVariant.Success => "border-transparent bg-alert-success text-white hover:bg-alert-success/80",
+            BadgeVariant.Info => "border-transparent bg-alert-info text-white hover:bg-alert-info/80",
+            BadgeVariant.Warning => "border-transparent bg-alert-warning text-white hover:bg-alert-warning/80",
+            BadgeVariant.Danger => "border-transparent bg-alert-danger text-white hover:bg-alert-danger/80",
+            BadgeVariant.SuccessSoft => "bg-alert-success-bg border-alert-success/50 text-alert-success hover:bg-alert-success-bg/80",
+            BadgeVariant.InfoSoft => "bg-alert-info-bg border-alert-info/50 text-alert-info hover:bg-alert-info-bg/80",
+            BadgeVariant.WarningSoft => "bg-alert-warning-bg border-alert-warning/50 text-alert-warning hover:bg-alert-warning-bg/80",
+            BadgeVariant.DangerSoft => "bg-alert-danger-bg border-alert-danger/50 text-alert-danger hover:bg-alert-danger-bg/80",
             _ => "border-transparent bg-primary text-primary-foreground hover:bg-primary/80"
         },
         // StyleVariant class overrides (layer 2 — before user Class so Class always wins)
