@@ -187,6 +187,7 @@
         new("EditorType Control", "Override the value input per field: CurrencyInput for decimals, MaskedInput for phone numbers, etc."),
         new("Filter Presets",     "Register reusable filter sets via FilterPresets child content. Appears as a Presets dropdown."),
         new("@bind-Filters",      "Two-way binding via Filters/FiltersChanged. Combine with ApplyFilters() LINQ extension."),
+        new("Nested Groups",      "Set AllowGroups=true to enable the predicate-tree editor with AND/OR logic toggles and nested sub-groups."),
     ];
 
     private record ExampleCard(string Title, string Description, string Route);
@@ -197,6 +198,7 @@
         new("All Field Types",  "Employee directory using all 8 field types + EditorType overrides.",  "/components/filter/all-types"),
         new("Presets",          "Order management with one-click preset filters + DataTable.",         "/components/filter/presets"),
         new("Custom Controls",  "Star-rating custom control via RenderFragment<FilterCondition>.",     "/components/filter/custom"),
+        new("Nested Groups",    "Predicate-tree editor with AND/OR logic toggles and nested sub-groups.", "/components/filter/nested"),
         new("State Persistence","Save and restore filter state via localStorage.",                     "/components/filter/persistence"),
     ];
 

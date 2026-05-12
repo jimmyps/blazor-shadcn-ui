@@ -62,11 +62,11 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     [Parameter] public FilterChipSize ChipSize { get; set; } = FilterChipSize.Small;
 
     /// <summary>
-    /// When true (default), the UI renders the root logic toggle (ALL of / ANY of)
+    /// When true, the UI renders the root logic toggle (ALL of / ANY of)
     /// and exposes the [+ Add group] button, enabling predicate-tree / nested-group editing.
-    /// Set to false to preserve the legacy flat-chip behaviour.
+    /// Defaults to false to preserve the legacy flat-chip behaviour.
     /// </summary>
-    [Parameter] public bool AllowGroups { get; set; } = true;
+    [Parameter] public bool AllowGroups { get; set; } = false;
 
     // ── Computed ─────────────────────────────────────────────────────────────
 
@@ -77,7 +77,7 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// is not in use. When tabs are showing the text is always hidden so the button stays
     /// icon-only and the toolbar width never shifts as the user switches presets.
     /// </summary>
-    private bool ShowButtonText => !_rootGroup.Conditions.Any() && !(PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any());
+    private bool ShowButtonText => !_rootGroup.Conditions.Any() && !_rootGroup.NestedGroups.Any() && !(PresetsVariant == FilterPresetsVariant.Tabs && _presets.Any());
 
     // ── Lifecycle ────────────────────────────────────────────────────────────
 

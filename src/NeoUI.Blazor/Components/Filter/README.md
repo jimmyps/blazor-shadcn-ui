@@ -72,6 +72,7 @@ Each active condition is rendered on its **own row** as a segmented chip:
 | `PresetsVariant` | `FilterPresetsVariant` | `Dropdown` | How presets are rendered: `Dropdown` (button + menu) or `Tabs` (horizontal tab bar with implicit "All" tab). |
 | `MaxTabs` | `int?` | `null` | Maximum visible preset tabs when using `Tabs` variant. Presets beyond this count overflow into a "More ▾" dropdown appended as the last tab slot. The slot label updates dynamically to show the active overflow preset name. Has no effect on `Dropdown` variant or when `null`. |
 | `ChipSize` | `FilterChipSize` | `Small` | Height of every chip: `Small` (h-7), `Medium` (h-8), `Large` (h-9). |
+| `AllowGroups` | `bool` | `false` | When `true`, enables the predicate-tree editor: root logic toggle (ALL of / ANY of) and [+ Add group] button for nested sub-groups. |
 | `Class` | `string?` | `null` | Additional CSS classes for the wrapper. |
 
 ### FilterField
@@ -114,6 +115,56 @@ Each active condition is rendered on its **own row** as a segmented chip:
 | `Select` | `Select<string>` (borderless) | Single value from a list |
 | `MultiSelect` | `MultiSelect<SelectOption>` (borderless) | Multiple values |
 | `Custom` | `RenderFragment<FilterCustomContext>` | Any custom control |
+
+## Nested Groups
+
+Set `AllowGroups="true"` to enable the interactive predicate-tree editor. Each group gets its own logic toggle (ALL of / ANY of) and an [+ Add group] button to create nested sub-groups up to three levels deep.
+
+```razor
+<FilterBuilder TData="Order"
+               @bind-Filters="activeFilters"
+               AllowGroups="true"
+               OnFilterChange="HandleFilterChange">
+    <FilterFields>
+        <FilterField Field="Status"   Label="Status"   Icon="activity"    Type="FilterFieldType.Select" Options="@statusOptions" />
+        <FilterField Field="Priority" Label="Priority" Icon="circle-alert" Type="FilterFieldType.Select" Options="@priorityOptions" />
+        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign" Type="FilterFieldType.Number"
+                     EditorType="FilterEditorType.Currency" Min="0" />
+    </FilterFields>
+</FilterBuilder>
+```
+
+You can also construct a `FilterGroup` with nested groups in code and pass it via `@bind-Filters`:
+
+```csharp
+// (Status = "Pending" OR Status = "Processing") AND Amount > 500
+var filters = new FilterGroup
+{
+    Logic = LogicalOperator.And,
+    Conditions =
+    [
+        new FilterCondition { Field = "Amount", Operator = FilterOperator.GreaterThan, Value = 500m }
+    ],
+    NestedGroups =
+    [
+        new FilterGroup
+        {
+            Logic = LogicalOperator.Or,
+            Conditions =
+            [
+                new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Pending" },
+                new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Processing" }
+            ]
+        }
+    ]
+};
+```
+
+The `ApplyFilters()` LINQ extension resolves the full predicate tree recursively:
+
+```csharp
+var results = allOrders.ApplyFilters(filters).ToList();
+```
 
 ## LINQ Extensions
 

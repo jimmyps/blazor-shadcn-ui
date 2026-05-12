@@ -7,12 +7,82 @@
 
     <DemoPageHeader
         Title="Nested Groups"
-        Description="Build complex filter logic with nested condition groups using AND/OR operators." />
+        Description="Build complex filter logic with nested condition groups using AND/OR operators. Set AllowGroups=true on FilterBuilder to enable the predicate-tree editor." />
 
-    <DemoSection Title="Coming Soon" Description="Nested group editing UI is planned for a future release. FilterGroup already supports nested groups in the model.">
-        <div class="bg-muted p-6 rounded-lg">
-            <pre class="text-sm overflow-x-auto font-mono"><code>@_nestedCode</code></pre>
-        </div>
+    <DemoSection Title="Interactive Predicate Tree" Description="Use [+ Add predicate] to add conditions and [+ Add group] to create nested sub-groups, each with their own AND/OR logic.">
+        <DemoBlock Code="@_interactiveCode">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Orders</h2>
+                    <span class="text-sm text-muted-foreground">@_filteredOrders.Count of @_allOrders.Count shown</span>
+                </div>
+
+                <FilterBuilder TData="Order"
+                               @bind-Filters="_activeFilters"
+                               AllowGroups="true"
+                               OnFilterChange="HandleFilterChange">
+                    <FilterFields>
+                        <FilterField Field="Status"   Label="Status"   Icon="activity"    Type="FilterFieldType.Select"  Options="@_statusOptions" />
+                        <FilterField Field="Priority" Label="Priority" Icon="circle-alert" Type="FilterFieldType.Select" Options="@_priorityOptions" />
+                        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign" Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="Customer" Label="Customer" Icon="user"        Type="FilterFieldType.Text" />
+                    </FilterFields>
+                </FilterBuilder>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    @foreach (var order in _filteredOrders)
+                    {
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>@order.OrderNumber</CardTitle>
+                                <CardDescription>@order.Customer</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold">$@order.Amount.ToString("N2")</span>
+                                    <div class="flex gap-1">
+                                        <Badge Variant="@GetStatusVariant(order.Status)">@order.Status</Badge>
+                                        <Badge Variant="@GetPriorityVariant(order.Priority)">@order.Priority</Badge>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    }
+                </div>
+
+                @if (!_filteredOrders.Any())
+                {
+                    <div class="text-center py-12">
+                        <p class="text-muted-foreground">No orders match your filters.</p>
+                    </div>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Programmatic Construction" Description="You can also build a FilterGroup with nested groups in code and pass it as a pre-seeded initial state.">
+        <DemoBlock Code="@_nestedCode">
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-semibold">Preset: Urgent Pending or Processing</h2>
+                    <span class="text-sm text-muted-foreground">@_presetFiltered.Count of @_allOrders.Count shown</span>
+                </div>
+
+                <FilterBuilder TData="Order"
+                               @bind-Filters="_presetFilters"
+                               AllowGroups="true"
+                               OnFilterChange="HandlePresetFilterChange">
+                    <FilterFields>
+                        <FilterField Field="Status"   Label="Status"   Icon="activity"    Type="FilterFieldType.Select"  Options="@_statusOptions" />
+                        <FilterField Field="Priority" Label="Priority" Icon="circle-alert" Type="FilterFieldType.Select" Options="@_priorityOptions" />
+                        <FilterField Field="Amount"   Label="Amount"   Icon="dollar-sign" Type="FilterFieldType.Number"
+                                     EditorType="FilterEditorType.Currency" Min="0" />
+                        <FilterField Field="Customer" Label="Customer" Icon="user"        Type="FilterFieldType.Text" />
+                    </FilterFields>
+                </FilterBuilder>
+            </div>
+        </DemoBlock>
     </DemoSection>
 
     <DemoSection Title="LINQ Support" Description="The ApplyFilters extension fully resolves nested groups at runtime.">
@@ -23,3 +93,104 @@
 
     <DemoPageSubNav ParentSlug="filter" />
 </div>
+
+@code {
+    private FilterGroup _activeFilters = new();
+    private FilterGroup _presetFilters = BuildPresetFilters();
+    private List<Order> _allOrders = new();
+    private List<Order> _filteredOrders = new();
+    private List<Order> _presetFiltered = new();
+
+    private readonly List<SelectOption> _statusOptions =
+    [
+        new("Pending",    "Pending"),
+        new("Processing", "Processing"),
+        new("Shipped",    "Shipped"),
+        new("Delivered",  "Delivered"),
+        new("Cancelled",  "Cancelled"),
+    ];
+
+    private readonly List<SelectOption> _priorityOptions =
+    [
+        new("Low",    "Low"),
+        new("Medium", "Medium"),
+        new("High",   "High"),
+    ];
+
+    protected override void OnInitialized()
+    {
+        _allOrders =
+        [
+            new() { Id = 1,  OrderNumber = "ORD-001", Customer = "Alice Johnson", Status = "Pending",    Priority = "High",   Amount = 1250.00m },
+            new() { Id = 2,  OrderNumber = "ORD-002", Customer = "Bob Smith",     Status = "Processing", Priority = "Medium", Amount = 450.50m  },
+            new() { Id = 3,  OrderNumber = "ORD-003", Customer = "Carol White",   Status = "Shipped",    Priority = "Low",    Amount = 89.99m   },
+            new() { Id = 4,  OrderNumber = "ORD-004", Customer = "David Brown",   Status = "Delivered",  Priority = "High",   Amount = 3200.00m },
+            new() { Id = 5,  OrderNumber = "ORD-005", Customer = "Eve Davis",     Status = "Pending",    Priority = "Medium", Amount = 175.25m  },
+            new() { Id = 6,  OrderNumber = "ORD-006", Customer = "Frank Miller",  Status = "Cancelled",  Priority = "Low",    Amount = 299.99m  },
+            new() { Id = 7,  OrderNumber = "ORD-007", Customer = "Grace Lee",     Status = "Processing", Priority = "High",   Amount = 5500.00m },
+            new() { Id = 8,  OrderNumber = "ORD-008", Customer = "Henry Wilson",  Status = "Pending",    Priority = "Medium", Amount = 650.00m  },
+            new() { Id = 9,  OrderNumber = "ORD-009", Customer = "Iris Martinez", Status = "Shipped",    Priority = "High",   Amount = 2100.75m },
+            new() { Id = 10, OrderNumber = "ORD-010", Customer = "Jack Anderson", Status = "Delivered",  Priority = "Low",    Amount = 55.00m   },
+        ];
+        _filteredOrders  = _allOrders.ToList();
+        _presetFiltered  = _allOrders.ApplyFilters(_presetFilters).ToList();
+    }
+
+    private void HandleFilterChange(FilterGroup filters)
+    {
+        _filteredOrders = _allOrders.ApplyFilters(filters).ToList();
+    }
+
+    private void HandlePresetFilterChange(FilterGroup filters)
+    {
+        _presetFiltered = _allOrders.ApplyFilters(filters).ToList();
+    }
+
+    // (Status = "Pending" OR Status = "Processing") AND Amount > 500
+    private static FilterGroup BuildPresetFilters() => new()
+    {
+        Logic = LogicalOperator.And,
+        Conditions =
+        [
+            new FilterCondition { Field = "Amount", Operator = FilterOperator.GreaterThan, Value = 500m }
+        ],
+        NestedGroups =
+        [
+            new FilterGroup
+            {
+                Logic = LogicalOperator.Or,
+                Conditions =
+                [
+                    new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Pending" },
+                    new FilterCondition { Field = "Status", Operator = FilterOperator.Equals, Value = "Processing" }
+                ]
+            }
+        ]
+    };
+
+    private static BadgeVariant GetStatusVariant(string status) => status switch
+    {
+        "Delivered"  => BadgeVariant.Default,
+        "Shipped"    => BadgeVariant.Secondary,
+        "Processing" => BadgeVariant.Secondary,
+        "Cancelled"  => BadgeVariant.Destructive,
+        _            => BadgeVariant.Outline,
+    };
+
+    private static BadgeVariant GetPriorityVariant(string priority) => priority switch
+    {
+        "High"   => BadgeVariant.Destructive,
+        "Medium" => BadgeVariant.Secondary,
+        _        => BadgeVariant.Outline,
+    };
+
+    public class Order
+    {
+        public int Id { get; set; }
+        public string OrderNumber { get; set; } = string.Empty;
+        public string Customer { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
+    }
+}

@@ -65,6 +65,10 @@ public partial class FilterBuilderDemo
         new("FilterFields",   "RenderFragment?",                   "null",           "<code>FilterField</code> child declarations."),
         new("FilterPresets",  "RenderFragment?",                   "null",           "<code>FilterPreset</code> child declarations. Adds a Presets dropdown."),
         new("ButtonText",     "string",                            "\"Filter\"",     "Label on the add-filter button (shown when no conditions are active)."),
+        new("PresetsVariant", "FilterPresetsVariant",              "Dropdown",       "How presets are rendered: <code>Dropdown</code> (button + menu) or <code>Tabs</code> (horizontal tab bar with implicit \"All\" tab)."),
+        new("MaxTabs",        "int?",                              "null",           "Maximum visible preset tabs when using <code>Tabs</code> variant. Excess presets overflow into a \"More ▾\" dropdown."),
+        new("ChipSize",       "FilterChipSize",                    "Small",          "Height of every chip: <code>Small</code> (h-7), <code>Medium</code> (h-8), <code>Large</code> (h-9)."),
+        new("AllowGroups",    "bool",                              "false",          "When true, enables the predicate-tree editor: logic toggle (ALL of / ANY of) + [+ Add group] button for nested sub-groups."),
         new("Class",          "string?",                           "null",           "Additional CSS classes for the wrapper element."),
     ];
 

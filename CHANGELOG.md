@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-5-12 — FilterBuilder Nested Groups (Interactive)
+
+> **Release: `v4.0.12`**  
+> **Affects `NeoUI.Blazor`.** Additive — no breaking changes.
+
+---
+
+### ✨ Enhancement — `FilterBuilder`: Interactive Predicate-Tree Editor
+
+Added `AllowGroups` parameter (`bool`, default `false`) to `FilterBuilder<TData>`, enabling an interactive predicate-tree editor with AND/OR logic toggles and nested sub-groups.
+
+#### New: `FilterGroupPanel` component
+
+A new recursive sub-component `FilterGroupPanel` renders one `FilterGroup` node. Each panel provides:
+
+- Logic toggle buttons (Match **ALL of** / **ANY of**) that update `FilterGroup.Logic`
+- **[+ Add predicate ▾]** dropdown — same field-picker pattern as the root filter button
+- **[+ Add group]** button — inserts a nested `FilterGroup` (hidden at max nesting depth, default 3)
+- Condition chips rendered via `FilterChip`, fully removable
+- Recursive nested group panels with remove (×) buttons on non-root groups
+- Visual treatment: root group blends with wrapper; nested groups use `border-dashed` with indent
+
+#### `FilterBuilder` changes
+
+- Replaced internal `_conditions` state with `_rootGroup` (`FilterGroup`) — deep-cloned on init and external sync
+- `NotifyFiltersChanged` now emits a full deep clone of `_rootGroup` (fixes prior bug where nested-group mutations were silently discarded)
+- `ClearAll` now clears both root conditions and nested groups
+- `ApplyPreset` now clones logic + conditions + nested groups from the preset
+- `ShowButtonText` now correctly checks both `Conditions` and `NestedGroups` so the "Filter" label hides when only group-level conditions are active
+
+#### New `AllowGroups` parameter
+
+```razor
+@* Enable predicate-tree editor — opt-in, backward-compatible *@
+<FilterBuilder TData="Order"
+               @bind-Filters="activeFilters"
+               AllowGroups="true"
+               OnFilterChange="HandleFilterChange">
+    ...
+</FilterBuilder>
+```
+
+When `AllowGroups = false` (default), the component renders the legacy flat chip layout with no logic toggle and no add-group button — fully backward-compatible.
+
+---
+
 ## 2026-5-6 — FilterBuilder MaxTabs Overflow
 
 > **Release: `v4.0.11`**  
