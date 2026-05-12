@@ -166,6 +166,10 @@ private System.Globalization.CultureInfo EffectiveCulture =>
         if (_selectedDate != SelectedDate)
         {
             _selectedDate = SelectedDate;
+            // Sync _lastNotifiedDate so OnAfterRenderAsync doesn't fire a spurious
+            // close+notify when the picker first opens with a pre-set date.
+            if (!_isOpen)
+                _lastNotifiedDate = _selectedDate;
         }
     }
 

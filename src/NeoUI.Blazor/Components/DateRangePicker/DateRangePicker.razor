@@ -293,11 +293,15 @@
         if (_startDate != StartDate)
         {
             _startDate = StartDate;
+            if (!_isOpen)
+                _lastNotifiedStartDate = _startDate;
         }
 
         if (_endDate != EndDate)
         {
             _endDate = EndDate;
+            if (!_isOpen)
+                _lastNotifiedEndDate = _endDate;
         }
 
         // Initialize calendar months to show contiguous months
