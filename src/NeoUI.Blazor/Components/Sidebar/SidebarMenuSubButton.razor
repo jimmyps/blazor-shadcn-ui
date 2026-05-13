@@ -1,6 +1,7 @@
 @namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 @*
     SidebarMenuSubButton component for clickable submenu items.
@@ -128,5 +129,27 @@ else
         };
 
         return ClassNames.cn(baseClasses, sizeClasses, Class);
+    }
+
+    private SidebarContext? _subscribedContext;
+
+    protected override void OnParametersSet()
+    {
+        if (_subscribedContext != Context)
+        {
+            if (_subscribedContext != null)
+                _subscribedContext.StateChanged -= OnContextStateChanged;
+            _subscribedContext = Context;
+            if (_subscribedContext != null)
+                _subscribedContext.StateChanged += OnContextStateChanged;
+        }
+    }
+
+    private void OnContextStateChanged(object? sender, EventArgs e) => StateHasChanged();
+
+    public void Dispose()
+    {
+        if (_subscribedContext != null)
+            _subscribedContext.StateChanged -= OnContextStateChanged;
     }
 }

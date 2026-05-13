@@ -1,6 +1,7 @@
 @namespace NeoUI.Blazor
 @using Microsoft.AspNetCore.Components.Routing
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 @*
     SidebarMenuButton component for clickable menu items with tooltip support.
@@ -101,6 +102,27 @@ else
     private TriggerContext? TriggerContext { get; set; }
 
     private ElementReference _buttonRef;
+    private SidebarContext? _subscribedContext;
+
+    protected override void OnParametersSet()
+    {
+        if (_subscribedContext != Context)
+        {
+            if (_subscribedContext != null)
+                _subscribedContext.StateChanged -= OnContextStateChanged;
+            _subscribedContext = Context;
+            if (_subscribedContext != null)
+                _subscribedContext.StateChanged += OnContextStateChanged;
+        }
+    }
+
+    private void OnContextStateChanged(object? sender, EventArgs e) => StateHasChanged();
+
+    public void Dispose()
+    {
+        if (_subscribedContext != null)
+            _subscribedContext.StateChanged -= OnContextStateChanged;
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
