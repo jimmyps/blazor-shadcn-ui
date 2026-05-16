@@ -1,0 +1,205 @@
+@page "/components/time-input"
+@using System.ComponentModel.DataAnnotations
+
+<PageTitle>Time Input - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Time Input"
+        Description="Keyboard-driven segmented time field with optional clock picker. Each time part (hour, minute, optional second, AM/PM) is individually focusable and editable." />
+
+    <DemoSection
+        Title="Default (24-hour)"
+        Description="A basic 24-hour time input with clock picker button.">
+        <DemoBlock Code="@_defaultCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Time</Label>
+                <TimeInput @bind-Value="_time1" Use12Hour="false" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_time1?.ToString("HH:mm") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="12-Hour Format"
+        Description="AM/PM segment appended for 12-hour clock.">
+        <DemoBlock Code="@_12hourCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Time</Label>
+                <TimeInput @bind-Value="_time2" Use12Hour="true" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_time2?.ToString("h:mm tt") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Seconds"
+        Description="Optional seconds segment for full HH:MM:SS display.">
+        <DemoBlock Code="@_secondsCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Time with Seconds</Label>
+                <TimeInput @bind-Value="_time3" Use12Hour="false" ShowSeconds="true" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_time3?.ToString("HH:mm:ss") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Minute Step"
+        Description="Constrains minute selection to 15-minute intervals in the picker and ArrowUp/Down.">
+        <DemoBlock Code="@_minuteStepCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Appointment Time</Label>
+                <TimeInput @bind-Value="_time4" Use12Hour="false" MinuteStep="15" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_time4?.ToString("HH:mm") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Without Picker Button"
+        Description="Keyboard-only input, no clock popover.">
+        <DemoBlock Code="@_noPickerCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Time</Label>
+                <TimeInput @bind-Value="_time5" Use12Hour="false" ShowPickerButton="false" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_time5?.ToString("HH:mm") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disabled State"
+        Description="Input is non-interactive when disabled.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Time</Label>
+                <TimeInput Value="@(new TimeOnly(14, 30))" Use12Hour="false" Disabled="true" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Validation"
+        Description="Integrated with Blazor EditForm and DataAnnotations.">
+        <DemoBlock Code="@_validationCode">
+            <div class="max-w-sm">
+                <EditForm Model="@_timeModel" OnValidSubmit="HandleTimeSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <Label>Meeting Time <span class="text-destructive">*</span></Label>
+                            <TimeInput @bind-Value="_timeModel.MeetingTime"
+                                       Use12Hour="false"
+                                       AriaInvalid="@(_timeFormTried && _timeModel.MeetingTime is null ? true : null)"
+                                       Required="true" />
+                            <ValidationMessage For="@(() => _timeModel.MeetingTime)" class="text-sm text-destructive" />
+                        </div>
+                        <Button Type="ButtonType.Submit" @onclick="() => _timeFormTried = true">Submit</Button>
+                    </div>
+                </EditForm>
+                @if (_timeFormSubmitted)
+                {
+                    <p class="mt-4 text-sm text-green-600 font-medium">Submitted! Time: @_timeModel.MeetingTime?.ToString("HH:mm")</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_timeInputProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    private TimeOnly? _time1;
+    private TimeOnly? _time2;
+    private TimeOnly? _time3;
+    private TimeOnly? _time4;
+    private TimeOnly? _time5;
+    private bool _timeFormSubmitted;
+    private bool _timeFormTried;
+    private TimeInputValidationModel _timeModel = new();
+
+    private void HandleTimeSubmit()
+    {
+        _timeFormSubmitted = true;
+    }
+
+    private class TimeInputValidationModel
+    {
+        [Required(ErrorMessage = "Meeting time is required")]
+        public TimeOnly? MeetingTime { get; set; }
+    }
+
+    private static readonly string _defaultCode = """
+        <TimeInput @bind-Value="selectedTime" Use12Hour="false" />
+        """;
+
+    private static readonly string _12hourCode = """
+        <TimeInput @bind-Value="selectedTime" Use12Hour="true" />
+        """;
+
+    private static readonly string _secondsCode = """
+        <TimeInput @bind-Value="selectedTime" Use12Hour="false" ShowSeconds="true" />
+        """;
+
+    private static readonly string _minuteStepCode = """
+        <TimeInput @bind-Value="appointmentTime" Use12Hour="false" MinuteStep="15" />
+        """;
+
+    private static readonly string _noPickerCode = """
+        <TimeInput @bind-Value="selectedTime" Use12Hour="false" ShowPickerButton="false" />
+        """;
+
+    private static readonly string _disabledCode = """
+        <TimeInput Value="@(new TimeOnly(14, 30))" Use12Hour="false" Disabled="true" />
+        """;
+
+    private static readonly string _validationCode = """
+        <EditForm Model="@model" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <Label>Meeting Time <span class="text-destructive">*</span></Label>
+                    <TimeInput @bind-Value="model.MeetingTime" Use12Hour="false" Required="true" />
+                    <ValidationMessage For="@(() => model.MeetingTime)" class="text-sm text-destructive" />
+                </div>
+                <Button Type="ButtonType.Submit">Submit</Button>
+            </div>
+        </EditForm>
+
+        @code {
+            private TimeInputModel model = new();
+
+            private class TimeInputModel
+            {
+                [Required(ErrorMessage = "Meeting time is required")]
+                public TimeOnly? MeetingTime { get; set; }
+            }
+        }
+        """;
+
+    private static readonly DemoPropRow[] _timeInputProps =
+    [
+        new("Value",            "TimeOnly?",                    "null",             "The selected time. Supports two-way binding via <code>@bind-Value</code>."),
+        new("ValueChanged",     "EventCallback&lt;TimeOnly?&gt;","—",               "Invoked when the value changes."),
+        new("Culture",          "CultureInfo?",                 "CurrentCulture",   "Culture for localization."),
+        new("Use12Hour",        "bool?",                        "from culture",     "When true, shows AM/PM segment. Defaults to culture's AM designator presence."),
+        new("ShowSeconds",      "bool",                         "false",            "Shows the seconds segment when true."),
+        new("MinuteStep",       "int",                          "1",                "Minute increment step for picker and ArrowUp/Down."),
+        new("Disabled",         "bool",                         "false",            "When true, the input is non-interactive."),
+        new("Required",         "bool",                         "false",            "Marks the input as required."),
+        new("ShowPickerButton", "bool",                         "true",             "Shows or hides the clock picker button."),
+        new("Id",               "string?",                      "null",             "HTML id attribute for the container."),
+        new("Name",             "string?",                      "null",             "Name for the hidden form input."),
+        new("Class",            "string?",                      "null",             "Additional CSS classes for the container."),
+        new("AriaLabel",        "string?",                      "\"Time\"",         "ARIA label for the group container."),
+        new("AriaDescribedBy",  "string?",                      "null",             "ARIA describedby for the group container."),
+        new("AriaInvalid",      "bool?",                        "null",             "When true, applies destructive border styling."),
+    ];
+}

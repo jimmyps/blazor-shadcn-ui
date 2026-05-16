@@ -1,0 +1,127 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+
+<div class="@ContainerClass"
+     id="@Id"
+     role="group"
+     aria-label="@(AriaLabel ?? "Time")"
+     aria-disabled="@(Disabled ? "true" : null)"
+     aria-required="@(Required ? "true" : null)"
+     aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+     aria-describedby="@AriaDescribedBy"
+     @ref="_containerRef"
+     @onkeydown="HandleKeyDown"
+     @attributes="AdditionalAttributes">
+
+    @foreach (var (seg, i) in _segments.Select((s, i) => (s, i)))
+    {
+        if (seg.IsLiteral)
+        {
+            <span class="text-muted-foreground select-none shrink-0" aria-hidden="true">@seg.LiteralText</span>
+        }
+        else if (seg.IsAmPm)
+        {
+            var idx = i;
+            <span tabindex="@(Disabled ? -1 : 0)"
+                  role="spinbutton"
+                  aria-label="AM/PM"
+                  aria-valuenow="@seg.Value"
+                  aria-valuemin="0"
+                  aria-valuemax="1"
+                  class="@GetSegmentClass(seg)"
+                  @onfocus="() => OnSegmentFocus(idx)"
+                  @onblur="OnSegmentBlur">
+                @GetAmPmDisplay(seg)
+            </span>
+        }
+        else
+        {
+            var idx = i;
+            <span tabindex="@(Disabled ? -1 : 0)"
+                  role="spinbutton"
+                  aria-label="@GetSegmentAriaLabel(seg)"
+                  aria-valuenow="@seg.Value"
+                  aria-valuemin="@seg.Min"
+                  aria-valuemax="@seg.Max"
+                  class="@GetSegmentClass(seg)"
+                  @onfocus="() => OnSegmentFocus(idx)"
+                  @onblur="OnSegmentBlur">
+                @GetSegmentDisplay(seg)
+            </span>
+        }
+    }
+
+    <span class="flex-1" aria-hidden="true"></span>
+
+    @if (ShowPickerButton && !Disabled)
+    {
+        <Popover @bind-Open="_isPickerOpen">
+            <PopoverTrigger>
+                <button type="button"
+                        class="flex items-center justify-center text-muted-foreground hover:text-foreground focus:outline-none"
+                        tabindex="-1"
+                        aria-label="Open time picker">
+                    <LucideIcon Name="clock" Size="14" />
+                </button>
+            </PopoverTrigger>
+            <PopoverContent Class="w-52 p-3" Align="PopoverAlign.End">
+                <div class="space-y-3">
+                    <p class="text-sm font-medium">Pick a time</p>
+                    @{
+                        var hourSeg = _segments.FirstOrDefault(s => s.Kind == TimeSegmentKind.Hour);
+                        var minSeg  = _segments.FirstOrDefault(s => s.Kind == TimeSegmentKind.Minute);
+                        var secSeg  = _segments.FirstOrDefault(s => s.Kind == TimeSegmentKind.Second);
+                        var ampSeg  = _segments.FirstOrDefault(s => s.Kind == TimeSegmentKind.AmPm);
+                    }
+                    <div class="flex items-center gap-1.5">
+                        @if (hourSeg is not null)
+                        {
+                            <NativeSelect TValue="string" Value="@hourSeg.Value?.ToString()" ValueChanged="OnPickerHourChanged" Size="NativeSelectSize.Small">
+                                @for (int h = hourSeg.Min; h <= hourSeg.Max; h++)
+                                {
+                                    <option value="@h">@h.ToString("D2")</option>
+                                }
+                            </NativeSelect>
+                        }
+                        <span class="text-muted-foreground">:</span>
+                        @if (minSeg is not null)
+                        {
+                            <NativeSelect TValue="string" Value="@minSeg.Value?.ToString()" ValueChanged="OnPickerMinuteChanged" Size="NativeSelectSize.Small">
+                                @for (int m = 0; m < 60; m += MinuteStep)
+                                {
+                                    <option value="@m">@m.ToString("D2")</option>
+                                }
+                            </NativeSelect>
+                        }
+                        @if (secSeg is not null)
+                        {
+                            <span class="text-muted-foreground">:</span>
+                            <NativeSelect TValue="string" Value="@secSeg.Value?.ToString()" ValueChanged="OnPickerSecondChanged" Size="NativeSelectSize.Small">
+                                @for (int s = 0; s < 60; s++)
+                                {
+                                    <option value="@s">@s.ToString("D2")</option>
+                                }
+                            </NativeSelect>
+                        }
+                        @if (ampSeg is not null)
+                        {
+                            <NativeSelect TValue="string" Value="@(ampSeg.Value == 0 ? "AM" : "PM")" ValueChanged="OnPickerAmPmChanged" Size="NativeSelectSize.Small">
+                                <option value="AM">AM</option>
+                                <option value="PM">PM</option>
+                            </NativeSelect>
+                        }
+                    </div>
+                    <div class="flex justify-end gap-2">
+                        <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isPickerOpen = false)">Cancel</Button>
+                        <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyPickerTime">Apply</Button>
+                    </div>
+                </div>
+            </PopoverContent>
+        </Popover>
+    }
+
+    @if (!string.IsNullOrEmpty(Name))
+    {
+        <input type="hidden" name="@Name" value="@HiddenValue" />
+    }
+</div>
