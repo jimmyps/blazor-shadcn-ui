@@ -587,8 +587,8 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
             try
             {
                 var numericValue = Convert.ToDecimal(Value);
-                // Use "G" format to preserve all significant digits (e.g., 100.2378 stays as 100.2378)
-                _editingValue = numericValue.ToString("G", CultureInfo.InvariantCulture);
+                // Use "G29" to preserve all significant digits while stripping trailing zeros (e.g., 50000.0000 → 50000)
+                _editingValue = numericValue.ToString("G29", CultureInfo.InvariantCulture);
             }
             catch
             {
