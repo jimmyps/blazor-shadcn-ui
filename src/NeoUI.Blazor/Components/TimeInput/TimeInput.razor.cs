@@ -43,6 +43,8 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
     private string _digitBuffer = "";
     private bool _isPickerOpen;
     private bool _jsInitialized;
+    private bool _isFocused;
+    private CancellationTokenSource? _blurCts;
 
     // Picker staging values (committed on Apply)
     private int _pickerHour;
@@ -102,12 +104,17 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
     /// <summary>ARIA invalid state. When true applies destructive border styling.</summary>
     [Parameter] public bool? AriaInvalid { get; set; }
 
+    /// <summary>Placeholder text shown when the value is empty and the input is not focused.</summary>
+    [Parameter] public string? Placeholder { get; set; }
+
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
     private CultureInfo EffectiveCulture => Culture ?? CultureInfo.CurrentCulture;
     private bool EffectiveUse12Hour => Use12Hour ?? !string.IsNullOrEmpty(EffectiveCulture.DateTimeFormat.AMDesignator);
     private string? HiddenValue => TryBuildTime()?.ToString("HH:mm:ss");
+    private bool HasAnySegmentValue => _segments.Any(s => !s.IsLiteral && s.Value is not null);
+    private bool _showPlaceholder => !string.IsNullOrEmpty(Placeholder) && !_isFocused && Value is null && !HasAnySegmentValue;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────
 
@@ -248,9 +255,15 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
 
         if (seg.IsAmPm)
         {
-            seg.Value = seg.Value == 0 ? 1 : 0;
+            if (seg.Value is null)
+                SeedUnsetSegmentsFromNow(); // seed AM/PM from now; don't toggle on first press
+            else
+                seg.Value = seg.Value == 0 ? 1 : 0;
             return;
         }
+
+        if (seg.Value is null)
+            SeedUnsetSegmentsFromNow();
 
         var range = seg.Kind == TimeSegmentKind.Minute && MinuteStep > 1
             ? 60 / MinuteStep
@@ -259,15 +272,36 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
         int current;
         if (seg.Kind == TimeSegmentKind.Minute && MinuteStep > 1)
         {
-            var step = seg.Value.HasValue ? seg.Value.Value / MinuteStep : 0;
+            var step = seg.Value!.Value / MinuteStep;
             current = seg.Min + ((step + delta + range * 100) % range) * MinuteStep;
         }
         else
         {
-            current = seg.Value ?? seg.Min;
+            current = seg.Value!.Value;
             current = seg.Min + ((current - seg.Min + delta + range * 100) % range);
         }
         seg.Value = current;
+    }
+
+    private void SeedUnsetSegmentsFromNow()
+    {
+        var now = DateTime.Now;
+        bool use12 = EffectiveUse12Hour;
+        bool isPm = now.Hour >= 12;
+        int hour12 = now.Hour % 12 == 0 ? 12 : now.Hour % 12;
+
+        foreach (var seg in _segments)
+        {
+            if (seg.IsLiteral || seg.Value is not null) continue;
+            seg.Value = seg.Kind switch
+            {
+                TimeSegmentKind.Hour   => use12 ? hour12 : now.Hour,
+                TimeSegmentKind.Minute => MinuteStep > 1 ? (now.Minute / MinuteStep) * MinuteStep : now.Minute,
+                TimeSegmentKind.Second => now.Second,
+                TimeSegmentKind.AmPm   => isPm ? 1 : 0,
+                _                      => seg.Value
+            };
+        }
     }
 
     private void ClearActiveSegment()
@@ -312,6 +346,40 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
         await MoveToNextSegment();
     }
 
+    // ── Container focus tracking ──────────────────────────────────────────
+
+    private void OnContainerFocusIn()
+    {
+        _blurCts?.Cancel();
+        _blurCts = null;
+        _isFocused = true;
+    }
+
+    private async Task OnContainerFocusOut()
+    {
+        _blurCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _blurCts = cts;
+        try
+        {
+            await Task.Delay(50, cts.Token);
+            _isFocused = false;
+            StateHasChanged();
+        }
+        catch (OperationCanceledException) { }
+        finally
+        {
+            if (_blurCts == cts) _blurCts = null;
+            cts.Dispose();
+        }
+    }
+
+    private async Task FocusFirstSegment()
+    {
+        if (_jsModule is null) return;
+        await _jsModule.InvokeVoidAsync("focusFirstSegment", _containerRef);
+    }
+
     // ── Keyboard handler ──────────────────────────────────────────────────
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
@@ -354,6 +422,11 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
                              (e.Key[0] is 'a' or 'A' or 'p' or 'P'))
                     {
                         await HandleAmPmKey(e.Key[0]);
+                        await NotifyValueChanged();
+                    }
+                    else if (!e.CtrlKey && !e.MetaKey && (e.Key[0] is 'c' or 'C'))
+                    {
+                        SyncSegmentsFromTimeOnly(TimeOnly.FromDateTime(DateTime.Now));
                         await NotifyValueChanged();
                     }
                 }
@@ -481,6 +554,7 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
 
     private string ContainerClass => ClassNames.cn(
         "flex h-8 w-full items-center rounded-md border border-input bg-background px-2 py-1 text-base shadow-xs",
+        "md:text-sm",
         "transition-colors focus-within:border-ring focus-within:ring-[2px] focus-within:ring-ring/50",
         Disabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "",
         AriaInvalid == true
@@ -492,6 +566,8 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        _blurCts?.Cancel();
+        _blurCts?.Dispose();
         if (_jsModule is not null)
         {
             try

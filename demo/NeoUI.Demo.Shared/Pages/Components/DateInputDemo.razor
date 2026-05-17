@@ -84,6 +84,18 @@
     </DemoSection>
 
     <DemoSection
+        Title="Placeholder"
+        Description="Shows placeholder text when the value is empty and the input is not focused. Clicking the placeholder or tabbing in reveals the segments.">
+        <DemoBlock Code="@_placeholderCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Date</Label>
+                <DateInput @bind-Value="_datePlaceholder" Placeholder="Pick a date" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_datePlaceholder?.ToString("D") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Validation"
         Description="Integrated with Blazor EditForm and DataAnnotations.">
         <DemoBlock Code="@_validationCode">
@@ -109,6 +121,53 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection Title="Keyboard Support" Description="All keyboard interactions supported by the date input.">
+        <div class="overflow-x-auto rounded-lg border">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b bg-muted/50">
+                        <th class="px-4 py-3 text-left font-semibold">Key</th>
+                        <th class="px-4 py-3 text-left font-semibold">Behavior</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="px-4 py-3"><Kbd>↑</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Increments the focused segment. If any segment is empty, all unset segments are first filled from today's date, then the focused segment is incremented.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>↓</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Decrements the focused segment with the same auto-fill behavior. Wraps at boundary.</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3"><Kbd>←</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Moves focus to the previous segment.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>→</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Moves focus to the next segment.</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3 font-mono text-xs">0–9</td>
+                        <td class="px-4 py-3 text-muted-foreground">Types a digit into the active segment. Auto-advances to the next segment when filled.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>C</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Sets all segments to today's date. Does not fire when combined with <Kbd>Ctrl</Kbd> or <Kbd>⌘</Kbd> (copy shortcut).</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3 whitespace-nowrap"><Kbd>Backspace</Kbd> / <Kbd>Del</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Clears the active segment value.</td>
+                    </tr>
+                    <tr class="bg-muted/20">
+                        <td class="px-4 py-3 whitespace-nowrap"><Kbd>Tab</Kbd> / <Kbd>Shift</Kbd>+<Kbd>Tab</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Navigates between segments using native browser focus.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_dateInputProps" />
     </DemoSection>
@@ -123,6 +182,7 @@
     private DateOnly? _date3;
     private DateOnly? _date4;
     private DateOnly? _date5;
+    private DateOnly? _datePlaceholder;
     private bool _dateFormSubmitted;
     private DateInputValidationModel _dateModel = new();
     private Dictionary<string, string> _dateValidationErrors = new();
@@ -170,6 +230,10 @@
         <DateInput Value="@(new DateOnly(2025, 6, 15))" Disabled="true" />
         """;
 
+    private static readonly string _placeholderCode = """
+        <DateInput @bind-Value="selectedDate" Placeholder="Pick a date" />
+        """;
+
     private static readonly string _validationCode = """
         <EditForm Model="@model" OnValidSubmit="HandleSubmit">
             <DataAnnotationsValidator />
@@ -212,5 +276,6 @@
         new("AriaLabel",        "string?",                      "\"Date\"",         "ARIA label for the group container."),
         new("AriaDescribedBy",  "string?",                      "null",             "ARIA describedby for the group container."),
         new("AriaInvalid",      "bool?",                        "null",             "When true, applies destructive border styling."),
+        new("Placeholder",      "string?",                      "null",             "Text shown when the value is empty and the input is not focused."),
     ];
 }

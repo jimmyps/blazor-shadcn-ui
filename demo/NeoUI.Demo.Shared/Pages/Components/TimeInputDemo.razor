@@ -81,6 +81,18 @@
     </DemoSection>
 
     <DemoSection
+        Title="Placeholder"
+        Description="Shows placeholder text when the value is empty and the input is not focused. Clicking the placeholder or tabbing in reveals the segments.">
+        <DemoBlock Code="@_placeholderCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Time</Label>
+                <TimeInput @bind-Value="_timePlaceholder" Use12Hour="false" Placeholder="Pick a time" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_timePlaceholder?.ToString("HH:mm") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Validation"
         Description="Integrated with Blazor EditForm and DataAnnotations.">
         <DemoBlock Code="@_validationCode">
@@ -107,6 +119,61 @@
         </DemoBlock>
     </DemoSection>
 
+    <DemoSection Title="Keyboard Support" Description="All keyboard interactions supported by the time input.">
+        <div class="overflow-x-auto rounded-lg border">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b bg-muted/50">
+                        <th class="px-4 py-3 text-left font-semibold">Key</th>
+                        <th class="px-4 py-3 text-left font-semibold">Behavior</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="px-4 py-3"><Kbd>↑</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Increments the focused segment. If any segment is empty, all unset segments are first filled from the current time, then the focused segment is incremented. For AM/PM on an empty field, the first press seeds from now without toggling.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>↓</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Decrements the focused segment with the same auto-fill behavior. Wraps at boundary (e.g. 59 min → 0 min).</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3"><Kbd>←</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Moves focus to the previous segment.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>→</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Moves focus to the next segment.</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3 font-mono text-xs">0–9</td>
+                        <td class="px-4 py-3 text-muted-foreground">Types a digit into the active segment. Auto-advances to the next segment when filled.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>A</Kbd> / <Kbd>a</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Sets AM on the AM/PM segment (12-hour mode only).</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3"><Kbd>P</Kbd> / <Kbd>p</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Sets PM on the AM/PM segment (12-hour mode only).</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>C</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Sets all segments to the current time. Does not fire when combined with <Kbd>Ctrl</Kbd> or <Kbd>⌘</Kbd>. If <code>MinuteStep &gt; 1</code>, the minute is floored to the nearest step.</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3 whitespace-nowrap"><Kbd>Backspace</Kbd> / <Kbd>Del</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Clears the active segment value.</td>
+                    </tr>
+                    <tr class="bg-muted/20">
+                        <td class="px-4 py-3 whitespace-nowrap"><Kbd>Tab</Kbd> / <Kbd>Shift</Kbd>+<Kbd>Tab</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Navigates between segments using native browser focus.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </DemoSection>
+
     <DemoSection Title="API Reference" Description="Component parameters and their types.">
         <DemoPropsTable Rows="_timeInputProps" />
     </DemoSection>
@@ -121,6 +188,7 @@
     private TimeOnly? _time3;
     private TimeOnly? _time4;
     private TimeOnly? _time5;
+    private TimeOnly? _timePlaceholder;
     private bool _timeFormSubmitted;
     private bool _timeFormTried;
     private TimeInputValidationModel _timeModel = new();
@@ -158,6 +226,10 @@
 
     private static readonly string _disabledCode = """
         <TimeInput Value="@(new TimeOnly(14, 30))" Use12Hour="false" Disabled="true" />
+        """;
+
+    private static readonly string _placeholderCode = """
+        <TimeInput @bind-Value="selectedTime" Use12Hour="false" Placeholder="Pick a time" />
         """;
 
     private static readonly string _validationCode = """
@@ -201,5 +273,6 @@
         new("AriaLabel",        "string?",                      "\"Time\"",         "ARIA label for the group container."),
         new("AriaDescribedBy",  "string?",                      "null",             "ARIA describedby for the group container."),
         new("AriaInvalid",      "bool?",                        "null",             "When true, applies destructive border styling."),
+        new("Placeholder",      "string?",                      "null",             "Text shown when the value is empty and the input is not focused."),
     ];
 }

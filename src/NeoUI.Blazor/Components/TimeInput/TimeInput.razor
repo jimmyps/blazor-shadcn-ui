@@ -11,13 +11,24 @@
      aria-describedby="@AriaDescribedBy"
      @ref="_containerRef"
      @onkeydown="HandleKeyDown"
+     @onfocusin="OnContainerFocusIn"
+     @onfocusout="OnContainerFocusOut"
      @attributes="AdditionalAttributes">
+
+    @if (!string.IsNullOrEmpty(Placeholder))
+    {
+        <span class="@(_showPlaceholder ? "text-muted-foreground flex-1 cursor-text select-none truncate" : "sr-only")"
+              aria-hidden="true"
+              @onclick="FocusFirstSegment">
+            @Placeholder
+        </span>
+    }
 
     @foreach (var (seg, i) in _segments.Select((s, i) => (s, i)))
     {
         if (seg.IsLiteral)
         {
-            <span class="text-muted-foreground select-none shrink-0" aria-hidden="true">@seg.LiteralText</span>
+            <span class="@(_showPlaceholder ? "sr-only" : "text-muted-foreground select-none shrink-0")" aria-hidden="true">@seg.LiteralText</span>
         }
         else if (seg.IsAmPm)
         {
@@ -28,7 +39,7 @@
                   aria-valuenow="@seg.Value"
                   aria-valuemin="0"
                   aria-valuemax="1"
-                  class="@GetSegmentClass(seg)"
+                  class="@(_showPlaceholder ? "sr-only" : GetSegmentClass(seg))"
                   @onfocus="() => OnSegmentFocus(idx)"
                   @onblur="OnSegmentBlur">
                 @GetAmPmDisplay(seg)
@@ -43,7 +54,7 @@
                   aria-valuenow="@seg.Value"
                   aria-valuemin="@seg.Min"
                   aria-valuemax="@seg.Max"
-                  class="@GetSegmentClass(seg)"
+                  class="@(_showPlaceholder ? "sr-only" : GetSegmentClass(seg))"
                   @onfocus="() => OnSegmentFocus(idx)"
                   @onblur="OnSegmentBlur">
                 @GetSegmentDisplay(seg)
@@ -51,7 +62,7 @@
         }
     }
 
-    <span class="flex-1" aria-hidden="true"></span>
+    <span class="@(_showPlaceholder ? "hidden" : "flex-1")" aria-hidden="true"></span>
 
     @if (ShowPickerButton && !Disabled)
     {
