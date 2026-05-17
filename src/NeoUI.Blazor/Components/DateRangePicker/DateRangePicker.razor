@@ -286,6 +286,13 @@
     [Parameter]
     public bool ShowPresets { get; set; }
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _lastNotifiedStartDate = _startDate;
+        _lastNotifiedEndDate = _endDate;
+    }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();

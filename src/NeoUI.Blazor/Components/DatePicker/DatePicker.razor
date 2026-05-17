@@ -159,14 +159,13 @@ private System.Globalization.CultureInfo EffectiveCulture =>
     [Parameter]
     public string? AriaLabel { get; set; }
 
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
-        base.OnParametersSet();
-
-        if (_selectedDate != SelectedDate)
-        {
-            _selectedDate = SelectedDate;
-        }
+        base.OnInitialized();
+        // Sync _lastNotifiedDate with the initial parameter value so that
+        // OnAfterRenderAsync doesn't spuriously close the popover on first open
+        // when the picker is given a pre-set date (e.g. inside a dialog form).
+        _lastNotifiedDate = _selectedDate;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -64,6 +64,10 @@ public partial class SplitButton : ComponentBase
     [Parameter]
     public string? DropdownClass { get; set; }
 
+    /// <summary>Gets or sets additional CSS classes for the dropdown menu content popup.</summary>
+    [Parameter]
+    public string? DropdownContentClass { get; set; }
+
     /// <summary>Gets or sets the aria-label for the dropdown toggle button.</summary>
     [Parameter]
     public string? DropdownAriaLabel { get; set; }

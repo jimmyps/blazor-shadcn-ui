@@ -235,9 +235,32 @@ export function init(indicator, selector, hoverEnabled, hoverTarget) {
     container.addEventListener('transitionend', onLayoutTransitionEnd);
     container.addEventListener('transitioncancel', onLayoutTransitionEnd);
 
+    // ── Sidebar expand/collapse tracking ────────────────────────────────────
+    // The sidebar width transition runs on the <aside> parent — transitionend
+    // doesn't propagate down into SidebarContent, so we use ResizeObserver to
+    // detect when the container (or its sidebar ancestor) changes size and
+    // reposition the indicator accordingly.
+    let resizeRafId = null;
+    const resizeObserver = new ResizeObserver(() => {
+        if (resizeRafId) return;
+        resizeRafId = requestAnimationFrame(() => {
+            resizeRafId = null;
+            if (!container.isConnected || !indicator.isConnected) return;
+            if ('siHover' in indicator.dataset) return;
+            positionIndicator(indicator, container, selector, false, transition, fixedHeight);
+        });
+    });
+    resizeObserver.observe(container);
+    // Also observe the nearest sidebar <aside> in case SidebarContent itself
+    // doesn't resize (e.g. transform-based collapse, or nested scroll viewports).
+    const sidebarAside = container.closest('aside[data-sidebar="sidebar"]');
+    if (sidebarAside) resizeObserver.observe(sidebarAside);
+
     instanceMap.set(indicator, {
         observer,
         cleanup: () => {
+            resizeObserver.disconnect();
+            if (resizeRafId) { cancelAnimationFrame(resizeRafId); resizeRafId = null; }
             hoverHandlers.forEach(fn => fn());
             container.removeEventListener('transitionend', onLayoutTransitionEnd);
             container.removeEventListener('transitioncancel', onLayoutTransitionEnd);

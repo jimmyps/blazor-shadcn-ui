@@ -255,6 +255,7 @@ public static class ComponentRegistry
             new("color-picker",     "Color Picker",     "Color selection with hex, RGB, and HSL support",                               "palette",               C, AI),
             new("combobox",         "Combobox",         "Autocomplete input with searchable dropdown",                                   "square-chevron-down",   C, AI),
             new("currency-input",   "Currency Input",   "Formatted currency input with locale support",                                  "dollar-sign",           C, AI),
+            new("date-input",       "Date Input",       "Keyboard-driven segmented date field with optional calendar picker",           "calendar-clock",        C, AI),
             new("date-picker",      "Date Picker",      "Date selection with calendar in popover",                                       "calendar-days",         C, AI),
             new("date-range-picker","Date Range Picker","Select date ranges with optional presets and two-calendar view",                "calendar-range",        C, AI),
             new("dynamic-form",     "Dynamic Form",     "Schema-driven form renderer with validation and 24 field types",                "layout-panel-top",      C, AI),
@@ -273,6 +274,7 @@ public static class ComponentRegistry
             new("range-slider",     "Range Slider",     "Dual-handle slider for selecting value ranges",                                 "sliders-horizontal",    C, AI),
             new("rich-text-editor", "Rich Text Editor", "WYSIWYG editor with toolbar formatting and live preview",                       "type",                  C, AI),
             new("tag-input",        "Tag Input",        "Chip/tag input with configurable triggers, suggestions, and paste splitting",   "tags",                  C, AI),
+            new("time-input",       "Time Input",       "Keyboard-driven segmented time field with optional clock picker",              "clock-4",               C, AI),
             new("time-picker",      "Time Picker",      "Time selection with hour and minute controls",                                  "clock",                 C, AI),
 
             // ── Data Display ──────────────────────────────────────────────
