@@ -93,7 +93,7 @@ Keyboard-driven segmented time field that renders hour, minute, optional second,
 
 ---
 
-### ✨ Enhancement — `FilterBuilder`: Interactive Predicate-Tree Editor
+### ✨ New Feature — `FilterBuilder`: Nested Group Support with Interactive Predicate-Tree Editor
 
 Added `AllowGroups` parameter (`bool`, default `false`) to `FilterBuilder<TData>`, enabling an interactive predicate-tree editor with AND/OR logic toggles and nested sub-groups.
 
