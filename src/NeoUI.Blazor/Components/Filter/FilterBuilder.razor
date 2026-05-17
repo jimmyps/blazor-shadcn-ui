@@ -179,7 +179,7 @@
                               Fields="@_fields"
                               ChipSize="@ChipSize"
                               IsRoot="true"
-                              OnChanged="@NotifyFiltersChanged"
+                              OnChanged="@HandleGroupChanged"
                               OnClearAll="@(!_presets.Any() ? EventCallback.Factory.Create(this, ClearAll) : default)"
                               HasActiveFilters="@(_rootGroup.Conditions.Any() || _rootGroup.NestedGroups.Any())" />
         </div>

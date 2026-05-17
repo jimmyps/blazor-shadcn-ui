@@ -25,6 +25,7 @@
         @if (!IsRoot)
         {
             <button type="button"
+                    aria-label="Remove group"
                     class="ml-auto inline-flex h-6 w-6 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
                     @onclick="RemoveGroupAsync">
                 <LucideIcon Name="x" Size="12" />
@@ -58,16 +59,15 @@
     @foreach (var nestedGroup in Group.NestedGroups.ToList())
     {
         var group = nestedGroup;
-        <div @key="group.Id" class="mt-2">
-            <FilterGroupPanel Group="@group"
-                              Fields="@Fields"
-                              ChipSize="@ChipSize"
-                              IsRoot="false"
-                              MaxNestingDepth="@MaxNestingDepth"
-                              CurrentDepth="@(CurrentDepth + 1)"
-                              OnChanged="@OnChanged"
-                              OnRemoveGroup="@(() => RemoveNestedGroup(group))" />
-        </div>
+        <FilterGroupPanel @key="group.Id"
+                          Group="@group"
+                          Fields="@Fields"
+                          ChipSize="@ChipSize"
+                          IsRoot="false"
+                          MaxNestingDepth="@MaxNestingDepth"
+                          CurrentDepth="@(CurrentDepth + 1)"
+                          OnChanged="@OnChanged"
+                          OnRemoveGroup="@(() => RemoveNestedGroup(group))" />
     }
 
     <div class="flex items-center gap-2 mt-2">

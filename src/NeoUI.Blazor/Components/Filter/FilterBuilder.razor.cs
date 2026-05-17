@@ -194,6 +194,13 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
         return Task.CompletedTask;
     }
 
+    private Task HandleGroupChanged()
+    {
+        _activePresetName = null;
+        _ = NotifyFiltersChanged();
+        return Task.CompletedTask;
+    }
+
     private async Task NotifyFiltersChanged()
     {
         var updated = CloneGroup(_rootGroup);
