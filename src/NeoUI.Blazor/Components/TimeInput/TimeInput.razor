@@ -87,7 +87,7 @@
                     <div class="flex items-center gap-1.5">
                         @if (hourSeg is not null)
                         {
-                            <NativeSelect TValue="string" Value="@hourSeg.Value?.ToString()" ValueChanged="OnPickerHourChanged" Size="NativeSelectSize.Small">
+                            <NativeSelect TValue="string" Value="@hourSeg.Value?.ToString()" ValueChanged="OnPickerHourChanged" Size="NativeSelectSize.Small" Class="w-16">
                                 @for (int h = hourSeg.Min; h <= hourSeg.Max; h++)
                                 {
                                     <option value="@h">@h.ToString("D2")</option>
@@ -97,7 +97,7 @@
                         <span class="text-muted-foreground">:</span>
                         @if (minSeg is not null)
                         {
-                            <NativeSelect TValue="string" Value="@minSeg.Value?.ToString()" ValueChanged="OnPickerMinuteChanged" Size="NativeSelectSize.Small">
+                            <NativeSelect TValue="string" Value="@minSeg.Value?.ToString()" ValueChanged="OnPickerMinuteChanged" Size="NativeSelectSize.Small" Class="w-16">
                                 @for (int m = 0; m < 60; m += MinuteStep)
                                 {
                                     <option value="@m">@m.ToString("D2")</option>
@@ -107,7 +107,7 @@
                         @if (secSeg is not null)
                         {
                             <span class="text-muted-foreground">:</span>
-                            <NativeSelect TValue="string" Value="@secSeg.Value?.ToString()" ValueChanged="OnPickerSecondChanged" Size="NativeSelectSize.Small">
+                            <NativeSelect TValue="string" Value="@secSeg.Value?.ToString()" ValueChanged="OnPickerSecondChanged" Size="NativeSelectSize.Small" Class="w-16">
                                 @for (int s = 0; s < 60; s++)
                                 {
                                     <option value="@s">@s.ToString("D2")</option>
@@ -116,7 +116,7 @@
                         }
                         @if (ampSeg is not null)
                         {
-                            <NativeSelect TValue="string" Value="@(ampSeg.Value == 0 ? "AM" : "PM")" ValueChanged="OnPickerAmPmChanged" Size="NativeSelectSize.Small">
+                            <NativeSelect TValue="string" Value="@(ampSeg.Value == 0 ? "AM" : "PM")" ValueChanged="OnPickerAmPmChanged" Size="NativeSelectSize.Small" Class="w-16">
                                 <option value="AM">AM</option>
                                 <option value="PM">PM</option>
                             </NativeSelect>
