@@ -30,6 +30,16 @@
                 <LucideIcon Name="x" Size="12" />
             </button>
         }
+        else if (HasActiveFilters && OnClearAll.HasDelegate)
+        {
+            <Button Variant="ButtonVariant.Outline"
+                    Size="ButtonSize.Small"
+                    OnClick="@OnClearAll"
+                    Class="ml-auto h-6 gap-1 px-2 text-xs text-muted-foreground hover:text-foreground">
+                <LucideIcon Name="filter-x" Size="12" />
+                <span>Clear</span>
+            </Button>
+        }
     </div>
 
     @foreach (var condition in Group.Conditions.ToList())
@@ -136,6 +146,9 @@
     [Parameter] public EventCallback OnRemoveGroup { get; set; }
     [Parameter] public int MaxNestingDepth { get; set; } = 3;
     [Parameter] public int CurrentDepth { get; set; }
+
+    [Parameter] public EventCallback OnClearAll { get; set; }
+    [Parameter] public bool HasActiveFilters { get; set; }
 
     private string PanelCssClass => IsRoot
         ? string.Empty

@@ -9,10 +9,14 @@
         @FilterPresets
     </CascadingValue>
 
-    @* ── Top row: [≡ Filter] [Presets dropdown?] ··· [✕ Clear] ── *@
+    @* ── Top row: hidden in groups mode with no presets (panel owns its own header) ── *@
+    @if (!AllowGroups || _presets.Any())
+    {
     <div class="flex items-center gap-2">
         <div class="flex items-center gap-2 flex-1">
-            @* Add Filter picker *@
+            @* Add Filter picker — flat mode only; groups mode uses FilterGroupPanel's own [+ Add predicate] *@
+            @if (!AllowGroups)
+            {
             <DropdownMenu>
                 <DropdownMenuTrigger>
                     <Button Variant="ButtonVariant.Outline"
@@ -69,6 +73,7 @@
                     }
                 </DropdownMenuContent>
             </DropdownMenu>
+            }
 
             @* Presets — dropdown variant *@
             @if (PresetsVariant == FilterPresetsVariant.Dropdown && _presets.Any())
@@ -165,6 +170,7 @@
             </Button>
         }
     </div>
+    }
 
     @if (AllowGroups)
     {
@@ -173,7 +179,9 @@
                               Fields="@_fields"
                               ChipSize="@ChipSize"
                               IsRoot="true"
-                              OnChanged="@NotifyFiltersChanged" />
+                              OnChanged="@NotifyFiltersChanged"
+                              OnClearAll="@(!_presets.Any() ? EventCallback.Factory.Create(this, ClearAll) : default)"
+                              HasActiveFilters="@(_rootGroup.Conditions.Any() || _rootGroup.NestedGroups.Any())" />
         </div>
     }
     else
