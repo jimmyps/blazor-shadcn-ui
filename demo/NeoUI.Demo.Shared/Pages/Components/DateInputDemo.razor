@@ -1,0 +1,281 @@
+@page "/components/date-input"
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+
+<PageTitle>Date Input - NeoUI</PageTitle>
+
+<div class="space-y-8 max-w-4xl">
+
+    <DemoPageHeader
+        Title="Date Input"
+        Description="Keyboard-driven segmented date field with optional calendar picker. Each date part (month, day, year) is individually focusable and editable." />
+
+    <DemoSection
+        Title="Default"
+        Description="A basic date input with calendar picker button.">
+        <DemoBlock Code="@_defaultCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Date</Label>
+                <DateInput @bind-Value="_date1" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_date1?.ToString("D") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Initial Value"
+        Description="Pre-populated with a specific date.">
+        <DemoBlock Code="@_initialValueCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Date of Birth</Label>
+                <DateInput @bind-Value="_date2" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_date2?.ToString("D") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Without Picker Button"
+        Description="Keyboard-only input, no calendar popover.">
+        <DemoBlock Code="@_noPickerCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Date</Label>
+                <DateInput @bind-Value="_date3" ShowPickerButton="false" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_date3?.ToString("D") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="With Date Constraints"
+        Description="Limits selectable dates to the next 6 months in the calendar picker.">
+        <DemoBlock Code="@_constraintsCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Travel Date</Label>
+                <DateInput @bind-Value="_date4"
+                           MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                           MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(6))" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_date4?.ToString("D") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Custom Culture (French)"
+        Description="Uses dd/MM/yyyy format from fr-FR culture.">
+        <DemoBlock Code="@_cultureCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Date (fr-FR)</Label>
+                <DateInput @bind-Value="_date5" Culture="@(new CultureInfo("fr-FR"))" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_date5?.ToString("D", new CultureInfo("fr-FR")) ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Disabled State"
+        Description="Input is non-interactive when disabled.">
+        <DemoBlock Code="@_disabledCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Date</Label>
+                <DateInput Value="@(new DateOnly(2025, 6, 15))" Disabled="true" />
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Placeholder"
+        Description="Shows placeholder text when the value is empty and the input is not focused. Clicking the placeholder or tabbing in reveals the segments.">
+        <DemoBlock Code="@_placeholderCode">
+            <div class="space-y-2 max-w-sm">
+                <Label>Date</Label>
+                <DateInput @bind-Value="_datePlaceholder" Placeholder="Pick a date" />
+                <p class="text-sm text-muted-foreground">Value: <strong>@(_datePlaceholder?.ToString("D") ?? "None")</strong></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
+        Title="Validation"
+        Description="Integrated with Blazor EditForm and DataAnnotations.">
+        <DemoBlock Code="@_validationCode">
+            <div class="max-w-sm">
+                <EditForm Model="@_dateModel" OnValidSubmit="HandleDateSubmit">
+                    <DataAnnotationsValidator />
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <Label>Start Date <span class="text-destructive">*</span></Label>
+                            <DateInput @bind-Value="_dateModel.StartDate"
+                                       AriaInvalid="@(_dateValidationErrors.ContainsKey(nameof(_dateModel.StartDate)) ? true : null)"
+                                       Required="true" />
+                            <ValidationMessage For="@(() => _dateModel.StartDate)" class="text-sm text-destructive" />
+                        </div>
+                        <Button Type="ButtonType.Submit">Submit</Button>
+                    </div>
+                </EditForm>
+                @if (_dateFormSubmitted)
+                {
+                    <p class="mt-4 text-sm text-green-600 font-medium">Submitted! Date: @_dateModel.StartDate?.ToString("D")</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Keyboard Support" Description="All keyboard interactions supported by the date input.">
+        <div class="overflow-x-auto rounded-lg border">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b bg-muted/50">
+                        <th class="px-4 py-3 text-left font-semibold">Key</th>
+                        <th class="px-4 py-3 text-left font-semibold">Behavior</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b">
+                        <td class="px-4 py-3"><Kbd>↑</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Increments the focused segment. If any segment is empty, all unset segments are first filled from today's date, then the focused segment is incremented.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>↓</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Decrements the focused segment with the same auto-fill behavior. Wraps at boundary.</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3"><Kbd>←</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Moves focus to the previous segment.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>→</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Moves focus to the next segment.</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3 font-mono text-xs">0–9</td>
+                        <td class="px-4 py-3 text-muted-foreground">Types a digit into the active segment. Auto-advances to the next segment when filled.</td>
+                    </tr>
+                    <tr class="bg-muted/20 border-b">
+                        <td class="px-4 py-3"><Kbd>C</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Sets all segments to today's date. Does not fire when combined with <Kbd>Ctrl</Kbd> or <Kbd>⌘</Kbd> (copy shortcut).</td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="px-4 py-3 whitespace-nowrap"><Kbd>Backspace</Kbd> / <Kbd>Del</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Clears the active segment value.</td>
+                    </tr>
+                    <tr class="bg-muted/20">
+                        <td class="px-4 py-3 whitespace-nowrap"><Kbd>Tab</Kbd> / <Kbd>Shift</Kbd>+<Kbd>Tab</Kbd></td>
+                        <td class="px-4 py-3 text-muted-foreground">Navigates between segments using native browser focus.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="API Reference" Description="Component parameters and their types.">
+        <DemoPropsTable Rows="_dateInputProps" />
+    </DemoSection>
+
+    <DemoPageNav />
+
+</div>
+
+@code {
+    private DateOnly? _date1;
+    private DateOnly? _date2 = new DateOnly(1990, 3, 25);
+    private DateOnly? _date3;
+    private DateOnly? _date4;
+    private DateOnly? _date5;
+    private DateOnly? _datePlaceholder;
+    private bool _dateFormSubmitted;
+    private DateInputValidationModel _dateModel = new();
+    private Dictionary<string, string> _dateValidationErrors = new();
+
+    private void HandleDateSubmit()
+    {
+        _dateFormSubmitted = true;
+    }
+
+    private class DateInputValidationModel
+    {
+        [Required(ErrorMessage = "Start date is required")]
+        public DateOnly? StartDate { get; set; }
+    }
+
+    private static readonly string _defaultCode = """
+        <DateInput @bind-Value="selectedDate" />
+        """;
+
+    private static readonly string _initialValueCode = """
+        <DateInput @bind-Value="dateOfBirth" />
+
+        @code {
+            private DateOnly? dateOfBirth = new DateOnly(1990, 3, 25);
+        }
+        """;
+
+    private static readonly string _noPickerCode = """
+        <DateInput @bind-Value="selectedDate" ShowPickerButton="false" />
+        """;
+
+    private static readonly string _constraintsCode = """
+        <DateInput @bind-Value="travelDate"
+                   MinDate="DateOnly.FromDateTime(DateTime.Today)"
+                   MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(6))" />
+        """;
+
+    private static readonly string _cultureCode = """
+        @using System.Globalization
+
+        <DateInput @bind-Value="selectedDate" Culture="@(new CultureInfo("fr-FR"))" />
+        """;
+
+    private static readonly string _disabledCode = """
+        <DateInput Value="@(new DateOnly(2025, 6, 15))" Disabled="true" />
+        """;
+
+    private static readonly string _placeholderCode = """
+        <DateInput @bind-Value="selectedDate" Placeholder="Pick a date" />
+        """;
+
+    private static readonly string _validationCode = """
+        <EditForm Model="@model" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <div class="space-y-4">
+                <div class="space-y-2">
+                    <Label>Start Date <span class="text-destructive">*</span></Label>
+                    <DateInput @bind-Value="model.StartDate" Required="true" />
+                    <ValidationMessage For="@(() => model.StartDate)" class="text-sm text-destructive" />
+                </div>
+                <Button Type="ButtonType.Submit">Submit</Button>
+            </div>
+        </EditForm>
+
+        @code {
+            private DateInputModel model = new();
+
+            private class DateInputModel
+            {
+                [Required(ErrorMessage = "Start date is required")]
+                public DateOnly? StartDate { get; set; }
+            }
+        }
+        """;
+
+    private static readonly DemoPropRow[] _dateInputProps =
+    [
+        new("Value",            "DateOnly?",                    "null",             "The selected date. Supports two-way binding via <code>@bind-Value</code>."),
+        new("ValueChanged",     "EventCallback&lt;DateOnly?&gt;","—",               "Invoked when the value changes."),
+        new("Culture",          "CultureInfo?",                 "CurrentCulture",   "Culture for date format and localization."),
+        new("Disabled",         "bool",                         "false",            "When true, the input is non-interactive."),
+        new("Required",         "bool",                         "false",            "Marks the input as required."),
+        new("ShowPickerButton", "bool",                         "true",             "Shows or hides the calendar picker button."),
+        new("MinDate",          "DateOnly?",                    "null",             "Earliest selectable date in the calendar."),
+        new("MaxDate",          "DateOnly?",                    "null",             "Latest selectable date in the calendar."),
+        new("IsDateDisabled",   "Func&lt;DateOnly, bool&gt;?",  "null",             "Function to disable specific dates in the calendar."),
+        new("CaptionLayout",    "CalendarCaptionLayout",         "Label",            "Calendar caption layout (Label or Dropdown)."),
+        new("Id",               "string?",                      "null",             "HTML id attribute for the container."),
+        new("Name",             "string?",                      "null",             "Name for the hidden form input."),
+        new("Class",            "string?",                      "null",             "Additional CSS classes for the container."),
+        new("AriaLabel",        "string?",                      "\"Date\"",         "ARIA label for the group container."),
+        new("AriaDescribedBy",  "string?",                      "null",             "ARIA describedby for the group container."),
+        new("AriaInvalid",      "bool?",                        "null",             "When true, applies destructive border styling."),
+        new("Placeholder",      "string?",                      "null",             "Text shown when the value is empty and the input is not focused."),
+    ];
+}

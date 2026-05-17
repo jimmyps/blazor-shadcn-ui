@@ -21,7 +21,7 @@ A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://
   <table align="center">
     <tr>
       <td align="center"><b>⚡ Zero Config</b><br/>Pre-built CSS, no Node.js or build tools required</td>
-      <td align="center"><b>🧩 135+ Components</b><br/>Modern, composable UI components</td>
+      <td align="center"><b>🧩 137+ Components</b><br/>Modern, composable UI components</td>
       <td align="center"><b>🎨 shadcn/ui Themes</b><br/>Drop in any shadcn/ui or tweakcn theme</td>
       <td align="center"><b>🌙 Dark Mode</b><br/>Built-in light &amp; dark with CSS variables</td>
     </tr>
@@ -455,7 +455,7 @@ Primitives give you complete control over styling while handling all the complex
 
 ## 📚 Components
 
-NeoUI includes **135+ styled components** with full shadcn/ui design compatibility:
+NeoUI includes **137+ styled components** with full shadcn/ui design compatibility:
 
 ### Form Components
 - **Button** - Multiple variants (default, destructive, outline, secondary, ghost, link) with icon support
@@ -484,8 +484,10 @@ NeoUI includes **135+ styled components** with full shadcn/ui design compatibili
 
 ### Date & Time
 - **Calendar** - Date selection grid with month navigation
+- **Date Input** - Keyboard-driven segmented date field (MM/DD/YYYY) with calendar picker, culture-aware format, `Placeholder` support, and min/max constraints
 - **Date Picker** - Date selection with calendar in popover
 - **Date Range Picker** - Date range selection with presets and two-calendar view
+- **Time Input** - Keyboard-driven segmented time field with 12/24-hour modes, optional seconds, minute step, and `Placeholder` support
 - **Time Picker** - Time selection with 12/24-hour format support
 
 ### Layout & Navigation

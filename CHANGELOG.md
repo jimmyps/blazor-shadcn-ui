@@ -2,13 +2,174 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-5-10 — Badge Semantic Variants
+## 2026-5-17 — DateInput & TimeInput
 
+> **Targeting: `v4.1.0`**  
 > **Affects `NeoUI.Blazor`.** Additive — no breaking changes.
 
 ---
 
+### ✨ New Component — `DateInput`
+
+Keyboard-driven segmented date field that renders month, day, and year as individually focusable spinbuttons. Culture-aware format is derived from `CultureInfo.DateTimeFormat.ShortDatePattern` so the segment order adapts automatically (e.g. `MM/DD/YYYY` for en-US, `DD/MM/YYYY` for fr-FR). Includes an optional calendar picker popover, min/max date constraints, and form integration via a hidden `name` input.
+
+```razor
+<DateInput @bind-Value="selectedDate" />
+<DateInput @bind-Value="selectedDate" Placeholder="Pick a date" />
+<DateInput @bind-Value="selectedDate"
+           MinDate="DateOnly.FromDateTime(DateTime.Today)"
+           MaxDate="DateOnly.FromDateTime(DateTime.Today.AddMonths(6))" />
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `DateOnly?` | `null` | Selected date. Supports two-way binding via `@bind-Value`. |
+| `ValueChanged` | `EventCallback<DateOnly?>` | — | Invoked when the value changes. |
+| `Placeholder` | `string?` | `null` | Text shown when the field is empty and not focused. |
+| `Culture` | `CultureInfo?` | `CurrentCulture` | Culture for date format and localization. |
+| `ShowPickerButton` | `bool` | `true` | Shows or hides the calendar picker button. |
+| `MinDate` | `DateOnly?` | `null` | Earliest selectable date in the calendar. |
+| `MaxDate` | `DateOnly?` | `null` | Latest selectable date in the calendar. |
+| `IsDateDisabled` | `Func<DateOnly, bool>?` | `null` | Function to disable specific dates in the calendar. |
+| `CaptionLayout` | `CalendarCaptionLayout` | `Label` | Calendar caption layout (`Label` or `Dropdown`). |
+| `Disabled` | `bool` | `false` | Non-interactive state. |
+| `Required` | `bool` | `false` | Marks the field as required. |
+| `Name` | `string?` | `null` | Name for the hidden form input (enables form submission). |
+| `AriaInvalid` | `bool?` | `null` | When true, applies destructive border styling. |
+
+**Keyboard support:**
+
+| Key | Behavior |
+|---|---|
+| `ArrowUp` | Increments the focused segment. If the segment is empty, all unset segments are first filled from today's date, then the focused segment is incremented. Wraps at boundary (e.g. Dec → Jan). |
+| `ArrowDown` | Decrements the focused segment with the same auto-fill behavior. Wraps at boundary. |
+| `ArrowLeft` | Moves focus to the previous segment. |
+| `ArrowRight` | Moves focus to the next segment. |
+| `0`–`9` | Types a digit into the active segment. Auto-advances to the next segment when the segment is filled (e.g. typing `1` then `2` fills month and jumps to day). |
+| `C` | Sets all segments to today's date. Does not fire when combined with Ctrl/Meta (copy shortcut). |
+| `Backspace` / `Delete` | Clears the active segment value. |
+| `Tab` / `Shift+Tab` | Navigates between segments using native browser focus. |
+
+---
+
+### ✨ New Component — `TimeInput`
+
+Keyboard-driven segmented time field that renders hour, minute, optional second, and AM/PM as individually focusable spinbuttons. 12/24-hour format is auto-detected from the active culture but can be forced via `Use12Hour`. Supports configurable minute step (e.g. 15-minute intervals) and an optional clock picker popover.
+
+```razor
+<TimeInput @bind-Value="selectedTime" />
+<TimeInput @bind-Value="selectedTime" Use12Hour="true" ShowSeconds="true" />
+<TimeInput @bind-Value="selectedTime" Placeholder="Pick a time" MinuteStep="15" />
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `Value` | `TimeOnly?` | `null` | Selected time. Supports two-way binding via `@bind-Value`. |
+| `ValueChanged` | `EventCallback<TimeOnly?>` | — | Invoked when the value changes. |
+| `Placeholder` | `string?` | `null` | Text shown when the field is empty and not focused. |
+| `Use12Hour` | `bool?` | from culture | When true, shows AM/PM segment. Defaults to culture's AM designator presence. |
+| `ShowSeconds` | `bool` | `false` | Shows the seconds segment. |
+| `MinuteStep` | `int` | `1` | Minute increment step for ArrowUp/Down and the clock picker. |
+| `ShowPickerButton` | `bool` | `true` | Shows or hides the clock picker button. |
+| `Disabled` | `bool` | `false` | Non-interactive state. |
+| `Required` | `bool` | `false` | Marks the field as required. |
+| `Name` | `string?` | `null` | Name for the hidden form input (enables form submission). |
+| `AriaInvalid` | `bool?` | `null` | When true, applies destructive border styling. |
+
+**Keyboard support:**
+
+| Key | Behavior |
+|---|---|
+| `ArrowUp` | Increments the focused segment. If the segment is empty, all unset segments are first filled from the current time, then the focused segment is incremented. For AM/PM on an empty field, the first press seeds from now without toggling; subsequent presses toggle. Wraps at boundary (e.g. 59 min → 0 min). |
+| `ArrowDown` | Decrements the focused segment with the same auto-fill behavior. Wraps at boundary. |
+| `ArrowLeft` | Moves focus to the previous segment. |
+| `ArrowRight` | Moves focus to the next segment. |
+| `0`–`9` | Types a digit into the active segment. Auto-advances to the next segment when filled. |
+| `A` / `a` | Sets AM on the AM/PM segment (12-hour mode only). |
+| `P` / `p` | Sets PM on the AM/PM segment (12-hour mode only). |
+| `C` | Sets all segments to the current time. Does not fire when combined with Ctrl/Meta (copy shortcut). If `MinuteStep > 1`, the seeded minute is rounded down to the nearest step. |
+| `Backspace` / `Delete` | Clears the active segment value. |
+| `Tab` / `Shift+Tab` | Navigates between segments using native browser focus. |
+
+---
+
+## 2026-5-11 to 2026-5-13 — Badge Variants, DatePicker, SplitButton, Sidebar & SelectionIndicator
+
+> **Releases: `v4.0.12` → `v4.0.18`**  
+> **Affects `NeoUI.Blazor`.** No breaking changes.
+
+---
+
+### 🐛 Fix — `SelectionIndicator`: reposition on sidebar expand/collapse via `ResizeObserver`
+
+**Release: `v4.0.18`**
+
+The `SelectionIndicator` now uses a `ResizeObserver` to detect sidebar expand/collapse and reposition itself correctly. Previously, the sidebar width transition ran on the `<aside>` parent element, which did not propagate `transitionend` events into `SidebarContent`, leaving the indicator at a stale position after the sidebar toggled.
+
+- `ResizeObserver` is attached to both the container element and the nearest `<aside data-sidebar="sidebar">` ancestor.
+- Repositioning is debounced with `requestAnimationFrame` to avoid redundant calls during rapid resize events.
+- Hover-state repositioning is correctly excluded.
+- `ResizeObserver` is disconnected and any pending rAF is cancelled on cleanup.
+
+---
+
+### 🐛 Fix — `Sidebar`: re-render `SidebarMenuButton` on `SidebarContext` state change
+
+**Release: `v4.0.17`**
+
+`SidebarMenuButton` and `SidebarMenuSubButton` now subscribe to `SidebarContext.StateChanged` and call `StateHasChanged()` when the context changes. Previously, navigating between routes could leave active-state highlighting stale without a full re-render.
+
+Both components implement `IDisposable` to cleanly unsubscribe on teardown.
+
+---
+
+### ✨ Enhancement — `SplitButton`: `DropdownContentClass` parameter
+
+**Release: `v4.0.16`**
+
+Added `DropdownContentClass` (`string?`) parameter to `SplitButton` to forward additional CSS classes to the inner `DropdownMenuContent` popup. Enables width, positioning, or style overrides without replacing the full dropdown template.
+
+```razor
+<SplitButton DropdownContentClass="min-w-[200px]">
+    ...
+</SplitButton>
+```
+
+---
+
+### 🐛 Fix — `DatePicker` / `DateRangePicker`: spurious popover close on first click
+
+**Release: `v4.0.15`** *(supersedes `v4.0.14`)*
+
+When a `DatePicker` or `DateRangePicker` was given a pre-set value (e.g. inside a dialog form), `OnAfterRenderAsync` would compare a stale `_lastNotifiedDate` (`null`) against the rendered selected date and immediately fire a close/notify on the first click.
+
+Fixed by overriding `OnInitialized` (runs once after initial parameters are set) to seed `_lastNotifiedDate` / `_lastNotifiedStartDate` / `_lastNotifiedEndDate` from the initial field values. The previous `OnParametersSet` approach was a no-op because `SelectedDate.get` returns `_selectedDate`, making the inequality check always false.
+
+---
+
+### ✨ Enhancement — `Badge`: soft variants (`SuccessSoft`, `InfoSoft`, `WarningSoft`, `DangerSoft`)
+
+**Release: `v4.0.13`**
+
+Added four soft-style `BadgeVariant` values as subtler alternatives to their solid counterparts:
+
+- **`SuccessSoft`** — tinted green background + accent border + accent text
+- **`InfoSoft`** — tinted blue background + accent border + accent text
+- **`WarningSoft`** — tinted amber background + accent border + accent text
+- **`DangerSoft`** — tinted red background + accent border + accent text
+
+All soft variants reuse `--alert-*-bg` / `--alert-*` CSS variables for full theme and dark-mode compatibility. The `--alert-*` CSS variables are now also declared as library defaults in `components-input.css` (previously only available in the demo app).
+
+```razor
+<Badge Variant="BadgeVariant.SuccessSoft">Completed</Badge>
+<Badge Variant="BadgeVariant.WarningSoft">Pending</Badge>
+```
+
+---
+
 ### ✨ Enhancement — `Badge`: semantic variants (`Muted`, `Success`, `Info`, `Warning`, `Danger`)
+
+**Release: `v4.0.12`**
 
 Added five new `BadgeVariant` values to match the existing `Alert` variant palette:
 
@@ -17,12 +178,8 @@ Added five new `BadgeVariant` values to match the existing `Alert` variant palet
 - **`Info`** — solid blue badge (`text-white`)
 - **`Warning`** — solid amber badge (`text-white`)
 - **`Danger`** — solid red badge (`text-white`)
-- **`SuccessSoft`** — tinted green background + accent border + accent text
-- **`InfoSoft`** — tinted blue background + accent border + accent text
-- **`WarningSoft`** — tinted amber background + accent border + accent text
-- **`DangerSoft`** — tinted red background + accent border + accent text
 
-All new variants reuse the same CSS custom property tokens as `Alert`, ensuring visual consistency and full theme/dark-mode compatibility. The `--alert-*` CSS variables are now also defined as library defaults in `components-input.css` (previously only in the demo app). The demo page has new **Semantic Variants** and **Soft Variants** sections.
+All new variants reuse the same CSS custom property tokens as `Alert`, ensuring visual consistency and full theme/dark-mode compatibility.
 
 ```razor
 <Badge Variant="BadgeVariant.Success">Success</Badge>

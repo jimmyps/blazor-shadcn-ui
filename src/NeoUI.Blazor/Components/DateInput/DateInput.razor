@@ -1,0 +1,81 @@
+@namespace NeoUI.Blazor
+@using NeoUI.Icons.Lucide
+
+<div class="@ContainerClass"
+     id="@Id"
+     role="group"
+     aria-label="@(AriaLabel ?? "Date")"
+     aria-disabled="@(Disabled ? "true" : null)"
+     aria-required="@(Required ? "true" : null)"
+     aria-invalid="@(AriaInvalid?.ToString().ToLower())"
+     aria-describedby="@AriaDescribedBy"
+     @ref="_containerRef"
+     @onkeydown="HandleKeyDown"
+     @onfocusin="OnContainerFocusIn"
+     @onfocusout="OnContainerFocusOut"
+     @attributes="AdditionalAttributes">
+
+    @if (!string.IsNullOrEmpty(Placeholder))
+    {
+        <span class="@(_showPlaceholder ? "text-muted-foreground flex-1 cursor-text select-none truncate" : "sr-only")"
+              aria-hidden="true"
+              @onclick="FocusFirstSegment">
+            @Placeholder
+        </span>
+    }
+
+    @foreach (var (seg, i) in _segments.Select((s, i) => (s, i)))
+    {
+        if (seg.IsLiteral)
+        {
+            <span class="@(_showPlaceholder ? "sr-only" : "text-muted-foreground select-none shrink-0")" aria-hidden="true">@seg.LiteralText</span>
+        }
+        else
+        {
+            var idx = i;
+            <span tabindex="@(Disabled ? -1 : 0)"
+                  role="spinbutton"
+                  aria-label="@GetSegmentAriaLabel(seg)"
+                  aria-valuenow="@seg.Value"
+                  aria-valuemin="@seg.Min"
+                  aria-valuemax="@seg.Max"
+                  class="@(_showPlaceholder ? "sr-only" : GetSegmentClass(seg))"
+                  @onfocus="() => OnSegmentFocus(idx)"
+                  @onblur="OnSegmentBlur">
+                @GetSegmentDisplay(seg)
+            </span>
+        }
+    }
+
+    <span class="@(_showPlaceholder ? "hidden" : "flex-1")" aria-hidden="true"></span>
+
+    @if (ShowPickerButton && !Disabled)
+    {
+        <Popover @bind-Open="_isPickerOpen">
+            <PopoverTrigger>
+                <button type="button"
+                        class="flex items-center justify-center text-muted-foreground hover:text-foreground focus:outline-none"
+                        tabindex="-1"
+                        aria-label="Open calendar">
+                    <LucideIcon Name="calendar" Size="14" />
+                </button>
+            </PopoverTrigger>
+            <PopoverContent Class="w-auto !p-0" Align="PopoverAlign.End">
+                <Calendar SelectedDate="@_pickerDate"
+                          SelectedDateChanged="OnPickerDateSelected"
+                          MinDate="@MinDate"
+                          MaxDate="@MaxDate"
+                          IsDateDisabled="@IsDateDisabled"
+                          Culture="@EffectiveCulture"
+                          CaptionLayout="@CaptionLayout"
+                          Class="border-0 shadow-none"
+                          RowClass="!mt-0" />
+            </PopoverContent>
+        </Popover>
+    }
+
+    @if (!string.IsNullOrEmpty(Name))
+    {
+        <input type="hidden" name="@Name" value="@HiddenValue" />
+    }
+</div>
