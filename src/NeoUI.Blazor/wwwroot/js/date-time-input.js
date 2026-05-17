@@ -3,7 +3,7 @@
 /**
  * Attach a keydown listener that prevents page scrolling on Arrow keys
  * while still allowing those events to bubble to Blazor.
- * Returns the handler so it can be detached later.
+ * The handler is stored on container._neoDateTimeHandler for removal by dispose().
  */
 export function initialize(container) {
     if (!container) return;

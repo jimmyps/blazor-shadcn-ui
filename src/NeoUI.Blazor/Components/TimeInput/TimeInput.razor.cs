@@ -112,7 +112,7 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
 
     private CultureInfo EffectiveCulture => Culture ?? CultureInfo.CurrentCulture;
     private bool EffectiveUse12Hour => Use12Hour ?? !string.IsNullOrEmpty(EffectiveCulture.DateTimeFormat.AMDesignator);
-    private string? HiddenValue => TryBuildTime()?.ToString("HH:mm:ss");
+    private string? HiddenValue => TryBuildTime()?.ToString("HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
     private bool HasAnySegmentValue => _segments.Any(s => !s.IsLiteral && s.Value is not null);
     private bool _showPlaceholder => !string.IsNullOrEmpty(Placeholder) && !_isFocused && Value is null && !HasAnySegmentValue;
 
@@ -127,6 +127,7 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
 
     protected override void OnParametersSet()
     {
+        if (MinuteStep < 1) MinuteStep = 1;
         if (_segments.Count == 0) return;
         SyncSegmentsFromValue();
         SyncPickerFromSegments();
@@ -549,7 +550,7 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
         "tabular-nums select-none cursor-default rounded-sm px-0.5 caret-transparent",
         "focus:outline-none focus:bg-primary focus:text-primary-foreground",
         seg.Value is null ? "text-muted-foreground" : "",
-        seg.IsAmPm ? "min-w-[2ch] text-center" : "min-w-[2ch] text-center"
+        "min-w-[2ch] text-center"
     );
 
     private string ContainerClass => ClassNames.cn(

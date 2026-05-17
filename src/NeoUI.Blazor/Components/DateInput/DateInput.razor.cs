@@ -173,7 +173,7 @@ public partial class DateInput : ComponentBase, IAsyncDisposable
                     'd' => new DateSegment { Kind = DateSegmentKind.Day, Min = 1, Max = 31, MaxLength = 2, Placeholder = "DD" },
                     _ => tokenLen >= 4
                         ? new DateSegment { Kind = DateSegmentKind.Year, Min = 1, Max = 9999, MaxLength = 4, Placeholder = "YYYY" }
-                        : new DateSegment { Kind = DateSegmentKind.Year, Min = 0, Max = 99, MaxLength = 2, Placeholder = "YY" }
+                        : new DateSegment { Kind = DateSegmentKind.Year, Min = 1, Max = 99, MaxLength = 2, Placeholder = "YY" }
                 });
             }
             else
