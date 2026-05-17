@@ -130,6 +130,8 @@ A new recursive sub-component `FilterGroupPanel` renders one `FilterGroup` node.
 
 When `AllowGroups = false` (default), the component renders the legacy flat chip layout with no logic toggle and no add-group button — fully backward-compatible.
 
+The demo site includes a dedicated **Nested Groups** demo page under the FilterBuilder section showcasing AND/OR logic toggles, nested sub-groups, and preset integration.
+
 ---
 
 ## 2026-5-11 to 2026-5-13 — Badge Variants, DatePicker, SplitButton, Sidebar & SelectionIndicator
