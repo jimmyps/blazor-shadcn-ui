@@ -28,7 +28,7 @@
             </PopoverTrigger>
             <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@HandleContentReady" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
                 <CommandContent FilterFunction="@GetFilterFunction()" SearchQuery="@_commandSearchQuery" SearchQueryChanged="@HandleInternalSearchQueryChanged">
-                    <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@EffectiveSearchPlaceholder" />
+                    <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@EffectiveSearchPlaceholder" SearchInterval="@SearchInterval" />
                     <CommandList OnLoadMore="@OnLoadMore" IsLoading="@IsLoading" EndOfListMessage="@EndOfListMessage" AllowLoadMoreDuringSearch="@SearchQueryChanged.HasDelegate">
                         <CommandEmpty>@EffectiveEmptyMessage</CommandEmpty>
                         <CommandGroup>

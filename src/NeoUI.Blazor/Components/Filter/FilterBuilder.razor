@@ -27,6 +27,7 @@
                       DisplaySelector="@(f => f.Label)"
                       IconSelector="@(f => f.Icon)"
                       ClearSearchOnSelect="true"
+                      SearchInterval="@ComboboxSearchInterval"
                       Placeholder="@ButtonText"
                       SearchPlaceholder="Search fields..."
                       EmptyMessage="No fields found."
@@ -200,6 +201,7 @@
                               ChipSize="@ChipSize"
                               IsRoot="true"
                               FieldPickerVariant="@FieldPickerVariant"
+                              ComboboxSearchInterval="@ComboboxSearchInterval"
                               OnChanged="@HandleGroupChanged"
                               OnClearAll="@(!_presets.Any() ? EventCallback.Factory.Create(this, ClearAll) : default)"
                               HasActiveFilters="@(_rootGroup.Conditions.Any() || _rootGroup.NestedGroups.Any())" />

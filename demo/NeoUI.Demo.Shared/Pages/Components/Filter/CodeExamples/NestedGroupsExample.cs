@@ -54,6 +54,7 @@ partial class NestedGroupsExample
                        @bind-Filters="employeeFilters"
                        AllowGroups="true"
                        FieldPickerVariant="FilterFieldPickerVariant.Combobox"
+                       ComboboxSearchInterval="500"
                        OnFilterChange="HandleEmployeeFilterChange">
             <FilterFields>
                 <FilterField Field="FirstName"  Label="First Name"  Icon="user"        Type="FilterFieldType.Text" />

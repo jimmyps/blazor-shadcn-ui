@@ -2,6 +2,55 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-5-18 — Input UX Fixes & Combobox Search Interval
+
+> **Targeting: `v4.1.2`**  
+> **Affects `NeoUI.Blazor`.** Additive — no breaking changes.
+
+---
+
+### 🐛 Fix — `Input`: stale C# value no longer disrupts active user input
+
+`updateValue` (the JS function called by C# to push a normalised/clamped value back to the DOM) now skips the update when the element is currently focused and the user's in-progress value differs from what C# is trying to write. Authoritative corrections (clamping, normalisation) continue to apply on blur as before — the guard only suppresses out-of-date echo responses that arrive mid-keystroke.
+
+Additionally, the debounce-revert edge case is fixed: if a user types ahead and then deletes back to the previously-sent value, any queued debounce timer is now cancelled before the early-exit, preventing a stale intermediate value from being sent to C#.
+
+---
+
+### ✨ Enhancement — `Combobox<TItem>`: `SearchInterval` parameter
+
+Added `SearchInterval` (`int`, default `0`) parameter. When set to a positive value, the command input debounces keystrokes by that many milliseconds before invoking `OnSearchChanged`. Useful when `ItemsChanged` triggers an async data fetch.
+
+```razor
+<Combobox TItem="Product"
+          Items="@products"
+          @bind-Value="selected"
+          SearchInterval="300" />
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `SearchInterval` | `int` | `0` | Debounce delay in ms before the search query is forwarded. `0` fires immediately. |
+
+---
+
+### ✨ Enhancement — `FilterBuilder`: `ComboboxSearchInterval` parameter
+
+Added `ComboboxSearchInterval` (`int`, default `200`) parameter. Forwarded to the internal `Combobox` used when `FieldPickerVariant="Combobox"` is set — and propagated automatically through all nested group panels.
+
+```razor
+<FilterBuilder TData="Employee"
+               FieldPickerVariant="FilterFieldPickerVariant.Combobox"
+               ComboboxSearchInterval="500"
+               ... />
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ComboboxSearchInterval` | `int` | `200` | Debounce delay (ms) for the searchable field picker combobox. |
+
+---
+
 ## 2026-5-18 — Combobox Enhancements & FilterBuilder Searchable Field Picker
 
 > **Targeting: `v4.1.1`**  

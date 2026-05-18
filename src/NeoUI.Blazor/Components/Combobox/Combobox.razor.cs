@@ -177,6 +177,14 @@ public partial class Combobox<TItem> : ComponentBase
     public bool ClearSearchOnSelect { get; set; }
 
     /// <summary>
+    /// Gets or sets the debounce interval in milliseconds before the search query is applied.
+    /// Default is 0 (no debouncing). Set to 150–300ms for better performance with large datasets
+    /// or server-side search via <see cref="SearchQueryChanged"/>.
+    /// </summary>
+    [Parameter]
+    public int SearchInterval { get; set; }
+
+    /// <summary>
     /// Gets or sets the callback invoked on every search keystroke.
     /// When set, the component's built-in text filter is completely bypassed — the consumer
     /// decides which <see cref="Items"/> to show (e.g. by fetching from a server).

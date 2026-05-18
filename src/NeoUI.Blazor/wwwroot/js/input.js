@@ -178,33 +178,48 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
         debounceTimer: null,
         inputHandler: null,
         changeHandler: null,
-        blurHandler: null
+        blurHandler: null,
+        lastSentValue: element.value  // tracks last value delivered to C#
     };
 
     // Attach input event listener ONLY if updateOn='input'
     if (state.updateOn === 'input' && dotNetRef) {
         state.inputHandler = (e) => {
             const value = e.target.value;
-            
+
+            // Skip if value hasn't changed since last C# call (e.g. backspace on empty field,
+            // IME composition end with same text, re-dispatched synthetic events).
+            // Also cancel any pending debounce — if the user reverted to lastSentValue the
+            // old timer would otherwise fire and send an intermediate (now-stale) value.
+            if (value === state.lastSentValue) {
+                if (state.debounceTimer) {
+                    clearTimeout(state.debounceTimer);
+                    state.debounceTimer = null;
+                }
+                return;
+            }
+
             // Handle debouncing
             if (state.debounceDelay > 0) {
                 // Clear existing timer
                 if (state.debounceTimer) {
                     clearTimeout(state.debounceTimer);
                 }
-                
-                // Set new timer with state check
+
+                // Set new timer — lastSentValue updated only when the call actually fires,
+                // so updateValue() can detect that a newer value is still pending
                 state.debounceTimer = setTimeout(() => {
                     // Check if state still exists before invoking
                     const currentState = inputState.get(elementId);
                     if (currentState && currentState.dotNetRef) {
-                        // Just invoke - no DOM update during typing (clamping deferred to blur)
+                        currentState.lastSentValue = value;
+                        currentState.debounceTimer = null;
                         safeInvoke(currentState.dotNetRef, 'OnInputChanged', value);
                     }
                 }, state.debounceDelay);
             } else {
                 // No debounce - immediate call
-                // No DOM update during typing - would interfere with user input
+                state.lastSentValue = value;
                 safeInvoke(dotNetRef, 'OnInputChanged', value);
             }
         };
@@ -218,6 +233,7 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
             
             // Only call C# for change events when updateOn='change'
             if (state.updateOn === 'change') {
+                state.lastSentValue = value;
                 // C# will call updateValue() if value gets clamped
                 safeInvoke(dotNetRef, 'OnInputChanged', value);
             }
@@ -240,9 +256,13 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
                 safeInvoke(dotNetRef, 'ValidateAndClamp');
             }
             // Final sync for UpdateOn=Input without blur validation
-            // Just syncing state - no transformation expected
+            // Only fires if the value differs from what was last sent (debounce may have
+            // already covered it, or blur fires after a no-change keystroke sequence)
             else if (state.updateOn === 'input') {
-                safeInvoke(dotNetRef, 'OnInputChanged', value);
+                if (value !== state.lastSentValue) {
+                    state.lastSentValue = value;
+                    safeInvoke(dotNetRef, 'OnInputChanged', value);
+                }
             }
         };
         element.addEventListener('blur', state.blurHandler);
@@ -261,10 +281,21 @@ export function updateValue(elementId, value) {
     const element = document.getElementById(elementId);
     if (!element) return;
 
-    // Only update if value differs to avoid cursor jump
+    const state = inputState.get(elementId);
+
+    // If the element is focused and the user has typed something different from what C#
+    // is trying to write back, skip the update — their in-progress input takes precedence
+    // over stale C# responses. Authoritative corrections (clamping, normalization) are
+    // applied on blur when the element is no longer focused.
+    if (document.activeElement === element && element.value !== (value || '')) return;
+
+    // Only update DOM if value differs to avoid cursor jump
     if (element.value !== value) {
         element.value = value || '';
     }
+
+    // Keep lastSentValue in sync so the next input/blur comparison is accurate
+    if (state) state.lastSentValue = value || '';
 }
 
 /**

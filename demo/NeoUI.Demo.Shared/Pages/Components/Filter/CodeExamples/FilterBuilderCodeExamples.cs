@@ -68,8 +68,10 @@ public partial class FilterBuilderDemo
         new("PresetsVariant", "FilterPresetsVariant",              "Dropdown",       "How presets are rendered: <code>Dropdown</code> (button + menu) or <code>Tabs</code> (horizontal tab bar with implicit \"All\" tab)."),
         new("MaxTabs",        "int?",                              "null",           "Maximum visible preset tabs when using <code>Tabs</code> variant. Excess presets overflow into a \"More ▾\" dropdown."),
         new("ChipSize",       "FilterChipSize",                    "Small",          "Height of every chip: <code>Small</code> (h-7), <code>Medium</code> (h-8), <code>Large</code> (h-9)."),
-        new("AllowGroups",    "bool",                              "false",          "When true, enables the predicate-tree editor: logic toggle (ALL of / ANY of) + [+ Add group] button for nested sub-groups."),
-        new("Class",          "string?",                           "null",           "Additional CSS classes for the wrapper element."),
+        new("AllowGroups",            "bool",                              "false",          "When true, enables the predicate-tree editor: logic toggle (ALL of / ANY of) + [+ Add group] button for nested sub-groups."),
+        new("FieldPickerVariant",     "FilterFieldPickerVariant",          "Dropdown",       "Field picker style: <code>Dropdown</code> (hierarchical menu with sub-menus) or <code>Combobox</code> (searchable — recommended for 15+ fields)."),
+        new("ComboboxSearchInterval", "int",                               "200",            "Debounce interval in milliseconds for the Combobox field picker search input. Only applies when <code>FieldPickerVariant</code> is <code>Combobox</code>."),
+        new("Class",                  "string?",                           "null",           "Additional CSS classes for the wrapper element."),
     ];
 
     private static readonly IReadOnlyList<DemoPropRow> _filterFieldProps =

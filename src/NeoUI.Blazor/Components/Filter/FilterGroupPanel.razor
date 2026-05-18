@@ -65,6 +65,7 @@
                           ChipSize="@ChipSize"
                           IsRoot="false"
                           FieldPickerVariant="@FieldPickerVariant"
+                          ComboboxSearchInterval="@ComboboxSearchInterval"
                           MaxNestingDepth="@MaxNestingDepth"
                           CurrentDepth="@(CurrentDepth + 1)"
                           OnChanged="@OnChanged"
@@ -82,6 +83,7 @@
                   DisplaySelector="@(f => f.Label)"
                   IconSelector="@(f => f.Icon)"
                   ClearSearchOnSelect="true"
+                  SearchInterval="@ComboboxSearchInterval"
                   Placeholder="Add predicate"
                   SearchPlaceholder="Search fields..."
                   EmptyMessage="No fields found."
@@ -171,6 +173,7 @@
     [Parameter] public EventCallback OnClearAll { get; set; }
     [Parameter] public bool HasActiveFilters { get; set; }
     [Parameter] public FilterFieldPickerVariant FieldPickerVariant { get; set; }
+    [Parameter] public int ComboboxSearchInterval { get; set; } = 200;
 
     private string? _fieldPickerSelected;
 

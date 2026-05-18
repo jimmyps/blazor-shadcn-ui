@@ -76,6 +76,13 @@ public partial class FilterBuilder<TData> : ComponentBase, IFilterBuilderContext
     /// </summary>
     [Parameter] public FilterFieldPickerVariant FieldPickerVariant { get; set; } = FilterFieldPickerVariant.Dropdown;
 
+    /// <summary>
+    /// Gets or sets the debounce interval in milliseconds for the field picker search input
+    /// when <see cref="FieldPickerVariant"/> is <see cref="FilterFieldPickerVariant.Combobox"/>.
+    /// Defaults to 200ms.
+    /// </summary>
+    [Parameter] public int ComboboxSearchInterval { get; set; } = 200;
+
     // ── Computed ─────────────────────────────────────────────────────────────
 
     private string WrapperCssClass => ClassNames.cn(Class);
