@@ -65,7 +65,7 @@ public partial class FilterValue : ComponentBase
 
     /// <summary>CSS for Select trigger: sizing/layout overrides. Border and ring suppression is handled by Borderless="true" on the trigger.</summary>
     private string SelectCompact => Compact
-        ? "h-full w-auto min-w-0 rounded-none px-2 text-sm hover:bg-muted/50 [&[aria-expanded=true]]:hover:bg-muted/50"
+        ? "h-full w-auto min-w-0 rounded-none px-2 py-0 text-sm hover:bg-muted/50 [&[aria-expanded=true]]:hover:bg-muted/50"
         : "h-8";
 
     /// <summary>CSS for MultiSelect trigger: no border or ring at any time, background changes only.</summary>
@@ -75,7 +75,7 @@ public partial class FilterValue : ComponentBase
 
     /// <summary>CSS for Combobox trigger: borderless and flush in compact mode.</summary>
     private string ComboboxCompact => Compact
-        ? "h-full !border-transparent !bg-transparent !shadow-none rounded-none px-2 min-w-[80px] max-w-[200px]"
+        ? "h-full !border-transparent !bg-transparent !shadow-none rounded-none px-2 py-0 min-w-[80px] max-w-[200px]"
         : "h-8";
 
     // ── String properties ────────────────────────────────────────────────────
