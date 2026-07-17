@@ -14,8 +14,12 @@
         @* Mobile-only entry point to the sheet. Rendered only when the sheet would have something in it. *@
         @if (HasViewSettings)
         {
+            @* ButtonSize.Icon, not Default + p-0: Default carries px-4, and cn() does not treat the p-0
+               shorthand as superseding it, so the padding survived and squeezed a w-8 button's content
+               box to nothing — the icon was there but crushed. Icon sizing carries no padding at all. *@
             <Button Variant="ButtonVariant.Outline"
-                    Class="h-8 w-8 shrink-0 p-0 sm:hidden"
+                    Size="ButtonSize.Icon"
+                    Class="h-8 w-8 shrink-0 sm:hidden"
                     aria-label="@Localizer["DataTable.ViewSettings"]"
                     OnClick="@(() => _viewSettingsOpen = true)">
                 <LucideIcon Name="sliders-horizontal" Size="16" />
