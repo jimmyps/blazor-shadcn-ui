@@ -1,12 +1,16 @@
 @namespace NeoUI.Blazor
 @typeparam TData where TData : class
 @inject ILocalizer Localizer
-<div class="@ClassNames.cn("flex items-center justify-between gap-2 pt-4", ToolbarClass)">
-    <div class="flex flex-1 items-center gap-2">
+@* Narrow screens: the search box takes the whole first line, which pushes the filters onto a
+   second line on its own while the toolbar actions stay up on the first line beside the search
+   (items-start keeps them aligned to it). From sm up the search returns to its fixed width, the
+   wrap never triggers, and the single-row desktop layout is unchanged. *@
+<div class="@ClassNames.cn("flex items-start justify-between gap-2 pt-4 sm:items-center", ToolbarClass)">
+    <div class="flex flex-1 flex-wrap items-center gap-2">
         <Input @bind-Value="@_searchValue"
                @bind-Value:after="@HandleSearchChanged"
                Placeholder="@Localizer["DataTable.Search"]"
-               Class="h-8 w-[180px]" />
+               Class="h-8 w-full sm:w-[180px]" />
 
         @if (ToolbarFilters != null)
         {
