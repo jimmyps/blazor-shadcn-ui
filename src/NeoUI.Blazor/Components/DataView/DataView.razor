@@ -385,21 +385,25 @@
         @* ── Pagination ───────────────────────────────────────────────── *@
         @if (!IsVirtualized && ShowPagination && IsPaginated && SortedItems.Count > 0)
         {
+            @* Kept in step with DataTable's pagination row (DataTable.razor). A fixed single row overflowed
+               on a phone: "Rows per page" wrapped mid-label and the controls ran off the edge. Wrap rather
+               than overflow, tighten the gaps, and below sm show only prev/next — first/last and the page
+               size selector have nowhere to go at that width. *@
             <Pagination State="@_paginationState"
                         PageSizes="@PageSizes"
                         OnPageChanged="@HandlePageChanged"
                         OnPageSizeChanged="@HandlePageSizeChanged"
-                        Class="flex items-center justify-between px-4 pt-4 border-t border-border mt-4">
+                        Class="flex flex-wrap items-center justify-between gap-y-2 px-4 pt-4 border-t border-border mt-4">
                 <PaginationInfo />
-                <PaginationContent Class="flex items-center gap-6 lg:gap-8">
-                    <PaginationPageSizeSelector />
+                <PaginationContent Class="flex items-center gap-2 sm:gap-4 lg:gap-8">
+                    <PaginationPageSizeSelector Class="hidden sm:flex" />
                     <div class="flex items-center gap-2">
-                        <PaginationPageDisplay />
+                        <PaginationPageDisplay Class="hidden lg:flex" />
                         <div class="flex items-center gap-1">
-                            <PaginationItem><PaginationFirst /></PaginationItem>
+                            <PaginationItem Class="hidden sm:flex"><PaginationFirst /></PaginationItem>
                             <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
                             <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
-                            <PaginationItem><PaginationLast /></PaginationItem>
+                            <PaginationItem Class="hidden sm:flex"><PaginationLast /></PaginationItem>
                         </div>
                     </div>
                 </PaginationContent>

@@ -55,21 +55,22 @@
            can only count rowData.length (one page) and would always show "of pageSize". *@
             @if (RowModelType == DataGridRowModelType.BlazorServerSide && PagingMode != DataGridPagingMode.None)
             {
+                @* Kept in step with DataTable's and DataView's pagination rows. See DataTable.razor. *@
                 <Pagination State="_blazorPaginationState"
                             PageSizes="@(new int[]{ 10, 20, 25, 50, 100 })"
                             OnPageChanged="OnBlazorPageChangedAsync"
                             OnPageSizeChanged="OnBlazorPageSizeChangedAsync"
-                            Class="flex items-center justify-between border-t px-2 py-4">
+                            Class="flex flex-wrap items-center justify-between gap-y-2 border-t px-2 py-4">
                     <PaginationInfo />
-                    <PaginationContent Class="flex items-center gap-6 lg:gap-8">
-                        <PaginationPageSizeSelector />
+                    <PaginationContent Class="flex items-center gap-2 sm:gap-4 lg:gap-8">
+                        <PaginationPageSizeSelector Class="hidden sm:flex" />
                         <div class="flex items-center gap-2">
-                            <PaginationPageDisplay />
+                            <PaginationPageDisplay Class="hidden lg:flex" />
                             <div class="flex items-center gap-1">
-                                <PaginationItem><PaginationFirst /></PaginationItem>
+                                <PaginationItem Class="hidden sm:flex"><PaginationFirst /></PaginationItem>
                                 <PaginationItem><PaginationPrevious ShowText="false" /></PaginationItem>
                                 <PaginationItem><PaginationNext ShowText="false" /></PaginationItem>
-                                <PaginationItem><PaginationLast /></PaginationItem>
+                                <PaginationItem Class="hidden sm:flex"><PaginationLast /></PaginationItem>
                             </div>
                         </div>
                     </PaginationContent>
