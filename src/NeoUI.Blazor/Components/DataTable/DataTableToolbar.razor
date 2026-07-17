@@ -33,7 +33,7 @@
                 <Select TValue="string" Value="@SortValue" ValueChanged="@ApplySortValue"
                         DisplayTextSelector="@(v => $"{Localizer["DataTable.Sort"]}: {SortLabel}")">
                     <SelectTrigger Class="h-8 w-auto border-dashed text-sm" aria-label="@Localizer["DataTable.SortBy"]">
-                        <SelectValue />
+                        <SelectValue Placeholder="@($"{Localizer["DataTable.Sort"]}: {Localizer["DataTable.SortNone"]}")" />
                     </SelectTrigger>
                     <SelectContent Class="w-max min-w-[var(--radix-select-trigger-width)]">
                         @foreach (var column in _sortableColumns)
@@ -155,7 +155,11 @@
         }
     }
 
-    /// <summary>Current sort as a Select option value, or null when unsorted so the trigger shows the placeholder.</summary>
+    /// <summary>
+    /// Current sort as a Select option value, or null when unsorted. Unsorted is shown by the trigger's
+    /// placeholder rather than by a sentinel option value, so every value here is a real column id and
+    /// nothing outside the sort model has to know about a magic string.
+    /// </summary>
     private string? SortValue =>
         ActiveSortColumn is { } column
             ? $"{column.Id}:{(SortDirection == SortDirection.Ascending ? "asc" : "desc")}"
@@ -171,6 +175,7 @@
     {
         if (string.IsNullOrEmpty(value) || !OnSortSelected.HasDelegate) return;
 
+        // LastIndexOf: a column id is free to contain ':' — only the trailing segment is the direction.
         var separator = value.LastIndexOf(':');
         if (separator <= 0) return;
 

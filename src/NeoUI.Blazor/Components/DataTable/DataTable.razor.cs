@@ -268,6 +268,16 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     private int _lastPaginationVersion = 0;
 
     /// <summary>
+    /// Version counter for sort changes to track render dependencies.
+    /// </summary>
+    private int _sortVersion = 0;
+
+    /// <summary>
+    /// Cached sort version for ShouldRender optimization.
+    /// </summary>
+    private int _lastSortVersion = 0;
+
+    /// <summary>
     /// Incremented each time ProcessDataAsync completes a server-side fetch so ShouldRender
     /// can detect that _processedData has changed even when no external parameters changed.
     /// </summary>
@@ -1385,26 +1395,30 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     /// Invokes the OnSort callback and reprocesses the data.
     /// </summary>
     /// <param name="sortInfo">The column ID and sort direction.</param>
-    private async Task HandleSortChange((string ColumnId, SortDirection Direction) sortInfo)
-    {
-        await HandleSortChangeCore(sortInfo);
-    }
-
     /// <summary>
-    /// Applies a sort chosen from the toolbar's mobile sort chip. On the header-click path the Table
-    /// primitive mutates the bound state itself before raising the change; driving a sort from outside
-    /// the table means setting that same state here first, then reusing the identical handler — so both
-    /// routes share one code path and both persist via StateKey.
+    /// Applies a sort chosen from the toolbar's sort control. The header-click path arrives at
+    /// HandleSortChange with the Table primitive having already mutated the bound state; driving a sort
+    /// from outside the table means setting that same state here first, then handing off to the very
+    /// same handler — so both routes share one path (and both persist via StateKey) without either
+    /// running twice. An empty column id clears the sort.
     /// </summary>
     private async Task ApplySortAsync((string ColumnId, SortDirection Direction) sortInfo)
     {
-        _tableState.Sorting.SortedColumn = sortInfo.ColumnId;
-        _tableState.Sorting.Direction = sortInfo.Direction;
-        await HandleSortChangeCore(sortInfo);
+        if (string.IsNullOrEmpty(sortInfo.ColumnId) || sortInfo.Direction == SortDirection.None)
+            _tableState.Sorting.ClearSort();
+        else
+            _tableState.Sorting.SetSort(sortInfo.ColumnId, sortInfo.Direction);
+
+        await HandleSortChange(sortInfo);
     }
 
-    private async Task HandleSortChangeCore((string ColumnId, SortDirection Direction) sortInfo)
+    private async Task HandleSortChange((string ColumnId, SortDirection Direction) sortInfo)
     {
+        // ShouldRender() tracks explicit version counters, and sorting had none — so the re-render that
+        // carries freshly sorted data into the table (and the new sort state out to the toolbar) was
+        // suppressed unless some *other* tracked thing happened to change at the same time.
+        _sortVersion++;
+
         if (OnSort.HasDelegate)
             await OnSort.InvokeAsync(sortInfo);
 
@@ -2007,6 +2021,7 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
         var searchChanged = _lastGlobalSearchValue != _globalSearchValue;
         var selectionChanged = _lastSelectionVersion != _selectionVersion;
         var paginationChanged = _lastPaginationVersion != _paginationVersion;
+        var sortChanged = _lastSortVersion != _sortVersion;
         var serverResultChanged = _lastServerResultVersion != _serverResultVersion;
         var styleChanged = _lastDense != Dense
             || _lastHeaderBackground != HeaderBackground
@@ -2025,8 +2040,9 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             || _lastVirtualizeOverscanCount != VirtualizeOverscanCount;
         var treeVersionChanged = _lastTreeVersion != _treeVersion;
 
-        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || serverResultChanged || styleChanged || virtualizeChanged || treeVersionChanged)
+        if (dataChanged || selectionModeChanged || loadingChanged || columnsChanged || searchChanged || selectionChanged || paginationChanged || sortChanged || serverResultChanged || styleChanged || virtualizeChanged || treeVersionChanged)
         {
+            _lastSortVersion = _sortVersion;
             _lastData = Data;
             _lastServerData = ServerData;
             _lastItemsProvider = ItemsProvider;
