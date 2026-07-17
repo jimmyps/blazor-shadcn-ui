@@ -217,10 +217,13 @@ public partial class Sidebar : ComponentBase, IDisposable
             }
 
             _subscribedContext = Context;
-
-            // Set up or tear down navigation listener based on AutoDetectActive
-            SetupNavigationListener();
         }
+
+        // Outside the context-changed branch on purpose: the listener depends on parameters, not on the
+        // context reference, and SidebarProvider creates its context once — so leaving this inside meant
+        // a later AutoDetectActive/CloseMobileOnNavigate change was silently ignored for the component's
+        // lifetime. _isNavigationListenerActive makes this idempotent to call on every parameter set.
+        SetupNavigationListener();
     }
 
     /// <summary>
@@ -261,8 +264,13 @@ public partial class Sidebar : ComponentBase, IDisposable
     {
         if (AutoDetectActive) UpdateCurrentPath();
 
+        // Deliberately not gated on IsMobile. SetIsMobile never clears OpenMobile, so widening past the
+        // mobile breakpoint with the sheet open leaves OpenMobile stuck true (the Sheet just stops being
+        // rendered) — and narrowing back would pop it open unprompted. Clearing it on any navigation
+        // tidies that up too. On desktop it is a no-op: SetOpenMobile returns early when unchanged,
+        // and desktop open/closed is the separate Open field.
         // SetOpenMobile raises StateChanged, which this component already re-renders on.
-        if (CloseMobileOnNavigate && Context is { IsMobile: true, OpenMobile: true })
+        if (CloseMobileOnNavigate && Context is { OpenMobile: true })
             Context.SetOpenMobile(false);
     }
 

@@ -1404,10 +1404,16 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     /// </summary>
     private async Task ApplySortAsync((string ColumnId, SortDirection Direction) sortInfo)
     {
-        if (string.IsNullOrEmpty(sortInfo.ColumnId) || sortInfo.Direction == SortDirection.None)
+        if (string.IsNullOrWhiteSpace(sortInfo.ColumnId) || sortInfo.Direction == SortDirection.None)
             _tableState.Sorting.ClearSort();
         else
             _tableState.Sorting.SetSort(sortInfo.ColumnId, sortInfo.Direction);
+
+        // Re-sorting invalidates the page you were on, so the header path resets to page 1 (inside
+        // TableContext.ToggleSort). This path sets SortingState directly and would otherwise keep the
+        // offset: re-sorting from page 7 would leave you stranded mid-list instead of at the top, and
+        // PersistStateAsync would then store that page against the new sort.
+        _tableState.Pagination.Reset();
 
         await HandleSortChange(sortInfo);
     }

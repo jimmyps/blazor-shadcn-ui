@@ -121,9 +121,13 @@
                             {
                                 var isActive = ActiveSortColumn?.Id == column.Id;
                                 var ascending = isActive && SortDirection == SortDirection.Ascending;
+                                @* Only the active chip states a direction. An inactive chip has no direction —
+                                   labelling it announced "Descending" to screen readers for a column that was
+                                   neither sorted descending nor about to be (tapping it sorts ascending). Its
+                                   text is already its accessible name, so a null here omits the attribute. *@
                                 <Button Variant="@(isActive ? ButtonVariant.Secondary : ButtonVariant.Outline)"
                                         Size="ButtonSize.Small" Class="h-8"
-                                        aria-label="@($"{column.Header} · {(ascending ? Localizer["DataTable.SortAscending"] : Localizer["DataTable.SortDescending"])}")"
+                                        aria-label="@(isActive ? $"{column.Header} · {(ascending ? Localizer["DataTable.SortAscending"] : Localizer["DataTable.SortDescending"])}" : null)"
                                         OnClick="@(() => ToggleSortAsync(column.Id))">
                                     @column.Header
                                     @if (isActive)
@@ -198,10 +202,16 @@
     /// <summary>True when the sheet would have any content — otherwise its trigger is not rendered.</summary>
     private bool HasViewSettings => ToolbarFilters != null || (ShowMobileSort && _sortableColumns.Count > 0);
 
+    /// <summary>
+    /// The column the table is actually sorted by, resolved against ALL columns rather than the offerable
+    /// ones: hiding a column via the columns menu does not clear the sort, so resolving against the
+    /// filtered list would report "unsorted" for a table that is still sorted — and light up the
+    /// "no sort" chip as if it were true.
+    /// </summary>
     private DataTable<TData>.ColumnData? ActiveSortColumn =>
         SortDirection == SortDirection.None
             ? null
-            : _sortableColumns.FirstOrDefault(c => c.Id == SortedColumn);
+            : Columns.FirstOrDefault(c => c.Id == SortedColumn);
 
     protected override void OnParametersSet()
     {
@@ -225,8 +235,14 @@
 
     private async Task ClearSortAsync()
     {
-        if (OnSortSelected.HasDelegate)
-            await OnSortSelected.InvokeAsync((string.Empty, SortDirection.None));
+        // Already unsorted: tapping again would still re-process the data and rewrite persisted state
+        // for no change.
+        if (!OnSortSelected.HasDelegate || ActiveSortColumn is null) return;
+
+        // Report the column being unsorted, not an empty id — the header's cycle-to-none reports the
+        // column too, so consumers of OnSort see one shape for "unsort" whichever route produced it.
+        // Direction=None is what actually clears it.
+        await OnSortSelected.InvokeAsync((SortedColumn ?? string.Empty, SortDirection.None));
     }
 
     private async Task HandleSearchChanged()
