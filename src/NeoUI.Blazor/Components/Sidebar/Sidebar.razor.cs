@@ -54,6 +54,15 @@ public partial class Sidebar : ComponentBase, IDisposable
     public bool AutoDetectActive { get; set; } = false;
 
     /// <summary>
+    /// Whether the mobile sheet closes itself when navigation occurs.
+    /// On mobile the sidebar is a modal sheet covering the page, so staying open after a menu item
+    /// navigates would leave it hiding the very page it just opened.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool CloseMobileOnNavigate { get; set; } = true;
+
+    /// <summary>
     /// Additional attributes to apply to the sidebar element.
     /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
@@ -215,22 +224,25 @@ public partial class Sidebar : ComponentBase, IDisposable
     }
 
     /// <summary>
-    /// Sets up or tears down the navigation listener based on AutoDetectActive setting.
+    /// Sets up or tears down the navigation listener.
+    /// Two independent features need it — active-state detection and closing the mobile sheet on
+    /// navigation — so it is attached whenever either is enabled, and each is re-checked when the
+    /// event fires rather than being baked into whether we subscribe.
     /// </summary>
     private void SetupNavigationListener()
     {
-        if (AutoDetectActive && !_isNavigationListenerActive)
+        var needsListener = AutoDetectActive || CloseMobileOnNavigate;
+
+        if (needsListener && !_isNavigationListenerActive)
         {
-            // Enable navigation tracking
             NavigationManager.LocationChanged += OnLocationChanged;
             _isNavigationListenerActive = true;
 
             // Set initial path
-            UpdateCurrentPath();
+            if (AutoDetectActive) UpdateCurrentPath();
         }
-        else if (!AutoDetectActive && _isNavigationListenerActive)
+        else if (!needsListener && _isNavigationListenerActive)
         {
-            // Disable navigation tracking
             NavigationManager.LocationChanged -= OnLocationChanged;
             _isNavigationListenerActive = false;
         }
@@ -242,11 +254,16 @@ public partial class Sidebar : ComponentBase, IDisposable
     }
 
     /// <summary>
-    /// Handles navigation location changes to update current path for active state detection.
+    /// Handles navigation location changes: updates the current path for active-state detection, and
+    /// dismisses the mobile sheet so it does not sit on top of the page that was just navigated to.
     /// </summary>
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        UpdateCurrentPath();
+        if (AutoDetectActive) UpdateCurrentPath();
+
+        // SetOpenMobile raises StateChanged, which this component already re-renders on.
+        if (CloseMobileOnNavigate && Context is { IsMobile: true, OpenMobile: true })
+            Context.SetOpenMobile(false);
     }
 
     /// <summary>
