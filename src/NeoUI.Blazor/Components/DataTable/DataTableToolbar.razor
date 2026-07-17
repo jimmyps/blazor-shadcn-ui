@@ -82,8 +82,12 @@
     @* Changes apply live, so there is nothing to commit and no Cancel to honour: the consumer's filter
        state is bound directly and cannot be rolled back from here. The single Done button just closes,
        and is named for what it does rather than implying a staged Apply. *@
+    @* Nothing below is rendered until the sheet opens — SheetPortal only mounts its content while open
+       (ForceMount defaults to false). The trigger above is mobile-only, so on desktop this never opens
+       and never renders: the second copy of the filters costs nothing there. Do not CSS-hide the content
+       instead — that would keep the overlay while hiding the panel. *@
     <Sheet Open="@_viewSettingsOpen" OpenChanged="@(v => _viewSettingsOpen = v)" Side="@SheetSide.Bottom">
-        <SheetContent Side="@SheetSide.Bottom" Class="sm:hidden">
+        <SheetContent Side="@SheetSide.Bottom">
             <SheetHeader>
                 <SheetTitle>@Localizer["DataTable.ViewSettings"]</SheetTitle>
             </SheetHeader>
