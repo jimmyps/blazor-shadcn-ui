@@ -3,7 +3,10 @@
 <div class="@CssClass">
     @if (ShowLabel)
     {
-        <p class="text-sm text-muted-foreground">@EffectiveLabel</p>
+        @* The label, not the Select, gives up the space on a phone: the Select has to stay reachable at
+           every width, because with a small page size the only alternative is tapping next repeatedly
+           with no way to change it. ShowLabel=false still removes it outright. *@
+        <p class="hidden text-sm text-muted-foreground sm:block">@EffectiveLabel</p>
     }
     <Select TValue="string"
             Value="@_pageSizeValue"
