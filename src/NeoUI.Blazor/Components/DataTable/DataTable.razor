@@ -13,6 +13,10 @@
                               OnColumnVisibilityChanged="HandleColumnVisibilityChanged"
                               ShowColumnsVisibility="@ColumnsVisibility"
                               ToolbarFilters="@ToolbarFilters"
+                              SortedColumn="@_tableState.Sorting.SortedColumn"
+                              SortDirection="@_tableState.Sorting.Direction"
+                              OnSortSelected="ApplySortAsync"
+                              ShowMobileSort="@ShowMobileSort"
                               ToolbarClass="@ToolbarClass">
                 @ToolbarActions
             </DataTableToolbar>

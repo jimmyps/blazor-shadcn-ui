@@ -17,6 +17,55 @@
             @ToolbarFilters
         }
 
+        @* Sort is reachable on desktop by clicking a column header, but on narrow screens consumers
+           routinely hide secondary columns with responsive display utilities — their headers are then
+           gone and those columns cannot be sorted at all. This chip is the affordance for that, so it
+           is mobile-only and leaves the desktop header-click flow untouched.
+           (Do not name utility classes literally in these comments: Tailwind scans raw file text and
+           would emit a class into components.css purely because a comment mentioned it.) *@
+        @if (ShowMobileSort && _sortableColumns.Count > 0)
+        {
+            <Popover>
+                <PopoverTrigger>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small"
+                            Class="h-8 border-dashed sm:hidden"
+                            aria-label="@Localizer["DataTable.SortBy"]">
+                        <span class="text-sm">@Localizer["DataTable.Sort"]: @SortLabel</span>
+                        <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent Class="w-[200px] p-0" Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start">
+                    <div class="p-1">
+                        <div class="px-2 py-1.5 text-xs font-medium text-muted-foreground">@Localizer["DataTable.SortBy"]</div>
+                        @foreach (var column in _sortableColumns)
+                        {
+                            var isActive = column.Id == SortedColumn && SortDirection != SortDirection.None;
+                            <div class="flex items-center gap-2 rounded-sm p-2 hover:bg-accent cursor-pointer select-none"
+                                 role="button"
+                                 @onclick="@(() => SelectSort(column.Id))">
+                                <span class="flex-1 text-sm">@column.Header</span>
+                                @if (isActive)
+                                {
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        @if (SortDirection == SortDirection.Ascending)
+                                        {
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                        }
+                                        else
+                                        {
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        }
+                                    </svg>
+                                }
+                            </div>
+                        }
+                    </div>
+                </PopoverContent>
+            </Popover>
+        }
+
         @if (Columns.Any(c => c.Filterable))
         {
             @* Use <FilterBuilder> component for dynamic filtering instead *@
@@ -86,9 +135,46 @@
     [Parameter]
     public string? ToolbarClass { get; set; }
 
+    /// <summary>Id of the currently sorted column, or null when unsorted.</summary>
+    [Parameter]
+    public string? SortedColumn { get; set; }
+
+    /// <summary>Direction of the current sort.</summary>
+    [Parameter]
+    public SortDirection SortDirection { get; set; }
+
+    /// <summary>Raised when a column is picked from the mobile sort chip.</summary>
+    [Parameter]
+    public EventCallback<(string ColumnId, SortDirection Direction)> OnSortSelected { get; set; }
+
+    /// <summary>Shows the mobile-only sort chip when any column is sortable. Default true.</summary>
+    [Parameter]
+    public bool ShowMobileSort { get; set; } = true;
+
+    private List<DataTable<TData>.ColumnData> _sortableColumns = new();
+
+    private string SortLabel =>
+        _sortableColumns.FirstOrDefault(c => c.Id == SortedColumn && SortDirection != SortDirection.None)?.Header
+        ?? Localizer["DataTable.SortNone"];
+
     protected override void OnParametersSet()
     {
         _searchValue = GlobalSearchValue;
+        _sortableColumns = Columns.Where(c => c.Sortable && c.Visible).ToList();
+    }
+
+    /// <summary>
+    /// Picking the already-sorted column flips its direction; picking a different one starts it
+    /// ascending. Mirrors what clicking a column header does on desktop.
+    /// </summary>
+    private async Task SelectSort(string columnId)
+    {
+        var direction = (columnId == SortedColumn && SortDirection == SortDirection.Ascending)
+            ? SortDirection.Descending
+            : SortDirection.Ascending;
+
+        if (OnSortSelected.HasDelegate)
+            await OnSortSelected.InvokeAsync((columnId, direction));
     }
 
     private async Task HandleSearchChanged()

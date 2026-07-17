@@ -813,6 +813,14 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     public bool ColumnsVisibility { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets whether the toolbar shows a sort chip on narrow screens when any column is sortable.
+    /// The chip is hidden from sm up, where column headers remain the way to sort.
+    /// Default is true.
+    /// </summary>
+    [Parameter]
+    public bool ShowMobileSort { get; set; } = true;
+
+    /// <summary>
     /// Controls the column-sizing algorithm used by the table.
     /// <list type="bullet">
     ///   <item><see cref="TableColumnSizing.Auto"/> (default) — <c>table-layout: auto</c>;
@@ -1378,6 +1386,24 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     /// </summary>
     /// <param name="sortInfo">The column ID and sort direction.</param>
     private async Task HandleSortChange((string ColumnId, SortDirection Direction) sortInfo)
+    {
+        await HandleSortChangeCore(sortInfo);
+    }
+
+    /// <summary>
+    /// Applies a sort chosen from the toolbar's mobile sort chip. On the header-click path the Table
+    /// primitive mutates the bound state itself before raising the change; driving a sort from outside
+    /// the table means setting that same state here first, then reusing the identical handler — so both
+    /// routes share one code path and both persist via StateKey.
+    /// </summary>
+    private async Task ApplySortAsync((string ColumnId, SortDirection Direction) sortInfo)
+    {
+        _tableState.Sorting.SortedColumn = sortInfo.ColumnId;
+        _tableState.Sorting.Direction = sortInfo.Direction;
+        await HandleSortChangeCore(sortInfo);
+    }
+
+    private async Task HandleSortChangeCore((string ColumnId, SortDirection Direction) sortInfo)
     {
         if (OnSort.HasDelegate)
             await OnSort.InvokeAsync(sortInfo);
