@@ -60,6 +60,8 @@ public class DefaultLocalizer : ILocalizer
         ["DataTable.Sort"] = "Sort",
         ["DataTable.SortBy"] = "Sort by",
         ["DataTable.SortNone"] = "None",
+        ["DataTable.SortAscending"] = "Ascending",
+        ["DataTable.SortDescending"] = "Descending",
         ["DataTable.Filter"] = "Filter",
         ["DataTable.FilterColumns"] = "Filter columns",
         ["DataTable.SelectRowsAriaLabel"] = "Select rows - click to see options",

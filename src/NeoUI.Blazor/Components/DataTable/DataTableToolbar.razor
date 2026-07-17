@@ -25,45 +25,29 @@
            would emit a class into components.css purely because a comment mentioned it.) *@
         @if (ShowMobileSort && _sortableColumns.Count > 0)
         {
-            <Popover>
-                <PopoverTrigger>
-                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small"
-                            Class="h-8 border-dashed sm:hidden"
-                            aria-label="@Localizer["DataTable.SortBy"]">
-                        <span class="text-sm">@Localizer["DataTable.Sort"]: @SortLabel</span>
-                        <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent Class="w-[200px] p-0" Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start">
-                    <div class="p-1">
-                        <div class="px-2 py-1.5 text-xs font-medium text-muted-foreground">@Localizer["DataTable.SortBy"]</div>
+            @* Direction is encoded into the option value ("{columnId}:asc") rather than toggled by
+               re-picking the active column: re-selecting the current value of a Select raises no change
+               event, so a toggle would silently do nothing. Listing both directions also states the
+               choice outright instead of hiding it behind a second tap. *@
+            <div class="sm:hidden">
+                <Select TValue="string" Value="@SortValue" ValueChanged="@ApplySortValue"
+                        DisplayTextSelector="@(v => $"{Localizer["DataTable.Sort"]}: {SortLabel}")">
+                    <SelectTrigger Class="h-8 w-auto border-dashed text-sm" aria-label="@Localizer["DataTable.SortBy"]">
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent Class="w-max min-w-[var(--radix-select-trigger-width)]">
                         @foreach (var column in _sortableColumns)
                         {
-                            var isActive = column.Id == SortedColumn && SortDirection != SortDirection.None;
-                            <div class="flex items-center gap-2 rounded-sm p-2 hover:bg-accent cursor-pointer select-none"
-                                 role="button"
-                                 @onclick="@(() => SelectSort(column.Id))">
-                                <span class="flex-1 text-sm">@column.Header</span>
-                                @if (isActive)
-                                {
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        @if (SortDirection == SortDirection.Ascending)
-                                        {
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                                        }
-                                        else
-                                        {
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        }
-                                    </svg>
-                                }
-                            </div>
+                            <SelectItem Value="@($"{column.Id}:asc")"
+                                        Text="@($"{column.Header} · {Localizer["DataTable.SortAscending"]}")"
+                                        Class="whitespace-nowrap" />
+                            <SelectItem Value="@($"{column.Id}:desc")"
+                                        Text="@($"{column.Header} · {Localizer["DataTable.SortDescending"]}")"
+                                        Class="whitespace-nowrap" />
                         }
-                    </div>
-                </PopoverContent>
-            </Popover>
+                    </SelectContent>
+                </Select>
+            </div>
         }
 
         @if (Columns.Any(c => c.Filterable))
@@ -153,9 +137,29 @@
 
     private List<DataTable<TData>.ColumnData> _sortableColumns = new();
 
-    private string SortLabel =>
-        _sortableColumns.FirstOrDefault(c => c.Id == SortedColumn && SortDirection != SortDirection.None)?.Header
-        ?? Localizer["DataTable.SortNone"];
+    private DataTable<TData>.ColumnData? ActiveSortColumn =>
+        SortDirection == SortDirection.None
+            ? null
+            : _sortableColumns.FirstOrDefault(c => c.Id == SortedColumn);
+
+    private string SortLabel
+    {
+        get
+        {
+            var column = ActiveSortColumn;
+            if (column is null) return Localizer["DataTable.SortNone"];
+            var direction = SortDirection == SortDirection.Ascending
+                ? Localizer["DataTable.SortAscending"]
+                : Localizer["DataTable.SortDescending"];
+            return $"{column.Header} · {direction}";
+        }
+    }
+
+    /// <summary>Current sort as a Select option value, or null when unsorted so the trigger shows the placeholder.</summary>
+    private string? SortValue =>
+        ActiveSortColumn is { } column
+            ? $"{column.Id}:{(SortDirection == SortDirection.Ascending ? "asc" : "desc")}"
+            : null;
 
     protected override void OnParametersSet()
     {
@@ -163,18 +167,16 @@
         _sortableColumns = Columns.Where(c => c.Sortable && c.Visible).ToList();
     }
 
-    /// <summary>
-    /// Picking the already-sorted column flips its direction; picking a different one starts it
-    /// ascending. Mirrors what clicking a column header does on desktop.
-    /// </summary>
-    private async Task SelectSort(string columnId)
+    private async Task ApplySortValue(string? value)
     {
-        var direction = (columnId == SortedColumn && SortDirection == SortDirection.Ascending)
-            ? SortDirection.Descending
-            : SortDirection.Ascending;
+        if (string.IsNullOrEmpty(value) || !OnSortSelected.HasDelegate) return;
 
-        if (OnSortSelected.HasDelegate)
-            await OnSortSelected.InvokeAsync((columnId, direction));
+        var separator = value.LastIndexOf(':');
+        if (separator <= 0) return;
+
+        var columnId = value[..separator];
+        var direction = value[(separator + 1)..] == "desc" ? SortDirection.Descending : SortDirection.Ascending;
+        await OnSortSelected.InvokeAsync((columnId, direction));
     }
 
     private async Task HandleSearchChanged()
