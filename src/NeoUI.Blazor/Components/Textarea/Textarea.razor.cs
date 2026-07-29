@@ -69,11 +69,24 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     /// Gets or sets when the input should update its bound value.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// - Input: Updates value immediately on every keystroke
     /// - Change: Updates value only when input loses focus (default)
+    /// </para>
+    /// <para>
+    /// Defaults to <see cref="InputUpdateMode.Change"/> so an interactive-server circuit is not
+    /// round-tripped on every keystroke — that latency is felt directly as laggy typing, and a
+    /// textarea is the control users type the most into. This also aligns Textarea with the other
+    /// text inputs (Input, NumericInput, MaskedInput, CurrencyInput), which already default to
+    /// Change; Textarea was the sole outlier despite this remark documenting Change as the default.
+    /// </para>
+    /// <para>
+    /// Set <c>UpdateOn="InputUpdateMode.Input"</c> where per-keystroke updates are genuinely needed
+    /// (live preview, character counter), ideally together with <see cref="DebounceDelay"/>.
+    /// </para>
     /// </remarks>
     [Parameter]
-    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Input;
+    public InputUpdateMode UpdateOn { get; set; } = InputUpdateMode.Change;
 
     /// <summary>
     /// Gets or sets the debounce delay in milliseconds for Input mode.
@@ -95,7 +108,8 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     /// Gets or sets the callback invoked when the textarea value changes.
     /// </summary>
     /// <remarks>
-    /// This event is fired on every keystroke (oninput event).
+    /// Fired according to <see cref="UpdateOn"/>: on blur by default (Change), or on every
+    /// keystroke when <see cref="UpdateOn"/> is set to Input.
     /// Use with Value parameter for two-way binding.
     /// </remarks>
     [Parameter]
