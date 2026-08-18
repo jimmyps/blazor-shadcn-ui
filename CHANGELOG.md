@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-8-18 — Lucide Refreshed to 1,834 Icons, and Renamed Names Keep Working
+
+> **Targeting: `icons-lucide/v3.1.0`** (latest released: `icons-lucide/v3.0.0`)
+> **Affects `NeoUI.Icons.Lucide`.** New icons + a redraw of 195 existing ones — no name is removed.
+
+---
+
+### ✨ Update — `Lucide`: 174 new icons, 195 redrawn upstream
+
+Refreshed `lucide.json` to the 2026-08-07 upstream snapshot. The set grows from 1,665 to **1,834 icons**, with 174 additions — chess pieces, the twelve zodiac signs, a `face-*` family, `database-*` and `layers-*` variants, `cloud-backup`/`cloud-sync`, and more.
+
+**⚠️ 195 existing icons were redrawn upstream** and will look different without any change on your side. The largest families affected are `file-*` (42), `calendar-*` (21), `clock-*` (13), `receipt-*` (9), `arrow-big-*` (8) and `bookmark-*` (5). Several are visible redesigns rather than nudges — `bookmark` gains a rounded ribbon notch, `anchor` is redrawn, and the whole `calendar` family shifts up 1px. Worth a look at any screen where these carry meaning.
+
+### 🐛 Fix — `Lucide`: renamed icons no longer disappear
+
+Upstream renamed five icons in this release. Iconify records the old spelling as an alias, but the generator only ever read the `icons` block, so those names would have vanished from the package and rendered the "icon not found" placeholder at runtime.
+
+Aliases are now emitted as real dictionary entries pointing at the same SVG, so **217 alias names** work alongside the 1,834 icons — and the next upstream rename is handled automatically.
+
+| Old name | Current name |
+| --- | --- |
+| `fingerprint` | `fingerprint-pattern` |
+| `history` | `rotate-ccw-clock` |
+| `flip-horizontal` | `square-centerline-dashed-horizontal` |
+| `flip-vertical` | `square-centerline-dashed-vertical` |
+| `text-select` | `square-dashed-text` |
+
+```razor
+<LucideIcon Name="history" />           @* still works — resolves to rotate-ccw-clock *@
+<LucideIcon Name="rotate-ccw-clock" />  @* preferred in new code *@
+```
+
+`LucideIconData.IconCount` now reports 2,051 (1,834 icons + 217 aliases).
+
+### 🔧 Chore — `GenerateIconData.ps1` produces what it claims
+
+Three generator defects meant the checked-in file had to be hand-corrected after every run, against its own "do not edit manually" header:
+
+- The namespace was emitted as `NeoUI.Icons.Lucide.Data` instead of `NeoUI.Icons.Lucide`.
+- `Out-File -Encoding UTF8` prepends a BOM on Windows PowerShell 5.1; the script now writes UTF-8 without one.
+- `$json.icons.PSObject.Properties.Count` returned `1` — PowerShell's scalar `.Count` — so every generated file was documented as "Contains 1 icons".
+
+Ordering is now pinned to `StringComparer.Ordinal` rather than `Sort-Object`, whose culture-aware collation made output depend on machine locale. This reorders the whole file once; from here it is byte-stable across machines.
+
+---
+
 ## 2026-8-17 — A Shorthand Utility Now Wins Its Merge
 
 > **Targeting: `v4.1.33`**

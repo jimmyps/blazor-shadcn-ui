@@ -8,7 +8,7 @@ NeoUI provides three icon library packages, each wrapping a popular open-source 
 
 | Package | Icon Set | Icons | License | Source |
 |---------|----------|-------|---------|--------|
-| `NeoUI.Icons.Lucide` | [Lucide](https://lucide.dev/) | 1,640+ | ISC | [GitHub](https://github.com/lucide-icons/lucide) |
+| `NeoUI.Icons.Lucide` | [Lucide](https://lucide.dev/) | 1,834 | ISC | [GitHub](https://github.com/lucide-icons/lucide) |
 | `NeoUI.Icons.Heroicons` | [Heroicons](https://heroicons.com/) | 1,288 | MIT | [GitHub](https://github.com/tailwindlabs/heroicons) |
 | `NeoUI.Icons.Feather` | [Feather](https://feathericons.com/) | 286 | MIT | [GitHub](https://github.com/feathericons/feather) |
 

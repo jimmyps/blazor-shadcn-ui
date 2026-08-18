@@ -1,10 +1,10 @@
 # NeoUI.Icons
 
-A comprehensive Lucide icon library for Blazor applications, providing 1,760+ beautiful, consistent SVG icons.
+A comprehensive Lucide icon library for Blazor applications, providing 1,834 beautiful, consistent SVG icons.
 
 ## Features
 
-- **1,760+ Icons**: Complete Lucide icon set
+- **1,834 Icons**: Complete Lucide icon set (plus 217 alias names for renamed icons)
 - **React-Style API**: Familiar component-based API for React developers
 - **Fully Accessible**: ARIA-compliant with customizable labels
 - **Tree-Shakeable**: Blazor assembly trimming removes unused icons at publish time
@@ -115,7 +115,7 @@ Add to `_Imports.razor`:
 
 ## Icon Names
 
-All 1,760+ Lucide icons are available. Icon names use kebab-case and match the official Lucide icon names:
+All 1,834 Lucide icons are available. Icon names use kebab-case and match the official Lucide icon names:
 
 - `camera`
 - `home`
@@ -129,9 +129,27 @@ All 1,760+ Lucide icons are available. Icon names use kebab-case and match the o
 - `chevron-up`
 - `alert-circle`
 - `info`
-- ... and 1,700+ more
+- ... and 1,800+ more
 
 **Browse all icons:** [lucide.dev/icons](https://lucide.dev/icons/)
+
+### Renamed icons (aliases)
+
+When Lucide renames an icon, the old name keeps working — it is emitted as an
+alias pointing at the same SVG, so upgrading the package never breaks a name you
+already use. 217 alias names are available alongside the 1,834 icons.
+
+Recent renames:
+
+| Old name | Current name |
+| --- | --- |
+| `fingerprint` | `fingerprint-pattern` |
+| `history` | `rotate-ccw-clock` |
+| `flip-horizontal` | `square-centerline-dashed-horizontal` |
+| `flip-vertical` | `square-centerline-dashed-vertical` |
+| `text-select` | `square-dashed-text` |
+
+Both spellings render the same icon. Prefer the current name in new code.
 
 ## Styling
 
