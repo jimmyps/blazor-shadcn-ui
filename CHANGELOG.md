@@ -2,6 +2,45 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-8-20 — A Server-Mode Table Owns Its Own Loading State
+
+> **Targeting: `v4.1.34`**
+> **Affects `NeoUI.Blazor`.** Bug fix. **Recommended for anyone using `ServerData`** — see why below.
+
+---
+
+### 🐛 Fix — `DataTable`: the empty state was reachable while a `ServerData` fetch was running
+
+A server-mode table could show "No results found" — or a caller's `EmptyTemplate`, saying something like *"No tracked stock yet"* — over a query that was still in flight. Not as a flash: for the full duration of a second round trip.
+
+The table decided between loading and empty from the `IsLoading` **parameter**, which is the caller's to set. A caller can only clear that flag from inside its own `ServerData` delegate, and the delegate returns one step **before** the table assigns the rows it just fetched. So the render that clears `IsLoading` necessarily lands on an empty row list. `OnParametersSetAsync` then compounds it: it ends by re-running the fetch, so that same render starts a *second* query, and the table sits in its empty state until that one lands too.
+
+No caller can fix this. The two facts that settle it — a fetch is running, and the rows are not in yet — are only both known inside the component:
+
+```csharp
+private int _serverFetchDepth;
+private bool ShowingFetchPlaceholder => _serverFetchDepth > 0 && !_processedData.Any();
+```
+```razor
+@if (IsLoading || ShowingFetchPlaceholder)
+```
+
+A **counter**, not a flag, precisely because of that re-entrant second fetch — two overlapping calls each saving and restoring a bool leave it stuck on whichever finished last.
+
+**Gated on having no rows, deliberately.** A refetch that already has rows on screen — a page change, a sort, a keystroke in the search box — keeps showing them until the new page lands, exactly as before. Only an *empty* grid with a fetch in flight shows the loading state.
+
+**Unaffected:** client mode (`Data=`), virtualized mode (`ItemsProvider=`), and tree-child expansion (`LoadChildrenAsync`), which has its own per-row spinner.
+
+**What this means for callers.** `IsLoading` no longer has to mean "a fetch has completed" — a claim the calling page cannot actually observe. It now only needs to cover the render before `ServerData` exists, since a table with no delegate starts no fetch:
+
+```razor
+<DataTable ServerData="@_serverData" IsLoading="@(_serverData is null)" … />
+```
+
+The `_loaded` flag, the wrapper method and the `finally { _loaded = true; StateHasChanged(); }` that pattern required can all go. Pages that keep them still render correctly — the component's placeholder covers them — but they pay for a duplicate first query.
+
+---
+
 ## 2026-8-17 — A Shorthand Utility Now Wins Its Merge
 
 > **Targeting: `v4.1.33`**
