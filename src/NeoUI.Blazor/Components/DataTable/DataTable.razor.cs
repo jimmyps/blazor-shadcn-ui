@@ -2274,15 +2274,32 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     /// leaves their children showing whatever they were first loaded with — a stale state made worse by
     /// being half correct. Pass false only when the parents alone are known to have changed.
     /// </param>
+    /// <param name="resetPage">
+    /// When true, returns to page 1 BEFORE the refetch. Pass it whenever the refresh follows a change to
+    /// WHAT is being listed — a filter that lives outside the toolbar — because the page the operator is
+    /// standing on numbers the OLD result set and means nothing against the new one.
+    ///
+    /// <para>Without it that query goes out with the stale <c>Skip</c>, comes back empty, and only THEN
+    /// clamps <c>CurrentPage</c> as <c>TotalItems</c> is assigned — so the table shows an empty grid under a
+    /// pager reading "Page 2 of 2" until something else triggers a fetch.</para>
+    ///
+    /// <para>Defaults to FALSE so the other reason to call this — an edit committed elsewhere — leaves the
+    /// operator where they were. Swapping the <see cref="ServerData"/> delegate has always reset the page as
+    /// a side effect (see <c>OnParametersSetAsync</c>); this is that same reset, for callers who refresh in
+    /// place instead of reassigning.</para>
+    /// </param>
     /// <remarks>
     /// Callers need this for two situations the component cannot see: an edit committed elsewhere (a dialog
     /// saving a child row), and a filter that lives outside the table's own toolbar. Both previously forced
     /// consumers to remount the component via <c>@key</c>, which discarded sort, page and column state
-    /// along with the cache.
+    /// along with the cache. Note that those two cases want OPPOSITE paging behaviour — hence
+    /// <paramref name="resetPage"/>.
     /// </remarks>
-    public async Task RefreshAsync(bool reloadChildren = true)
+    public async Task RefreshAsync(bool reloadChildren = true, bool resetPage = false)
     {
         if (reloadChildren) _fetchedChildren.Clear();
+        // Before ProcessDataAsync, not after — the point is for the request to carry Skip = 0.
+        if (resetPage) _tableState.Pagination.Reset();
         await ProcessDataAsync();
         StateHasChanged();
     }

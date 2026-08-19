@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-8-20 — `RefreshAsync` Can Reset the Page
+
+> **Targeting: `v4.1.35`**
+> **Affects `NeoUI.Blazor`.** Additive. **Recommended for anyone driving a server-mode table from a filter outside the toolbar.**
+
+---
+
+### 🐛 Fix — `DataTable.RefreshAsync(resetPage: true)`
+
+`RefreshAsync` refetched on whatever page the operator was standing on. That is right for the reason it was added — an edit committed elsewhere, where you want to stay put — and wrong for the other documented reason, a filter that lives outside the toolbar.
+
+Filtering from page 3 sent the query with the **stale `Skip`**. It came back empty, and `CurrentPage` was only clamped afterwards, as `TotalItems` was assigned. The result was an empty grid beneath a pager reading "Page 2 of 2", which did not correct itself until something triggered another fetch.
+
+Reassigning the `ServerData` delegate has always reset the page as a side effect:
+
+```csharp
+// When the ServerData delegate reference changes … reset to page 1 so the user always
+// sees the first page of the freshly-filtered result set.
+if (!ReferenceEquals(ServerData, _lastServerData) && _lastServerData is not null)
+    _tableState.Pagination.CurrentPage = 1;
+```
+
+`RefreshAsync` had no equivalent, so the two ways of driving a refetch disagreed. It now takes the reset explicitly:
+
+```csharp
+public async Task RefreshAsync(bool reloadChildren = true, bool resetPage = false)
+```
+```razor
+@* a filter changed WHAT is listed — the old page number means nothing *@
+await _table.RefreshAsync(resetPage: true);
+
+@* a dialog saved a row — stay exactly where the operator was *@
+await _table.RefreshAsync();
+```
+
+**`false` by default, deliberately.** Flipping it would silently start bouncing every save-and-refresh caller back to page 1 after editing a row on page 4. As an opt-in this release changes no existing behaviour.
+
+Client-mode tables are unaffected — they re-page in memory and never issue a stale `Skip`.
+
+---
+
 ## 2026-8-20 — A Server-Mode Table Owns Its Own Loading State
 
 > **Targeting: `v4.1.34`**
