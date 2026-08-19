@@ -28,7 +28,10 @@
              style="@TableContainerStyle"
              data-pinned-table="@(HasPinnedColumns ? "true" : null)"
              data-keyboard-nav="@(EnableKeyboardNavigation ? "true" : null)">
-            @if (IsLoading)
+            @* IsLoading is the caller's hint for the first paint; ShowingFetchPlaceholder is what the table
+               itself knows. Either one holds the loading state up, so the empty branch below is only reached
+               with a settled row list — never with an empty one a running fetch is about to replace. *@
+            @if (IsLoading || ShowingFetchPlaceholder)
             {
                 @if (LoadingTemplate != null)
                 {
