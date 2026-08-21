@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 > **Targeting: `v4.1.36`**
 > **Affects `NeoUI.Blazor`.** Bug fix. **Recommended for anyone using `ServerData`** — this one costs real queries.
+> **Also pulls in `NeoUI.Icons.Lucide` 3.1.0** — see the bundled note below.
+
+---
+
+### 📦 Bundled — `NeoUI.Icons.Lucide` 3.0.0 → 3.1.0
+
+Taking 4.1.36 upgrades the icon set with it, so read the `icons-lucide/v3.1.0` entry further down before shipping. The short version: **174 new icons, and 195 existing ones redrawn upstream.**
+
+The redraws are the part that needs attention, because they change how existing screens look with **no change on your side**. The largest families affected are `file-*` (42), `calendar-*` (21) and `clock-*` (13), and several are redesigns rather than nudges — `bookmark` gains a rounded ribbon notch, `anchor` is redrawn, and the whole `calendar` family shifts up 1px. Worth a glance anywhere an icon carries meaning rather than decoration.
+
+No icon name is removed, and renamed ones keep resolving under their old names.
 
 ---
 
