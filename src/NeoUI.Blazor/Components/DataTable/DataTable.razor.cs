@@ -1202,10 +1202,23 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
                 || expandedChanged
                 || !ReferenceEquals(ServerData, _lastFetchedServerData);
 
-            _lastFetchedServerData = ServerData;
             if (!refetch) return;
+
+            // Marked as fetched only AFTER the fetch returns. Setting it first means a delegate that throws
+            // — a transient server error is enough — leaves the guard believing the data arrived, so every
+            // later parameter set takes the early return and the table never retries. On the failure path the
+            // state stays untouched, the reference still differs, and the next render tries again.
+            await ProcessDataAsync();
             _hasFetchedOnce = true;
+            _lastFetchedServerData = ServerData;
+            return;
         }
+
+        // Left server mode: forget what was fetched. Otherwise a caller that drops ServerData to null and
+        // later restores the SAME delegate instance would find the reference unchanged, skip the refetch,
+        // and keep whatever client-mode processing put on screen in between.
+        _hasFetchedOnce = false;
+        _lastFetchedServerData = null;
 
         await ProcessDataAsync();
     }
