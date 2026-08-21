@@ -6,8 +6,37 @@ $outputPath = Join-Path $PSScriptRoot "Data\LucideIconData.cs"
 Write-Host "Reading Lucide icon data from $jsonPath..."
 $json = Get-Content -Path $jsonPath -Raw | ConvertFrom-Json
 
-$iconCount = $json.icons.PSObject.Properties.Count
+$iconProperties = @($json.icons.PSObject.Properties)
+$iconCount = $iconProperties.Count
 Write-Host "Found $iconCount icons"
+
+# Iconify keeps renamed icons in an "aliases" block that points at the new name.
+# Emit them as additional dictionary entries so a name that used to work keeps
+# working after an upstream rename.
+$entries = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($icon in $iconProperties) {
+    $entries[$icon.Name] = $icon.Value.body
+}
+
+$aliasCount = 0
+$skippedAliases = @()
+foreach ($alias in @($json.aliases.PSObject.Properties)) {
+    $parent = $alias.Value.parent
+    if ($entries.ContainsKey($alias.Name)) { continue }
+    if ($parent -and $entries.ContainsKey($parent)) {
+        $entries[$alias.Name] = $entries[$parent]
+        $aliasCount++
+    }
+    else {
+        $skippedAliases += "$($alias.Name) -> $parent"
+    }
+}
+Write-Host "Found $aliasCount aliases"
+if ($skippedAliases.Count -gt 0) {
+    Write-Warning "Skipped $($skippedAliases.Count) alias(es) with an unresolved parent: $($skippedAliases -join ', ')"
+}
+
+$totalCount = $entries.Count
 
 # Create Data directory if it doesn't exist
 $dataDir = Join-Path $PSScriptRoot "Data"
@@ -22,25 +51,27 @@ $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine("// This file is auto-generated. Do not edit manually.")
 [void]$sb.AppendLine("// Generated from lucide.json on $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')")
 [void]$sb.AppendLine("")
-[void]$sb.AppendLine("namespace NeoUI.Icons.Lucide.Data;")
+[void]$sb.AppendLine("namespace NeoUI.Icons.Lucide;")
 [void]$sb.AppendLine("")
 [void]$sb.AppendLine("/// <summary>")
 [void]$sb.AppendLine("/// Provides access to Lucide icon SVG data.")
-[void]$sb.AppendLine("/// Contains {0} icons from the Lucide icon set." -f $iconCount)
+[void]$sb.AppendLine("/// Contains $totalCount icons from the Lucide icon set ($iconCount icons + $aliasCount aliases).")
 [void]$sb.AppendLine("/// </summary>")
 [void]$sb.AppendLine("public static class LucideIconData")
 [void]$sb.AppendLine("{")
 [void]$sb.AppendLine("    private static readonly IReadOnlyDictionary<string, string> Icons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)")
 [void]$sb.AppendLine("    {")
 
-# Add each icon to the dictionary
-$iconProperties = $json.icons.PSObject.Properties | Sort-Object Name
-$lastIndex = $iconProperties.Count - 1
+# Add each icon to the dictionary.
+# Sort with the ordinal comparer, not Sort-Object: the default sort is
+# culture-aware, so the generated ordering would vary by machine locale.
+$sortedNames = [string[]]$entries.Keys
+[Array]::Sort($sortedNames, [System.StringComparer]::Ordinal)
+$lastIndex = $sortedNames.Count - 1
 $currentIndex = 0
 
-foreach ($icon in $iconProperties) {
-    $iconName = $icon.Name
-    $iconBody = $icon.Value.body
+foreach ($iconName in $sortedNames) {
+    $iconBody = $entries[$iconName]
 
     # Escape double quotes and backslashes in the SVG
     $escapedBody = $iconBody -replace '\\', '\\' -replace '"', '\"'
@@ -53,7 +84,7 @@ foreach ($icon in $iconProperties) {
     $currentIndex++
 
     if ($currentIndex % 100 -eq 0) {
-        Write-Host "Processed $currentIndex / $iconCount icons..."
+        Write-Host "Processed $currentIndex / $totalCount icons..."
     }
 }
 
@@ -89,6 +120,8 @@ foreach ($icon in $iconProperties) {
 [void]$sb.AppendLine("}")
 
 # Write to file
-$sb.ToString() | Out-File -FilePath $outputPath -Encoding UTF8
+# Write UTF-8 without a BOM: Out-File -Encoding UTF8 emits one on Windows
+# PowerShell 5.1, which then has to be stripped by hand.
+[System.IO.File]::WriteAllText($outputPath, $sb.ToString(), (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "✓ Generated C# file: $outputPath"
-Write-Host "✓ Total icons: $iconCount"
+Write-Host "✓ Total entries: $totalCount ($iconCount icons + $aliasCount aliases)"
