@@ -2,6 +2,83 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-8-20 — `RefreshAsync` Can Reset the Page
+
+> **Targeting: `v4.1.35`**
+> **Affects `NeoUI.Blazor`.** Additive. **Recommended for anyone driving a server-mode table from a filter outside the toolbar.**
+
+---
+
+### 🐛 Fix — `DataTable.RefreshAsync(resetPage: true)`
+
+`RefreshAsync` refetched on whatever page the operator was standing on. That is right for the reason it was added — an edit committed elsewhere, where you want to stay put — and wrong for the other documented reason, a filter that lives outside the toolbar.
+
+Filtering from page 3 sent the query with the **stale `Skip`**. It came back empty, and `CurrentPage` was only clamped afterwards, as `TotalItems` was assigned. The result was an empty grid beneath a pager reading "Page 2 of 2", which did not correct itself until something triggered another fetch.
+
+Reassigning the `ServerData` delegate has always reset the page as a side effect:
+
+```csharp
+// When the ServerData delegate reference changes … reset to page 1 so the user always
+// sees the first page of the freshly-filtered result set.
+if (!ReferenceEquals(ServerData, _lastServerData) && _lastServerData is not null)
+    _tableState.Pagination.CurrentPage = 1;
+```
+
+`RefreshAsync` had no equivalent, so the two ways of driving a refetch disagreed. It now takes the reset explicitly:
+
+```csharp
+public async Task RefreshAsync(bool reloadChildren = true, bool resetPage = false)
+```
+```razor
+@* a filter changed WHAT is listed — the old page number means nothing *@
+await _table.RefreshAsync(resetPage: true);
+
+@* a dialog saved a row — stay exactly where the operator was *@
+await _table.RefreshAsync();
+```
+
+**`false` by default, deliberately.** Flipping it would silently start bouncing every save-and-refresh caller back to page 1 after editing a row on page 4. As an opt-in this release changes no existing behaviour.
+
+Client-mode tables are unaffected — they re-page in memory and never issue a stale `Skip`.
+
+---
+
+## 2026-8-20 — A Server-Mode Table Owns Its Own Loading State
+
+> **Targeting: `v4.1.34`**
+> **Affects `NeoUI.Blazor`.** Bug fix. **Recommended for anyone using `ServerData`** — see why below.
+
+---
+
+### 🐛 Fix — `DataTable`: the empty state was reachable while a `ServerData` fetch was running
+
+A server-mode table could show "No results found" — or a caller's `EmptyTemplate`, saying something like *"No tracked stock yet"* — over a query that was still in flight. Not as a flash: for the full duration of a second round trip.
+
+The table decided between loading and empty from the `IsLoading` **parameter**, which is the caller's to set. A caller can only clear that flag from inside its own `ServerData` delegate, and the delegate returns one step **before** the table assigns the rows it just fetched. So the render that clears `IsLoading` necessarily lands on an empty row list. `OnParametersSetAsync` then compounds it: it ends by re-running the fetch, so that same render starts a *second* query, and the table sits in its empty state until that one lands too.
+
+No caller can fix this. The two facts that settle it — a fetch is running, and the rows are not in yet — are only both known inside the component:
+
+```csharp
+private int _serverFetchDepth;
+private bool ShowingFetchPlaceholder => _serverFetchDepth > 0 && !_processedData.Any();
+```
+```razor
+@if (IsLoading || ShowingFetchPlaceholder)
+```
+
+A **counter**, not a flag, precisely because of that re-entrant second fetch — two overlapping calls each saving and restoring a bool leave it stuck on whichever finished last.
+
+**Gated on having no rows, deliberately.** A refetch that already has rows on screen — a page change, a sort, a keystroke in the search box — keeps showing them until the new page lands, exactly as before. Only an *empty* grid with a fetch in flight shows the loading state.
+
+**Unaffected:** client mode (`Data=`), virtualized mode (`ItemsProvider=`), and tree-child expansion (`LoadChildrenAsync`), which has its own per-row spinner.
+
+**What this means for callers.** `IsLoading` no longer has to mean "a fetch has completed" — a claim the calling page cannot actually observe. It now only needs to cover the render before `ServerData` exists, since a table with no delegate starts no fetch:
+
+```razor
+<DataTable ServerData="@_serverData" IsLoading="@(_serverData is null)" … />
+```
+
+The `_loaded` flag, the wrapper method and the `finally { _loaded = true; StateHasChanged(); }` that pattern required can all go. Pages that keep them still render correctly — the component's placeholder covers them — but they pay for a duplicate first query.
 ## 2026-8-18 — Lucide Refreshed to 1,834 Icons, and Renamed Names Keep Working
 
 > **Targeting: `icons-lucide/v3.1.0`** (latest released: `icons-lucide/v3.0.0`)

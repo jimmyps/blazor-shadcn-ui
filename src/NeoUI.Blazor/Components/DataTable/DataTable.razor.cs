@@ -289,6 +289,38 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     private int _lastServerResultVersion = -1;
 
     /// <summary>
+    /// How many <see cref="ServerData"/> calls are in flight.
+    ///
+    /// <para>A COUNTER, not a flag: <c>OnParametersSetAsync</c> ends by re-running the fetch, so a render
+    /// that happens during one fetch starts a second one alongside it. Two overlapping calls each saving and
+    /// restoring a bool would leave it stuck on whichever value the LAST one to finish captured — and if the
+    /// outer call finished first, stuck true forever, with the table wedged in its loading state.</para>
+    /// </summary>
+    private int _serverFetchDepth;
+
+    /// <summary>
+    /// True while the table is fetching AND has nothing to show. It renders its loading state in that case
+    /// regardless of the <see cref="IsLoading"/> parameter.
+    ///
+    /// <para>Without this the empty state is reachable mid-fetch and the caller cannot prevent it: the
+    /// parameter is owned by the parent, and the parent's flag is necessarily stale, because it can only be
+    /// cleared from inside the ServerData delegate — which returns BEFORE <c>_processedData</c> is assigned
+    /// here. The render that clears IsLoading therefore lands on an empty row list, and the re-fetch above
+    /// keeps it there for a whole second query.</para>
+    ///
+    /// <para>Gated on having no rows deliberately. A refetch that HAS rows on screen — a page change, a sort,
+    /// a keystroke in the search box — keeps showing them until the new ones land, which is the behaviour
+    /// this component already had. Replacing the grid with a skeleton on every one of those would be a far
+    /// louder change than the bug being fixed.</para>
+    /// </summary>
+    private bool ShowingFetchPlaceholder => _serverFetchDepth > 0 && !_processedData.Any();
+
+    /// <summary>
+    /// Cached placeholder state for ShouldRender optimization.
+    /// </summary>
+    private bool _lastShowingFetchPlaceholder;
+
+    /// <summary>
     /// Cached Dense value for ShouldRender optimization.
     /// </summary>
     private bool _lastDense;
@@ -1183,6 +1215,26 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     }
 
     /// <summary>
+    /// Invokes <see cref="ServerData"/> with the in-flight flag raised, so the table shows its loading state
+    /// for the duration instead of falling through to the empty state on a row list that has not been
+    /// replaced yet. See <see cref="ShowingFetchPlaceholder"/> for why the caller's IsLoading cannot cover it.
+    /// </summary>
+    private async Task<DataTableResult<TData>> FetchServerDataAsync(DataTableRequest request)
+    {
+        _serverFetchDepth++;
+        // Only meaningful when there is nothing on screen, which is exactly when the placeholder applies.
+        if (!_processedData.Any()) StateHasChanged();
+        try
+        {
+            return await ServerData!(request);
+        }
+        finally
+        {
+            _serverFetchDepth--;
+        }
+    }
+
+    /// <summary>
     /// Processes the data through the complete pipeline: preprocessing, filtering, sorting, and pagination.
     /// In server mode, delegates entirely to the <see cref="ServerData"/> callback.
     /// </summary>
@@ -1204,7 +1256,7 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
                     SortDescriptors = BuildSortDescriptors(),
                     SearchText      = string.IsNullOrWhiteSpace(_globalSearchValue) ? null : _globalSearchValue
                 };
-                var result = await ServerData!(request);
+                var result = await FetchServerDataAsync(request);
                 _processedData = result.Items.ToList();
                 _filteredData  = _processedData;
                 _tableState.Pagination.TotalItems = result.TotalCount;
@@ -1264,7 +1316,7 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
                 SearchText       = string.IsNullOrWhiteSpace(_globalSearchValue) ? null : _globalSearchValue
             };
 
-            var result = await ServerData!(request);
+            var result = await FetchServerDataAsync(request);
             _processedData = result.Items.ToList();
             _filteredData  = _processedData;
             _tableState.Pagination.TotalItems = result.TotalCount;
@@ -2085,7 +2137,7 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             || !ReferenceEquals(_lastServerData, ServerData)
             || !ReferenceEquals(_lastItemsProvider, ItemsProvider);
         var selectionModeChanged = _lastSelectionMode != SelectionMode;
-        var loadingChanged = _lastIsLoading != IsLoading;
+        var loadingChanged = _lastIsLoading != IsLoading || _lastShowingFetchPlaceholder != ShowingFetchPlaceholder;
         var columnsChanged = _lastColumnsVersion != _columnsVersion;
         var searchChanged = _lastGlobalSearchValue != _globalSearchValue;
         var selectionChanged = _lastSelectionVersion != _selectionVersion;
@@ -2117,6 +2169,7 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             _lastItemsProvider = ItemsProvider;
             _lastSelectionMode = SelectionMode;
             _lastIsLoading = IsLoading;
+            _lastShowingFetchPlaceholder = ShowingFetchPlaceholder;
             _lastColumnsVersion = _columnsVersion;
             _lastGlobalSearchValue = _globalSearchValue;
             _lastSelectionVersion = _selectionVersion;
@@ -2221,15 +2274,32 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     /// leaves their children showing whatever they were first loaded with — a stale state made worse by
     /// being half correct. Pass false only when the parents alone are known to have changed.
     /// </param>
+    /// <param name="resetPage">
+    /// When true, returns to page 1 BEFORE the refetch. Pass it whenever the refresh follows a change to
+    /// WHAT is being listed — a filter that lives outside the toolbar — because the page the operator is
+    /// standing on numbers the OLD result set and means nothing against the new one.
+    ///
+    /// <para>Without it that query goes out with the stale <c>Skip</c>, comes back empty, and only THEN
+    /// clamps <c>CurrentPage</c> as <c>TotalItems</c> is assigned — so the table shows an empty grid under a
+    /// pager reading "Page 2 of 2" until something else triggers a fetch.</para>
+    ///
+    /// <para>Defaults to FALSE so the other reason to call this — an edit committed elsewhere — leaves the
+    /// operator where they were. Swapping the <see cref="ServerData"/> delegate has always reset the page as
+    /// a side effect (see <c>OnParametersSetAsync</c>); this is that same reset, for callers who refresh in
+    /// place instead of reassigning.</para>
+    /// </param>
     /// <remarks>
     /// Callers need this for two situations the component cannot see: an edit committed elsewhere (a dialog
     /// saving a child row), and a filter that lives outside the table's own toolbar. Both previously forced
     /// consumers to remount the component via <c>@key</c>, which discarded sort, page and column state
-    /// along with the cache.
+    /// along with the cache. Note that those two cases want OPPOSITE paging behaviour — hence
+    /// <paramref name="resetPage"/>.
     /// </remarks>
-    public async Task RefreshAsync(bool reloadChildren = true)
+    public async Task RefreshAsync(bool reloadChildren = true, bool resetPage = false)
     {
         if (reloadChildren) _fetchedChildren.Clear();
+        // Before ProcessDataAsync, not after — the point is for the request to carry Skip = 0.
+        if (resetPage) _tableState.Pagination.Reset();
         await ProcessDataAsync();
         StateHasChanged();
     }
