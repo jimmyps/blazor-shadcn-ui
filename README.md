@@ -125,7 +125,7 @@ dotnet add package NeoUI.Blazor
 dotnet add package NeoUI.Blazor.Primitives
 
 # Icon libraries (choose one or more)
-dotnet add package NeoUI.Icons.Lucide      # 1,640 icons - stroke-based, consistent
+dotnet add package NeoUI.Icons.Lucide      # 1,760 icons - stroke-based, consistent
 dotnet add package NeoUI.Icons.Heroicons   # 1,288 icons - 4 variants (outline, solid, mini, micro)
 dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-based
 ```
@@ -141,7 +141,7 @@ dotnet add package NeoUI.Icons.Feather     # 286 icons - minimalist, stroke-base
    **Optional icon packages** — add whichever you need:
 
 ```razor
-@using NeoUI.Icons.Lucide      @* 1,640+ icons *@
+@using NeoUI.Icons.Lucide      @* 1,760+ icons *@
 @using NeoUI.Icons.Heroicons   @* 1,288 icons across 4 variants *@
 @using NeoUI.Icons.Feather     @* 286 minimalist icons *@
 ```
@@ -582,7 +582,7 @@ Five dedicated mobile-first components for `.NET MAUI Blazor Hybrid`, PWA, and m
 
 NeoUI offers **three icon library packages** to suit different design preferences:
 
-- **Lucide Icons** (`NeoUI.Icons.Lucide`) - 1,640 beautiful, consistent stroke-based icons
+- **Lucide Icons** (`NeoUI.Icons.Lucide`) - 1,760 beautiful, consistent stroke-based icons
   - ISC licensed
   - 24x24 viewBox, 2px stroke width
   - Perfect for: Modern, clean interfaces

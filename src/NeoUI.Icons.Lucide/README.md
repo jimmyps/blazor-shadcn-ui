@@ -1,10 +1,10 @@
 # NeoUI.Icons
 
-A comprehensive Lucide icon library for Blazor applications, providing 1,600+ beautiful, consistent SVG icons.
+A comprehensive Lucide icon library for Blazor applications, providing 1,760+ beautiful, consistent SVG icons.
 
 ## Features
 
-- **1,640+ Icons**: Complete Lucide icon set
+- **1,760+ Icons**: Complete Lucide icon set
 - **React-Style API**: Familiar component-based API for React developers
 - **Fully Accessible**: ARIA-compliant with customizable labels
 - **Tree-Shakeable**: Blazor assembly trimming removes unused icons at publish time
@@ -115,7 +115,7 @@ Add to `_Imports.razor`:
 
 ## Icon Names
 
-All 1,640+ Lucide icons are available. Icon names use kebab-case and match the official Lucide icon names:
+All 1,760+ Lucide icons are available. Icon names use kebab-case and match the official Lucide icon names:
 
 - `camera`
 - `home`
@@ -129,7 +129,7 @@ All 1,640+ Lucide icons are available. Icon names use kebab-case and match the o
 - `chevron-up`
 - `alert-circle`
 - `info`
-- ... and 1,600+ more
+- ... and 1,700+ more
 
 **Browse all icons:** [lucide.dev/icons](https://lucide.dev/icons/)
 
