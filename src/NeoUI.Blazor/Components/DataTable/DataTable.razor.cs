@@ -321,6 +321,15 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     private bool _lastShowingFetchPlaceholder;
 
     /// <summary>
+    /// The <see cref="ServerData"/> delegate the last fetch was issued against, and whether any fetch has
+    /// happened yet. Deliberately NOT <c>_lastServerData</c>: that one belongs to ShouldRender and is updated
+    /// on its schedule, so sharing it would let a render decision silently suppress a fetch.
+    /// </summary>
+    private Func<DataTableRequest, Task<DataTableResult<TData>>>? _lastFetchedServerData;
+
+    private bool _hasFetchedOnce;
+
+    /// <summary>
     /// Cached Dense value for ShouldRender optimization.
     /// </summary>
     private bool _lastDense;
@@ -1129,17 +1138,20 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
     {
         // Sync externally-provided ExpandedValues into internal state.
         // Use SetEquals so that in-place mutations of the same HashSet instance are also detected.
+        var expandedChanged = false;
         if (ExpandedValues is not null &&
             (!ReferenceEquals(ExpandedValues, _lastExpandedValues) ||
              !_expandedRowsInternal.SetEquals(ExpandedValues)))
         {
             _lastExpandedValues = ExpandedValues;
             _expandedRowsInternal = new HashSet<string>(ExpandedValues);
+            expandedChanged = true;
         }
 
         // Sync externally-set GlobalSearchValue into internal state (supports @bind-GlobalSearchValue).
         var incoming = GlobalSearchValue ?? string.Empty;
-        if (incoming != _globalSearchValue)
+        var searchChanged = incoming != _globalSearchValue;
+        if (searchChanged)
         {
             _globalSearchValue = incoming;
             _tableState.Pagination.CurrentPage = 1;
@@ -1168,6 +1180,45 @@ public partial class DataTable<TData> : ComponentBase, IAsyncDisposable where TD
             _lastSelectedItems = SelectedItems;
             _selectionVersion++;
         }
+
+        // SERVER MODE ONLY: re-fetch when something that changes the RESULT changed, not on every parameter
+        // set. Blazor calls OnParametersSetAsync on every parent render, so an unconditional fetch here meant
+        // opening a dialog — or anything else re-rendering the page — issued the whole query again. On a page
+        // that enriches each row, that is a dozen round trips for a render that changed nothing.
+        //
+        // Page, size and sort are driven by this component's OWN handlers, which call ProcessDataAsync
+        // directly; they never depended on this line. What does arrive as a parameter is the delegate itself
+        // (callers swap it to re-filter), the bound search text, and tree expansion — so those three refetch.
+        //
+        // Client mode is deliberately left alone. Its cost is CPU over data already in memory rather than a
+        // round trip, and ApplySorting resolves the sorted column out of _columns — which register during the
+        // CHILD render, after this method has run. The unconditional call is what currently covers that
+        // ordering, so guarding it would risk a client table rendering unsorted until something else
+        // re-rendered it. Different problem, different fix, not this one.
+        if (IsServerMode)
+        {
+            var refetch = !_hasFetchedOnce
+                || searchChanged
+                || expandedChanged
+                || !ReferenceEquals(ServerData, _lastFetchedServerData);
+
+            if (!refetch) return;
+
+            // Marked as fetched only AFTER the fetch returns. Setting it first means a delegate that throws
+            // — a transient server error is enough — leaves the guard believing the data arrived, so every
+            // later parameter set takes the early return and the table never retries. On the failure path the
+            // state stays untouched, the reference still differs, and the next render tries again.
+            await ProcessDataAsync();
+            _hasFetchedOnce = true;
+            _lastFetchedServerData = ServerData;
+            return;
+        }
+
+        // Left server mode: forget what was fetched. Otherwise a caller that drops ServerData to null and
+        // later restores the SAME delegate instance would find the reference unchanged, skip the refetch,
+        // and keep whatever client-mode processing put on screen in between.
+        _hasFetchedOnce = false;
+        _lastFetchedServerData = null;
 
         await ProcessDataAsync();
     }

@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-8-21 — A Server-Mode Table Stops Re-Fetching On Unrelated Renders
+
+> **Targeting: `v4.1.36`**
+> **Affects `NeoUI.Blazor`.** Bug fix. **Recommended for anyone using `ServerData`** — this one costs real queries.
+> **Also pulls in `NeoUI.Icons.Lucide` 3.1.0** — see the bundled note below.
+
+---
+
+### 📦 Bundled — `NeoUI.Icons.Lucide` 3.0.0 → 3.1.0
+
+Taking 4.1.36 upgrades the icon set with it, so read the `icons-lucide/v3.1.0` entry further down before shipping. The short version: **174 new icons, and 195 existing ones redrawn upstream.**
+
+The redraws are the part that needs attention, because they change how existing screens look with **no change on your side**. The largest families affected are `file-*` (42), `calendar-*` (21) and `clock-*` (13), and several are redesigns rather than nudges — `bookmark` gains a rounded ribbon notch, `anchor` is redrawn, and the whole `calendar` family shifts up 1px. Worth a glance anywhere an icon carries meaning rather than decoration.
+
+No icon name is removed, and renamed ones keep resolving under their old names.
+
+---
+
+### 🐛 Fix — `DataTable`: every parent render issued the whole server query again
+
+`OnParametersSetAsync` ended with an unconditional `await ProcessDataAsync()`. Blazor calls that method on **every parent render**, so anything re-rendering the page re-ran the fetch — opening a dialog, a toast appearing, an unrelated field updating.
+
+On a list that enriches each row, this is not one wasted query. A consumer's catalogue page issued roughly a dozen round trips per render: the page query, then variants, modifier usage, stock levels, thresholds, and per-outlet resolution. Tapping **Add item** paid all of it again, and a brand-new store with *zero* products still took 500 ms–1 s — because the cost scaled with renders, not with data.
+
+Now the fetch happens only when something that changes the result changed:
+
+```csharp
+if (IsServerMode)
+{
+    var refetch = !_hasFetchedOnce
+        || searchChanged
+        || expandedChanged
+        || !ReferenceEquals(ServerData, _lastFetchedServerData);
+
+    _lastFetchedServerData = ServerData;
+    if (!refetch) return;
+    _hasFetchedOnce = true;
+}
+```
+
+**Page, size and sort never depended on that line.** They are driven by the component's own handlers, which call `ProcessDataAsync` directly. What genuinely arrives as a *parameter* is the delegate itself — callers swap it to re-filter, and that still triggers — plus the bound search text and tree expansion.
+
+**`RefreshAsync` is untouched**, so an edit committed elsewhere still refreshes exactly as before.
+
+### Client mode is deliberately unchanged
+
+Its cost is CPU over data already in memory, not a round trip — and `ApplySorting` resolves the sorted column out of `_columns`, which register during the **child** render, *after* `OnParametersSetAsync` has run. The unconditional call is currently what covers that ordering, so guarding it would risk a client-mode table rendering unsorted until something else re-rendered it.
+
+That is a real defect too, but a different one, and it wants its own fix rather than a shared guard that quietly changes both.
+
+---
+
 ## 2026-8-20 — `RefreshAsync` Can Reset the Page
 
 > **Targeting: `v4.1.35`**
