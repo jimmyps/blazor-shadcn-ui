@@ -69,7 +69,8 @@ namespace NeoUI.Demo.Shared.Pages.Components
                    built-in Clear/Close footer. Use it for an action on the OPTION SET rather than on the
                    selection. Prefer a link/text button: this popover often opens inside a dialog that
                    already owns a primary action. *@
-                <MultiSelect TItem="Technology"
+                <MultiSelect @ref="_techPicker"
+                             TItem="Technology"
                              Items="technologies"
                              @bind-Values="selectedTechnologies"
                              ValueSelector="@(t => t.Value)"
