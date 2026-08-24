@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-8-24 — CloseAsync Runs Wholly On The Dispatcher
+
+> **Targeting: `v4.1.38`**
+> **Affects `NeoUI.Blazor`.** Bug fix. **Recommended if you took 4.1.37** — that release shipped `CloseAsync` with both defects below.
+
+---
+
+### 🐞 `CloseAsync` never cleared the one-shot focus flag
+
+`HandleOpenChanged` is the only other place `_focusDone` is cleared, and `CloseAsync` cannot reach it: the Popover is in controlled mode, so setting `_isOpen` ourselves raises no `OpenChanged`. Left set, the next open skipped its focus and **the search box never took the caret again** — the dropdown became keyboard-hostile after the first programmatic close.
+
+### 🐞 The close sequence ran off the dispatcher
+
+`CloseAsync` is documented as callable from any context, but only the render was wrapped in `InvokeAsync`. `Close()` mutates `_isOpen`/`_searchQuery` and awaits the consumer's `SearchQueryChanged`, so all of that ran on the caller's thread — and on Blazor Server a timer or JS interop callback arrives off-dispatcher, where touching component state throws. The whole sequence now runs inside `InvokeAsync`.
+
 ## 2026-8-24 — MultiSelect Gains A Row For Acting On The List Itself
 
 > **Targeting: `v4.1.37`**
