@@ -69,7 +69,8 @@ namespace NeoUI.Demo.Shared.Pages.Components
                    built-in Clear/Close footer. Use it for an action on the OPTION SET rather than on the
                    selection. Prefer a link/text button: this popover often opens inside a dialog that
                    already owns a primary action. *@
-                <MultiSelect TItem="Technology"
+                <MultiSelect @ref="_techPicker"
+                             TItem="Technology"
                              Items="technologies"
                              @bind-Values="selectedTechnologies"
                              ValueSelector="@(t => t.Value)"
@@ -79,12 +80,24 @@ namespace NeoUI.Demo.Shared.Pages.Components
                              PopoverWidth="w-[300px]">
                     <FooterContent>
                         <Button Variant="ButtonVariant.Link" Size="ButtonSize.Small"
-                                Class="h-auto px-1 py-0 gap-1.5" OnClick="OpenManageDialog">
+                                Class="h-auto px-1 py-0 gap-1.5" OnClick="HandleManageAsync">
                             <LucideIcon Name="settings-2" Size="14" />
                             Manage technologies
                         </Button>
                     </FooterContent>
                 </MultiSelect>
+
+                @code {
+                    private MultiSelect<Technology>? _techPicker;
+
+                    // Dismiss the popover BEFORE opening your own overlay, or it sits open behind it —
+                    // still listening for click-outside, so the first click can land on the popover.
+                    private async Task HandleManageAsync()
+                    {
+                        await (_techPicker?.CloseAsync() ?? Task.CompletedTask);
+                        // ...open your manage dialog here
+                    }
+                }
                 """;
 
         private const string _withoutSelectAllCode = """

@@ -493,12 +493,24 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// component — our parameters have not changed, so Blazor never repaints us and the dropdown stays visibly
     /// open with <c>_isOpen</c> already false.
     /// </remarks>
-    public async Task CloseAsync()
-    {
-        if (!_isOpen) return;
-        await Close();
-        StateHasChanged();
-    }
+    public async Task CloseAsync() =>
+        // The WHOLE sequence runs on the dispatcher, not just the render. Close() mutates _isOpen and
+        // _searchQuery and awaits SearchQueryChanged, so wrapping only StateHasChanged would still touch
+        // component state — and invoke a consumer callback — from whatever thread called us. On Blazor
+        // Server a timer or JS interop callback arrives off-dispatcher, and that throws.
+        // Reading _isOpen belongs inside for the same reason.
+        await InvokeAsync(async () =>
+        {
+            if (!_isOpen) return;
+            await Close();
+
+            // Close() bypasses HandleOpenChanged — the Popover is in controlled mode, so setting _isOpen
+            // ourselves raises no OpenChanged — and that is the only other place this is cleared. Left set,
+            // the next open skips its one-shot focus and the search box never takes the caret again.
+            _focusDone = false;
+
+            StateHasChanged();
+        });
 
     /// <summary>
     /// Gets the click-outside event handler based on AutoClose setting.
