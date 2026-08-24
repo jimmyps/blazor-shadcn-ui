@@ -482,6 +482,25 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     }
 
     /// <summary>
+    /// Closes the dropdown from OUTSIDE the component — for a <see cref="FooterContent"/> action that opens
+    /// an overlay of its own (a manage dialog, a create form). Leaving the popover open behind a modal stacks
+    /// two layers of chrome over the same field and makes dismissal ambiguous: the popover is still listening
+    /// for click-outside, so the first click meant for the dialog can land on the popover instead.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="StateHasChanged"/> is the point of this method existing rather than callers reaching for the
+    /// private path. An external caller mutating this component's state re-renders the CALLER, not this
+    /// component — our parameters have not changed, so Blazor never repaints us and the dropdown stays visibly
+    /// open with <c>_isOpen</c> already false.
+    /// </remarks>
+    public async Task CloseAsync()
+    {
+        if (!_isOpen) return;
+        await Close();
+        StateHasChanged();
+    }
+
+    /// <summary>
     /// Gets the click-outside event handler based on AutoClose setting.
     /// Returns an empty EventCallback when AutoClose is false.
     /// </summary>
