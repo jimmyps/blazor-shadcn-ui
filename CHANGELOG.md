@@ -2,6 +2,70 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-8-24 — MultiSelect Gains A Row For Acting On The List Itself
+
+> **Targeting: `v4.1.37`**
+> **Affects `NeoUI.Blazor`.** Additive. **Opt-in — nothing renders unless you pass it**, so no existing usage moves.
+
+---
+
+### ✨ `MultiSelect.FooterContent`
+
+A `RenderFragment` rendered in its own left-aligned row between the scrollable option list and the built-in
+Clear/Close footer. It is for an action on the **option set** rather than on the selection — "Manage tags",
+"New category", "Edit list".
+
+```razor
+<MultiSelect TItem="Tag" Items="tags" @bind-Values="selected" ...>
+    <FooterContent>
+        <Button Variant="ButtonVariant.Link" Size="ButtonSize.Small" Class="h-auto px-1 py-0 gap-1.5"
+                OnClick="OpenManageDialog">
+            <LucideIcon Name="settings-2" Size="14" />
+            Manage tags
+        </Button>
+    </FooterContent>
+</MultiSelect>
+```
+
+**Why its own row rather than a third child of the existing footer.** That footer is `justify-between` with two
+short muted labels, so a third child is distributed by *string length* rather than by importance — "Manage tags"
+ends up the widest and loudest thing in the row without meaning to be, wedged between two dismiss controls.
+
+The row sits **outside** the list's scroll container, so it stays visible as the list scrolls with no
+`position: sticky` and no z-index involved.
+
+**One usage note:** prefer a link/text-weight button over a solid one. This popover typically opens inside a
+dialog that already owns a primary action, and two solid buttons on screen compete for the same attention.
+
+### ✨ `MultiSelect.CloseAsync()`
+
+Public, and the companion to the above. When a `FooterContent` action opens an overlay of its own, call it
+first:
+
+```razor
+<MultiSelect @ref="_picker" ...>
+    <FooterContent>
+        <Button Variant="ButtonVariant.Link" OnClick="OpenManageAsync">Manage tags</Button>
+    </FooterContent>
+</MultiSelect>
+
+@code {
+    private async Task OpenManageAsync()
+    {
+        await _picker!.CloseAsync();     // dismiss the popover BEFORE the dialog opens
+        await _manageDialog!.OpenAsync();
+    }
+}
+```
+
+Leaving the popover open behind a modal stacks two layers of chrome over one field, and the popover is still
+listening for click-outside — so the first click intended for the dialog can land on the popover instead.
+
+It calls `StateHasChanged()`, which is the reason it exists as a method rather than callers poking state: an
+external caller mutating a child component's state re-renders the **caller**, not the child. The child's
+parameters have not changed, so Blazor never repaints it and the dropdown stays visibly open with `_isOpen`
+already false.
+
 ## 2026-8-21 — A Server-Mode Table Stops Re-Fetching On Unrelated Renders
 
 > **Targeting: `v4.1.36`**

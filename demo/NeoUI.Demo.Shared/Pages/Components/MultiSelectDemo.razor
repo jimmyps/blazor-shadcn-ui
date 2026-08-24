@@ -85,6 +85,37 @@
     </DemoSection>
 
     <DemoSection
+        Title="Footer Action"
+        Description="FooterContent adds a left-aligned row between the list and the built-in Clear/Close footer — for an action on the OPTION SET (manage, create, edit the list) rather than on the selection. It sits outside the scroll area, so it stays visible while the list scrolls.">
+        <DemoBlock Code="@_footerContentCode">
+            <div class="flex flex-col gap-2">
+                <MultiSelect @ref="_techPicker"
+                            TItem="Technology"
+                            Items="technologies"
+                            @bind-Values="selectedTechnologies"
+                            ValueSelector="@(t => t.Value)"
+                            DisplaySelector="@(t => t.Label)"
+                            Placeholder="Select technologies..."
+                            SearchPlaceholder="Search..."
+                            MaxDisplayTags="2"
+                            PopoverWidth="w-[300px]">
+                    <FooterContent>
+                        <Button Variant="ButtonVariant.Link" Size="ButtonSize.Small" Class="h-auto px-1 py-0 gap-1.5"
+                                OnClick="HandleManageAsync">
+                            <LucideIcon Name="settings-2" Size="14" />
+                            Manage technologies
+                        </Button>
+                    </FooterContent>
+                </MultiSelect>
+                @if (_manageClicked > 0)
+                {
+                    <p class="text-sm text-muted-foreground">Manage clicked @_manageClicked time(s).</p>
+                }
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection
         Title="Without Select All"
         Description="Multi Select without the Select All option.">
         <DemoBlock Code="@_withoutSelectAllCode">
@@ -335,6 +366,17 @@
 </div>
 
 @code {
+    private int _manageClicked;
+    private MultiSelect<Technology>? _techPicker;
+
+    // A footer action that opens something else should dismiss the popover first — otherwise it sits open
+    // behind the new overlay, still listening for click-outside.
+    private async Task HandleManageAsync()
+    {
+        await (_techPicker?.CloseAsync() ?? Task.CompletedTask);
+        _manageClicked++;
+    }
+
     private IEnumerable<string>? selectedLanguages;
     private IEnumerable<string>? selectedTechnologies;
     private IEnumerable<string>? selectedCountries;

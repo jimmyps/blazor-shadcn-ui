@@ -173,6 +173,18 @@
                 }
             </div>
 
+            @* Caller-supplied action row (opt-in). Sits OUTSIDE the scrollable list above, so it stays put
+               while the list scrolls with no position:sticky needed. Deliberately its OWN row rather than a
+               third child of the Clear/Close footer below: that row is justify-between with two short muted
+               labels, so an added action is spaced by string length instead of importance and ends up the
+               widest thing in it. *@
+            @if (FooterContent is not null)
+            {
+                <div class="flex items-center border-t p-2">
+                    @FooterContent
+                </div>
+            }
+
             @* Footer section *@
             <div class="flex items-center justify-between border-t p-2">
                 <button type="button"
