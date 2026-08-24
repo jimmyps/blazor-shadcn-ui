@@ -497,7 +497,17 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     {
         if (!_isOpen) return;
         await Close();
-        StateHasChanged();
+
+        // Close() bypasses HandleOpenChanged — the Popover is in controlled mode, so setting _isOpen
+        // ourselves raises no OpenChanged — and HandleOpenChanged is the only other place this is cleared.
+        // Left set, the next open would skip its one-shot focus and the search box would never take the
+        // caret again.
+        _focusDone = false;
+
+        // InvokeAsync, not a bare StateHasChanged: this is public and may be called from any context —
+        // a parent's event handler, a timer, a JS interop callback — and only InvokeAsync guarantees the
+        // render is scheduled on the renderer's synchronization context.
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
