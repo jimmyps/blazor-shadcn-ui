@@ -255,6 +255,28 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     public Expression<Func<IEnumerable<string>?>>? ValuesExpression { get; set; }
 
     /// <summary>
+    /// Optional content rendered in its own row between the scrollable option list and the built-in
+    /// Clear/Close footer. Nothing is rendered when this is <see langword="null"/>, so every existing usage
+    /// is unaffected.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is for an action on the OPTION SET rather than on the selection — "Manage tags", "New category",
+    /// "Edit list". Such an action does not belong in the Clear/Close row: that row is <c>justify-between</c>
+    /// with two short muted labels, so a third child is distributed by string length rather than by
+    /// importance and ends up the widest, loudest thing there without meaning to be.
+    /// </para>
+    /// <para>
+    /// The row sits OUTSIDE the list's scroll container, so it stays put as the list scrolls with no
+    /// <c>position: sticky</c> needed. Content is left-aligned; supply your own button. Prefer text/link
+    /// weight over a solid button — this popover usually opens inside a dialog that already owns a primary
+    /// action, and two solid buttons on screen compete for the same attention.
+    /// </para>
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? FooterContent { get; set; }
+
+    /// <summary>
     /// Tracks whether the popover is currently open.
     /// </summary>
     private bool _isOpen { get; set; } = false;

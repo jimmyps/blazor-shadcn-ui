@@ -64,6 +64,29 @@ namespace NeoUI.Demo.Shared.Pages.Components
                              PopoverWidth="w-[280px]" />
                 """;
 
+        private const string _footerContentCode = """
+                @* FooterContent renders in its own left-aligned row between the option list and the
+                   built-in Clear/Close footer. Use it for an action on the OPTION SET rather than on the
+                   selection. Prefer a link/text button: this popover often opens inside a dialog that
+                   already owns a primary action. *@
+                <MultiSelect TItem="Technology"
+                             Items="technologies"
+                             @bind-Values="selectedTechnologies"
+                             ValueSelector="@(t => t.Value)"
+                             DisplaySelector="@(t => t.Label)"
+                             Placeholder="Select technologies..."
+                             MaxDisplayTags="2"
+                             PopoverWidth="w-[300px]">
+                    <FooterContent>
+                        <Button Variant="ButtonVariant.Link" Size="ButtonSize.Small"
+                                Class="h-auto px-1 py-0 gap-1.5" OnClick="OpenManageDialog">
+                            <LucideIcon Name="settings-2" Size="14" />
+                            Manage technologies
+                        </Button>
+                    </FooterContent>
+                </MultiSelect>
+                """;
+
         private const string _withoutSelectAllCode = """
                 <MultiSelect TItem="Framework"
                              Items="frameworks"
