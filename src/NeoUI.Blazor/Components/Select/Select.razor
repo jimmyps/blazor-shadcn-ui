@@ -3,10 +3,10 @@
 @attribute [CascadingTypeParameter(nameof(TValue))]
 
 @* Styled Select wrapper around Select *@
-<SelectPrimitive TValue="TValue"
+<SelectPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" TValue="TValue"
                  Value="@Value"
                  ValueChanged="@ValueChanged"
-                 @bind-Open="IsOpen"
+                 Open="@Open" OpenChanged="@OpenChanged"
                  Disabled="Disabled"
                  DisplayTextSelector="@DisplayTextSelector"
                  class="@CssClass">
@@ -14,6 +14,15 @@
 </SelectPrimitive>
 
 @code {
+    /// <summary>Uses browser-local floating interactions when set to Browser. Default is Blazor.</summary>
+    [Parameter]
+    public InteractionMode InteractionMode { get; set; }
+
+    /// <summary>Increment to reapply Open and Value, including an unchanged value after a reset.</summary>
+    [Parameter]
+    public long InteractionRevision { get; set; }
+
+
     /// <summary>
     /// Gets or sets the currently selected value.
     /// </summary>
@@ -66,7 +75,6 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private bool IsOpen { get; set; }
 
     /// <summary>
     /// Gets the computed CSS classes for the select container.

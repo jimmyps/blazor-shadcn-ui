@@ -6,9 +6,9 @@
                                            TextValue="@GetDisplayText()"
                                            Disabled="Disabled"
                                            class="@CssClass">
-    @if (IsSelected)
+    @if (IsSelected || _context?.IsBrowserInteraction == true)
     {
-        <span class="absolute inset-y-0 right-0 flex items-center pr-3">
+        <span data-neo-selection-indicator class="absolute inset-y-0 right-0 flex items-center pr-3">
             <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
@@ -88,7 +88,7 @@
         "outline-none transition-colors",
         "data-[focused=true]:bg-accent data-[focused=true]:text-accent-foreground",
         "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50",
-        ClassNames.when(IsSelected, "bg-accent/50 text-accent-foreground"),
+        ClassNames.when(_context?.IsBrowserInteraction != true && IsSelected, "bg-accent/50 text-accent-foreground"),
         _styleVariant.GetClasses("SelectItem.Root"),
         Class
     );

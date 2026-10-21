@@ -64,6 +64,8 @@
 
     protected override void OnInitialized()
     {
+        if (MenuContext?.Browser.Enabled == true)
+            throw new InvalidOperationException("Browser interaction mode currently supports action/link items and submenus. Keep check/radio menus in Blazor mode.");
         if (MenuContext == null)
         {
             throw new InvalidOperationException(

@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* Styled DropdownMenu component - thin wrapper around DropdownMenu primitive *@
-<DropdownMenuPrimitive Open="@Open"
+<DropdownMenuPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Open="@Open"
                                                       OpenChanged="@OpenChanged"
                                                       DefaultOpen="@DefaultOpen"
                                                       OnOpenChange="@OnOpenChange"
@@ -10,6 +10,15 @@
 </DropdownMenuPrimitive>
 
 @code {
+    /// <summary>Uses browser-local floating interactions when set to Browser. Default is Blazor.</summary>
+    [Parameter]
+    public InteractionMode InteractionMode { get; set; }
+
+    /// <summary>Increment to reapply Open and Value, including an unchanged value after a reset.</summary>
+    [Parameter]
+    public long InteractionRevision { get; set; }
+
+
     /// <summary>
     /// The child content to render within the dropdown menu.
     /// Typically includes DropdownMenuTrigger and DropdownMenuContent.

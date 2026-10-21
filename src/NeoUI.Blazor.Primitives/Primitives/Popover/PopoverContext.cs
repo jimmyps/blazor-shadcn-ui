@@ -32,6 +32,8 @@ public class PopoverState
 /// </summary>
 public class PopoverContext : PrimitiveContextWithEvents<PopoverState>
 {
+    internal BrowserFloatingState Browser { get; } = new();
+
     /// <summary>
     /// Initializes a new instance of the PopoverContext.
     /// </summary>

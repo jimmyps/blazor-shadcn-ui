@@ -27,6 +27,12 @@ public class TriggerContext
     /// </summary>
     public bool IsOpen { get; init; }
 
+    /// <summary>Whether a browser controller owns trigger interaction and aria-expanded.</summary>
+    public bool BrowserOwned { get; init; }
+
+    /// <summary>Whether the trigger must be disabled, including AsChild elements.</summary>
+    public bool Disabled { get; init; }
+
     /// <summary>
     /// Action to toggle the associated overlay open/closed.
     /// Should be invoked on click.

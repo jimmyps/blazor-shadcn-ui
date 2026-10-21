@@ -228,6 +228,13 @@ public partial class Button : ComponentBase
         _ => "button"
     };
 
+    /// <inheritdoc />
+    protected override void OnParametersSet()
+    {
+        if (TriggerContext?.BrowserOwned == true && OnClick.HasDelegate)
+            throw new InvalidOperationException("A browser-owned AsChild trigger cannot run a Button OnClick callback. Put application actions on content items.");
+    }
+
     /// <summary>
     /// Handles the button click event.
     /// </summary>

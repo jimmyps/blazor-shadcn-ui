@@ -12,12 +12,12 @@ else
     <button type="button"
             id="@Context.TriggerId"
             @ref="@_triggerRef"
-            @onclick="HandleClick"
+            @onclick="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
             @attributes="AdditionalAttributes"
             aria-haspopup="true"
-            aria-expanded="@Context.IsOpen.ToString().ToLower()"
+            aria-expanded="@(Context.Browser.Enabled ? null : Context.IsOpen.ToString().ToLower())"
             aria-controls="@Context.ContentId"
-            style="@(Context.IsOpen ? "pointer-events: none;" : "")">
+            style="@(!Context.Browser.Enabled && Context.IsOpen ? "pointer-events: none;" : "")">
         @ChildContent
     </button>
 }
@@ -72,6 +72,7 @@ else
     private TriggerContext TriggerContext => new()
     {
         TriggerId = Context.TriggerId,
+        BrowserOwned = Context.Browser.Enabled,
         IsOpen = Context.IsOpen,
         // Toggle now only opens when closed (to prevent Blazor event routing edge cases)
         Toggle = () => { if (!Context.IsOpen) Context.Open(_asChildTriggerRef); },
@@ -114,6 +115,8 @@ else
 
     protected override void OnInitialized()
     {
+        if (Context?.Browser.Enabled == true && (CustomClickHandling || OnClick.HasDelegate))
+            throw new InvalidOperationException("Browser triggers handle clicks locally. Put application actions on content items instead.");
         if (Context == null)
         {
             throw new InvalidOperationException(

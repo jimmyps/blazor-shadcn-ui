@@ -1,0 +1,2 @@
+/* Persistent closed layers must not widen the gallery after a viewport resize. */
+body:has([data-browser-interactions-demo]) [data-portal-content]:has(> [data-state="closed"]){left:-9999px!important;top:-9999px!important}

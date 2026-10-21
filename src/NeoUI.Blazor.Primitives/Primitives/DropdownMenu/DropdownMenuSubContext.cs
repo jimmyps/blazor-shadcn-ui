@@ -7,6 +7,9 @@ namespace NeoUI.Blazor.Primitives;
 /// </summary>
 public class DropdownMenuSubContext
 {
+    internal string BrowserTriggerId { get; } = $"neo-sub-trigger-{Guid.NewGuid():N}";
+    internal string BrowserContentId { get; } = $"neo-sub-content-{Guid.NewGuid():N}";
+    internal BrowserFloatingState Browser { get; } = new();
     /// <summary>
     /// Gets or sets whether the submenu is open.
     /// </summary>

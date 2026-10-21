@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <RootNamespace>NeoUI.BrowserTests.Host</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/NeoUI.Blazor/NeoUI.Blazor.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
+    <Content Include="../NeoUI.BrowserTests.Host/Cases.razor" Link="Cases.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/_Imports.razor" Link="_Imports.razor" />
+  </ItemGroup>
+</Project>

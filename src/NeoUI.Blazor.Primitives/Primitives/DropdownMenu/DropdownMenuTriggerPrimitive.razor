@@ -12,11 +12,13 @@ else
     <button type="button"
             id="@Context.TriggerId"
             @ref="@_triggerRef"
-            @onclick="HandleClick"
-            @onkeydown="HandleKeyDown"
+            disabled="@Disabled"
+            aria-disabled="@Disabled.ToString().ToLowerInvariant()"
+            @onclick="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+            @onkeydown="@(Context.Browser.Enabled ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
             @attributes="AdditionalAttributes"
             aria-haspopup="menu"
-            aria-expanded="@Context.IsOpen.ToString().ToLower()"
+            aria-expanded="@(Context.Browser.Enabled ? null : Context.IsOpen.ToString().ToLower())"
             aria-controls="@Context.ContentId">
         @ChildContent
     </button>
@@ -79,6 +81,8 @@ else
     private TriggerContext TriggerContext => new()
     {
         TriggerId = Context.TriggerId,
+        BrowserOwned = Context.Browser.Enabled,
+        Disabled = Disabled,
         IsOpen = Context.IsOpen,
         Toggle = () => Context.Toggle(_asChildTriggerRef),
         Open = () => Context.Open(_asChildTriggerRef),
@@ -161,6 +165,8 @@ else
 
     protected override void OnInitialized()
     {
+        if (Context?.Browser.Enabled == true && (CustomClickHandling || OnClick.HasDelegate))
+            throw new InvalidOperationException("Browser triggers handle clicks locally. Put application actions on content items instead.");
         if (Context == null)
         {
             throw new InvalidOperationException(

@@ -1,0 +1,96 @@
+<AppProvider>
+    <h1>Browser floating interaction regression cases</h1>
+    <section>
+        <DropdownMenu InteractionMode="InteractionMode.Browser">
+            <DropdownMenuTrigger AsChild><Button data-testid="menu-trigger">Actions</Button></DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuItem OnClick="RunAction">Run action</DropdownMenuItem>
+                <DropdownMenuItem Disabled>Disabled action</DropdownMenuItem>
+                <DropdownMenuItem><a href="#native">Native link</a></DropdownMenuItem>
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                        <DropdownMenuItem>Nested action</DropdownMenuItem>
+                        <DropdownMenuItem>Another nested action</DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                </DropdownMenuSub>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        <p data-testid="actions">@actions</p>
+    </section>
+    <section>
+        <Select TValue="string" InteractionMode="InteractionMode.Browser" Value="@value" ValueChanged="SelectValue"
+                InteractionRevision="@revision" Disabled="@disabled">
+            <SelectTrigger data-testid="select-trigger"><SelectValue Placeholder="Choose fruit" /></SelectTrigger>
+            <SelectContent>
+                @foreach (var fruit in fruits)
+                {
+                    <SelectItem @key="fruit" TValue="string" Value="@fruit" Text="@fruit" Disabled="@(fruit == "Disabled fruit")" />
+                }
+            </SelectContent>
+        </Select>
+        <p data-testid="server-value">@value</p>
+        <label><input type="checkbox" @bind="reject" data-testid="reject" /> Reject selection</label>
+        <label><input type="checkbox" @bind="slow" data-testid="slow" /> Slow callback</label>
+        <button @onclick="Reset" data-testid="reset">Reset</button>
+        <button @onclick="() => disabled = !disabled" data-testid="disable">Toggle disabled</button>
+        <button @onclick="AddFruit" data-testid="add">Add Grape</button>
+        <button @onclick="RemoveFruit" data-testid="remove">Remove Banana</button>
+    </section>
+    <section>
+        <Popover InteractionMode="InteractionMode.Browser">
+            <PopoverTrigger><span data-testid="popover-trigger">Details</span></PopoverTrigger>
+            <PopoverContent><button data-testid="popover-child">Popover button</button></PopoverContent>
+        </Popover>
+    </section>
+    <section>
+        <DropdownMenu>
+            <DropdownMenuTrigger><span data-testid="legacy-trigger">Legacy</span></DropdownMenuTrigger>
+            <DropdownMenuContent><DropdownMenuItem>Legacy item</DropdownMenuItem></DropdownMenuContent>
+        </DropdownMenu>
+    </section>
+    <DropdownMenu InteractionMode="InteractionMode.Browser">
+        <DropdownMenuTrigger Disabled><span data-testid="disabled-native">Disabled native</span></DropdownMenuTrigger>
+        <DropdownMenuContent><DropdownMenuItem>Never opened native</DropdownMenuItem></DropdownMenuContent>
+    </DropdownMenu>
+    <DropdownMenu InteractionMode="InteractionMode.Browser">
+        <DropdownMenuTrigger AsChild Disabled><Button data-testid="disabled-child">Disabled child</Button></DropdownMenuTrigger>
+        <DropdownMenuContent><DropdownMenuItem>Never opened child</DropdownMenuItem></DropdownMenuContent>
+    </DropdownMenu>
+    <button @onclick="() => renders++" data-testid="render">Render parent (@renders)</button>
+    <button data-testid="outside">Outside</button>
+    <section>
+        <DropdownMenu InteractionMode="InteractionMode.Browser" Open="@commandOpen" OpenChanged="ReportCommandOpen" InteractionRevision="@commandRevision">
+            <DropdownMenuTrigger><span data-testid="command-trigger">Observed menu</span></DropdownMenuTrigger>
+            <DropdownMenuContent><DropdownMenuItem>Observed item</DropdownMenuItem></DropdownMenuContent>
+        </DropdownMenu>
+        <p data-testid="command-open">@commandOpen.ToString().ToLowerInvariant()</p>
+        <button @onclick="OpenCommand" data-testid="open-command">Open by parameter</button>
+        <button @onclick="CloseCommand" data-testid="close-command">Close by parameter</button>
+    </section>
+    <OverlayPortalHost />
+    <ContainerPortalHost />
+</AppProvider>
+
+@code {
+    private bool commandOpen;
+    private long commandRevision;
+    private async Task ReportCommandOpen(bool open) { await Task.Delay(200); commandOpen = open; }
+    private void OpenCommand() { commandOpen = true; commandRevision++; }
+    private void CloseCommand() { commandOpen = false; commandRevision++; }
+    private string? value = "Apple";
+    private int renders;
+    private int actions;
+    private bool reject, slow, disabled;
+    private long revision;
+    private readonly List<string> fruits = ["Apple", "Banana", "Disabled fruit", "Cherry"];
+    private async Task SelectValue(string? proposed)
+    {
+        if (slow) await Task.Delay(1000);
+        if (!reject) value = proposed;
+    }
+    private void AddFruit() => fruits.Add("Grape");
+    private void RemoveFruit() => fruits.Remove("Banana");
+    private void Reset() { value = "Apple"; revision++; }
+    private async Task RunAction() { await Task.Delay(500); actions++; }
+}

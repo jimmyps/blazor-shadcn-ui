@@ -55,6 +55,12 @@
 
     protected override void OnParametersSet()
     {
+        _context.Browser.Sync(MenuContext?.Browser.Mode ?? InteractionMode.Blazor, Open, false, 0);
+        _context.Browser.OpenChanged = OpenChanged.HasDelegate || OnOpenChange.HasDelegate ? async open =>
+        {
+            await OpenChanged.InvokeAsync(open);
+            await OnOpenChange.InvokeAsync(open);
+        } : null;
         if (Open.HasValue && _context.IsOpen != Open.Value)
         {
             _context.IsOpen = Open.Value;

@@ -10,10 +10,10 @@
     Maintains PopoverPrimitive-specific behavior: click-outside, escape key, ARIA attributes.
 *@
 
-<FloatingPortal IsOpen="@Context.IsOpen"
+<FloatingPortal BrowserOptions="@GetBrowserOptions()" BrowserEvents="@browserEvents?.Reference" IsOpen="@Context.IsOpen"
                 AnchorElement="@Context.State.TriggerElement"
                 PortalId="@_portalId"
-                ForceMount="@ForceMount"
+                ForceMount="@(Context?.Browser.Enabled == true || ForceMount)"
                 Side="@Side"
                 Align="@Align"
                 Offset="@Offset"
@@ -145,6 +145,21 @@
     private bool _disposed = false;
     private string _portalId = "";
 
+    private BrowserFloatingEvents? browserEvents;
+    private BrowserFloatingOptions? GetBrowserOptions()
+    {
+        if (Context?.Browser.Enabled != true) return null;
+        return new BrowserFloatingOptions
+        {
+            TriggerId = Context.TriggerId, ContentId = Context.ContentId,
+            Kind = "popover", Open = Context.Browser.Open, OpenVersion = Context.Browser.OpenVersion,
+            NotifyOpen = Context.Browser.OpenChanged != null,
+            CloseOnEscape = CloseOnEscape, CloseOnClickOutside = CloseOnClickOutside,
+            NotifyEscape = OnEscapeKeyDown.HasDelegate, NotifyOutside = OnClickOutside.HasDelegate,
+            NotifyReady = OnContentReady.HasDelegate
+        };
+    }
+
     protected override void OnInitialized()
     {
         if (Context == null)
@@ -155,6 +170,21 @@
         }
 
         _portalId = string.IsNullOrEmpty(PortalId) ? $"popover-portal-{Context.ContentId}" : PortalId;
+
+        if (Context.Browser.Enabled)
+        {
+            browserEvents = new BrowserFloatingEvents
+            {
+                Notify = async (name, open) =>
+                {
+                    if (name == "open") await Context.Browser.ReportOpenAsync(open);
+                    if (name == "escape") await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
+                    if (name == "outside") await OnClickOutside.InvokeAsync();
+                    if (name == "ready") await OnContentReady.InvokeAsync();
+                },
+
+            };
+        }
 
         // Subscribe to context changes
         Context.OnStateChanged += HandleContextStateChanged;
@@ -167,13 +197,14 @@
              tabindex="-1"
              data-autofocus
              @attributes="AdditionalAttributes"
-             data-state="@(Context.IsOpen ? "open" : "closed")">
+             data-state="@(Context.Browser.Enabled ? null : (Context.IsOpen ? "open" : "closed"))">
             @ChildContent
         </div>
     };
 
     private async Task HandleFloatingReady()
     {
+        if (Context?.Browser.Enabled == true) return;
         // Set up click-outside detection
         if (CloseOnClickOutside)
         {
@@ -341,6 +372,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        browserEvents?.Dispose();
         // Set disposed flag first to prevent JSInvokable callbacks during cleanup
         _disposed = true;
 

@@ -4,7 +4,7 @@
     Wraps the Popover primitive with shadcn/ui styling.
 *@
 
-<PopoverPrimitive Open="@Open"
+<PopoverPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Open="@Open"
                                            OpenChanged="@OpenChanged"
                                            DefaultOpen="@DefaultOpen"
                                            OnOpenChange="@OnOpenChange"
@@ -13,6 +13,15 @@
 </PopoverPrimitive>
 
 @code {
+    /// <summary>Uses browser-local floating interactions when set to Browser. Default is Blazor.</summary>
+    [Parameter]
+    public InteractionMode InteractionMode { get; set; }
+
+    /// <summary>Increment to reapply Open and Value, including an unchanged value after a reset.</summary>
+    [Parameter]
+    public long InteractionRevision { get; set; }
+
+
     /// <summary>
     /// The child content to render within the popover.
     /// Should include PopoverTrigger and PopoverContent.

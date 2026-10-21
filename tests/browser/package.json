@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test floating.spec.mjs" },
+  "devDependencies": { "playwright": "^1.56.0", "@floating-ui/dom": "^1.7.4" }
+}

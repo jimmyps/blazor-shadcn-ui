@@ -1,0 +1,203 @@
+@page "/components/browser-interactions"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<PageTitle>Interaction Mode - NeoUI</PageTitle>
+<link rel="stylesheet" href="_content/NeoUI.Demo.Shared/css/browser-interactions.css" />
+
+<div class="space-y-8 max-w-4xl" data-browser-interactions-demo @ref="pageRoot">
+    <DemoPageHeader Title="Interaction Mode"
+                    Description="Keep floating UI responsive with browser-local interactions and asynchronous application callbacks.">
+        <div class="flex flex-wrap gap-2 text-xs text-muted-foreground">
+            <span class="rounded-md border px-2 py-1">Preview</span>
+            <span class="rounded-md border px-2 py-1">Opt-in mode</span>
+            <span class="rounded-md border px-2 py-1">Keyboard accessible</span>
+        </div>
+    </DemoPageHeader>
+    <section class="grid gap-4 sm:grid-cols-3 rounded-lg border bg-card text-card-foreground p-4 [&>div]:space-y-1" aria-label="Live demo activity">
+        <div><span class="block text-xs font-medium text-muted-foreground">LOCAL UI EVENTS</span><strong class="block text-2xl font-semibold" data-local-events></strong><span class="block text-xs text-muted-foreground">Observed directly in this browser</span></div>
+        <div><span class="block text-xs font-medium text-muted-foreground">LAST REVEAL</span><strong class="block text-2xl font-semibold" data-reveal-time></strong><span class="block text-xs text-muted-foreground">Input → positioned floating layer</span></div>
+        <div><span class="block text-xs font-medium text-muted-foreground">APPLICATION CALLBACKS</span><strong class="block text-2xl font-semibold" data-testid="callback-count">@callbackCount</strong><span class="block text-xs text-muted-foreground">@pendingCallbacks pending · @parentRenders parent renders</span></div>
+    </section>
+
+    <DemoSection Title="Dropdown menus" Description="Compare browser-local opening, focus, submenus, and dismissal with the default Blazor interaction mode. On Interactive Server, the default path includes a server round trip.">
+        <DemoBlock>
+        <div class="grid gap-6 lg:grid-cols-2">
+            <article class="space-y-4 min-w-0">
+                <div class="flex flex-wrap items-center justify-between gap-2"><span class="rounded-md border px-2 py-1 text-xs font-medium bg-primary text-primary-foreground">BROWSER MODE</span><span class="text-xs text-muted-foreground">Click → browser → visible</span></div>
+                <h3 class="font-semibold">Ready when you are.</h3><p>Opening, focus, submenus, and dismissal stay local. An application action still reaches C#.</p>
+                <DropdownMenu InteractionMode="InteractionMode.Browser">
+                    <DropdownMenuTrigger AsChild><Button data-testid="browser-menu" >Explore browser menu <LucideIcon Name="chevron-down" Size="16" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-64">
+                        <DropdownMenuLabel>Workspace actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="RunBrowserAction">Save draft <span class="ml-auto pl-3 text-xs text-muted-foreground">async callback</span></DropdownMenuItem>
+                        <DropdownMenuItem><a href="#selection-lab">Go to selection lab</a></DropdownMenuItem>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>Move to workspace</DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem OnClick="MoveToProduct">Product</DropdownMenuItem>
+                                <DropdownMenuItem OnClick="MoveToDesign">Design</DropdownMenuItem>
+                                <DropdownMenuItem Disabled>Archived workspace</DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem Disabled>Delete workspace (disabled)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <p class="text-sm text-muted-foreground min-h-5" data-testid="browser-action">@browserAction</p>
+            </article>
+            <article class="space-y-4 min-w-0">
+                <div class="flex flex-wrap items-center justify-between gap-2"><span class="rounded-md border px-2 py-1 text-xs font-medium">STANDARD BLAZOR</span><span class="text-xs text-muted-foreground">Click → server → render</span></div>
+                <h3 class="font-semibold">The familiar server path.</h3><p>The default mode processes interactions through the active Blazor renderer, including a server round trip here.</p>
+                <DropdownMenu>
+                    <DropdownMenuTrigger AsChild><Button Variant="ButtonVariant.Outline" data-testid="standard-menu">Explore standard menu <LucideIcon Name="chevron-down" Size="16" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-64">
+                        <DropdownMenuLabel>Workspace actions</DropdownMenuLabel><DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="RunStandardAction">Save draft</DropdownMenuItem>
+                        <DropdownMenuItem>Browse workspace</DropdownMenuItem>
+                        <DropdownMenuSub><DropdownMenuSubTrigger>Move to workspace</DropdownMenuSubTrigger><DropdownMenuSubContent><DropdownMenuItem>Product</DropdownMenuItem><DropdownMenuItem>Design</DropdownMenuItem></DropdownMenuSubContent></DropdownMenuSub>
+                        <DropdownMenuSeparator /><DropdownMenuItem Disabled>Delete workspace (disabled)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <p class="text-sm text-muted-foreground min-h-5" data-testid="standard-action">@standardAction</p>
+            </article>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground mt-6 [&>kbd]:rounded [&>kbd]:border [&>kbd]:px-1"><kbd>↑</kbd><kbd>↓</kbd> navigate <span>·</span><kbd>→</kbd> submenu <span>·</span><kbd>Esc</kbd> dismiss <span>·</span> type to find an item</div>
+        </DemoBlock>
+    </DemoSection>
+
+    <div id="selection-lab" class="scroll-mt-24">
+    <DemoSection Title="Select with asynchronous commits" Description="Change the workspace while a callback is pending. Selection updates immediately; older responses cannot replace your latest choice.">
+        <DemoBlock Code="@sampleCode">
+        <div class="grid gap-6 lg:grid-cols-2">
+            <article class="space-y-4 min-w-0">
+                <label class="block text-sm font-medium">Active workspace</label>
+                <Select TValue="string" InteractionMode="InteractionMode.Browser" Value="@selectedWorkspace" ValueChanged="CommitWorkspace" Disabled="@selectDisabled" InteractionRevision="@selectionRevision" Class="w-full" >
+                    <SelectTrigger data-testid="workspace-select"><SelectValue Placeholder="Choose a workspace" /></SelectTrigger>
+                    <SelectContent>
+                        @foreach (var workspace in workspaces)
+                        {
+                            <SelectItem @key="workspace" TValue="string" Value="@workspace" Text="@workspace" Disabled="@(workspace == "Archived")" />
+                        }
+                    </SelectContent>
+                </Select>
+                <div class="flex flex-wrap items-center justify-between gap-2 rounded-md border bg-muted/50 p-3 text-sm"><span>Last accepted by server</span><strong data-testid="accepted-workspace">@selectedWorkspace</strong></div>
+                <div class="flex flex-wrap gap-2">
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="ResetSelection" Disabled="@(pendingCallbacks > 0)" data-testid="reset-selection">Reset selection</Button>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="AddWorkspace" Disabled="@(workspaces.Contains("Research"))" data-testid="add-workspace">Add “Research”</Button>
+                </div>
+                <label class="flex items-center gap-2 text-sm"><input type="checkbox" @bind="selectDisabled" data-testid="disable-select" /> Disable the select through Razor</label>
+            </article>
+            <aside class="space-y-4 min-w-0">
+                <h3 class="font-semibold">Application behavior</h3>
+                <label class="flex justify-between gap-2 text-sm" for="callback-delay">Callback delay <output>@callbackDelay ms</output></label>
+                <input id="callback-delay" data-testid="callback-delay" class="w-full accent-primary" type="range" min="0" max="3000" step="250" @bind="callbackDelay" />
+                <div class="flex justify-between text-xs text-muted-foreground"><span>Immediate</span><span>3 seconds</span></div>
+                <label class="flex items-center gap-2 text-sm"><input type="checkbox" @bind="rejectSelection" data-testid="reject-selection" /> Server rejects selection changes</label>
+                <p class="text-sm text-muted-foreground">Rejection restores the accepted value after the callback. This delay simulates application work, not network latency.</p>
+                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="RenderParent" data-testid="render-parent">Render parent (@parentRenders)</Button>
+                <p class="text-sm text-muted-foreground">Open the select, then trigger a parent render. Its browser state stays intact.</p>
+            </aside>
+        </div>
+        </DemoBlock>
+    </DemoSection>
+    </div>
+
+    <DemoSection Title="Popover and browser events" Description="Open a floating layer and watch its events without adding server callbacks.">
+    <DemoBlock>
+    <div class="grid gap-6 lg:grid-cols-2">
+        <article class="space-y-4 min-w-0">
+            <span class="text-xs font-medium text-muted-foreground">03 / FLOAT WITHOUT WAITING</span><h3 class="font-semibold">Small layer. Local behavior.</h3>
+            <p>This popover opens, positions, takes focus, and dismisses in the browser. These native controls need no application callback.</p>
+            <Popover InteractionMode="InteractionMode.Browser">
+                <PopoverTrigger AsChild><Button Variant="ButtonVariant.Outline" data-testid="browser-popover"><LucideIcon Name="sliders-horizontal" Size="16" /> Display options</Button></PopoverTrigger>
+                <PopoverContent Class="w-72">
+                    <div class="grid gap-3 text-sm [&_label]:flex [&_label]:items-center [&_label]:gap-2 [&_small]:text-muted-foreground"><h3 class="font-semibold">Display options</h3><p>Preferences for this local preview.</p>
+                        <label><input type="checkbox" checked /> Show workspace avatars</label>
+                        <label><input type="checkbox" /> Compact row spacing</label>
+                        <label><input type="checkbox" checked /> Show activity indicators</label>
+                        <small>Click outside or press Escape to close.</small>
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </article>
+        <article class="space-y-4 min-w-0">
+            <div class="flex flex-wrap items-center justify-between gap-2"><div><span class="text-xs font-medium text-muted-foreground">LIVE IN YOUR BROWSER</span><h3 class="font-semibold">Local event stream</h3></div><span class="size-2 rounded-full bg-primary" aria-label="Live"></span></div>
+            <p class="text-sm text-muted-foreground" data-empty-log>Open a browser-mode component to see its events.</p>
+            <ol class="space-y-2 text-xs text-muted-foreground [&>li]:grid [&>li]:grid-cols-[3rem_1fr_auto] [&>li]:gap-2 [&>li]:border-b [&>li]:pb-2 [&_span]:truncate" data-event-log aria-label="Recent browser events"></ol>
+        </article>
+    </div>
+    </DemoBlock>
+    </DemoSection>
+
+    <p class="text-sm text-muted-foreground">Browser mode currently supports action/link menus, submenus, popovers, and selects. Checkbox and radio menu items use the default Blazor mode.</p>
+    <DemoPageNav />
+</div>
+
+@code {
+    private ElementReference pageRoot;
+    private IJSObjectReference? module, controller;
+    private readonly List<string> workspaces = ["Design", "Product", "Engineering", "Growth", "Archived"];
+    private string? selectedWorkspace = "Design";
+    private string browserAction = "Try Save draft to run an application callback.";
+    private string standardAction = "Existing behavior is still the default.";
+    private int callbackDelay = 1500, callbackCount, pendingCallbacks, parentRenders;
+    private long selectionRevision;
+    private bool selectDisabled, rejectSelection;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Demo.Shared/Pages/Components/BrowserInteractionsDemo.razor.js");
+        controller = await module.InvokeAsync<IJSObjectReference>("initialize", pageRoot);
+    }
+
+    private async Task CommitWorkspace(string? proposed)
+    {
+        var shouldReject = rejectSelection;
+        await ApplicationWork();
+        if (!shouldReject && workspaces.Contains(proposed ?? "") && proposed != "Archived") selectedWorkspace = proposed;
+    }
+    private async Task ApplicationWork()
+    {
+        var delay = callbackDelay;
+        callbackCount++;
+        pendingCallbacks++;
+        StateHasChanged();
+        try { await Task.Delay(delay); }
+        finally { pendingCallbacks--; }
+    }
+    private async Task RunBrowserAction() { browserAction = "Saving draft… the menu has already closed."; await ApplicationWork(); browserAction = "Draft saved. The UI never waited for this callback."; }
+    private async Task RunStandardAction() { standardAction = "Saving draft…"; await ApplicationWork(); standardAction = "Draft saved through the standard path."; }
+    private async Task MoveToProduct() { await ApplicationWork(); browserAction = "Draft moved to Product."; }
+    private async Task MoveToDesign() { await ApplicationWork(); browserAction = "Draft moved to Design."; }
+    private void ResetSelection() { selectedWorkspace = "Design"; selectionRevision++; }
+    private void AddWorkspace() { if (!workspaces.Contains("Research")) workspaces.Add("Research"); }
+    private void RenderParent() => parentRenders++;
+
+    private const string sampleCode = """
+        <Select TValue="string"
+                InteractionMode="InteractionMode.Browser"
+                @bind-Value="workspace">
+            <SelectTrigger><SelectValue Placeholder="Workspace" /></SelectTrigger>
+            <SelectContent>
+                <SelectItem Value="@("design")" Text="Design" />
+                <SelectItem Value="@("product")" Text="Product" />
+            </SelectContent>
+        </Select>
+        """;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (controller != null)
+        {
+            try { await controller.InvokeVoidAsync("dispose"); await controller.DisposeAsync(); }
+            catch (JSDisconnectedException) { }
+        }
+        if (module != null)
+        {
+            try { await module.DisposeAsync(); } catch (JSDisconnectedException) { }
+        }
+    }
+}

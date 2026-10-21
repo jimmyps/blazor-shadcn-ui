@@ -10,11 +10,11 @@
     Maintains DropdownMenuPrimitive-specific behavior: click-outside, keyboard navigation, focus management.
 *@
 
-<FloatingPortal IsOpen="@Context.IsOpen"
+<FloatingPortal BrowserOptions="@GetBrowserOptions()" BrowserEvents="@browserEvents?.Reference" IsOpen="@Context.IsOpen"
                 AnchorElement="@Context.State.TriggerElement"
                 PortalId="@_portalId"
                 ParentPortalId="@ParentPortalId"
-                ForceMount="@ForceMount"
+                ForceMount="@(Context?.Browser.Enabled == true || ForceMount)"
                 Side="@Side"
                 Align="@Align"
                 Offset="@Offset"
@@ -154,6 +154,21 @@
     // Track menu items for keyboard navigation
     private List<IDropdownMenuItem> _menuItems = new();
 
+    private BrowserFloatingEvents? browserEvents;
+    private BrowserFloatingOptions? GetBrowserOptions()
+    {
+        if (Context?.Browser.Enabled != true) return null;
+        return new BrowserFloatingOptions
+        {
+            TriggerId = Context.TriggerId, ContentId = Context.ContentId,
+            Kind = "menu", Open = Context.Browser.Open, OpenVersion = Context.Browser.OpenVersion,
+            NotifyOpen = Context.Browser.OpenChanged != null,
+            CloseOnEscape = CloseOnEscape, CloseOnClickOutside = CloseOnClickOutside,
+            NotifyEscape = OnEscapeKeyDown.HasDelegate, NotifyOutside = OnClickOutside.HasDelegate,
+            Loop = Loop, Rtl = Context.BrowserRtl
+        };
+    }
+
     protected override void OnInitialized()
     {
         if (Context == null)
@@ -165,6 +180,20 @@
 
         _portalId = $"dropdown-portal-{Context.ContentId}";
 
+        if (Context.Browser.Enabled)
+        {
+            browserEvents = new BrowserFloatingEvents
+            {
+                Notify = async (name, open) =>
+                {
+                    if (name == "open") await Context.Browser.ReportOpenAsync(open);
+                    if (name == "escape") await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
+                    if (name == "outside") await OnClickOutside.InvokeAsync();
+                },
+
+            };
+        }
+
         // Subscribe to context changes
         Context.OnStateChanged += HandleContextStateChanged;
     }
@@ -175,7 +204,7 @@
              id="@Context.ContentId"
              role="menu"
              tabindex="-1"
-             data-state="@(Context.IsOpen ? "open" : "closed")"
+             data-state="@(Context.Browser.Enabled ? null : (Context.IsOpen ? "open" : "closed"))"
              data-autofocus
              @attributes="GetAttributesWithoutStyle()">
             <CascadingValue Value="Context" IsFixed="false">
@@ -188,6 +217,7 @@
 
     private async Task HandleFloatingReady()
     {
+        if (Context?.Browser.Enabled == true) return;
         // Set up click-outside detection
         if (CloseOnClickOutside)
         {
@@ -392,6 +422,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        browserEvents?.Dispose();
         // Set disposed flag first to prevent JSInvokable callbacks during cleanup
         _disposed = true;
 
@@ -399,17 +430,17 @@
 
         if (_clickOutsideModule != null)
         {
-            await _clickOutsideModule.DisposeAsync();
+            try { await _clickOutsideModule.DisposeAsync(); } catch (JSDisconnectedException) { }
         }
 
         if (_menuKeyboardModule != null)
         {
-            await _menuKeyboardModule.DisposeAsync();
+            try { await _menuKeyboardModule.DisposeAsync(); } catch (JSDisconnectedException) { }
         }
 
         if (_matchWidthModule != null)
         {
-            await _matchWidthModule.DisposeAsync();
+            try { await _matchWidthModule.DisposeAsync(); } catch (JSDisconnectedException) { }
         }
 
         _dotNetRef?.Dispose();

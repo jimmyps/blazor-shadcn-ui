@@ -51,8 +51,18 @@
     [Parameter]
     public bool Modal { get; set; } = true;
 
+    /// <summary>Uses browser-local floating interactions when set to Browser. Default is Blazor.</summary>
+    [Parameter]
+    public InteractionMode InteractionMode { get; set; }
+
+    /// <summary>Increment to reapply Open and Value, including an unchanged value after a reset.</summary>
+    [Parameter]
+    public long InteractionRevision { get; set; }
+
     protected override void OnInitialized()
     {
+        _context.Browser.Sync(InteractionMode, Open, DefaultOpen, InteractionRevision);
+
         // Initialize controllable state
         _state = new UseControllableState<bool>(DefaultOpen)
         {
@@ -70,6 +80,12 @@
 
     protected override void OnParametersSet()
     {
+        _context.Browser.OpenChanged = OpenChanged.HasDelegate || OnOpenChange.HasDelegate ? async open =>
+        {
+            await OpenChanged.InvokeAsync(open);
+            await OnOpenChange.InvokeAsync(open);
+        } : null;
+        _context.Browser.Sync(InteractionMode, Open, DefaultOpen, InteractionRevision);
         // Update controlled value if it changed
         if (_state.IsControlled && Open.HasValue)
         {
@@ -80,6 +96,7 @@
 
     private void HandleContextStateChanged()
     {
+        if (_context.Browser.Enabled) return;
         // When context state changes (e.g., from PopoverTriggerPrimitive or click outside),
         // update the controllable state
         var newOpenState = _context.State.IsOpen;
