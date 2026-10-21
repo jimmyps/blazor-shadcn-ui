@@ -3,7 +3,7 @@
 @using NeoUI.Icons.Lucide
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerClass">
-        <Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
+        <Popover InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
             <PopoverTrigger role="combobox"
                            aria-expanded="@GetIsOpen().ToString().ToLower()"
                            aria-controls="@($"{Id}-listbox")"

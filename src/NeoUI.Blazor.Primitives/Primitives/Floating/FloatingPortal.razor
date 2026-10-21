@@ -477,13 +477,17 @@
         // Only reset to false on full unmount (MountPortalAsync or CleanupAsync).
     }
 
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+
     private RenderFragment RenderPortalContent() => __builder =>
     {
         <div @ref="_portalContentRef"
              @attributes="GetAttributesWithoutStyle()"
              data-portal-content="true"
              style="@GetMergedStyle()">
-            @ChildContent
+            <CascadingValue Value="@InteractionPolicy" IsFixed="true">
+                @ChildContent
+            </CascadingValue>
         </div>
     };
 

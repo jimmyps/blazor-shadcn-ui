@@ -1,4 +1,11 @@
+@inject NavigationManager Navigation
 <AppProvider>
+    @if (Navigation.Uri.Contains("cost="))
+    {
+        <MountCostCases />
+    }
+    else
+    {
     <h1>Browser floating interaction regression cases</h1>
     <section>
         <DropdownMenu InteractionMode="InteractionMode.Browser">
@@ -44,7 +51,7 @@
         </Popover>
     </section>
     <section>
-        <DropdownMenu>
+        <DropdownMenu InteractionMode="InteractionMode.Blazor">
             <DropdownMenuTrigger><span data-testid="legacy-trigger">Legacy</span></DropdownMenuTrigger>
             <DropdownMenuContent><DropdownMenuItem>Legacy item</DropdownMenuItem></DropdownMenuContent>
         </DropdownMenu>
@@ -68,6 +75,11 @@
         <button @onclick="OpenCommand" data-testid="open-command">Open by parameter</button>
         <button @onclick="CloseCommand" data-testid="close-command">Close by parameter</button>
     </section>
+    @if (Navigation.Uri.Contains("adoption=true"))
+    {
+        <AdoptionCases />
+    }
+    }
     <OverlayPortalHost />
     <ContainerPortalHost />
 </AppProvider>

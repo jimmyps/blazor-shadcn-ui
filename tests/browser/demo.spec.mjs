@@ -178,12 +178,59 @@ test('Interaction Mode is discoverable in navigation, indexes, and spotlight', a
         await page.getByRole('button', { name: /Search components/ }).first().click();
         const search = page.getByPlaceholder('Type a command or search...');
         await search.waitFor({ state: 'visible' });
+        const session = await page.context().newCDPSession(page);
+        await eventually(async () => {
+            const inputId = await search.getAttribute('id');
+            const { result } = await session.send('Runtime.evaluate', {
+                expression: 'document.getElementById(' + JSON.stringify(inputId) + ')'
+            });
+            const { listeners } = await session.send('DOMDebugger.getEventListeners', { objectId: result.objectId });
+            assert.ok(listeners.some(listener => listener.type === 'input'));
+        });
+        await session.detach();
         for (const query of ['Interaction Mode', 'browser-local']) {
-            await search.fill(query);
-            await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).waitFor({ state: 'visible' });
+            // Input installs its debounced listener asynchronously after the dialog mounts.
+            // Discovery tests wait for that listener rather than testing first-keystroke hydration.
+            await eventually(async () => {
+                await search.fill(query);
+                await search.dispatchEvent('input');
+                await pause(400);
+                assert.equal(await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).isVisible(), true);
+            });
         }
         await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).click();
         await page.getByRole('heading', { name: 'Interaction Mode', exact: true }).waitFor();
         await search.waitFor({ state: 'hidden' });
+    } finally { await browser.close(); }
+});
+
+test('filter menus reconcile async choices and a browser theme picker retains live Blazor actions', async () => {
+    const browser = await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) {
+        await page.route(origin + '/**', route => route.continue({ headers: {
+            ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true'
+        } }));
+    }
+    try {
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => document.querySelector('[data-local-events]')?.textContent === '0');
+        await page.getByTestId('demo-filters').click();
+        const unread = page.getByRole('menuitemcheckbox', { name: 'Unread only', exact: true });
+        await unread.click();
+        assert.equal(await unread.getAttribute('aria-checked'), 'true');
+        assert.match(await page.getByTestId('demo-accepted-filters').textContent(), /unread False/);
+        await eventually(async () => assert.match(await page.getByTestId('demo-accepted-filters').textContent(), /unread True/));
+        assert.equal(await page.getByTestId('demo-filters').getAttribute('aria-expanded'), 'true');
+        await page.keyboard.press('Escape');
+        const picker = page.getByTestId('browser-theme-picker').getByRole('button').first();
+        await picker.click();
+        const popup = page.locator(`[id="${await picker.getAttribute('aria-controls')}"]`);
+        await popup.waitFor({ state: 'visible' });
+        assert.notEqual(await popup.getAttribute('data-neo-browser-content'), null);
+        await popup.getByRole('button', { name: 'Slate', exact: true }).click();
+        await eventually(async () => assert.equal(await page.locator('html').evaluate(e => e.classList.contains('base-slate')), true));
+        assert.equal(await popup.isVisible(), true);
     } finally { await browser.close(); }
 });

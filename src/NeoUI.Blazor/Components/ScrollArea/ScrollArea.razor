@@ -110,14 +110,20 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    private readonly SemaphoreSlim lifecycleGate = new(1, 1);
+    private bool disposed;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            await lifecycleGate.WaitAsync();
             try
             {
+                if (disposed) return;
                 _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
                     "import", "./_content/NeoUI.Blazor/js/scroll-area.js");
+                if (disposed) return;
 
                 _scrollAreaInstance = await _module.InvokeAsync<IJSObjectReference>(
                     "initialize",
@@ -134,6 +140,7 @@
                 // Log when JS runtime is not available (e.g., during server-side prerendering)
                 Logger.LogDebug(ex, "ScrollArea: JS runtime not available during initialization (likely prerendering).");
             }
+            finally { lifecycleGate.Release(); }
         }
     }
 
@@ -176,6 +183,8 @@
 
     public async ValueTask DisposeAsync()
     {
+        disposed = true;
+        await lifecycleGate.WaitAsync();
         try
         {
             if (_module != null && _scrollAreaInstance != null)
@@ -201,5 +210,6 @@
         {
             // Silently handle - component already disposed or JS error
         }
+        finally { lifecycleGate.Release(); }
     }
 }

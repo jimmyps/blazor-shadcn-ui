@@ -39,6 +39,11 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Combobox<TItem> : ComponentBase
 {
+    /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state, including unchanged reset values.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// Gets or sets the collection of items to display in the combobox.
     /// </summary>
@@ -296,6 +301,7 @@ public partial class Combobox<TItem> : ComponentBase
         {
             // Small delay to let browser finish processing DOM changes
             await Task.Delay(50);
+            if (!_isOpen) return;
             await _commandInputRef.FocusAsync();
         }
         catch

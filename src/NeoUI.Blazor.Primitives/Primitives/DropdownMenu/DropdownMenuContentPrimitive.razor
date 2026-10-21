@@ -184,6 +184,8 @@
         {
             browserEvents = new BrowserFloatingEvents
             {
+                CommitMenu = (key, value) => Context.BrowserSelections.TryGetValue(key, out var selection)
+                    ? selection.CommitAsync(value) : Task.FromResult<string?>(null),
                 Notify = async (name, open) =>
                 {
                     if (name == "open") await Context.Browser.ReportOpenAsync(open);

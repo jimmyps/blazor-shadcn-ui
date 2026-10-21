@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
 const url = process.env.NEOUI_TEST_URL ?? 'http://localhost:5198';
-let browser, page, sent, errors;
+let browser, page, sent, errors, lastFrameAt;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function eventually(check, timeout = 5000) {
     const started = Date.now();
@@ -21,11 +21,11 @@ before(async () => {
 after(async () => { await browser?.close(); });
 beforeEach(async () => {
     page = await browser.newPage();
-    sent = []; errors = [];
+    sent = []; errors = []; lastFrameAt = Date.now();
     page.setDefaultTimeout(10000);
     page.on('pageerror', error => errors.push(String(error)));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
-    page.on('websocket', socket => socket.on('framesent', frame => sent.push(frame.payload)));
+    page.on('websocket', socket => socket.on('framesent', frame => { sent.push(frame.payload); lastFrameAt = Date.now(); }));
     // Preload the same positioning engine locally; regression tests don't depend on a CDN.
     const core = await readFile(new URL('./node_modules/@floating-ui/core/dist/floating-ui.core.umd.js', import.meta.url), 'utf8');
     const dom = await readFile(new URL('./node_modules/@floating-ui/dom/dist/floating-ui.dom.umd.js', import.meta.url), 'utf8');
@@ -33,7 +33,8 @@ beforeEach(async () => {
     await page.goto(url);
     await page.waitForFunction(() => document.querySelectorAll('[data-neo-browser-content]').length >= 7);
     await eventually(async () => assert.equal(await selectedText(), 'Apple'));
-    await sleep(200);
+    // Measure interaction traffic after setup interop has settled, including on a busy host.
+    await eventually(async () => assert.ok(Date.now() - lastFrameAt >= 500), 15000);
     sent.length = 0;
 });
 afterEach(async () => {

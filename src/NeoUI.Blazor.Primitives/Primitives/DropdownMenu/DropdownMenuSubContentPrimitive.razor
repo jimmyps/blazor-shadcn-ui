@@ -103,6 +103,8 @@ private readonly List<IDropdownMenuItem> _menuItems = new();
         if (MenuContext?.Browser.Enabled == true)
             browserEvents = new BrowserFloatingEvents
             {
+                CommitMenu = (key, value) => MenuContext.BrowserSelections.TryGetValue(key, out var selection)
+                    ? selection.CommitAsync(value) : Task.FromResult<string?>(null),
                 Notify = (name, open) => name == "open" ? SubContext.Browser.ReportOpenAsync(open) : Task.CompletedTask
             };
 

@@ -3,12 +3,11 @@
 <DropdownMenuCheckboxItemPrimitive class="@CssClass"
                                                            Disabled="@Disabled"
                                                            Checked="@Checked"
-                                                           CheckedChanged="@OnCheckedChanged"
+                                                           CheckedChanged="@HandleCheckedChanged"
+                                                           InteractionRevision="@InteractionRevision"
                                                            OnCheckedChange="@OnCheckedChange"
                                                            CloseOnSelect="@CloseOnSelect">
-    <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        @if (Checked)
-        {
+    <span data-neo-selection-indicator style="@(Checked ? null : "display:none")" class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="16"
                  height="16"
@@ -21,7 +20,6 @@
                  class="h-4 w-4">
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-        }
     </span>
     <span>@ChildContent</span>
 </DropdownMenuCheckboxItemPrimitive>
@@ -63,12 +61,12 @@
         Class
     );
 
-    private void OnCheckedChanged(bool isChecked)
+    private async Task HandleCheckedChanged(bool value)
     {
-        if (CheckedChanged.HasDelegate)
-            CheckedChanged.InvokeAsync(isChecked);
-
-        if (Checked != isChecked)
-            Checked = isChecked;
+        if (CheckedChanged.HasDelegate) await CheckedChanged.InvokeAsync(value);
+        else Checked = value;
     }
+
+    /// <summary>Increment to reset the checked value authoritatively.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
 }

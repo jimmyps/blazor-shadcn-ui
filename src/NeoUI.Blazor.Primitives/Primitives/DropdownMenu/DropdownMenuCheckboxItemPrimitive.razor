@@ -3,13 +3,19 @@
 @implements IDisposable
 
 <div @ref="_itemRef"
+     id="@browserSelection.Id"
+     data-neo-check-key="@(Context.Browser.Enabled ? browserSelection.Id : null)"
+     data-neo-check-value="true"
+     data-neo-check-accepted="@(Context.Browser.Enabled ? browserSelection.Value : null)"
+     data-neo-check-version="@(Context.Browser.Enabled ? browserSelection.Version : null)"
+     data-neo-close-on-select="@CloseOnSelect.ToString().ToLowerInvariant()"
      role="menuitemcheckbox"
      tabindex="-1"
      aria-checked="@Checked.ToString().ToLower()"
      aria-disabled="@Disabled.ToString().ToLower()"
      data-disabled="@(Disabled ? "true" : null)"
      data-state="@(Checked ? "checked" : "unchecked")"
-     @onclick="HandleClick"
+     @onclick="@(Context.Browser.Enabled ? default : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
      @attributes="AdditionalAttributes">
     @ChildContent
 </div>
@@ -67,10 +73,17 @@
     [Parameter]
     public bool CloseOnSelect { get; set; } = false;
 
+    private readonly BrowserMenuSelection browserSelection = new();
+    /// <summary>Increment to authoritatively reset the checked value, even if unchanged.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Context.Browser.Enabled) browserSelection.Sync(Checked.ToString().ToLowerInvariant(), Context.Browser.ValueVersion, InteractionRevision);
+    }
+
     protected override void OnInitialized()
     {
-        if (Context?.Browser.Enabled == true)
-            throw new InvalidOperationException("Browser interaction mode currently supports action/link items and submenus. Keep check/radio menus in Blazor mode.");
         if (Context == null)
         {
             throw new InvalidOperationException(
@@ -78,6 +91,19 @@
                 "Ensure DropdownMenuCheckboxItemPrimitive is a child of a DropdownMenuPrimitive component.");
         }
 
+        if (Context.Browser.Enabled)
+        {
+            browserSelection.Commit = async proposed =>
+            {
+                if (Disabled) return browserSelection.Value;
+                var value = proposed == "true";
+                if (CheckedChanged.HasDelegate) await CheckedChanged.InvokeAsync(value);
+                else Checked = value;
+                await OnCheckedChange.InvokeAsync(value);
+                return Checked.ToString().ToLowerInvariant();
+            };
+            Context.BrowserSelections.Add(browserSelection.Id, browserSelection);
+        }
         // Register this item with the content for keyboard navigation
         ContentContext?.RegisterMenuItem(this);
     }
@@ -124,6 +150,7 @@
 
     public void Dispose()
     {
+        Context?.BrowserSelections.Remove(browserSelection.Id);
         // Unregister this item when disposed
         ContentContext?.UnregisterMenuItem(this);
     }

@@ -4,10 +4,8 @@
 const SCROLL_THRESHOLD = 1;
 
 export function initialize(scrollAreaElement, options) {
-  if (!scrollAreaElement) {
-    console.error('ScrollArea: Element reference is null');
-    return null;
-  }
+  // A tab/portal can be removed while the initialization interop is in flight.
+  if (!scrollAreaElement?.isConnected) return null;
 
   const viewport = scrollAreaElement.querySelector('[data-scroll-viewport]');
   if (!viewport) {

@@ -104,6 +104,44 @@
     </DemoSection>
     </div>
 
+    <DemoSection Title="Checkbox and radio menus" Description="Filter feedback stays local while application callbacks run. Use the delay and rejection settings above to distinguish pending choices from accepted values.">
+        <DemoBlock Code="@filterCode">
+            <div class="space-y-4">
+                <DropdownMenu InteractionMode="InteractionMode.Browser" InteractionRevision="@filterRevision">
+                    <DropdownMenuTrigger AsChild><Button Variant="ButtonVariant.Outline" data-testid="demo-filters">Inbox filters <LucideIcon Name="chevron-down" Size="16" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-64">
+                        <DropdownMenuLabel>Filters (keep open)</DropdownMenuLabel>
+                        <DropdownMenuCheckboxItem Checked="@unreadOnly" CheckedChanged="CommitUnread">Unread only</DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Checked="@mentionsOnly" CheckedChanged="CommitMentions">Mentions only</DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Disabled>Assigned team (unavailable)</DropdownMenuCheckboxItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                        <DropdownMenuRadioGroup TValue="string" Value="@notificationLevel" ValueChanged="CommitNotifications">
+                            <DropdownMenuRadioItem TValue="string" Value="@("all")" CloseOnSelect="false">All notifications</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem TValue="string" Value="@("important")" CloseOnSelect="false">Important only</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <p class="text-sm text-muted-foreground" data-testid="demo-accepted-filters">Accepted: unread @unreadOnly, mentions @mentionsOnly, notifications @notificationLevel.</p>
+                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="ResetFilters">Reset filters</Button>
+                <p class="text-sm text-muted-foreground">A visible checkmark is optimistic feedback. Pending items expose data-neo-pending; the accepted summary changes only after the callback.</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Adopt a policy with exceptions" Description="Explicit component setting → nearest scoped override → application default → library Blazor default.">
+        <DemoBlock Code="@policyCode">
+            <InteractionModeProvider Mode="InteractionMode.Browser">
+                <div class="space-y-3" data-testid="browser-theme-picker">
+                    <h3 class="font-semibold">Live Blazor content inside a browser popover</h3>
+                    <p class="text-sm text-muted-foreground">This theme picker inherits Browser mode. Its buttons still execute the existing Blazor theme handlers.</p>
+                    <ThemeSwitcher ShowStyles />
+                </div>
+            </InteractionModeProvider>
+        </DemoBlock>
+        <p class="text-sm text-muted-foreground">DatePicker, Combobox, and MultiSelect inherit this policy too. Their floating shells become local; search, calendar actions, and selection remain Blazor interactions. Large lists and repeated row menus may be better kept in Blazor mode with mount-on-demand content.</p>
+    </DemoSection>
+
     <DemoSection Title="Popover and browser events" Description="Open a floating layer and watch its events without adding server callbacks.">
     <DemoBlock>
     <div class="grid gap-6 lg:grid-cols-2">
@@ -131,7 +169,7 @@
     </DemoBlock>
     </DemoSection>
 
-    <p class="text-sm text-muted-foreground">Browser mode currently supports action/link menus, submenus, popovers, and selects. Checkbox and radio menu items use the default Blazor mode.</p>
+    <p class="text-sm text-muted-foreground">Browser mode supports action/link menus, checkbox and radio items, submenus, popovers, and selects. Local feedback does not confirm server acceptance; circuit interruptions can leave requests uncertain.</p>
     <DemoPageNav />
 </div>
 
@@ -175,6 +213,49 @@
     private void ResetSelection() { selectedWorkspace = "Design"; selectionRevision++; }
     private void AddWorkspace() { if (!workspaces.Contains("Research")) workspaces.Add("Research"); }
     private void RenderParent() => parentRenders++;
+
+    private bool unreadOnly, mentionsOnly;
+    private string? notificationLevel = "all";
+    private long filterRevision;
+    private async Task CommitFilter(Action accept)
+    {
+        var revision = filterRevision;
+        var reject = rejectSelection;
+        await ApplicationWork();
+        if (!reject && filterRevision == revision) accept();
+    }
+    private Task CommitUnread(bool value) => CommitFilter(() => unreadOnly = value);
+    private Task CommitMentions(bool value) => CommitFilter(() => mentionsOnly = value);
+    private Task CommitNotifications(string? value) => CommitFilter(() => notificationLevel = value);
+    private void ResetFilters() { unreadOnly = mentionsOnly = false; notificationLevel = "all"; filterRevision++; }
+
+    private const string policyCode = """
+        // Program.cs: opt in application-wide.
+        builder.Services.ConfigureNeoUIInteractions(options =>
+            options.DefaultMode = InteractionMode.Browser);
+
+        // A scope overrides the application; an explicit setting overrides the scope.
+        <InteractionModeProvider Mode="InteractionMode.Browser">
+            <ThemeSwitcher ShowStyles />
+            <Select TValue="string" InteractionMode="InteractionMode.Blazor">
+                <!-- Large list: retain a targeted exception. -->
+                <SelectContent ForceMount="false">...</SelectContent>
+            </Select>
+        </InteractionModeProvider>
+        """;
+    private const string filterCode = """
+        <DropdownMenu InteractionMode="InteractionMode.Browser"
+                      InteractionRevision="@revision">
+            <DropdownMenuTrigger AsChild><Button>Filters</Button></DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuCheckboxItem Checked="@unread"
+                                          CheckedChanged="CommitUnread"
+                                          CloseOnSelect="false">Unread only</DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        // CommitUnread can await work, then assign unread to accept; leave it unchanged to reject.
+        // Increment revision to apply a reset and invalidate stale browser acknowledgements.
+        """;
 
     private const string sampleCode = """
         <Select TValue="string"

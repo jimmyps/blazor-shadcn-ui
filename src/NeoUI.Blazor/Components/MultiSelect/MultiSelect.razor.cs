@@ -14,6 +14,11 @@ namespace NeoUI.Blazor;
 /// <typeparam name="TItem">The type of items in the multiselect list.</typeparam>
 public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 {
+    /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state, including unchanged reset values.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// Gets or sets the JavaScript runtime for interop operations.
     /// </summary>
@@ -542,6 +547,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         {
             // Small delay to let browser finish processing DOM changes
             await Task.Delay(50);
+            if (!_isOpen) return;
             await _searchInputRef.FocusAsync();
         }
         catch
@@ -553,9 +559,9 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles search input changes.
     /// </summary>
-    private async Task HandleSearchInput(ChangeEventArgs args)
+    private async Task HandleSearchInput(string? value)
     {
-        _searchQuery = args.Value?.ToString() ?? string.Empty;
+        _searchQuery = value ?? string.Empty;
         if (SearchQueryChanged.HasDelegate)
         {
             await SearchQueryChanged.InvokeAsync(_searchQuery);
@@ -851,12 +857,15 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         _dotNetRef = null;
     }
 
+    private long _lastInteractionRevision;
+    private NeoUI.Blazor.Primitives.InteractionMode? _lastInteractionMode;
+
     /// <summary>
-    /// Determines whether the component should re-render based on tracked state changes.
-    /// This optimization reduces unnecessary render cycles.
+    /// Determines whether tracked state or interaction commands require another render.
     /// </summary>
     protected override bool ShouldRender()
     {
+        var interactionChanged = _lastInteractionRevision != InteractionRevision || _lastInteractionMode != InteractionMode;
         var itemsChanged = !ReferenceEquals(_lastItems, Items);
         var valuesChanged = !ReferenceEquals(_lastValues, Values);
         var openChanged = _lastIsOpen != _isOpen;
@@ -864,8 +873,10 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         var disabledChanged = _lastDisabled != Disabled;
         var loadingChanged = _lastIsLoading != IsLoading;
 
-        if (itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged || loadingChanged)
+        if (interactionChanged || itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged || loadingChanged)
         {
+            _lastInteractionRevision = InteractionRevision;
+            _lastInteractionMode = InteractionMode;
             _lastItems = Items;
             _lastValues = Values;
             _lastIsOpen = _isOpen;

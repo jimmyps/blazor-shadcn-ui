@@ -7,9 +7,7 @@
                                                         Disabled="@Disabled"
                                                         Value="@Value"
                                                         CloseOnSelect="@CloseOnSelect">
-    <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        @if (IsSelectedInternal)
-        {
+    <span data-neo-selection-indicator style="@(IsSelectedInternal ? null : "display:none")" class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="8"
                  height="8"
@@ -17,7 +15,6 @@
                  fill="currentColor">
                 <circle cx="4" cy="4" r="4" />
             </svg>
-        }
     </span>
     <span>@ChildContent</span>
 </DropdownMenuRadioItemPrimitive>

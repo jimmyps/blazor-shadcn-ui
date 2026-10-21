@@ -30,6 +30,7 @@ public class DropdownMenuState
 /// </summary>
 public class DropdownMenuContext : PrimitiveContextWithEvents<DropdownMenuState>
 {
+    internal Dictionary<string, BrowserMenuSelection> BrowserSelections { get; } = new();
     internal bool BrowserRtl { get; set; }
     internal BrowserFloatingState Browser { get; } = new();
 

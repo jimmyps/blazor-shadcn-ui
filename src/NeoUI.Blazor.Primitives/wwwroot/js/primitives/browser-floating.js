@@ -176,6 +176,79 @@ export function createController(floating, initialOptions, initialPosition, brid
             emit('error', { operation: 'selection', message: String(error) });
         });
     };
+    // Each checkbox/radio group has its own queue and reset epoch. Razor owns
+    // authoritative metadata; JS owns aria-checked, data-state, and indicator display.
+    const menuSelections = new Map();
+    const checkItems = () => [...content.querySelectorAll('[data-neo-check-key]')]
+        .filter(item => item.closest('[data-neo-browser-content]') === content);
+    const paintMenuSelection = (key, state) => {
+        for (const item of checkItems().filter(item => item.dataset.neoCheckKey === key)) {
+            const checked = item.getAttribute('role') === 'menuitemcheckbox'
+                ? state.value === 'true' : state.value === item.dataset.neoCheckValue;
+            const aria = String(checked), presentation = checked ? 'checked' : 'unchecked';
+            if (item.getAttribute('aria-checked') !== aria) item.setAttribute('aria-checked', aria);
+            if (item.dataset.state !== presentation) item.dataset.state = presentation;
+            item.toggleAttribute('data-neo-pending', state.pending > 0);
+            for (const indicator of item.querySelectorAll('[data-neo-selection-indicator]'))
+                indicator.style.display = checked ? '' : 'none';
+        }
+    };
+    const syncMenuSelections = () => {
+        const current = checkItems();
+        const keys = new Set(current.map(item => item.dataset.neoCheckKey));
+        for (const [key, state] of menuSelections) if (!keys.has(key)) {
+            state.epoch++;
+            menuSelections.delete(key);
+        }
+        for (const item of current) {
+            const key = item.dataset.neoCheckKey, version = item.dataset.neoCheckVersion;
+            let state = menuSelections.get(key);
+            if (!state) {
+                state = { version, value: item.dataset.neoCheckAccepted ?? null,
+                    accepted: item.dataset.neoCheckAccepted ?? null, sequence: 0, epoch: 0, pending: 0, queue: Promise.resolve() };
+                menuSelections.set(key, state);
+            } else if (state.version !== version) {
+                state.version = version;
+                state.epoch++;
+                state.value = state.accepted = item.dataset.neoCheckAccepted ?? null;
+                state.pending = 0;
+            }
+            paintMenuSelection(key, state);
+        }
+    };
+    const selectMenuItem = item => {
+        syncMenuSelections();
+        const key = item.dataset.neoCheckKey, state = menuSelections.get(key);
+        const proposed = item.getAttribute('role') === 'menuitemcheckbox'
+            ? String(state.value !== 'true') : item.dataset.neoCheckValue;
+        const sequence = ++state.sequence, epoch = state.epoch;
+        state.value = proposed;
+        state.pending++;
+        paintMenuSelection(key, state);
+        if (item.dataset.neoCloseOnSelect !== 'false') {
+            let root = controller;
+            while (root.parent()?.options.kind === 'menu' || root.parent()?.options.kind === 'submenu') root = root.parent();
+            root.close(true);
+        }
+        emit('valuechange', { key, value: proposed, sequence, pending: true });
+        state.queue = state.queue.then(async () => {
+            if (disposed || state.epoch !== epoch) return;
+            const accepted = bridge ? await bridge.invokeMethodAsync('CommitMenuAsync', key, proposed) : proposed;
+            if (disposed || state.epoch !== epoch) return;
+            state.accepted = accepted;
+            state.pending--;
+            if (sequence === state.sequence) state.value = accepted;
+            paintMenuSelection(key, state);
+            emit('commit', { key, value: proposed, accepted, sequence, pending: state.pending > 0 });
+        }).catch(error => {
+            if (!disposed && state.epoch === epoch) {
+                state.pending--;
+                if (sequence === state.sequence) state.value = state.accepted;
+                paintMenuSelection(key, state);
+            }
+            emit('error', { operation: 'menu-selection', key, message: String(error) });
+        });
+    };
     const stop = event => { event.preventDefault(); event.stopImmediatePropagation(); };
     const click = event => {
         const target = event.target;
@@ -184,13 +257,14 @@ export function createController(floating, initialOptions, initialPosition, brid
             if (!disabled(trigger())) opened ? close() : void open();
             return;
         }
-        if (!opened || target.closest('[data-neo-browser-content]') !== content) return;
+        if (!opened || options.kind === 'popover' || target.closest('[data-neo-browser-content]') !== content) return;
         const item = target.closest(itemSelector);
         if (!item) return;
         if (disabled(item)) { stop(event); return; }
         const submenu = [...controllers.values()].find(other => other.options.kind === 'submenu' && other.trigger() === item);
         if (submenu) { stop(event); void submenu.open(); return; }
         if (options.kind === 'select') { stop(event); select(item); return; }
+        if (item.dataset.neoCheckKey) { stop(event); selectMenuItem(item); return; }
         // Keep action clicks/native links intact, but dismiss before their server handler runs.
         if (item.dataset.neoCloseOnSelect !== 'false') {
             let root = controller;
@@ -217,7 +291,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (event.key === 'Escape' && options.closeOnEscape) {
             stop(event); close(); notify('escape', false); return;
         }
-        if (event.key === 'Tab') { close(true); return; }
+        if (event.key === 'Tab') { if (options.kind !== 'popover') close(true); return; }
         if (options.kind === 'popover' || event.target.matches('input, textarea, select, [contenteditable="true"]')) return;
         const enabled = items();
         const current = options.kind === 'select' ? focused : doc.activeElement;
@@ -253,6 +327,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (next) focus(next);
     };
     const pointerOver = event => {
+        if (options.kind === 'popover') return;
         const item = event.target.closest(itemSelector);
         if (!opened || !item || item.closest('[data-neo-browser-content]') !== content || disabled(item)) return;
         if (item.contains(event.relatedTarget)) return;
@@ -272,6 +347,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     const listeners = { click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut };
     const observer = new MutationObserver(() => {
         if (options.kind === 'select') applySelection(selectedId);
+        syncMenuSelections();
     });
     const triggerObserver = new MutationObserver(() => {
         if (disabled(trigger()) && opened) close(false);
@@ -296,6 +372,7 @@ export function createController(floating, initialOptions, initialPosition, brid
             content = doc.getElementById(options.contentId) ?? content;
             content.setAttribute('data-neo-browser-content', '');
             watchTrigger();
+            syncMenuSelections();
             if (valueCommand) {
                 selectionEpoch++;
                 acknowledgedId = options.selectedItemId ?? null;
@@ -339,8 +416,9 @@ export function createController(floating, initialOptions, initialPosition, brid
     for (const [name, listener] of Object.entries(listeners)) doc.addEventListener(name, listener, true);
     // Observe structure/config only; JS-owned presentation attributes don't feed back into this observer.
     observer.observe(floating, { childList: true, subtree: true, attributes: true,
-        attributeFilter: ['disabled', 'aria-disabled', 'data-disabled', 'data-neo-text'] });
+        attributeFilter: ['disabled', 'aria-disabled', 'data-disabled', 'data-neo-text', 'data-neo-check-accepted', 'data-neo-check-version', 'data-neo-check-value', 'aria-checked'] });
     watchTrigger();
+    syncMenuSelections();
     observeRemoval(doc);
     setVisible(false);
     if (options.kind === 'select') applySelection(selectedId);

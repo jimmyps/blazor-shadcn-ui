@@ -31,7 +31,7 @@
 }
 else
 {
-    <SelectContentPrimitive TValue="TValue"
+    <SelectContentPrimitive TValue="TValue" ForceMount="@ForceMount"
                             MatchTriggerWidth="@(!(Class?.Contains("w-max") ?? false))"
                             class="@OuterCssClass">
         <div @ref="_scrollRef" @onscroll="HandleScroll" class="@InnerCssClass">
@@ -56,6 +56,9 @@ else
 }
 
 @code {
+    /// <summary>Keep closed content mounted in Blazor mode. Browser mode always keeps it mounted.</summary>
+    [Parameter] public bool ForceMount { get; set; } = true;
+
     private ElementReference _scrollRef;
     private IJSObjectReference? _jsModule;
     private bool _prevIsOpen = false;
@@ -158,6 +161,8 @@ else
 
     protected override void OnParametersSet()
     {
+        if (Context?.IsBrowserInteraction == true && Presentation == SelectPresentation.BottomSheet)
+            throw new InvalidOperationException("Select BottomSheet presentation requires InteractionMode.Blazor. Use an explicit exception to the Browser policy.");
         var isOpen = Context?.IsOpen == true;
         if (Presentation == SelectPresentation.BottomSheet && isOpen && !_prevIsOpen)
         {

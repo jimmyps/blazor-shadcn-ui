@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
 
@@ -68,7 +69,10 @@
 
     /// <summary>Uses browser-local floating interactions when set to Browser. Default is Blazor.</summary>
     [Parameter]
-    public InteractionMode InteractionMode { get; set; }
+    public InteractionMode? InteractionMode { get; set; }
+
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private InteractionMode EffectiveInteractionMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
 
     /// <summary>Increment to reapply Open and Value, including an unchanged value after a reset.</summary>
     [Parameter]
@@ -76,7 +80,7 @@
 
     protected override void OnInitialized()
     {
-        _context.Browser.Sync(InteractionMode, Open, DefaultOpen, InteractionRevision);
+        _context.Browser.Sync(EffectiveInteractionMode, Open, DefaultOpen, InteractionRevision);
 
         // Initialize controllable state
         _state = new UseControllableState<bool>(DefaultOpen)
@@ -100,7 +104,7 @@
             await OpenChanged.InvokeAsync(open);
             await OnOpenChange.InvokeAsync(open);
         } : null;
-        _context.Browser.Sync(InteractionMode, Open, DefaultOpen, InteractionRevision);
+        _context.Browser.Sync(EffectiveInteractionMode, Open, DefaultOpen, InteractionRevision);
         // Update controlled value if it changed
         if (_state.IsControlled && Open.HasValue)
         {

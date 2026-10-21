@@ -16,12 +16,18 @@ internal sealed class BrowserFloatingState
     private bool initialized;
     private long revision;
     private bool? parameterOpen;
+    private readonly HashSet<bool> pendingOpenEchoes = [];
 
     internal void Sync(InteractionMode mode, bool? open, bool defaultOpen, long commandRevision)
     {
         if (initialized && mode != Mode)
             throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the component with @key.");
-        if (!initialized || (!Reporting && (open != parameterOpen || revision != commandRevision)))
+        var reset = initialized && revision != commandRevision;
+        var changed = open != parameterOpen;
+        // EventCallback schedules its parent's render after it returns. Reporting alone
+        // cannot suppress those late binding echoes; remember the reported values too.
+        var echo = open.HasValue && pendingOpenEchoes.Remove(open.Value);
+        if (!initialized || reset || (!Reporting && changed && !echo))
         {
             Open = open ?? defaultOpen;
             OpenVersion++;
@@ -35,6 +41,7 @@ internal sealed class BrowserFloatingState
 
     internal async Task ReportOpenAsync(bool open)
     {
+        if (OpenChanged != null) pendingOpenEchoes.Add(open);
         Reporting = true;
         try
         {
@@ -48,6 +55,7 @@ internal sealed class BrowserFloatingState
 internal sealed class BrowserFloatingEvents : IDisposable
 {
     internal Func<string, bool, Task>? Notify { get; set; }
+    internal Func<string, string?, Task<string?>>? CommitMenu { get; set; }
     internal Func<string, Task<string?>>? Commit { get; set; }
     internal DotNetObjectReference<BrowserFloatingEvents> Reference { get; }
     internal BrowserFloatingEvents() => Reference = DotNetObjectReference.Create(this);
@@ -57,6 +65,9 @@ internal sealed class BrowserFloatingEvents : IDisposable
 
     [JSInvokable]
     public Task<string?> CommitAsync(string itemId) => Commit?.Invoke(itemId) ?? Task.FromResult<string?>(null);
+
+    [JSInvokable]
+    public Task<string?> CommitMenuAsync(string key, string? proposed) => CommitMenu?.Invoke(key, proposed) ?? Task.FromResult<string?>(null);
 
     public void Dispose() => Reference.Dispose();
 }

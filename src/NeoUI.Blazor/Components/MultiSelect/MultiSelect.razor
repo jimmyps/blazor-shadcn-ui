@@ -3,7 +3,7 @@
 @using NeoUI.Icons.Lucide
 
 <div class="@ContainerClass">
-    <Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
+    <Popover InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
         <PopoverTrigger role="combobox"
                         aria-expanded="@_isOpen.ToString().ToLower()"
                         aria-controls="@($"{Id}-listbox")"
@@ -93,8 +93,9 @@
                        id="@($"{Id}-search")"
                        type="text"
                        placeholder="@EffectiveSearchPlaceholder"
-                       value="@_searchQuery"
-                       @oninput="HandleSearchInput"
+                       @bind-value:get="_searchQuery"
+                       @bind-value:set="HandleSearchInput"
+                       @bind-value:event="oninput"
                        @onkeydown="HandleSearchKeyDown"
                        class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
             </div>

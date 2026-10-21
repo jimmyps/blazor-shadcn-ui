@@ -1,0 +1,26 @@
+@inject NavigationManager Navigation
+<h1>Persistent floating content cost fixture</h1>
+<Select TValue="string" InteractionMode="@Mode">
+    <SelectTrigger data-testid="cost-select"><SelectValue Placeholder="Large list" /></SelectTrigger>
+    <SelectContent ForceMount="false">
+        @for (var i = 0; i < 1000; i++)
+        {
+            <SelectItem TValue="string" Value="@($"item-{i}")" Text="@($"Item {i}")" />
+        }
+    </SelectContent>
+</Select>
+@for (var row = 0; row < 25; row++)
+{
+    <DropdownMenu InteractionMode="@Mode">
+        <DropdownMenuTrigger><span>Row @row actions</span></DropdownMenuTrigger>
+        <DropdownMenuContent ForceMount="false">
+            @for (var item = 0; item < 10; item++)
+            {
+                <DropdownMenuItem>Row action @item</DropdownMenuItem>
+            }
+        </DropdownMenuContent>
+    </DropdownMenu>
+}
+@code {
+    private InteractionMode Mode => Navigation.Uri.Contains("cost=browser") ? InteractionMode.Browser : InteractionMode.Blazor;
+}

@@ -3,8 +3,8 @@
 @inject ILocalizer Localizer
 @* DatePicker - Date selection with Calendar in Popover *@
 
-<Popover @bind-Open="_isOpen">
-    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()" @onclick="OnTriggerClick">
+<Popover InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" @bind-Open="_isOpen">
+    <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
         @if (ShowIcon)
         {
             <LucideIcon Name="calendar" Class="@GetIconClass()" />
@@ -15,7 +15,7 @@
             <LucideIcon Name="chevron-down" Class="ml-auto h-4 w-4 opacity-50" />
         }
     </PopoverTrigger>
-    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align">
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align" OnContentReady="@HandleContentReady">
         <Calendar @ref="_calendar" @bind-SelectedDate="_selectedDate"
                   MinDate="@MinDate"
                   MaxDate="@MaxDate"
@@ -28,6 +28,11 @@
 </Popover>
 
 @code {
+    /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
 private Calendar? _calendar;
 private bool _isOpen;
 private DateOnly? _selectedDate;
@@ -51,6 +56,7 @@ private System.Globalization.CultureInfo EffectiveCulture =>
             if (_selectedDate != value)
             {
                 _selectedDate = value;
+                _lastNotifiedDate = value;
             }
         }
     }
@@ -182,12 +188,8 @@ private System.Globalization.CultureInfo EffectiveCulture =>
         }
     }
 
-    private async Task OnTriggerClick()
+    private async Task HandleContentReady()
     {
-        // Wait for popover to open and calendar to render
-        // The delay ensures the calendar DOM is available before focusing
-        await Task.Delay(100);
-        
         if (_isOpen && _calendar is not null)
         {
             await _calendar.FocusAsync();

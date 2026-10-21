@@ -1,0 +1,17 @@
+@namespace NeoUI.Blazor.Primitives
+<CascadingValue Value="@policy">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    private InteractionPolicy policy = new(InteractionMode.Blazor);
+    protected override void OnParametersSet()
+    {
+        if (policy.Mode != Mode) policy = new(Mode);
+    }
+
+    /// <summary>Default for descendants that omit InteractionMode. Explicit component settings win.</summary>
+    [Parameter] public InteractionMode Mode { get; set; }
+    /// <summary>Components within this policy scope.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
