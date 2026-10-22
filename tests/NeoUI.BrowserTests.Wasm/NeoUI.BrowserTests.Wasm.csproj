@@ -13,6 +13,7 @@
     <Content Include="../NeoUI.BrowserTests.Host/MountCostCases.razor" Link="MountCostCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/MenuFamilyCases.razor" Link="MenuFamilyCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FormCases.razor" Link="FormCases.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/StandardFormCases.razor" Link="StandardFormCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/AdoptionCases.razor" Link="AdoptionCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/Cases.razor" Link="Cases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/_Imports.razor" Link="_Imports.razor" />

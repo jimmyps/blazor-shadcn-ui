@@ -104,6 +104,27 @@ runs after synchronization so stale custom-validity messages cannot block sendin
 standalone `Input.FlushAsync` and scope `FlushAsync` support custom submission paths.
 The barrier synchronizes supported Input drafts, not other controls' optimistic selection queues or arbitrary editors.
 
+### ✨ Feature — EditForm-compatible adoption without changing submit handlers
+
+`BrowserEditForm` is a thin wrapper around the standard EditForm for existing applications:
+change the form tag and optionally add `OnFlushFailed`; retain its `Model`/`EditContext`,
+validators, form content and existing submit handlers. It inherits global/scoped interaction
+policy rather than imposing Browser mode on its inputs.
+
+Draft synchronization happens before validation. `OnValidSubmit`/`OnInvalidSubmit` retain
+automatic EditContext validation; `OnSubmit` retains caller-owned validation without an
+extra implicit validation pass. Synchronization failures run neither validation nor submit
+handlers. Native constraints run after synchronization, with `novalidate` and submitter
+`formnovalidate` preserved. A native validation failure suppresses submission as on EditForm.
+Browser and .NET guards block duplicate submits through the awaited handler; `IsSubmitting`,
+`aria-busy` and `SubmitAsync()` support existing feedback/programmatic flows. Explicit
+EditContexts and Model-generated contexts remain stable through parent/busy-state renders.
+The lower-level scope also gains a caller-owned submit overload without automatic validation.
+
+EditForm has no public asynchronous pre-validation hook, so retaining the literal EditForm
+tag requires the documented scope/OnSubmit integration. The wrapper keeps that migration to
+a tag change and uses public framework APIs. Interactive rendering is required.
+
 ### 🐛 Fix — reconnect reconciliation, touch switching and local UI states
 
 - Floating controllers observe rendered configuration after a retained-circuit reconnect. Checked-state resets and close commands reconcile without replaying business callbacks, including resets to the same accepted value.

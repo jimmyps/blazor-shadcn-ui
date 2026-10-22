@@ -4,6 +4,11 @@
     {
         <MountCostCases />
     }
+    else if (Navigation.Uri.Contains("editform=true"))
+    {
+        @if (Navigation.Uri.Contains("global=true")) { <StandardFormCases /> }
+        else { <InteractionModeProvider Mode="InteractionMode.Browser"><StandardFormCases /></InteractionModeProvider> }
+    }
     else
     {
     <h1>Browser floating interaction regression cases</h1>

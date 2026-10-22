@@ -11,6 +11,7 @@
     internal string Id { get; } = $"neo-input-scope-{Guid.NewGuid():N}";
     private ElementReference root;
     private IJSObjectReference? module;
+    private IJSObjectReference? editFormGuard;
     private bool busy, disposed, renderedBusy;
     private long requestId;
     private DotNetObjectReference<BrowserInputScope>? bridge;
@@ -35,9 +36,34 @@
 
     /// <summary>Flushes, validates, and saves while holding a browser input snapshot lock.</summary>
     public Task<InputFlushResult> SubmitAsync(EditContext editContext, Func<Task> onValidSubmit, Func<Task>? onInvalidSubmit = null)
-        => ExecuteAsync(editContext, onValidSubmit, onInvalidSubmit);
+        => ExecuteAsync(editContext, onValidSubmit, onInvalidSubmit, true);
 
-    private async Task<InputFlushResult> ExecuteAsync(EditContext? context, Func<Task>? save, Func<Task>? invalid)
+    /// <summary>Flushes and holds input locks through a caller-owned submission lifecycle, without automatic EditContext validation.</summary>
+    public Task<InputFlushResult> SubmitAsync(Func<Task> onSubmit, bool validateNative = true)
+        => ExecuteAsync(null, onSubmit, null, validateNative);
+
+    internal async Task InitializeEditFormGuardAsync()
+    {
+        if (disposed || editFormGuard != null) return;
+        try {
+            using var deadline = new CancellationTokenSource(5000);
+            module ??= await JS.InvokeAsync<IJSObjectReference>("import", deadline.Token, "./_content/NeoUI.Blazor/js/browser-input.js");
+            if (!disposed) editFormGuard ??= await module.InvokeAsync<IJSObjectReference>("initializeEditForm", deadline.Token, root, !OperatingSystem.IsBrowser());
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+    }
+
+    internal async Task ReleaseEditFormGuardAsync()
+    {
+        if (editFormGuard == null) return;
+        try {
+            using var deadline = new CancellationTokenSource(1000);
+            await editFormGuard.InvokeVoidAsync("release", deadline.Token);
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+    }
+
+    private async Task<InputFlushResult> ExecuteAsync(EditContext? context, Func<Task>? save, Func<Task>? invalid, bool checkNative = false)
     {
         if (disposed) return new() { Status = InputFlushStatus.Disposed };
         if (busy) return new() { Status = InputFlushStatus.Busy };
@@ -56,7 +82,7 @@
                 module ??= await JS.InvokeAsync<IJSObjectReference>("import", deadline.Token, "./_content/NeoUI.Blazor/js/browser-input.js");
                 if (disposed) return new() { Status = InputFlushStatus.Disposed };
                 bridge ??= DotNetObjectReference.Create(this);
-                lease = await module.InvokeAsync<IJSObjectReference>("beginScope", deadline.Token, root, Id, FlushTimeoutMilliseconds, context != null);
+                lease = await module.InvokeAsync<IJSObjectReference>("beginScope", deadline.Token, root, Id, FlushTimeoutMilliseconds, checkNative);
                 await lease.InvokeVoidAsync("watch", deadline.Token, bridge, id, nameof(CompleteFlush), !OperatingSystem.IsBrowser());
                 result = await completion.Task.WaitAsync(deadline.Token);
             }
@@ -104,7 +130,10 @@
         bridge?.Dispose();
         if (module != null)
         {
-            try { await module.DisposeAsync(); }
+            try {
+                if (editFormGuard != null) { await editFormGuard.InvokeVoidAsync("dispose"); await editFormGuard.DisposeAsync(); }
+                await module.DisposeAsync();
+            }
             catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
         }
     }

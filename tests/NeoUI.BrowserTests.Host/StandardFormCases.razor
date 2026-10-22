@@ -1,0 +1,59 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+
+<BrowserEditForm @ref="automatic" EditContext="@automaticContext" FormName="standard-auto" OnValidSubmit="Valid" OnInvalidSubmit="Invalid" OnFlushFailed="Failed" FlushTimeoutMilliseconds="@timeout" novalidate="@noValidate" class="existing-form" data-testid="standard-auto">
+    <ChildContent Context="edit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <Input Value="@automaticModel.Name" ValueChanged="ChangeAutomatic" ValueExpression="@(() => automaticModel.Name)" ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" DebounceDelay="5000" Placeholder="Standard automatic name" />
+        <input required data-testid="standard-native" />
+        <button type="submit" data-testid="standard-save">Standard save</button>
+        <button type="submit" formnovalidate data-testid="standard-no-native">Skip native checks</button>
+        <span data-testid="standard-context">@ReferenceEquals(edit, automaticContext).ToString().ToLowerInvariant()</span>
+    </ChildContent>
+</BrowserEditForm>
+<BrowserEditForm @ref="manual" Model="@manualModel" FormName="standard-manual" novalidate OnSubmit="ManualSubmit" OnFlushFailed="Failed" data-testid="standard-manual">
+    <DataAnnotationsValidator />
+    <Input @bind-Value="manualModel.Name" UpdateOn="InputUpdateMode.Input" DebounceDelay="5000" Placeholder="Standard manual name" />
+    <button type="submit" data-testid="standard-manual-save">Custom submit</button>
+</BrowserEditForm>
+<p data-testid="standard-saved">@saved</p><p data-testid="standard-valid">@valid</p><p data-testid="standard-invalid">@invalid</p>
+<p data-testid="standard-validations">@validations</p><p data-testid="standard-manual-calls">@manualCalls</p><p data-testid="standard-manual-valid">@manualValid</p>
+<p data-testid="standard-failure">@failure</p><p data-testid="standard-failures">@failures</p><p data-testid="standard-model">@automaticModel.Name</p>
+<p data-testid="standard-manual-model">@manualModel.Name</p><p data-testid="standard-saving">@saving.ToString().ToLowerInvariant()</p>
+<button data-testid="standard-programmatic" @onclick="() => automatic!.SubmitAsync()">Programmatic submit</button>
+<button data-testid="standard-render" @onclick="() => renders++">Render @renders</button>
+<button data-testid="standard-replace" @onclick="Replace">Replace EditContext</button>
+<label><input type="checkbox" @bind="reject" data-testid="standard-reject" />Reject input</label>
+<label><input type="checkbox" @bind="hold" data-testid="standard-hold" />Hold handler</label>
+<label><input type="checkbox" @bind="hang" data-testid="standard-hang" />Hold input</label>
+<label><input type="checkbox" @bind="noValidate" data-testid="standard-novalidate" />Disable native checks</label>
+<label><input type="checkbox" @bind="manualValidate" data-testid="standard-manual-validate" />Validate manually</label>
+<button data-testid="standard-timeout" @onclick="() => timeout = 300">Short timeout</button>
+<button data-testid="standard-release" @onclick="Release">Release handler</button>
+
+@code {
+    private sealed class Model { [Required, MinLength(4)] public string? Name { get; set; } }
+    private Model automaticModel = new(), manualModel = new();
+    private EditContext automaticContext = default!;
+    private BrowserEditForm? automatic, manual;
+    private string? saved, failure, manualValid;
+    private int valid, invalid, validations, manualCalls, failures, renders, timeout = 5000;
+    private long revision;
+    private bool reject, hold, hang, saving, manualValidate, noValidate = true;
+    private TaskCompletionSource? heldHandler, heldInput;
+    protected override void OnInitialized() => ConfigureContext();
+    private void ConfigureContext() { automaticContext = new(automaticModel); automaticContext.OnValidationRequested += (_, _) => validations++; }
+    private void Replace() { automaticModel = new(); revision++; ConfigureContext(); }
+    private async Task ChangeAutomatic(string? value) {
+        var current = automaticModel; var refuse = reject;
+        if (hang) { heldInput ??= new(); await heldInput.Task; } else await Task.Delay(150);
+        if (!refuse && current == automaticModel) automaticModel.Name = value;
+    }
+    private async Task Valid(EditContext edit) { valid++; saved = ((Model)edit.Model).Name; await WaitForHandler(); }
+    private void Invalid(EditContext _) => invalid++;
+    private void Failed(InputFlushResult result) { failure = result.Status.ToString(); failures++; }
+    private async Task ManualSubmit(EditContext edit) { manualCalls++; saved = ((Model)edit.Model).Name; if (manualValidate) manualValid = edit.Validate().ToString().ToLowerInvariant(); await WaitForHandler(); }
+    private async Task WaitForHandler() { saving = true; if (hold) { heldHandler ??= new(); await heldHandler.Task; } else await Task.Delay(100); saving = false; }
+    private void Release() { heldHandler?.TrySetResult(); heldHandler = null; heldInput?.TrySetResult(); heldInput = null; }
+}

@@ -192,7 +192,7 @@ test('Interaction Mode is discoverable in navigation, indexes, and spotlight', a
             assert.ok(listeners.some(listener => listener.type === 'input'));
         });
         await session.detach();
-        for (const query of ['Interaction Mode', 'browser-local', 'MultiSelect', 'date/time pickers']) {
+        for (const query of ['Interaction Mode', 'browser-local', 'MultiSelect', 'date/time pickers', 'BrowserEditForm']) {
             // Input installs its debounced listener asynchronously after the dialog mounts.
             // Discovery tests wait for that listener rather than testing first-keystroke hydration.
             await eventually(async () => {

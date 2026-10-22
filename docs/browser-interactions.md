@@ -158,6 +158,76 @@ Rendered revision commands reconcile after reconnect without requiring a transie
 This first implementation covers Input and composed search fields. Textarea, masked inputs,
 and specialised editor components retain their existing value behavior.
 
+### Existing EditForm handlers: a one-tag opt-in
+
+With the application default set to Browser, change only the form component tag from
+`EditForm` to `BrowserEditForm` and optionally add synchronization feedback:
+
+```csharp
+builder.Services.ConfigureNeoUIInteractions(options =>
+    options.DefaultMode = InteractionMode.Browser);
+```
+
+```razor
+<BrowserEditForm EditContext="@editContext" OnValidSubmit="SaveAsync"
+                 OnInvalidSubmit="ShowErrors" OnFlushFailed="ShowSynchronizationFeedback"
+                 FormName="profile" class="profile-form" novalidate>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <Input @bind-Value="model.Name" UpdateOn="InputUpdateMode.Input" />
+    <Button Type="ButtonType.Submit">Save</Button>
+</BrowserEditForm>
+```
+
+The wrapper renders a real EditForm and reuses `BrowserInputScope` to flush drafts before
+validation. It **does not choose an interaction mode**: global/scoped defaults and explicit
+input overrides continue to apply. Existing fields, validators, handlers and the explicit
+EditContext are retained. `Model` is also supported, with a stable generated EditContext
+until the model changes. `FormName`, `Enhance`, child-content context and form attributes
+are forwarded; `Model`/`EditContext` and submit-handler combinations follow EditForm's rules.
+This opt-in requires an interactive renderer; it is not a static SSR/enhanced POST handler.
+
+| Existing EditForm behavior | BrowserEditForm behavior after successful draft synchronization |
+| --- | --- |
+| `OnValidSubmit` / `OnInvalidSubmit` | Calls `EditContext.Validate()` once, then invokes the matching existing callback |
+| `OnSubmit` | Invokes the existing callback without implicit EditContext validation; the callback still owns validation |
+| `OnSubmit` combined with valid/invalid handlers | Rejected, as with EditForm |
+| `novalidate` / submitter `formnovalidate` | Retains the native-validation opt-out; EditContext validation behavior is unchanged |
+| Native constraint failure | Reports native validity and suppresses submit callbacks; it does not become an `OnInvalidSubmit` or synchronization failure |
+
+If a Server circuit is already known to be unavailable, the native submit is blocked
+locally without locking the form or replaying the submit after reconnect. No server callback
+can run during that outage: the form emits `neoui:form-flush-failed` with
+`detail.status = "Uncertain"` and marks `data-neo-form-flush-status="Uncertain"` for client
+feedback. A later deliberate submit can retry. A submission interrupted before .NET takes
+the guard also releases on the documented connection-state hook. WebAssembly local
+callbacks remain available offline.
+
+Native constraint checks are deferred until after the final draft has been acknowledged,
+so stale native/custom-validity messages cannot block synchronization. Automatic .NET
+validation then sees the current model. A synchronization rejection, timeout, reset,
+composition or uncertain delivery invokes `OnFlushFailed` **without** requesting validation
+or invoking a submit handler. Failures are not automatically retried.
+
+`IsSubmitting` and form `aria-busy` cover synchronization and the awaited handler. The
+browser blocks duplicate click/Enter/`requestSubmit()` events; the .NET barrier also guards
+programmatic submissions. Supported inputs remain locked through the awaited handler.
+`BrowserEditForm.SubmitAsync()` uses the same path. Await all persistence in the existing
+handler rather than starting fire-and-forget work. `FlushTimeoutMilliseconds` defaults to
+30000. The barrier covers supported Input drafts, not independent selection queues or
+unsupported editors. Forms and scopes remain independent.
+
+A standard EditForm cannot accept an asynchronous pre-validation extension: its validation
+request is synchronous and its public `OnSubmit` is the validation-owning replacement.
+Intercepting DOM submission and replaying it would also lose a reliable completion boundary
+for the original awaited handler. BrowserEditForm is a thin adapter around those public APIs;
+it does not patch framework internals or mutate an existing EditForm's parameters.
+For the framework's callback distinction, see the [.NET EditForm implementation](https://github.com/dotnet/aspnetcore/blob/v10.0.0/src/Components/Web/src/Forms/EditForm.cs).
+
+If keeping the literal `<EditForm>` tag is essential, the manual `BrowserInputScope` /
+`OnSubmit` integration below remains supported. It requires the existing handler to call
+the scope; putting a flush in `OnValidSubmit` is too late.
+
 ### Flush before validating or saving a form
 
 Blur sends a final edit but does not wait for application callbacks. An ordinary Save
@@ -204,7 +274,7 @@ An application replacing that UI/handler should call `setConnectionAvailable(fal
 from `browser-input.js` in its down/up handlers. This guard is not applied to WebAssembly's
 local .NET callbacks. A lost completion acknowledgement still blocks Save at the deadline.
 
-For an existing EditForm, use the reusable scope and the **OnSubmit** event:
+For a custom flow that keeps the literal EditForm tag, use the reusable scope and the **OnSubmit** event:
 
 ```razor
 <BrowserInputScope @ref="inputs">

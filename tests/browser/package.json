@@ -1,6 +1,6 @@
 {
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test --test-concurrency=1 floating.spec.mjs adoption.spec.mjs input.spec.mjs forms.spec.mjs menus.spec.mjs" },
+  "scripts": { "test": "node --test --test-concurrency=1 floating.spec.mjs adoption.spec.mjs input.spec.mjs forms.spec.mjs editform.spec.mjs menus.spec.mjs" },
   "devDependencies": { "playwright": "^1.56.0", "@floating-ui/dom": "^1.7.4" }
 }

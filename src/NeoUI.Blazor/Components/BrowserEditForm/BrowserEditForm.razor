@@ -1,0 +1,96 @@
+@namespace NeoUI.Blazor
+@using Microsoft.AspNetCore.Components.Forms
+
+<BrowserInputScope @ref="scope" FlushTimeoutMilliseconds="@FlushTimeoutMilliseconds">
+    <EditForm @ref="form" EditContext="@activeContext" FormName="@FormName" Enhance="@Enhance"
+              OnSubmit="Submit" ChildContent="@ChildContent" AdditionalAttributes="@FormAttributes" />
+</BrowserInputScope>
+
+@code {
+    private BrowserInputScope? scope;
+    private EditForm? form;
+    private EditContext? activeContext;
+    /// <summary>The model to edit. Supply Model or EditContext, as with EditForm.</summary>
+    [Parameter] public object? Model { get; set; }
+    /// <summary>An existing editing context. It is forwarded unchanged to EditForm.</summary>
+    [Parameter] public EditContext? EditContext { get; set; }
+    /// <summary>The existing validators, fields and form content.</summary>
+    [Parameter] public RenderFragment<EditContext>? ChildContent { get; set; }
+    /// <summary>Owns validation manually, exactly as EditForm.OnSubmit, after synchronization.</summary>
+    [Parameter] public EventCallback<EditContext> OnSubmit { get; set; }
+    /// <summary>Invoked after synchronization and successful automatic EditContext validation.</summary>
+    [Parameter] public EventCallback<EditContext> OnValidSubmit { get; set; }
+    /// <summary>Invoked after synchronization when automatic EditContext validation fails.</summary>
+    [Parameter] public EventCallback<EditContext> OnInvalidSubmit { get; set; }
+    /// <summary>Invoked instead of submit/validation handlers when drafts cannot be synchronized safely.</summary>
+    [Parameter] public EventCallback<InputFlushResult> OnFlushFailed { get; set; }
+    /// <summary>The name forwarded to the underlying EditForm.</summary>
+    [Parameter] public string? FormName { get; set; }
+    /// <summary>Forwarded to EditForm. Draft synchronization requires an interactive render mode.</summary>
+    [Parameter] public bool Enhance { get; set; }
+    /// <summary>Maximum wait for draft acknowledgements. Defaults to 30 seconds.</summary>
+    [Parameter] public int FlushTimeoutMilliseconds { get; set; } = 30000;
+    /// <summary>Attributes forwarded to the form. Native validation is deferred until after synchronization.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    /// <summary>True during synchronization, validation and the awaited submit handler.</summary>
+    public bool IsSubmitting { get; private set; }
+
+    private bool NoValidate => AdditionalAttributes?.Any(attribute =>
+        attribute.Key.Equals("novalidate", StringComparison.OrdinalIgnoreCase) &&
+        attribute.Value != null && attribute.Value is not false) == true;
+
+    private Dictionary<string, object> FormAttributes {
+        get {
+            var attributes = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            if (AdditionalAttributes != null) foreach (var attribute in AdditionalAttributes) attributes[attribute.Key] = attribute.Value;
+            // Always defer pre-submit native checks. The original novalidate choice is honored after the flush.
+            attributes["novalidate"] = true;
+            attributes["aria-busy"] = IsSubmitting.ToString().ToLowerInvariant();
+            attributes["data-neo-edit-form"] = "";
+            attributes["data-neo-edit-form-busy"] = IsSubmitting.ToString().ToLowerInvariant();
+            return attributes;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if ((Model == null) == (EditContext == null))
+            throw new InvalidOperationException("Supply either Model or EditContext to BrowserEditForm, but not both, as with EditForm.");
+        // Passing EditContext=null alongside Model would reset EditForm's internal context on
+        // every wrapper render and remount inputs while their snapshot is being synchronized.
+        if (EditContext != null) activeContext = EditContext;
+        else if (activeContext?.Model != Model) activeContext = new EditContext(Model!);
+        if (OnSubmit.HasDelegate && (OnValidSubmit.HasDelegate || OnInvalidSubmit.HasDelegate))
+            throw new InvalidOperationException("When supplying OnSubmit to BrowserEditForm, do not also supply OnValidSubmit or OnInvalidSubmit, as with EditForm.");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (scope != null) await scope.InitializeEditFormGuardAsync();
+    }
+
+    /// <summary>Submits through the same synchronization barrier as click, Enter and requestSubmit().</summary>
+    public Task SubmitAsync() => form?.EditContext is { } context ? Submit(context) : Task.CompletedTask;
+
+    private async Task Submit(EditContext context)
+    {
+        if (IsSubmitting || scope == null) return;
+        IsSubmitting = true;
+        StateHasChanged();
+        try {
+            var result = await scope.SubmitAsync(async () => {
+                // Preserve EditForm's distinction: OnSubmit owns validation; otherwise Validate runs once.
+                if (OnSubmit.HasDelegate) await OnSubmit.InvokeAsync(context);
+                else if (context.Validate()) await OnValidSubmit.InvokeAsync(context);
+                else await OnInvalidSubmit.InvokeAsync(context);
+            }, validateNative: !NoValidate);
+            // Native constraint failure suppresses submit callbacks, like the browser on a standard EditForm.
+            if (!result.Success && result.Status != InputFlushStatus.Invalid && result.Status != InputFlushStatus.Busy)
+                await OnFlushFailed.InvokeAsync(result);
+        }
+        finally {
+            IsSubmitting = false; StateHasChanged();
+            await scope.ReleaseEditFormGuardAsync();
+        }
+    }
+}

@@ -2,13 +2,17 @@
 // subsequent DOM values; post-render repair cannot prevent stale render-batch writes.
 const controllers = new WeakMap();
 const activeScopes = new Map();
+const editFormGuards = new WeakMap();
 let connectionState = true;
 // .NET 10 exposes reconnect state on the reconnect modal. Do not replace the
 // application's handler or inspect private Blazor/SignalR runtime fields.
 document.addEventListener('components-reconnect-state-changed', event => {
-    connectionState = event.detail.state === 'hide';
+    setConnectionAvailable(event.detail.state === 'hide');
 }, true);
-export function setConnectionAvailable(available) { connectionState = available; }
+export function setConnectionAvailable(available) {
+    connectionState = available;
+    document.dispatchEvent(new Event('neoui:input-connection-state'));
+}
 function canInvokeServer() {
     if (navigator.onLine === false || !connectionState) return false;
     const modal = document.getElementById('components-reconnect-modal');
@@ -232,13 +236,65 @@ function begin(elements, timeout, validate = null) {
     return makeLease(result, releases);
 }
 
+// EditForm has no asynchronous pre-validation hook. The thin BrowserEditForm wrapper
+// defers native validation and uses this capture guard only to identify the submitter
+// and suppress duplicate native events; .NET still owns validation and business handlers.
+export function initializeEditForm(root, server = false) {
+    if (editFormGuards.has(root)) return editFormGuards.get(root);
+    let busy = false, skipNative = false, started = false;
+    const forms = () => [...root.querySelectorAll('form[data-neo-edit-form]')]
+        .filter(form => form.closest('[data-neo-input-scope-root]') === root);
+    const release = () => { busy = false; skipNative = false; started = false; for (const form of forms()) form.setAttribute('aria-busy', 'false'); };
+    const unavailable = form => {
+        release(); form.dataset.neoFormFlushStatus = 'Uncertain';
+        form.dispatchEvent(new CustomEvent('neoui:form-flush-failed', { bubbles: true, detail: { status: 'Uncertain' } }));
+    };
+    const submit = event => {
+        if (!forms().includes(event.target)) return;
+        if (busy) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+        if (server && !canInvokeServer()) {
+            event.preventDefault(); event.stopImmediatePropagation(); unavailable(event.target); return;
+        }
+        busy = true; started = false;
+        delete event.target.dataset.neoFormFlushStatus;
+        skipNative = event.submitter?.formNoValidate === true;
+        event.target.setAttribute('aria-busy', 'true');
+    };
+    // Blazor may dispatch submit from document capture synchronously in WebAssembly.
+    // Capture at window first so the submitter and duplicate guard are known before .NET runs.
+    const eventTarget = root.ownerDocument.defaultView;
+    eventTarget.addEventListener('submit', submit, true);
+    const availability = () => {
+        if (server && busy && !started && !canInvokeServer()) for (const form of forms()) unavailable(form);
+    };
+    eventTarget.addEventListener('offline', availability);
+    root.ownerDocument.addEventListener('neoui:input-connection-state', availability);
+    // Rendered wrapper state is the reconnect fallback; scope completion can precede
+    // the wrapper's failure handler/finally, so it must not release this guard.
+    const observer = new MutationObserver(() => { if (forms().every(form => form.dataset.neoEditFormBusy === 'false')) release(); });
+    observer.observe(root, { subtree: true, attributes: true, attributeFilter: ['data-neo-edit-form-busy'] });
+    const removal = new MutationObserver(() => { if (!root.isConnected) guard.dispose(); });
+    removal.observe(root.ownerDocument.body, { childList: true, subtree: true });
+    const guard = {
+        acquire() { busy = true; started = true; },
+        get skipNative() { return skipNative; },
+        release,
+        dispose() { release(); observer.disconnect(); removal.disconnect(); eventTarget.removeEventListener('submit', submit, true); eventTarget.removeEventListener('offline', availability); root.ownerDocument.removeEventListener('neoui:input-connection-state', availability); editFormGuards.delete(root); delete root.dataset.neoEditFormReady; }
+    };
+    editFormGuards.set(root, guard);
+    root.dataset.neoEditFormReady = 'true';
+    return guard;
+}
+
 export function beginScope(root, scopeId, timeout = 30000, checkNative = false) {
     if (!root?.isConnected) return makeLease(Promise.resolve({ status: 'NotReady' }), []);
     const elements = [...root.ownerDocument.querySelectorAll('[data-neo-input-scope]')]
         .filter(element => element.dataset.neoInputScope === scopeId && element.hasAttribute('data-neo-input-config'));
     activeScopes.get(scopeId)?.release();
     const forms = [...root.querySelectorAll('form')].filter(form => form.closest('[data-neo-input-scope-root]') === root);
-    const lease = begin(elements, timeout, checkNative ? () => validateNative(elements, forms) : null), release = lease.release;
+    const guard = editFormGuards.get(root);
+    guard?.acquire();
+    const lease = begin(elements, timeout, checkNative && !guard?.skipNative ? () => validateNative(elements, forms) : null), release = lease.release;
     const observer = new MutationObserver(() => {
         if (!root.isConnected || root.dataset.neoInputBusy === 'false') lease.release();
     });
