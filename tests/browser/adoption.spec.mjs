@@ -368,8 +368,11 @@ test('browser Command hover and keyboard focus send no circuit traffic and commi
         assert.equal(await beta.getAttribute('data-focused'), 'true');
         await root.getByRole('option', { name: 'Disabled command', exact: true }).evaluate(e => e.click());
         assert.equal(traffic.frames.length, 0);
-        await page.keyboard.press('Enter');
-        assert.equal(await page.getByTestId('local-command-commits').textContent(), '0');
+        const beforeCommit = await input.evaluate(element => {
+            element.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+            return document.querySelector('[data-testid="local-command-commits"]').textContent;
+        });
+        assert.equal(beforeCommit, '0');
         await eventually(async () => assert.equal(await page.getByTestId('local-command-commits').textContent(), '1'));
     } finally { await traffic.dispose(); }
 });

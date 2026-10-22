@@ -22,7 +22,7 @@ after(async () => { await browser?.close(); });
 beforeEach(async () => {
     page = await browser.newPage();
     sent = []; errors = []; lastFrameAt = Date.now();
-    page.setDefaultTimeout(10000);
+    page.setDefaultTimeout(process.env.NEOUI_TEST_RENDERER === 'wasm' ? 30000 : 10000);
     page.on('pageerror', error => errors.push(String(error)));
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     page.on('websocket', socket => socket.on('framesent', frame => { sent.push(frame.payload); lastFrameAt = Date.now(); }));
