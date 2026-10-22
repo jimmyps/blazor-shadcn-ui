@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
 
@@ -10,6 +11,24 @@
 
 @code {
     private TooltipContext _context = new();
+    /// <summary>Omitted settings inherit the scoped or application policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply a controlled open command after reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private InteractionMode EffectiveMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
+    private void SyncBrowser()
+    {
+        _context.Browser.OpenChanged = OpenChanged.HasDelegate ? async open =>
+        {
+            await OpenChanged.InvokeAsync(open);
+
+        } : null;
+        _context.Browser.Sync(EffectiveMode, Open, DefaultOpen, InteractionRevision);
+        _context.BrowserOpenDelay = DelayDuration;
+        _context.BrowserCloseDelay = HideDelay;
+    }
+
     private UseControllableState<bool> _state = null!;
     private System.Timers.Timer? _showTimer;
     private System.Timers.Timer? _hideTimer;
@@ -73,6 +92,7 @@
 
     protected override void OnInitialized()
     {
+        SyncBrowser();
         // Initialize controllable state
         _state = new UseControllableState<bool>(DefaultOpen)
         {
@@ -89,7 +109,7 @@
         _context.OnStateChanged += HandleContextStateChanged;
 
         // If initial state is open, apply it with delay
-        if (_state.Value)
+        if (_state.Value && !_context.Browser.Enabled)
         {
             _ = SetOpenWithDelayAsync(true);
         }
@@ -97,6 +117,7 @@
 
     protected override void OnParametersSet()
     {
+        SyncBrowser();
         // Update controlled value if it changed
         if (_state.IsControlled && Open.HasValue)
         {
@@ -113,6 +134,7 @@
 
     private void HandleContextStateChanged()
     {
+        if (_context.Browser.Enabled) return;
         // When context state changes (e.g., from TooltipTriggerPrimitive),
         // capture the intent and reset state immediately to prevent premature rendering
         var intentOpen = _context.State.IsOpen;

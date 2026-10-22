@@ -67,7 +67,7 @@ namespace NeoUI.Blazor.Primitives;
 /// </example>
 public partial class CollapsibleContentPrimitive : ComponentBase
 {
-    private bool _shouldRender => ForceMount || (Context?.Open ?? false);
+    private bool _shouldRender => (Context?.BrowserInteraction ?? false) || ForceMount || (Context?.Open ?? false);
 
     /// <summary>
     /// Gets the cascaded collapsible context from the parent CollapsiblePrimitive component.

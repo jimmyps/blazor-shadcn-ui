@@ -4,7 +4,6 @@ using NeoUI.Blazor.Validation;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System.Linq.Expressions;
 
@@ -52,9 +51,6 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
-    private static readonly Action<ILogger, string, Exception?> LogJsInitializationFailed =
-        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogJsInitializationFailed)),
-            "Error initializing input JS: {Message}");
     private IJSObjectReference? _inputModule;
 
     /// <summary>
@@ -66,6 +62,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// Tracks whether JavaScript module has been initialized.
     /// </summary>
     private bool _jsInitialized = false;
+    private readonly SemaphoreSlim _initializationGate = new(1, 1);
 
     /// <summary>
     /// Auto-generated ID when user doesn't provide one.
@@ -76,7 +73,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// Reference to the underlying input HTML element.
     /// Used to perform DOM operations such as focusing.
     /// </summary>
-    private ElementReference _elementReference;
+    protected ElementReference _elementReference;
 
     /// <summary>
     /// Validation behavior handler for EditContext integration.
@@ -88,9 +85,6 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// </summary>
     [Inject]
     private IJSRuntime JSRuntime { get; set; } = default!;
-
-    [Inject]
-    private ILogger<Input> Logger { get; set; } = default!;
 
     /// <summary>
     /// Gets the cascaded EditContext from an EditForm.
@@ -416,7 +410,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// - Custom classes from the Class parameter
     /// Uses the cn() utility for intelligent class merging and Tailwind conflict resolution.
     /// </remarks>
-    private string CssClass => ClassNames.cn(
+    protected virtual string CssClass => ClassNames.cn(
         // Base input styles (from shadcn/ui)
         "flex h-8 w-full rounded-md border border-input bg-background px-2 py-1 text-base shadow-xs",
         "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
@@ -442,7 +436,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// <remarks>
     /// This ensures form submission works even when Name is not explicitly set.
     /// </remarks>
-    private string? EffectiveName => Name ?? Id;
+    protected string? EffectiveName => Name ?? Id;
 
     /// <summary>
     /// Gets the effective ID, generating a unique ID if none is provided.
@@ -451,7 +445,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// This ensures JavaScript can always reference the element, even when Id is not explicitly set.
     /// The generated ID follows the pattern: input-{6-character-guid}.
     /// </remarks>
-    private string EffectiveId
+    protected string EffectiveId
     {
         get
         {
@@ -491,7 +485,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// When ShowValidationError is true, this is automatically set based on validation state.
     /// Otherwise, uses the manually set AriaInvalid parameter.
     /// </summary>
-    private bool? EffectiveAriaInvalid =>
+    protected bool? EffectiveAriaInvalid =>
         _validationBehavior?.EffectiveAriaInvalid ?? AriaInvalid;
 
     /// <summary>
@@ -555,50 +549,37 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// Initializes JavaScript module and validation after the component first renders.
     /// Sets up input event handling based on UpdateOn mode and debounce settings.
     /// </summary>
+    /// <summary>Receives the native control after its event controller is ready.</summary>
+    [Parameter] public Action<ElementReference>? OnInputRef { get; set; }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender || _browserInputDisposed) return;
+        await _initializationGate.WaitAsync();
+        try
         {
-            try
+            if (_browserInputDisposed) return;
+            _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/NeoUI.Blazor/js/input.js");
+            if (_browserInputDisposed) return;
+            _dotNetRef = DotNetObjectReference.Create(this);
+            await _inputModule.InvokeVoidAsync("initializeInput", EffectiveId,
+                UpdateOn.ToString().ToLowerInvariant(), DebounceDelay, _dotNetRef, false, BrowserInteraction);
+            _jsInitialized = true;
+            if (_browserInputDisposed) return;
+            OnInputRef?.Invoke(_elementReference);
+            if (_browserInputDisposed) return;
+            if (ShowValidationError && EditContext != null && ValueExpression != null)
             {
-                // Import the input module
-                _inputModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoUI.Blazor/js/input.js");
-
-                // Create DotNetObjectReference for callbacks
-                _dotNetRef = DotNetObjectReference.Create(this);
-
-                // Initialize input event handling with UpdateOn mode and debounce
-                // Use EffectiveId which always has a value (user-provided or generated)
-                await _inputModule.InvokeVoidAsync(
-                    "initializeInput",
-                    EffectiveId,
-                    UpdateOn.ToString().ToLower(),
-                    DebounceDelay,
-                    _dotNetRef,
-                    false,
-                    BrowserInteraction
-                );
-
-                _jsInitialized = true;
-
-                // Initialize validation if ShowValidationError is enabled
-                if (ShowValidationError && EditContext != null && ValueExpression != null)
-                {
-                    await _inputModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLower());
-                }
-
-                // Apply initial validation state after first render
-                if (ShowValidationError && _validationBehavior != null)
-                {
-                    await _validationBehavior.UpdateValidationDisplayAsync();
-                }
+                await _inputModule.InvokeVoidAsync("initializeValidation", EffectiveId, UpdateOn.ToString().ToLowerInvariant());
+                if (_browserInputDisposed) return;
             }
-            catch (Exception ex)
-            {
-                LogJsInitializationFailed(Logger, ex.Message, ex);
-            }
+            if (ShowValidationError && _validationBehavior != null)
+                await _validationBehavior.UpdateValidationDisplayAsync();
         }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException) { }
+        catch (ObjectDisposedException) when (_browserInputDisposed) { }
+        finally { _initializationGate.Release(); }
     }
 
     /// <summary>
@@ -629,37 +610,27 @@ public partial class Input : ComponentBase, IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         DisposeBrowserFlushes();
+        if (EditContext != null)
+            EditContext.OnValidationStateChanged -= OnValidationStateChanged;
+        await _initializationGate.WaitAsync();
         try
         {
-            // Unsubscribe from EditContext event
-            if (EditContext != null)
+            if (_validationBehavior != null) await _validationBehavior.DisposeAsync();
+            if (_inputModule != null)
             {
-                EditContext.OnValidationStateChanged -= OnValidationStateChanged;
-            }
-
-            if (_validationBehavior != null)
-            {
-                await _validationBehavior.DisposeAsync();
-            }
-
-            if (_jsInitialized && _inputModule != null)
-            {
-                // Dispose input event handling and validation tracking
-                await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
-                await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
-
+                if (_jsInitialized)
+                {
+                    await _inputModule.InvokeVoidAsync("disposeInput", EffectiveId);
+                    await _inputModule.InvokeVoidAsync("disposeValidation", EffectiveId);
+                }
                 await _inputModule.DisposeAsync();
             }
-
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally
+        {
             _dotNetRef?.Dispose();
-        }
-        catch (JSDisconnectedException)
-        {
-            // The JS runtime is already disposed
-        }
-        catch
-        {
-            // Ignore disposal errors
+            _initializationGate.Release();
         }
     }
 

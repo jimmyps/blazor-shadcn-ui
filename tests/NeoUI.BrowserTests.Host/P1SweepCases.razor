@@ -1,0 +1,191 @@
+<section data-testid="p1-sweep">
+    <button data-testid="sweep-toggle-inputs" @onclick="() => showInputs = !showInputs">Toggle inputs</button>
+    <button data-testid="sweep-independent" @onclick="() => independent++">Independent @independent</button>
+    <HoverCard OpenDelay="30" CloseDelay="80">
+        <HoverCardTrigger AsChild><Button>Sweep hover</Button></HoverCardTrigger>
+        <HoverCardContent><button data-testid="sweep-hover-child">Live hover action</button></HoverCardContent>
+    </HoverCard>
+    <Tooltip DelayDuration="30" HideDelay="20">
+        <TooltipTrigger AsChild><Button OnClick="TooltipAction">Sweep tooltip</Button></TooltipTrigger>
+        <TooltipContent>Sweep tooltip content</TooltipContent>
+    </Tooltip>
+    <p data-testid="sweep-tooltip-actions">@tooltipActions</p>
+    <section data-testid="sweep-disclosures">
+        <Accordion Collapsible>
+            <AccordionItem Value="one"><AccordionTrigger>First disclosure</AccordionTrigger><AccordionContent><button>First disclosure action</button></AccordionContent></AccordionItem>
+            <AccordionItem Value="disabled" Disabled><AccordionTrigger>Disabled disclosure</AccordionTrigger><AccordionContent>Disabled body</AccordionContent></AccordionItem>
+            <AccordionItem Value="two"><AccordionTrigger>Second disclosure</AccordionTrigger><AccordionContent>Second disclosure body</AccordionContent></AccordionItem>
+        </Accordion>
+        <Collapsible><CollapsibleTrigger AsChild><Button OnClick="DisclosureAction">Standalone disclosure</Button></CollapsibleTrigger><CollapsibleContent>Standalone disclosure body</CollapsibleContent></Collapsible>
+        <Tabs DefaultValue="one">
+            <TabsList><TabsTrigger Value="one">First local tab</TabsTrigger><TabsTrigger Value="disabled" Disabled>Disabled local tab</TabsTrigger><TabsTrigger Value="two">Second local tab</TabsTrigger></TabsList>
+            <TabsContent Value="one">First local panel</TabsContent><TabsContent Value="two">Second local panel</TabsContent>
+        </Tabs>
+    </section>
+    <p data-testid="sweep-disclosure-actions">@disclosureActions</p>
+    <section data-testid="sweep-controlled">
+        <Tabs Value="@activeTab" ValueChanged="ChangeTab" InteractionRevision="@tabRevision" Orientation="TabsOrientation.Vertical" ActivationMode="TabsActivationMode.Manual">
+            <TabsList><TabsTrigger Value="one">Controlled first</TabsTrigger><TabsTrigger Value="two">Controlled second</TabsTrigger></TabsList>
+            <TabsContent Value="one">Controlled first panel</TabsContent><TabsContent Value="two">Controlled second panel</TabsContent>
+        </Tabs>
+        <button data-testid="sweep-reset-tab" @onclick="ResetTab">Reset tab</button>
+        <p data-testid="sweep-tab-value">@activeTab</p>
+        <p data-testid="sweep-tab-started">@tabCallbacks</p>
+    </section>
+    @if (showInputs)
+    {
+    <BrowserEditForm Model="@model" OnValidSubmit="Save">
+        <Input @bind-Value="model.Single" UpdateOn="InputUpdateMode.Input" Placeholder="Sweep single line" />
+        <Textarea @bind-Value="model.Note" UpdateOn="InputUpdateMode.Input" Placeholder="Sweep textarea" />
+        <InputGroup><InputGroupInput @bind-Value="model.Group" Placeholder="Sweep group input" /></InputGroup>
+        <InputGroup><InputGroupTextarea @bind-Value="model.GroupNote" Placeholder="Sweep group textarea" /></InputGroup>
+        <Button Type="ButtonType.Submit" data-testid="sweep-save">Save</Button>
+    </BrowserEditForm>
+    }
+    <section data-testid="sweep-formatted">
+        <BrowserEditForm Model="@numbers" OnValidSubmit="SaveNumbers">
+            <NumericInput TValue="decimal?" @bind-Value="numbers.Amount" Min="-100" Max="100" UpdateOn="InputUpdateMode.Input" ValueRevision="@numberRevision" Placeholder="Sweep numeric" />
+            <CurrencyInput TValue="decimal?" @bind-Value="numbers.Price" Currency="EUR" Culture="de-DE" UpdateOn="InputUpdateMode.Input" ValueRevision="@numberRevision" Placeholder="Sweep currency" />
+            <MaskedInput @bind-Value="numbers.Code" Mask="000-000" UpdateOn="InputUpdateMode.Input" ValueRevision="@numberRevision" Placeholder="Sweep masked" Required />
+            <NumericInput TValue="decimal?" Value="@((decimal?)12m)" ValueChanged="@((decimal? value) => readonlyCommits++)" Readonly Placeholder="Sweep readonly numeric" />
+            <button type="submit" data-testid="sweep-number-save">Save numbers</button>
+        </BrowserEditForm>
+        <button @onclick="ResetNumbers" data-testid="sweep-number-reset">Reset numbers</button>
+        <p data-testid="sweep-readonly-commits">@readonlyCommits</p>
+        <p data-testid="sweep-number-saved">@numberSaved</p>
+    </section>
+    <BrowserEditForm Model="@markdown" OnValidSubmit="SaveMarkdown">
+        <MarkdownEditor @bind-Value="markdown.Text" ValueRevision="@markdownRevision" Placeholder="Sweep markdown" />
+        <button type="submit" data-testid="sweep-markdown-save">Save markdown</button>
+        <button type="button" @onclick="ResetMarkdown" data-testid="sweep-markdown-reset">Reset markdown</button>
+    </BrowserEditForm>
+    <p data-testid="sweep-markdown-saved">@markdownSaved</p>
+    <section data-testid="sweep-fields">
+        <BrowserEditForm Model="@fields" OnValidSubmit="SaveFields">
+            <Checkbox @bind-Checked="fields.Check" AriaLabel="Sweep checkbox" InteractionRevision="@fieldRevision" Required />
+            <Switch @bind-Checked="fields.Switch" AriaLabel="Sweep switch" InteractionRevision="@fieldRevision" />
+            <Toggle @bind-Pressed="fields.Pressed" InteractionRevision="@fieldRevision">Sweep toggle</Toggle>
+            <ToggleGroup @bind-Value="fields.Choice" InteractionRevision="@fieldRevision"><ToggleGroupItem Value="one">Sweep choice one</ToggleGroupItem><ToggleGroupItem Value="two">Sweep choice two</ToggleGroupItem></ToggleGroup>
+            <Slider @bind-Value="fields.Volume" InteractionRevision="@fieldRevision" />
+            <button type="submit" data-testid="sweep-fields-save">Save fields</button>
+        </BrowserEditForm>
+        <button @onclick="ResetFields" data-testid="sweep-fields-reset">Reset fields</button>
+        <p data-testid="sweep-fields-saved">@fieldsSaved</p>
+    </section>
+    <section data-testid="sweep-special">
+        <BrowserEditForm Model="@special" OnValidSubmit="SaveSpecial">
+            <RadioGroup TValue="string" @bind-Value="special.Radio" AriaLabel="Sweep radio" InteractionRevision="@specialRevision"><RadioGroupItem TValue="string" Value="@("one")" AriaLabel="Sweep radio one" /><RadioGroupItem TValue="string" Value="@("disabled")" Disabled AriaLabel="Sweep radio disabled" /><RadioGroupItem TValue="string" Value="@("two")" AriaLabel="Sweep radio two" /></RadioGroup>
+            <InputOtp Length="4" @bind-Value="special.Otp" InteractionRevision="@specialRevision" Required><InputOtpGroup><InputOtpSlot Index="0" /><InputOtpSlot Index="1" /><InputOtpSlot Index="2" /><InputOtpSlot Index="3" /></InputOtpGroup></InputOtp>
+            <DateInput @bind-Value="special.Date" Culture="@(System.Globalization.CultureInfo.GetCultureInfo("en-GB"))" ShowPickerButton="false" InteractionRevision="@specialRevision" AriaLabel="Sweep date" Required />
+            <TimeInput @bind-Value="special.Time" Use12Hour="false" ShowPickerButton="false" InteractionRevision="@specialRevision" AriaLabel="Sweep time" Required />
+            <RangeSlider @bind-MinValue="special.Low" @bind-MaxValue="special.High" InteractionRevision="@specialRevision" AriaLabel="Sweep range" />
+            <button type="submit" data-testid="sweep-special-save">Save special</button>
+        </BrowserEditForm>
+        <button @onclick="ResetSpecial" data-testid="sweep-special-reset">Reset special</button>
+        <p data-testid="sweep-special-saved">@specialSaved</p>
+    </section>
+    <section data-testid="sweep-tags">
+        <BrowserEditForm Model="@tagDraft" OnValidSubmit="SaveTags">
+            <TagInput @bind-Tags="tagDraft.Tags" Suggestions="@choices" Placeholder="Sweep tags" InteractionRevision="@tagRevision" Validate="@(tag => tag != "reject")" Clearable />
+            <button type="submit" data-testid="sweep-tags-save">Save tags</button>
+        </BrowserEditForm>
+        <button @onclick="ResetTags" data-testid="sweep-tags-reset">Reset tags</button>
+        <p data-testid="sweep-tags-saved">@tagsSaved</p>
+    </section>
+    <button data-testid="sweep-toggle-field" @onclick="() => showDelayed = !showDelayed">Toggle delayed field</button>
+    @if (showDelayed)
+    {
+    <section data-testid="sweep-delayed">
+        <Checkbox Checked="@delayedCheck" CheckedChanged="ChangeDelayedCheck" AcceptedValueAccessor="@(() => delayedCheck)" InteractionRevision="@delayedRevision" AriaLabel="Delayed sweep checkbox" />
+        <button data-testid="sweep-delay-reject" @onclick="() => rejectDelayed = !rejectDelayed">Reject @rejectDelayed</button>
+        <button data-testid="sweep-delay-reset" @onclick="ResetDelayed">Reset delayed</button>
+        <p data-testid="sweep-delay-count">@delayedCount</p>
+        <p data-testid="sweep-delay-value">@delayedCheck</p>
+        <button data-testid="sweep-delay-offline-reset" @onclick="OfflineReset">Reset after reconnect</button>
+        <p data-testid="sweep-delay-reset-pending">@delayedResetPending</p>
+    </section>
+    }
+    <section data-testid="sweep-picker-shells">
+        <DateInput Value="@(new DateOnly(2026,10,22))" AriaLabel="Sweep date picker" />
+        <TimeInput Value="@(new TimeOnly(13,45))" Use12Hour="false" AriaLabel="Sweep time picker" />
+    </section>
+    <MaskedInput Value="@boundaryMask" ValueChanged="ChangeBoundaryMask" AcceptedValueAccessor="@(() => boundaryMask)" Mask="000-000" AriaLabel="Sweep boundary mask" />
+    <p data-testid="sweep-mask-boundaries">@maskBoundaries</p>
+    <section data-testid="sweep-focus-api">
+        <DateInput @ref="emptyDate" Placeholder="Empty date API" AriaLabel="Empty date API" ShowPickerButton="false" />
+        <TimeInput @ref="emptyTime" Placeholder="Empty time API" AriaLabel="Empty time API" ShowPickerButton="false" />
+        <button type="button" @onclick="() => emptyDate!.FocusAsync()">Focus empty date</button>
+        <button type="button" @onclick="() => emptyTime!.FocusAsync()">Focus empty time</button>
+    </section>
+    <p data-testid="sweep-bound">@model.Single</p>
+    <p data-testid="sweep-saved">@saved</p>
+    <MultiSelect TItem="string" Items="@choices" ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
+                 SearchInterval="250" Placeholder="Sweep select" SearchPlaceholder="Sweep multi search" />
+</section>
+
+@code {
+    private DateInput? emptyDate;
+    private TimeInput? emptyTime;
+    private string? boundaryMask;
+    private int maskBoundaries;
+    private void ChangeBoundaryMask(string? value) { boundaryMask = value; maskBoundaries++; }
+    private int disclosureActions;
+    private async Task DisclosureAction() { await Task.Delay(500); disclosureActions++; }
+    private bool showDelayed = true;
+    private bool delayedCheck, rejectDelayed, delayedResetPending;
+    private int delayedCount;
+    private long delayedRevision;
+    private async Task ChangeDelayedCheck(bool value) { var revision = delayedRevision; delayedCount++; await Task.Delay(500); if (revision == delayedRevision && !rejectDelayed) delayedCheck = value; }
+    private void ResetDelayed() { delayedCheck = false; delayedRevision++; }
+    private async Task OfflineReset() { delayedResetPending = true; await Task.Delay(600); ResetDelayed(); delayedResetPending = false; }
+    private sealed class TagDraft { public IReadOnlyList<string>? Tags { get; set; } }
+    private readonly TagDraft tagDraft = new();
+    private long tagRevision;
+    private string tagsSaved = "None";
+    private void SaveTags() => tagsSaved = string.Join("|",tagDraft.Tags ?? []);
+    private void ResetTags() { tagDraft.Tags = ["Reset"]; tagRevision++; }
+    private sealed class Special { public string? Radio { get; set; } = "one"; public string? Otp { get; set; } public DateOnly? Date { get; set; } = new DateOnly(2026,10,22); public TimeOnly? Time { get; set; } = new TimeOnly(13,45); public double Low { get; set; } = 20; public double High { get; set; } = 80; }
+    private readonly Special special = new();
+    private long specialRevision;
+    private string specialSaved = "None";
+    private void SaveSpecial() => specialSaved = $"{special.Radio}|{special.Otp}|{special.Date:yyyy-MM-dd}|{special.Time:HH:mm}|{special.Low}|{special.High}";
+    private void ResetSpecial() { special.Radio = "one"; special.Otp = ""; special.Date = new DateOnly(2026,10,22); special.Time = new TimeOnly(13,45); special.Low = 20; special.High = 80; specialRevision++; }
+    private sealed class Fields { public bool Check { get; set; } public bool Switch { get; set; } public bool Pressed { get; set; } public string? Choice { get; set; } public double Volume { get; set; } = 30; }
+    private readonly Fields fields = new();
+    private long fieldRevision;
+    private string fieldsSaved = "None";
+    private void SaveFields() => fieldsSaved = $"{fields.Check}|{fields.Switch}|{fields.Pressed}|{fields.Choice}|{fields.Volume}";
+    private void ResetFields() { fields.Check = false; fields.Switch = false; fields.Pressed = false; fields.Choice = "one"; fields.Volume = 30; fieldRevision++; }
+    private sealed class MarkdownDraft { public string? Text { get; set; } }
+    private readonly MarkdownDraft markdown = new();
+    private long markdownRevision;
+    private string markdownSaved = "None";
+    private void SaveMarkdown() => markdownSaved = markdown.Text ?? "Empty";
+    private void ResetMarkdown() { markdown.Text = "Reset document"; markdownRevision++; }
+    private int readonlyCommits;
+    private sealed class Numbers { public decimal? Amount { get; set; } public decimal? Price { get; set; } public string? Code { get; set; } }
+    private readonly Numbers numbers = new();
+    private string numberSaved = "None";
+    private void SaveNumbers() => numberSaved = $"{numbers.Amount?.ToString(System.Globalization.CultureInfo.InvariantCulture)}|{numbers.Price?.ToString(System.Globalization.CultureInfo.InvariantCulture)}|{numbers.Code}";
+    private void ResetNumbers() { numbers.Amount = 10; numbers.Price = 20; numbers.Code = "123456"; numberRevision++; }
+    private long numberRevision;
+    private string? activeTab = "one";
+    private long tabRevision;
+    private int tabCallbacks;
+    private async Task ChangeTab(string? value) { var revision = tabRevision; tabCallbacks++; await Task.Delay(700); if (revision == tabRevision) activeTab = value; }
+    private void ResetTab() { activeTab = "one"; tabRevision++; }
+    private bool showInputs = true;
+    private int independent;
+    private int tooltipActions;
+    private async Task TooltipAction() { await Task.Delay(500); tooltipActions++; }
+    private readonly Draft model = new();
+    private string saved = "None";
+    private readonly string[] choices = ["Design", "Product", "Engineering"];
+    private sealed class Draft {
+        public string? Single { get; set; }
+        public string? Note { get; set; } = "Initial note\nSecond initial line";
+        public string? Group { get; set; }
+        public string? GroupNote { get; set; } = "Initial grouped note";
+    }
+    private void Save() => saved = $"{model.Single}|{model.Note}|{model.Group}|{model.GroupNote}";
+}

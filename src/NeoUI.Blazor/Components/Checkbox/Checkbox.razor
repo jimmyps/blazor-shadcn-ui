@@ -1,16 +1,16 @@
 @namespace NeoUI.Blazor
-<CheckboxPrimitive
+<CheckboxPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" AcceptedValueAccessor="AcceptedBrowserValue" Name="@EffectiveName" Required="@Required"
     Id="@Id"
     Checked="@Checked"
     CheckedChanged="@HandleCheckedChanged"
     Indeterminate="@Indeterminate"
-    IndeterminateChanged="@IndeterminateChanged"
+    IndeterminateChanged="HandleIndeterminateChanged"
     Disabled="@Disabled"
     AriaLabel="@AriaLabel"
     class="@CssClass"
     aria-required="@(Required || CheckedExpression != null ? "true" : null)"
     aria-invalid="@(IsInvalid ? "true" : null)">
-    @if (Checked)
+    @if (BrowserInteraction || Checked)
     {
         <svg xmlns="http://www.w3.org/2000/svg"
              width="16"
@@ -21,11 +21,11 @@
              stroke-width="2"
              stroke-linecap="round"
              stroke-linejoin="round"
-             class="text-current">
+             hidden="@BrowserInteraction" data-neo-field-indicator="checked" class="text-current">
             <polyline points="20 6 9 17 4 12"></polyline>
         </svg>
     }
-    else if (Indeterminate)
+    @if (BrowserInteraction || Indeterminate)
     {
         <svg xmlns="http://www.w3.org/2000/svg"
              width="16"
@@ -36,14 +36,14 @@
              stroke-width="2"
              stroke-linecap="round"
              stroke-linejoin="round"
-             class="text-current">
+             hidden="@BrowserInteraction" data-neo-field-indicator="mixed" class="text-current">
             <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
     }
 </CheckboxPrimitive>
 
 @* Hidden input for form submission *@
-@if (!string.IsNullOrEmpty(EffectiveName))
+@if (!BrowserInteraction && !string.IsNullOrEmpty(EffectiveName))
 {
     <input type="hidden" name="@EffectiveName" value="@(Checked ? "true" : "false")" />
 }

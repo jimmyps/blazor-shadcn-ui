@@ -16,6 +16,7 @@
     <Content Include="../NeoUI.BrowserTests.Host/StandardFormCases.razor" Link="StandardFormCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FloatingLifecycleCases.razor" Link="FloatingLifecycleCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/AdoptionCases.razor" Link="AdoptionCases.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/P1SweepCases.razor" Link="P1SweepCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/Cases.razor" Link="Cases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/_Imports.razor" Link="_Imports.razor" />
   </ItemGroup>

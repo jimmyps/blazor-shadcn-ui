@@ -1,5 +1,18 @@
 @namespace NeoUI.Blazor
 
+@if (BrowserInteraction)
+{
+    <BrowserTextareaInput @ref="browserInput" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
+        Id="@EffectiveId" Name="@(EffectiveName ?? string.Empty)" Class="@CssClass" Value="@Value" ValueChanged="@ValueChanged"
+        ValueExpression="@ValueExpression" AcceptedValueAccessor="@AcceptedValueAccessor" ValueRevision="@ValueRevision"
+        UpdateOn="@UpdateOn" DebounceDelay="@DebounceDelay" Placeholder="@Placeholder" Disabled="@Disabled" Readonly="@Readonly"
+        Required="@Required" Rows="@Rows" Cols="@Cols" Wrap="@Wrap" Autocomplete="@Autocomplete"
+        MaxLength="@MaxLength" MinLength="@MinLength" InputMode="@InputMode" Autofocus="@Autofocus" Spellcheck="@Spellcheck"
+        AriaLabel="@AriaLabel" AriaDescribedBy="@AriaDescribedBy" AriaInvalid="@AriaInvalid" ShowValidationError="@ShowValidationError"
+        data-slot="textarea-control" />
+}
+else
+{
 <textarea
     id="@EffectiveId"
     name="@EffectiveName"
@@ -22,6 +35,4 @@
     aria-describedby="@AriaDescribedBy"
     aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
     data-slot="textarea-control"></textarea>
-
-
-
+}

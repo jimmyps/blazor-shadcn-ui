@@ -3,9 +3,10 @@
 <button 
     type="button"
     role="@(ParentGroup?.Type == ToggleGroupType.Single ? "radio" : "checkbox")"
-    aria-checked="@(IsSelected ? "true" : "false")"
+    aria-checked="@(ParentGroup?.BrowserInteraction == true ? null : IsSelected ? "true" : "false")"
+    data-neo-field-item="@(ParentGroup?.BrowserInteraction == true ? Value : null)"
     disabled="@(Disabled || ParentGroup?.Disabled == true)"
-    @onclick="OnClickAsync"
+    @onclick="@(ParentGroup?.BrowserInteraction == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, OnClickAsync))"
     class="@CssClass">
     @ChildContent
 </button>

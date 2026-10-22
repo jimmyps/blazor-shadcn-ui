@@ -9,6 +9,10 @@ public sealed class BrowserFloatingOptions
     public string ContentId { get; set; } = "";
     /// <summary>Behavior: menu, select, popover, or submenu.</summary>
     public string Kind { get; set; } = "popover";
+    /// <summary>Browser hover reveal delay in milliseconds.</summary>
+    public int OpenDelay { get; set; }
+    /// <summary>Browser hover dismissal delay in milliseconds.</summary>
+    public int CloseDelay { get; set; }
     /// <summary>Context-menu viewport coordinates for programmatic opening.</summary>
     public double X { get; set; }
     /// <summary>Context-menu viewport coordinates for programmatic opening.</summary>

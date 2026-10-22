@@ -124,6 +124,7 @@ public partial class CollapsiblePrimitive : ComponentBase
     /// </summary>
     protected override void OnInitialized()
     {
+        context.BrowserInteraction = BrowserInteraction;
         context.Open = Open;
         context.Disabled = Disabled;
         context.Toggle = ToggleAsync;
@@ -134,6 +135,7 @@ public partial class CollapsiblePrimitive : ComponentBase
     /// </summary>
     protected override void OnParametersSet()
     {
+        context.BrowserInteraction = BrowserInteraction;
         context.Open = Open;
         context.Disabled = Disabled;
     }

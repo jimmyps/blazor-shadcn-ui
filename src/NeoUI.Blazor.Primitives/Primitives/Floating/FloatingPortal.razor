@@ -506,6 +506,7 @@
         // Only reset to false on full unmount (MountPortalAsync or CleanupAsync).
     }
 
+    [CascadingParameter(Name = "NeoUIInputScopeId")] private string? InputScopeId { get; set; }
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
 
     private RenderFragment RenderPortalContent() => __builder =>
@@ -516,7 +517,7 @@
              data-neo-browser-config="@BrowserConfiguration"
              style="@GetMergedStyle()">
             <CascadingValue Value="@InteractionPolicy" IsFixed="true">
-                @ChildContent
+                <CascadingValue Name="NeoUIInputScopeId" Value="InputScopeId" IsFixed="true">@ChildContent</CascadingValue>
             </CascadingValue>
         </div>
     };

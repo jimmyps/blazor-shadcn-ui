@@ -1,11 +1,15 @@
 @namespace NeoUI.Blazor
 
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="toggle" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser">
 <button 
     type="button" 
-    aria-pressed="@Pressed"
+    aria-pressed="@(BrowserInteraction ? null : Pressed.ToString().ToLowerInvariant())"
+    data-neo-field-item="@(BrowserInteraction ? "checked" : null)"
     disabled="@Disabled"
-    @onclick="OnClickAsync"
+    @onclick="@(BrowserInteraction ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, OnClickAsync))"
     class="@CssClass"
     @attributes="AdditionalAttributes">
     @ChildContent
 </button>
+
+</BrowserStateHost>

@@ -1,15 +1,19 @@
 @namespace NeoUI.Blazor
 
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="slider" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@BrowserOptions">
 <div class="@ContainerCssClass">
     <input 
         type="range" 
         min="@Min" 
         max="@Max" 
         step="@Step" 
-        value="@Value"
-        @oninput="OnInputAsync"
-        @onchange="OnChangeAsync"
+        value="@(BrowserInteraction ? null : Value.ToString(System.Globalization.CultureInfo.InvariantCulture))"
+        data-neo-field-range="@(BrowserInteraction ? string.Empty : null)"
+        @oninput="@(BrowserInteraction ? default(EventCallback<ChangeEventArgs>) : EventCallback.Factory.Create<ChangeEventArgs>(this, OnInputAsync))"
+        @onchange="@(BrowserInteraction ? default(EventCallback<ChangeEventArgs>) : EventCallback.Factory.Create<ChangeEventArgs>(this, OnChangeAsync))"
         disabled="@Disabled"
-        style="@TrackStyle"
+        style="@(BrowserInteraction ? null : TrackStyle)"
         class="@CssClass" />
 </div>
+
+</BrowserStateHost>

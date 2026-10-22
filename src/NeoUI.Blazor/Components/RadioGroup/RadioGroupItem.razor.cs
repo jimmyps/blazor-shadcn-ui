@@ -176,7 +176,7 @@ public partial class RadioGroupItem<TValue> : ComponentBase
                 // Transition for smooth appearance
                 "transition-transform duration-100",
                 // Only visible when checked
-                !IsChecked ? "scale-0" : null
+                !IsChecked && Context?.BrowserInteraction != true ? "scale-0" : null
             );
         }
     }

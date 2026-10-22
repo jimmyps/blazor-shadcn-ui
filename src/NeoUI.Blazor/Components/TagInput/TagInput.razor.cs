@@ -159,6 +159,7 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
 
     protected override void OnParametersSet()
     {
+        if (BrowserInteraction && TagTemplate != null) throw new InvalidOperationException("Browser TagInput cannot construct a Razor TagTemplate locally. Use InteractionMode.Blazor for custom tag templates.");
         if (!ReferenceEquals(_lastTags, Tags))
         {
             _currentTags = Tags?.ToList() ?? new List<string>();
@@ -169,6 +170,7 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) { if (!browserMounted) { browserMounted = true; StateHasChanged(); } return; }
         if (!firstRender) return;
         try
         {
@@ -189,6 +191,7 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
 
     protected override bool ShouldRender()
     {
+        if (BrowserInteraction) return true;
         var changed =
             _lastInputText != _inputText ||
             _lastSuggestionsOpen != _suggestionsOpen ||

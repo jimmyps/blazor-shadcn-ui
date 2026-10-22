@@ -5,15 +5,16 @@
 {
     <div id="@Item.ContentId"
          role="region"
+         data-neo-state-panel="@(Item.Context.BrowserInteraction ? Item.Value : null)" hidden="@Item.Context.BrowserInteraction"
          aria-labelledby="@Item.TriggerId"
-         data-state="@(Item.IsOpen ? "open" : "closed")"
+         data-state="@(Item.Context.BrowserInteraction ? null : (Item.IsOpen ? "open" : "closed"))"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
 }
 
 @code {
-    private bool _shouldRender => ForceMount || Item.IsOpen;
+    private bool _shouldRender => Item.Context.BrowserInteraction || ForceMount || Item.IsOpen;
 
     /// <summary>
     /// Cascading parameter to receive the parent accordion item.

@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
 
@@ -8,6 +9,24 @@
 
 @code {
     private HoverCardContext _context = new();
+    /// <summary>Omitted settings inherit the scoped or application policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply a controlled open command after reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private InteractionMode EffectiveMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
+    private void SyncBrowser()
+    {
+        _context.Browser.OpenChanged = OpenChanged.HasDelegate || OnOpenChange.HasDelegate ? async open =>
+        {
+            await OpenChanged.InvokeAsync(open);
+            await OnOpenChange.InvokeAsync(open);
+        } : null;
+        _context.Browser.Sync(EffectiveMode, Open, DefaultOpen, InteractionRevision);
+        _context.BrowserOpenDelay = OpenDelay;
+        _context.BrowserCloseDelay = CloseDelay;
+    }
+
     private UseControllableState<bool> _state = null!;
 
     /// <summary>
@@ -59,6 +78,7 @@
 
     protected override void OnInitialized()
     {
+        SyncBrowser();
         // Initialize controllable state
         _state = new UseControllableState<bool>(DefaultOpen)
         {
@@ -78,6 +98,7 @@
 
     protected override void OnParametersSet()
     {
+        SyncBrowser();
         // Update controlled value if it changed
         if (_state.IsControlled && Open.HasValue && Open.Value != _state.ControlledValue)
         {
@@ -92,6 +113,7 @@
 
     private void HandleContextStateChanged()
     {
+        if (_context.Browser.Enabled) return;
         // When context state changes (e.g., from HoverCardTriggerPrimitive),
         // update the controllable state
         var newOpenState = _context.State.IsOpen;

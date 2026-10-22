@@ -704,6 +704,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        ConfigureBrowserMode();
         
         if (ShowValidationError)
         {
@@ -712,7 +713,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
                 getEffectiveId: () => EffectiveId,
                 getEditContext: () => EditContext,
                 shouldShowValidation: () => ShowValidationError,
-                getJsModule: () => _inputModule
+                getJsModule: () => BrowserInteraction ? browserInput?.ValidationModule : _inputModule
             );
         }
     }
@@ -723,6 +724,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        ConfigureBrowserMode();
 
         if (_validationBehavior != null)
         {
@@ -759,6 +761,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         if (firstRender)
         {
             try

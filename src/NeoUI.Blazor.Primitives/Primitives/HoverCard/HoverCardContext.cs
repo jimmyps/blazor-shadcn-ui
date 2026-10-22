@@ -34,6 +34,10 @@ public class HoverCardState
 /// </summary>
 public class HoverCardContext : PrimitiveContextWithEvents<HoverCardState>
 {
+    internal BrowserFloatingState Browser { get; } = new();
+    internal int BrowserOpenDelay { get; set; }
+    internal int BrowserCloseDelay { get; set; }
+
     /// <summary>
     /// Initializes a new instance of the HoverCardContext.
     /// </summary>

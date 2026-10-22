@@ -3,6 +3,7 @@ module.exports = {
   darkMode: ["class"],
   content: [
     './Components/**/*.{razor,html,cs}',
+    '../NeoUI.Blazor.Primitives/wwwroot/js/primitives/browser-tags.js',
   ],
   safelist: [
     // Navigation menu motion animations - ensure these are always generated

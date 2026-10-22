@@ -8,12 +8,12 @@
 }
 else
 {
-    <button type="button"
-            data-state="@(Context?.Open ?? false ? "open" : "closed")"
-            aria-expanded="@(Context?.Open ?? false)"
+    <button type="button" id="@(Context?.BrowserInteraction == true ? Context.TriggerId : null)" aria-controls="@(Context?.BrowserInteraction == true ? Context.ContentId : null)"
+            data-state="@(Context?.BrowserInteraction == true ? null : (Context?.Open ?? false ? "open" : "closed"))"
+            aria-expanded="@(Context?.BrowserInteraction == true ? null : (Context?.Open ?? false).ToString().ToLowerInvariant())"
             disabled="@(Context?.Disabled ?? false)"
-            @onclick="HandleClick"
-            @onkeydown="HandleKeyDown"
+            @onclick="@(Context?.BrowserInteraction == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+            @onkeydown="@(Context?.BrowserInteraction == true ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
             @attributes="AdditionalAttributes">
         @ChildContent
     </button>

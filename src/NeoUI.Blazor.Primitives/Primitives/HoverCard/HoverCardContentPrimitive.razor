@@ -8,15 +8,15 @@
     Maintains HoverCardPrimitive-specific behavior: mouse hover persistence.
 *@
 
-@if (Context.IsOpen && Context.State.TriggerElement.HasValue)
+@if (Context.Browser.Enabled || (Context.IsOpen && Context.State.TriggerElement.HasValue))
 {
-    <FloatingPortal IsOpen="true"
+    <FloatingPortal IsOpen="@Context.IsOpen" BrowserOptions="@GetBrowserOptions()" BrowserEvents="@browserEvents?.Reference"
                     AnchorElement="@Context.State.TriggerElement"
                     PortalId="@_portalId"
                     Side="@Side"
                     Align="@Align"
                     Offset="@Offset"
-                    ForceMount="false"
+                    ForceMount="@Context.Browser.Enabled"
                     Strategy="PositioningStrategy.Absolute"
                     ZIndex="ZIndexLevels.TooltipContent"
                     OnReady="@HandleFloatingReady">
@@ -25,6 +25,15 @@
 }
 
 @code {
+    private BrowserFloatingEvents? browserEvents;
+    private BrowserFloatingOptions? GetBrowserOptions() => !Context.Browser.Enabled ? null : new()
+    {
+        TriggerId = Context.TriggerId, ContentId = Context.ContentId,
+        Kind = "hovercard", Open = Context.Browser.Open, OpenVersion = Context.Browser.OpenVersion,
+        OpenDelay = Context.BrowserOpenDelay, CloseDelay = Context.BrowserCloseDelay,
+        NotifyOpen = Context.Browser.OpenChanged != null, CloseOnClickOutside = true
+    };
+
     [CascadingParameter]
     private HoverCardContext Context { get; set; } = null!;
 
@@ -71,6 +80,8 @@
             throw new InvalidOperationException("HoverCardContentPrimitive must be used within a HoverCardPrimitive component.");
         }
 
+        if (Context.Browser.Enabled)
+            browserEvents = new BrowserFloatingEvents { Notify = (name, open) => name == "open" ? Context.Browser.ReportOpenAsync(open) : Task.CompletedTask };
         _portalId = $"hovercard-portal-{Context.ContentId}";
     }
 
@@ -81,8 +92,8 @@
              role="dialog"
              aria-describedby="@Context.TriggerId"
              tabindex="-1"
-             @onmouseenter="HandleMouseEnter"
-             @onmouseleave="HandleMouseLeave"
+             @onmouseenter="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+             @onmouseleave="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
              data-state="open"
              data-side="@Side"
              @attributes="GetNonStyleAttributes()">
@@ -142,6 +153,7 @@
 
     public ValueTask DisposeAsync()
     {
+        browserEvents?.Dispose();
         CancelCloseTimer();
         return ValueTask.CompletedTask;
     }

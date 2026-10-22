@@ -1,18 +1,23 @@
 @namespace NeoUI.Blazor.Primitives
 
-<button type="button"
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="switch" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues"
+    Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { required = Required })">
+<button type="button" data-neo-field-item="@(BrowserInteraction ? "checked" : null)"
         role="switch"
-        aria-checked="@Checked.ToString().ToLower()"
+        aria-checked="@(BrowserInteraction ? null : Checked.ToString().ToLower())"
         aria-disabled="@Disabled.ToString().ToLower()"
-        data-state="@(Checked ? "checked" : "unchecked")"
+        data-state="@(BrowserInteraction ? null : Checked ? "checked" : "unchecked")"
         disabled="@Disabled"
         tabindex="@(Disabled ? -1 : 0)"
-        @onclick="HandleClick"
-        @onkeydown="HandleKeyDown"
-        @onkeydown:preventDefault="@shouldPreventDefault"
+        @onclick="@(BrowserInteraction ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+        @onkeydown="@(BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
+        @onkeydown:preventDefault="@(!BrowserInteraction && shouldPreventDefault)"
         @attributes="AdditionalAttributes">
     @ChildContent
 </button>
+@if (BrowserInteraction && !string.IsNullOrEmpty(Name)) { <input type="hidden" name="@Name" data-neo-field-hidden /> }
+</BrowserStateHost>
+
 
 @code {
     private bool shouldPreventDefault = false;

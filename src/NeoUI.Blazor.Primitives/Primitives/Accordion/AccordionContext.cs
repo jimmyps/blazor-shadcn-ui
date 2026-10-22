@@ -43,6 +43,8 @@ public enum AccordionType
 /// </summary>
 public class AccordionContext : PrimitiveContextWithEvents<AccordionState>
 {
+    internal bool BrowserInteraction { get; set; }
+
     /// <summary>
     /// Initializes a new instance of the AccordionContext.
     /// </summary>

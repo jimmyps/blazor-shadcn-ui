@@ -48,7 +48,8 @@ export function createController(floating, initialOptions, initialPosition, brid
     let notifications = Promise.resolve();
     let typeahead = '';
     let typeaheadTimer;
-    let hoverTimer;
+    let hoverTimer, hoverOpenTimer, hoverCloseTimer;
+    const isHover = () => options.kind === 'tooltip' || options.kind === 'hovercard';
     let contextPoint = { x: options.x ?? 0, y: options.y ?? 0 };
     let backdrop, savedOverflow;
     const positionReference = () => options.kind === 'contextmenu' ? {
@@ -83,7 +84,13 @@ export function createController(floating, initialOptions, initialPosition, brid
         floating.inert = !visible;
         content.setAttribute('data-state', visible ? 'open' : 'closed');
         content.setAttribute('aria-hidden', String(!visible));
-        trigger()?.setAttribute('aria-expanded', String(visible));
+        if (options.kind === 'tooltip') {
+            const target = trigger();
+            const descriptions = (target?.getAttribute('aria-describedby') ?? '').split(/\s+/).filter(id => id && id !== options.contentId);
+            if (visible) descriptions.push(options.contentId);
+            if (descriptions.length) target?.setAttribute('aria-describedby', descriptions.join(' '));
+            else target?.removeAttribute('aria-describedby');
+        } else trigger()?.setAttribute('aria-expanded', String(visible));
         trigger()?.setAttribute('data-state', visible ? 'open' : 'closed');
     };
     const focus = item => {
@@ -125,6 +132,7 @@ export function createController(floating, initialOptions, initialPosition, brid
             if (child !== controller && belongsTo(child)) child.close(false, report);
     };
     const close = (restoreFocus = true, report = true) => {
+        clearTimeout(hoverOpenTimer); clearTimeout(hoverCloseTimer);
         if (!opened) return;
         opened = false;
         generation++;
@@ -145,13 +153,14 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (opened) return;
         // Opening a sibling closes its branch. Ancestor overlays remain open.
         for (const other of controllers.values()) {
+            if (isHover() && !['tooltip', 'hovercard'].includes(other.options.kind)) continue;
             if (other !== controller && other.isOpen && !belongsTo(other) && !other.belongsTo(controller))
                 other.close(false);
         }
         opened = true;
         const version = ++generation;
         // ARIA reflects intent immediately; visibility waits only for browser positioning.
-        trigger()?.setAttribute('aria-expanded', 'true');
+        if (options.kind !== 'tooltip') trigger()?.setAttribute('aria-expanded', 'true');
         if (report) notify('open', true);
         try {
             const result = await positioning.computePosition(positionReference(), floating, positionOptions());
@@ -169,7 +178,7 @@ export function createController(floating, initialOptions, initialPosition, brid
                     backdrop.setAttribute('data-neo-context-backdrop', ''); doc.body.append(backdrop);
                 }
             }
-            if (initialFocus === 'none') { notify('ready', true); return; }
+            if (isHover() || initialFocus === 'none') { notify('ready', true); return; }
             if (options.kind === 'popover') {
                 (content.querySelector('[data-neo-autofocus]') ?? content.querySelector('[autofocus], button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') ?? content)
                     .focus({ preventScroll: true });
@@ -280,6 +289,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     };
     const stop = event => { event.preventDefault(); event.stopImmediatePropagation(); };
     const click = event => {
+        if (isHover()) { if (options.kind === 'tooltip' && trigger()?.contains(event.target)) close(false); return; }
         const target = event.target;
         if (trigger()?.contains(target) && options.kind !== 'submenu' && options.kind !== 'contextmenu') {
             stop(event);
@@ -315,6 +325,14 @@ export function createController(floating, initialOptions, initialPosition, brid
     const keydown = event => {
         if (event.isComposing || event.key === 'Process') return;
         const onTrigger = trigger()?.contains(event.target);
+        if (isHover()) {
+            // A pointer-revealed card may have focus elsewhere. Give a nested layer
+            // the first Escape; its own controller handles that dismissal.
+            const nested = [...controllers.values()].some(other => other !== controller && other.isOpen &&
+                (content.contains(other.trigger()) || content.contains(other.content)));
+            if (event.key === 'Escape' && opened && !nested) { stop(event); close(false); }
+            return;
+        }
         const inContent = event.target.closest('[data-neo-browser-content]') === content;
         if (onTrigger && options.kind !== 'submenu' && options.kind !== 'contextmenu' && ['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
             stop(event);
@@ -369,7 +387,22 @@ export function createController(floating, initialOptions, initialPosition, brid
         stop(event);
         if (next) focus(next);
     };
+    const insideHover = target => Boolean(target && (trigger()?.contains(target) || content.contains(target)));
+    const revealHover = () => {
+        clearTimeout(hoverCloseTimer); clearTimeout(hoverOpenTimer);
+        if (!opened) hoverOpenTimer = setTimeout(() => { if (!disposed) void open('none'); }, Math.max(0, options.openDelay ?? 0));
+    };
+    const dismissHover = () => {
+        clearTimeout(hoverOpenTimer); clearTimeout(hoverCloseTimer);
+        hoverCloseTimer = setTimeout(() => { if (!disposed && !insideHover(doc.activeElement)) close(false); }, Math.max(0, options.closeDelay ?? 0));
+    };
+    const focusIn = event => { if (isHover() && insideHover(event.target)) { clearTimeout(hoverCloseTimer); clearTimeout(hoverOpenTimer); void open('none'); } };
+    const focusOut = event => { if (isHover() && insideHover(event.target) && !insideHover(event.relatedTarget)) dismissHover(); };
     const pointerOver = event => {
+        if (isHover()) {
+            if (event.pointerType !== 'touch' && insideHover(event.target) && !insideHover(event.relatedTarget)) revealHover();
+            return;
+        }
         if (options.kind === 'popover' || event.pointerType === 'touch') return;
         const item = event.target.closest(itemSelector);
         if (!opened || !item || item.closest('[data-neo-browser-content]') !== content || disabled(item)) return;
@@ -384,6 +417,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         }, 200);
     };
     const pointerOut = event => {
+        if (isHover()) { if (event.pointerType !== 'touch' && insideHover(event.target) && !insideHover(event.relatedTarget)) dismissHover(); return; }
         if (event.pointerType === 'touch') return;
         const item = event.target.closest(itemSelector);
         if (item && !item.contains(event.relatedTarget)) clearTimeout(hoverTimer);
@@ -399,7 +433,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (opened) close(false, false);
         reportPoint(); void open();
     };
-    const listeners = { contextmenu, click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut };
+    const listeners = { focusin: focusIn, focusout: focusOut, contextmenu, click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut };
     const observer = new MutationObserver(() => {
         const json = floating.getAttribute('data-neo-browser-config');
         if (json !== renderedConfiguration) {
@@ -467,7 +501,7 @@ export function createController(floating, initialOptions, initialPosition, brid
             close(false, false);
             disposed = true;
             generation++;
-            clearTimeout(hoverTimer); clearTimeout(typeaheadTimer);
+            clearTimeout(hoverTimer); clearTimeout(hoverOpenTimer); clearTimeout(hoverCloseTimer); clearTimeout(typeaheadTimer);
             observer.disconnect();
             triggerObserver.disconnect();
             for (const [name, listener] of Object.entries(listeners)) doc.removeEventListener(name, listener, true);

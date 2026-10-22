@@ -6,7 +6,7 @@
 *@
 
 <div class="@ContainerCssClass" data-slot="markdown-editor">
-    <Tabs DefaultValue="write" OnValueChange="HandleTabChange">
+    <Tabs InteractionMode="@(BrowserInteraction ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)" DefaultValue="write" OnValueChange="HandleTabChange">
         @* Header with tabs and toolbar *@
         <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-input bg-muted/40">
             @* Write/Preview tabs - GitHub style boxed tabs *@
@@ -37,19 +37,19 @@
                         <DropdownMenuContent Align="PopoverAlign.Start" Class="w-40">
                             <DropdownMenuLabel>Text Style</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem OnClick="@(() => ApplyHeading(0))">
+                            <DropdownMenuItem data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="heading0" OnClick="@(() => ApplyHeading(0))">
                                 <LucideIcon Name="pilcrow" Size="14" Class="mr-2" />
                                 Normal
                             </DropdownMenuItem>
-                            <DropdownMenuItem OnClick="@(() => ApplyHeading(1))">
+                            <DropdownMenuItem data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="heading1" OnClick="@(() => ApplyHeading(1))">
                                 <LucideIcon Name="heading-1" Size="14" Class="mr-2" />
                                 Heading 1
                             </DropdownMenuItem>
-                            <DropdownMenuItem OnClick="@(() => ApplyHeading(2))">
+                            <DropdownMenuItem data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="heading2" OnClick="@(() => ApplyHeading(2))">
                                 <LucideIcon Name="heading-2" Size="14" Class="mr-2" />
                                 Heading 2
                             </DropdownMenuItem>
-                            <DropdownMenuItem OnClick="@(() => ApplyHeading(3))">
+                            <DropdownMenuItem data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="heading3" OnClick="@(() => ApplyHeading(3))">
                                 <LucideIcon Name="heading-3" Size="14" Class="mr-2" />
                                 Heading 3
                             </DropdownMenuItem>
@@ -61,7 +61,7 @@
                         <Button Variant="ButtonVariant.Ghost"
                                 Size="ButtonSize.IconSmall"
                                 AriaLabel="Bold (Ctrl+B)"
-                                OnClick="ApplyBold"
+                                data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="bold" OnClick="ApplyBold"
                                 Disabled="@Disabled"
                                 Class="h-7 w-7">
                             <LucideIcon Name="bold" Size="14" />
@@ -69,7 +69,7 @@
                         <Button Variant="ButtonVariant.Ghost"
                                 Size="ButtonSize.IconSmall"
                                 AriaLabel="Italic (Ctrl+I)"
-                                OnClick="ApplyItalic"
+                                data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="italic" OnClick="ApplyItalic"
                                 Disabled="@Disabled"
                                 Class="h-7 w-7">
                             <LucideIcon Name="italic" Size="14" />
@@ -77,7 +77,7 @@
                         <Button Variant="ButtonVariant.Ghost"
                                 Size="ButtonSize.IconSmall"
                                 AriaLabel="Underline (Ctrl+U)"
-                                OnClick="ApplyUnderline"
+                                data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="underline" OnClick="ApplyUnderline"
                                 Disabled="@Disabled"
                                 Class="h-7 w-7">
                             <LucideIcon Name="underline" Size="14" />
@@ -91,7 +91,7 @@
                         <Button Variant="ButtonVariant.Ghost"
                                 Size="ButtonSize.IconSmall"
                                 AriaLabel="Bullet list"
-                                OnClick="ApplyBulletList"
+                                data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="bullet" OnClick="ApplyBulletList"
                                 Disabled="@Disabled"
                                 Class="h-7 w-7">
                             <LucideIcon Name="list" Size="14" />
@@ -99,7 +99,7 @@
                         <Button Variant="ButtonVariant.Ghost"
                                 Size="ButtonSize.IconSmall"
                                 AriaLabel="Numbered list"
-                                OnClick="ApplyNumberedList"
+                                data-neo-markdown-target="@BrowserActionTarget" data-neo-markdown-action="number" OnClick="ApplyNumberedList"
                                 Disabled="@Disabled"
                                 Class="h-7 w-7">
                             <LucideIcon Name="list-ordered" Size="14" />
@@ -111,6 +111,16 @@
 
         @* Content area *@
         <TabsContent Value="write" Class="mt-0">
+            @if (BrowserInteraction)
+            {
+                <BrowserTextareaInput @ref="browserInput" Id="@BrowserId" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
+                    Class="@TextareaCssClass" Value="@Value" ValueChanged="AcceptMarkdownDraft" ValueExpression="@ValueExpression"
+                    AcceptedValueAccessor="@(() => Value)" ValueRevision="@ValueRevision" Format="@BrowserFormat"
+                    UpdateOn="InputUpdateMode.Input" DebounceDelay="@DebounceDelay" Placeholder="@Placeholder" Disabled="@Disabled" Readonly="@Readonly"
+                    AriaLabel="@AriaLabel" AriaDescribedBy="@AriaDescribedBy" AriaInvalid="@AriaInvalid" />
+            }
+            else
+            {
             <textarea @ref="_textareaRef"
                       id="@Id"
                       class="@TextareaCssClass"
@@ -123,6 +133,7 @@
                       @oninput="HandleInput"
                       @onkeydown="HandleKeyDown"
                       @onkeydown:preventDefault="_shouldPreventKeydown"></textarea>
+            }
         </TabsContent>
 
         <TabsContent Value="preview" Class="mt-0">

@@ -1,5 +1,16 @@
 @namespace NeoUI.Blazor
 
+@if (BrowserInteraction)
+{
+    <BrowserTextareaInput @ref="browserInput" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
+        Id="@EffectiveId" Name="@string.Empty" Class="@CssClass" Rows="@Rows" Value="@Value" ValueChanged="@ValueChanged"
+        ValueExpression="@ValueExpression" ValueRevision="@ValueRevision" AcceptedValueAccessor="@AcceptedValueAccessor"
+        UpdateOn="@UpdateOn" DebounceDelay="@DebounceDelay" Placeholder="@Placeholder" Disabled="@Disabled" Readonly="@Readonly"
+        Required="@Required" AriaLabel="@AriaLabel" AriaDescribedBy="@AriaDescribedBy" AriaInvalid="@AriaInvalid"
+        OnInputRef="@(element => textareaReference = element)" AdditionalAttributes="@BrowserAttributes" />
+}
+else
+{
 @* Input/change events are wired through the shared input.js module (see OnAfterRenderAsync)
    so debouncing runs in the browser without a per-keystroke round-trip. *@
 <textarea
@@ -10,8 +21,10 @@
     placeholder="@Placeholder"
     disabled="@Disabled"
     required="@Required"
+    readonly="@Readonly"
     aria-label="@AriaLabel"
     aria-describedby="@AriaDescribedBy"
     aria-invalid="@(AriaInvalid?.ToString().ToLower())"
     @attributes="AdditionalAttributes"
     @ref="textareaReference">@Value</textarea>
+}

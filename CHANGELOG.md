@@ -26,11 +26,27 @@ controls, event handlers and changing Razor content; the browser owns its floati
 | Select and Popover | Floating shell, focus, positioning and dismissal; Select also provides local navigation/typeahead and optimistic selection feedback |
 | NavigationMenu | Mounted panels, hover delays, switching, focus, ARIA, indicators/viewports and native-link dismissal, including nested portaled content |
 | DatePicker, DateRangePicker, TimePicker, Combobox and MultiSelect | Inherited floating policy; local dismissal and applicable mounted-item hover/focus/navigation; Calendar mounted-day navigation and Command/virtualized Command navigation |
+| HoverCard and Tooltip | Local pointer/focus timers, persistence across trigger/content, Escape dismissal and tooltip descriptions; action callbacks remain live |
+| Accordion, Collapsible and Tabs | Mounted panels, local expansion/activation, disabled skipping, keyboard navigation, ARIA and revisioned resets; Tabs support manual/automatic and horizontal/vertical navigation |
 | SplitButton and SidebarPillNav compositions | Resolved interaction policy for dropdown/menu content, local split-button open styling and optimistic pill-button active feedback |
 
 Menubar and ContextMenu reuse the DropdownMenu selection/controller protocol **at the primitive layer**.
 Keyboard and ARIA behavior, disabled items, nested focus and local mechanics continue working when outgoing
 circuit traffic is blocked. Date/time commits and newly rendered content still use .NET.
+
+Browser Tabs keep inactive content mounted. Review tab sets containing lazy data loads,
+large grids/charts/editors or substantial lifecycle/subscription work before enabling this policy.
+Use `<Tabs InteractionMode="InteractionMode.Blazor">` as a targeted exception; hidden is not lazy.
+The Interaction Mode gallery includes multiline/grouped draft, hover, disclosure and Tabs examples.
+
+### ✨ Feature — shared browser field acceptance and expanded input families
+
+- NumericInput, CurrencyInput and MaskedInput preserve editable drafts separately from typed values. Final blur/form commits apply bounds and formatting; partial or unrepresentable values stop submission. Formatting the same value succeeds without a second Save; changed values require review through ValueAdjusted. Masked onchange uses raw empty/non-empty boundaries, and WebKit deletion across literals stays local.
+- Checkbox, Switch, RadioGroup, Toggle, ToggleGroup, Slider and RangeSlider provide local state/preview with asynchronous canonical acceptance, rejection and revisioned resets. The shared primitive field host joins the existing form synchronization barrier, including portaled content.
+- InputOtp supports local typing, paste, navigation and disabled handling. DateInput/TimeInput support local segmented editing, ARIA updates and the existing FocusAsync API; picker selection/Apply/Cancel dismiss locally, and partial entries cannot submit an older model.
+- TagInput adds local static search, suggestions, hover, tokenization, paste and removal. Application search/validation remain asynchronous; stale results are discarded, Save captures a pending tag, and custom Razor TagTemplate compositions retain an explicit Blazor exception.
+- MarkdownEditor reuses the textarea draft/form adapter for local typing, formatting shortcuts/toolbars, list continuation and undo/redo. Explicit resets clear document history; undo/redo notifications preserve redo history, and preview HTML still uses server rendering and sanitization.
+- RichTextEditor was audited rather than converted. Its existing Quill callback suppression does not solve stale parent echoes or guarantee selection/undo preservation. Full rich-editor synchronization and modal families remain outside this sweep.
 
 ### ✨ Feature — application defaults with explicit exceptions
 
@@ -64,12 +80,21 @@ Mode is fixed after initialization; recreate a component with `@key` to change i
 
 ### ✨ Feature — browser-owned Input drafts and ordered search acknowledgements
 
+Browser-mode `Input`, `Textarea`, `InputGroupInput` and `InputGroupTextarea` share the draft and form-flush protocol.
+Their shared initialization checks lifetime across module import, so removal during initialization cannot pass a disposed callback bridge to JavaScript.
+Textarea also preserves its initial value in server-rendered HTML before hydration.
+
 Browser-mode `Input` owns the current value, caret and selection while .NET processes edits asynchronously.
 An acknowledgement for `Pro` cannot overwrite a newer `Product` draft. The protocol covers delayed/rapid
 edits, rejection/normalization, IME composition, debounce, blur/change, uncertain delivery and explicit resets.
 Command/Combobox/MultiSelect search fields retain typed spaces while results are pending;
 Space selection shortcuts apply to list/root targets rather than editable search inputs.
 The gallery spotlight has coverage for delayed searches, caret edits and repeated clearing.
+MultiSelect search now reads its canonical query when acknowledging an edit, independently
+of cascading renders. Browser Input uses binding expressions or an explicit
+`AcceptedValueAccessor` for canonical acknowledgement; internal Command/DataView/DynamicForm
+compositions supply their context/model accessors. Rejection, normalization and reset
+checks remain in place.
 The Interaction Mode gallery also includes an inline CommandInput example with grouped
 commands, a 300 ms debounce, delayed search feedback, keyboard selection and reset.
 CommandInput now acknowledges the accepted context query directly, independently of

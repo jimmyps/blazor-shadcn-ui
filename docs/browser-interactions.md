@@ -155,8 +155,7 @@ are discarded and are not automatically replayed on reconnect. A new user edit c
 revision also releases new edits if an old acknowledgement never settles. Acknowledgement loss does not prove the server failed.
 Rendered revision commands reconcile after reconnect without requiring a transient JS call.
 
-This first implementation covers Input and composed search fields. Textarea, masked inputs,
-and specialised editor components retain their existing value behavior.
+The supported draft/field families and the RichTextEditor exception are listed in the expansion section below.
 
 ### Existing EditForm handlers: a one-tag opt-in
 
@@ -214,8 +213,8 @@ browser blocks duplicate click/Enter/`requestSubmit()` events; the .NET barrier 
 programmatic submissions. Supported inputs remain locked through the awaited handler.
 `BrowserEditForm.SubmitAsync()` uses the same path. Await all persistence in the existing
 handler rather than starting fire-and-forget work. `FlushTimeoutMilliseconds` defaults to
-30000. The barrier covers supported Input drafts, not independent selection queues or
-unsupported editors. Forms and scopes remain independent.
+30000. The barrier covers the supported text and shared data-field controllers listed below.
+Select/Combobox/MultiSelect and menu selection queues remain independent, as do unsupported editors. Forms and scopes remain independent.
 
 A standard EditForm cannot accept an asynchronous pre-validation extension: its validation
 request is synchronous and its public `OnSubmit` is the validation-owning replacement.
@@ -299,9 +298,8 @@ For a custom flow that keeps the literal EditForm tag, use the reusable scope an
 Do not put a flush inside an existing `OnValidSubmit`: validation would already have run
 against the earlier model. `BrowserInputScope.FlushAsync()` and `Input.FlushAsync()` are
 available for custom flows, but only `SubmitAsync` holds the scope lock through Save.
-A standalone Input flush requires Browser mode. For other editors or optimistic selection
-controls, await their application commits before saving; this barrier synchronizes Input
-drafts. Bind ordinary form model values as drafts and validate on submit so a partial
+A standalone Input flush requires Browser mode. For unsupported editors and independent
+Select/Combobox/MultiSelect or menu selection queues, await application commits before saving. Bind ordinary form model values as drafts and validate on submit so a partial
 first-character boundary update can enable actions without being rejected as a complete
 field value. Nested scopes are independent and fields
 explicitly using Blazor or unsupported editors retain their existing synchronization.
@@ -606,3 +604,50 @@ SplitButton's secondary menu inherits/overrides the policy. Both segments reflec
 Browser menu content and navigation panels remain mounted. Account for the initial rendering/DOM cost when repeating menus across many rows. The form input flush barrier does not await these menu selection queues.
 
 Try the [menu-family gallery](../demo/NeoUI.Demo.Shared/Pages/Components/BrowserMenuFamilies.razor) in the Interaction Mode demo (`#menu-families`).
+
+
+## Canonical values in composed text inputs
+
+A browser acknowledgement must read the accepted model value rather than infer it from whether a child render has completed. Standard `@bind-Value` supplies `ValueExpression`; Browser Input reads that expression after the awaited callback. Manually composed inputs can supply `AcceptedValueAccessor="@(() => model.Name)"` alongside `Value`/`ValueChanged`. The accessor is read after application work, so it must return the actual canonical value, including rejection or normalization. Returning the submitted draft unconditionally would bypass rejection.
+
+Command, MultiSelect search, DataView search and DynamicForm text fields supply their live context/model accessors. DataTable and FilterValue standard bindings use their binding expressions. Revision checks still invalidate acknowledgements from before a reset. This does not turn server acceptance into persistence confirmation.
+
+The P1/P2 scope and consumer review for lazy/heavy tab panels are tracked in [the expansion notes](interaction-mode-sweep.md). The supported families and exceptions are detailed below.
+
+
+## Expanded input and disclosure families
+
+Textarea, InputGroupInput and InputGroupTextarea reuse Input's browser draft controller, including IME, debounce, emptiness boundaries, explicit ValueRevision resets and form flushing. NumericInput, CurrencyInput and MaskedInput use the same queue with typed canonical acceptance and a final blur/Save commit. Incomplete or unrepresentable numeric values remain editable but block Save; they cannot silently submit an older parsed value. Locale formatting that preserves the typed value does not require a second Save. Clamping, normalization or rejection that changes the value returns ValueAdjusted so the user can review it.
+
+Checkbox, Switch, RadioGroup, Toggle, ToggleGroup, Slider, RangeSlider, InputOtp, DateInput, TimeInput and TagInput use the primitive shared field host. Checked/pressed state, mounted indicators, segment editing, OTP paste/focus and range preview run locally. Their asynchronous accepted values join BrowserInputScope and BrowserEditForm, including fields in floating portals. Use InteractionRevision for authoritative resets. Ordinary binding supplies canonical expressions automatically; manual asynchronous callbacks should supply the corresponding AcceptedValueAccessor (or AcceptedValuesAccessor / AcceptedTagsAccessor / AcceptedMinValueAccessor and AcceptedMaxValueAccessor).
+
+TagInput filters static suggestions and handles tokenization, paste, hover and removal locally. OnSearchSuggestions remains application work, with the configured SuggestionDebounceMs (300 ms by default); stale search results cannot replace a newer query. Server Validate and TagsChanged can reject optimistic tags. Save tokenizes a remaining draft before taking the snapshot. A Razor TagTemplate requires an explicit Blazor exception because the browser cannot construct arbitrary Razor components:
+
+```razor
+<TagInput InteractionMode="InteractionMode.Blazor" TagTemplate="@customTemplate" />
+```
+
+MarkdownEditor uses the textarea draft/form adapter. Formatting shortcuts, toolbar actions, list continuation and undo/redo stay local; an explicit ValueRevision starts a new document and clears prior history. Markdown preview rendering and HTML sanitization remain server work. Revealing Preview does not mean that synchronization or rendering has finished.
+
+HoverCard and Tooltip keep their pointer/focus timers, persistence and Escape dismissal local, while action-button callbacks and inner Blazor content remain live. Accordion and Collapsible share the primitive disclosure controller. Tabs share its keyboard/ARIA and controlled reset protocol, with manual/automatic activation and horizontal/vertical navigation.
+
+### Review Tabs before inheriting a Browser default
+
+Browser Tabs retain inactive panels. Hidden components still initialize, load data and retain subscriptions and memory. Evaluate lazy data loads, heavy grids/charts/editors and mount/unmount side effects before opting a tab set in. Keep such sets in Blazor mode when their lifecycle is intentional:
+
+```razor
+<Tabs InteractionMode="InteractionMode.Blazor">
+    @* Heavy or intentionally lazy panels. *@
+</Tabs>
+```
+
+### RichTextEditor audit boundary
+
+RichTextEditor already types in Quill locally, but it does not join the new browser draft/form protocol in this sweep. Its 150 ms notification debounce is not an acceptance revision. The source audit found that delayed parent values can still reach OnParametersSetAsync and setHtml, which calls Quill setContents with API source. Callback suppression prevents loops; it does not prove that the value is current or preserve the user's latest selection/undo history. Do not treat global Browser mode or BrowserEditForm as fixing this editor. A separate versioned Delta/HTML and selection/undo integration is P3 and remains excluded from this change.
+
+
+## Expansion regression commands
+
+The default `npm test` in `tests/browser` now includes the expansion fixtures. Set `NEOUI_TEST_URL` to the Server test host and `NEOUI_EXPECT_DEFAULT=Browser` for its application-default configuration; omit the latter for scoped-policy coverage. Use `NEOUI_TEST_RENDERER=wasm` against the WASM test host and `NEOUI_BROWSER_ENGINE=webkit` for the expansion's WebKit cases. `npm run test:demo` uses `NEOUI_DEMO_URL` to verify the actual gallery, including mixed-control Save and desktop/mobile layout.
+
+Focused regressions include blocked circuit traffic, canonical acknowledgements under render backpressure, empty-mask change boundaries, WebKit deletion across literals, unrepresentable numeric values, read-only snapshots, Markdown redo, public segmented FocusAsync, delayed/rejected changes, explicit resets, retained-circuit reconciliation, and removal during controller import. A debug WASM build and browser emulation do not establish Native AOT, Hybrid or physical-device coverage.

@@ -23,6 +23,7 @@
            InteractionMode="@(Context?.BrowserInteraction == true ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)"
            ValueRevision="@(Context?.InputRevision ?? 0)"
            Value="@Context?.SearchQuery"
+           AcceptedValueAccessor="@(() => Context?.SearchQuery)"
            ValueChanged="HandleValueChanged"
            UpdateOn="InputUpdateMode.Input"
            DebounceDelay="SearchInterval"

@@ -1,5 +1,5 @@
 @namespace NeoUI.Blazor
-<SwitchPrimitive Checked="@Checked"
+<SwitchPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" AcceptedValueAccessor="AcceptedBrowserValue" Name="@EffectiveName" Required="@Required" Checked="@Checked"
                  CheckedChanged="@HandleCheckedChanged"
                  Disabled="@Disabled"
                  Id="@Id"
@@ -7,12 +7,12 @@
                  aria-required="@(Required || CheckedExpression != null ? "true" : null)"
                  aria-invalid="@(IsInvalid ? "true" : null)"
                  class="@CssClass">
-    <span data-state="@(Checked ? "checked" : "unchecked")" class="@ThumbCssClass">
+    <span data-neo-field-state data-state="@(BrowserInteraction ? null : Checked ? "checked" : "unchecked")" class="@ThumbCssClass">
     </span>
 </SwitchPrimitive>
 
 @* Hidden input for form submission *@
-@if (!string.IsNullOrEmpty(EffectiveName))
+@if (!BrowserInteraction && !string.IsNullOrEmpty(EffectiveName))
 {
     <input type="hidden" name="@EffectiveName" value="@(Checked ? "true" : "false")" />
 }

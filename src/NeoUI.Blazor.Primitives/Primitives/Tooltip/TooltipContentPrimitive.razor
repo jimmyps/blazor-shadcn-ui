@@ -7,15 +7,15 @@
     Maintains ARIA attributes for accessibility.
 *@
 
-@if (Context.IsOpen && Context.State.TriggerElement.HasValue)
+@if (Context.Browser.Enabled || (Context.IsOpen && Context.State.TriggerElement.HasValue))
 {
-    <FloatingPortal IsOpen="true"
+    <FloatingPortal IsOpen="@Context.IsOpen" BrowserOptions="@GetBrowserOptions()" BrowserEvents="@browserEvents?.Reference"
                     AnchorElement="@Context.State.TriggerElement"
                     PortalId="@_portalId"
                     Side="@EffectiveSide"
                     Align="@EffectiveAlign"
                     Offset="@Offset"
-                    ForceMount="false"
+                    ForceMount="@Context.Browser.Enabled"
                     Strategy="@Strategy"
                     ZIndex="ZIndexLevels.TooltipContent"
                     OnReady="@HandleFloatingReady">
@@ -24,6 +24,15 @@
 }
 
 @code {
+    private BrowserFloatingEvents? browserEvents;
+    private BrowserFloatingOptions? GetBrowserOptions() => !Context.Browser.Enabled ? null : new()
+    {
+        TriggerId = Context.TriggerId, ContentId = Context.TooltipId,
+        Kind = "tooltip", Open = Context.Browser.Open, OpenVersion = Context.Browser.OpenVersion,
+        OpenDelay = Context.BrowserOpenDelay, CloseDelay = Context.BrowserCloseDelay,
+        NotifyOpen = Context.Browser.OpenChanged != null, CloseOnClickOutside = true
+    };
+
     [CascadingParameter]
     private TooltipContext Context { get; set; } = null!;
 
@@ -141,6 +150,8 @@
                 "Ensure TooltipContentPrimitive is a child of a TooltipPrimitive component.");
         }
 
+        if (Context.Browser.Enabled)
+            browserEvents = new BrowserFloatingEvents { Notify = (name, open) => name == "open" ? Context.Browser.ReportOpenAsync(open) : Task.CompletedTask };
         _portalId = $"tooltip-portal-{Context.TooltipId}";
 
         // Subscribe to context changes
@@ -172,6 +183,7 @@
 
     public ValueTask DisposeAsync()
     {
+        browserEvents?.Dispose();
         if (Context != null)
         {
             Context.OnStateChanged -= HandleContextStateChanged;

@@ -18,7 +18,7 @@
     {
         <Input Id="@FieldId"
                Type="@HtmlInputType"
-               Value="@StringValue"
+               Value="@StringValue" AcceptedValueAccessor="AcceptedStringValue"
                ValueChanged="@HandleStringChange"
                Placeholder="@Field.Placeholder"
                Disabled="@Disabled"
@@ -29,7 +29,7 @@
     {
         <Input Id="@FieldId"
                Type="InputType.Password"
-               Value="@StringValue"
+               Value="@StringValue" AcceptedValueAccessor="AcceptedStringValue"
                ValueChanged="@HandleStringChange"
                Placeholder="@Field.Placeholder"
                Disabled="@Disabled"
@@ -39,7 +39,7 @@
     @* ── Numeric variants ─────────────────────────────────────────────────── *@
     else if (Field.Type == FieldType.Number)
     {
-        <NumericInput TValue="double?"
+        <NumericInput TValue="double?" AcceptedValueAccessor="@(() => NumericDoubleValue)"
                       Id="@FieldId"
                       Value="@NumericDoubleValue"
                       ValueChanged="@HandleNumericChange"
@@ -50,7 +50,7 @@
     }
     else if (Field.Type == FieldType.Currency)
     {
-        <CurrencyInput TValue="decimal?"
+        <CurrencyInput TValue="decimal?" AcceptedValueAccessor="@(() => DecimalValue)"
                        Id="@FieldId"
                        Value="@DecimalValue"
                        ValueChanged="@HandleDecimalChange"
@@ -62,7 +62,7 @@
     else if (Field.Type == FieldType.Masked)
     {
         var mask = Field.Metadata?.TryGetValue("mask", out var m) == true ? m?.ToString() ?? string.Empty : string.Empty;
-        <MaskedInput Id="@FieldId"
+        <MaskedInput AcceptedValueAccessor="AcceptedStringValue" Id="@FieldId"
                      Value="@StringValue"
                      ValueChanged="@HandleStringChange"
                      Mask="@mask"
@@ -74,7 +74,7 @@
     @* ── Textarea ──────────────────────────────────────────────────────────── *@
     else if (Field.Type == FieldType.Textarea)
     {
-        <Textarea Id="@FieldId"
+        <Textarea AcceptedValueAccessor="AcceptedStringValue" Id="@FieldId"
                   Value="@StringValue"
                   ValueChanged="@HandleStringChange"
                   Placeholder="@Field.Placeholder"
@@ -86,7 +86,7 @@
     {
         var inlineLabel = Field.Label ?? Field.Placeholder;
         <div class="flex items-center gap-2">
-            <Checkbox Id="@FieldId"
+            <Checkbox Id="@FieldId" AcceptedValueAccessor="@(() => BoolValue)"
                       Checked="@BoolValue"
                       CheckedChanged="@HandleBoolChange"
                       Disabled="@Disabled" />
@@ -106,7 +106,7 @@
     {
         var inlineLabel = Field.Label ?? Field.Placeholder;
         <div class="flex items-center gap-2">
-            <Switch Id="@FieldId"
+            <Switch Id="@FieldId" AcceptedValueAccessor="@(() => BoolValue)"
                     Checked="@BoolValue"
                     CheckedChanged="@HandleBoolChange"
                     Disabled="@Disabled" />
@@ -131,7 +131,7 @@
                 var optId  = $"{FieldId}-{opt.Value}";
                 var ticked = CheckboxGroupValues.Contains(opt.Value);
                 <div class="flex items-center gap-2">
-                    <Checkbox Id="@optId"
+                    <Checkbox Id="@optId" AcceptedValueAccessor="@(() => CheckboxGroupValues.Contains(opt.Value))"
                               Checked="@ticked"
                               CheckedChanged="@((bool v) => HandleCheckboxGroupChange(opt.Value, v))"
                               Disabled="@(Disabled || opt.Disabled)" />
@@ -198,7 +198,7 @@
     @* ── Radio group ──────────────────────────────────────────────────────── *@
     else if (Field.Type == FieldType.RadioGroup)
     {
-        <RadioGroup Value="@StringValue"
+        <RadioGroup AcceptedValueAccessor="@(() => StringValue)" Value="@StringValue"
                     ValueChanged="@((string? v) => HandleStringChange(v))"
                     Disabled="@Disabled">
             @foreach (var opt in Field.Options ?? [])
@@ -274,7 +274,7 @@
     else if (Field.Type == FieldType.OTP)
     {
         var length = Field.Metadata?.TryGetValue("length", out var l) == true && l is int li ? li : 6;
-        <InputOtp Value="@StringValue"
+        <InputOtp AcceptedValueAccessor="@(() => StringValue)" Value="@StringValue"
                   ValueChanged="@((string v) => HandleStringChange(v))"
                   Length="@length"
                   Disabled="@Disabled" />
@@ -282,13 +282,13 @@
     @* ── Sliders ──────────────────────────────────────────────────────────── *@
     else if (Field.Type == FieldType.Slider)
     {
-        <Slider Value="@SliderValue"
+        <Slider AcceptedValueAccessor="@(() => SliderValue)" Value="@SliderValue"
                 ValueChanged="@((double v) => HandleSliderChange(v))"
                 Disabled="@Disabled" />
     }
     else if (Field.Type == FieldType.RangeSlider)
     {
-        <RangeSlider MinValue="@RangeMinValue"
+        <RangeSlider AcceptedMinValueAccessor="@(() => RangeMinValue)" AcceptedMaxValueAccessor="@(() => RangeMaxValue)" MinValue="@RangeMinValue"
                      MinValueChanged="@((double v) => HandleRangeMinChange(v))"
                      MaxValue="@RangeMaxValue"
                      MaxValueChanged="@((double v) => HandleRangeMaxChange(v))"
@@ -297,7 +297,7 @@
     @* ── Tags ─────────────────────────────────────────────────────────────── *@
     else if (Field.Type == FieldType.Tags)
     {
-        <TagInput Tags="@TagsValue"
+        <TagInput AcceptedTagsAccessor="@(() => TagsValue)" Tags="@TagsValue"
                   TagsChanged="@HandleTagsChange"
                   Placeholder="@Field.Placeholder"
                   Disabled="@Disabled" />
@@ -315,7 +315,7 @@
     {
         <Input Id="@FieldId"
                Type="InputType.Text"
-               Value="@StringValue"
+               Value="@StringValue" AcceptedValueAccessor="AcceptedStringValue"
                ValueChanged="@HandleStringChange"
                Placeholder="@Field.Placeholder"
                Disabled="@Disabled"

@@ -188,12 +188,12 @@
             <div class="grid gap-6 sm:grid-cols-2">
                 <article class="space-y-3 min-w-0">
                     <Label For="demo-draft-input">Update on input</Label>
-                    <Input Id="demo-draft-input" InteractionMode="InteractionMode.Browser" Value="@acceptedDraft" ValueChanged="CommitDraft" ValueRevision="@draftRevision" UpdateOn="InputUpdateMode.Input" Placeholder="Keep typing during the delay" data-testid="demo-browser-input" />
+                    <Input Id="demo-draft-input" InteractionMode="InteractionMode.Browser" Value="@acceptedDraft" AcceptedValueAccessor="@(() => acceptedDraft)" ValueChanged="CommitDraft" ValueRevision="@draftRevision" UpdateOn="InputUpdateMode.Input" Placeholder="Keep typing during the delay" data-testid="demo-browser-input" />
                     <p class="text-sm text-muted-foreground">Accepted: <span class="font-medium text-foreground" data-testid="demo-input-accepted">@acceptedDraft</span></p>
                 </article>
                 <article class="space-y-3 min-w-0">
                     <Label For="demo-change-draft">Update on change</Label>
-                    <Input Id="demo-change-draft" InteractionMode="InteractionMode.Browser" Value="@acceptedChangeDraft" ValueChanged="CommitChangeDraft" ValueRevision="@draftRevision" UpdateOn="InputUpdateMode.Change" Placeholder="Type, then leave this field" data-testid="demo-change-input" />
+                    <Input Id="demo-change-draft" InteractionMode="InteractionMode.Browser" Value="@acceptedChangeDraft" AcceptedValueAccessor="@(() => acceptedChangeDraft)" ValueChanged="CommitChangeDraft" ValueRevision="@draftRevision" UpdateOn="InputUpdateMode.Change" Placeholder="Type, then leave this field" data-testid="demo-change-input" />
                     <p class="text-sm text-muted-foreground">Accepted: <span class="font-medium text-foreground" data-testid="demo-change-accepted">@acceptedChangeDraft</span></p>
                 </article>
             </div>
@@ -255,6 +255,50 @@
         </DemoBlock>
     </DemoSection>
 
+    <InteractionModeProvider Mode="InteractionMode.Browser">
+        <DemoSection Title="Multiline and grouped drafts" Description="Textarea and InputGroup share Input's browser draft, IME, reset and form synchronization protocol. Save immediately after typing to include the latest values.">
+            <DemoBlock>
+                <BrowserEditForm Model="@expandedDraft" OnValidSubmit="SaveExpandedDraft">
+                    <div class="space-y-4">
+                        <Textarea @bind-Value="expandedDraft.Notes" UpdateOn="InputUpdateMode.Input" DebounceDelay="250" Placeholder="Project notes" />
+                        <InputGroup><InputGroupInput @bind-Value="expandedDraft.Title" Placeholder="Draft title" /></InputGroup>
+                        <InputGroup><InputGroupTextarea @bind-Value="expandedDraft.Summary" Placeholder="Draft summary" /></InputGroup>
+                        <Button Type="ButtonType.Submit">Save multiline draft</Button>
+                        <p class="text-sm text-muted-foreground" role="status">@expandedSaved</p>
+                    </div>
+                </BrowserEditForm>
+            </DemoBlock>
+        </DemoSection>
+        <DemoSection Title="Hover and disclosure" Description="HoverCard and Tooltip timers, Accordion expansion and Collapsible state stay in the browser. Their mounted content remains live Blazor content.">
+            <DemoBlock>
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <HoverCard><HoverCardTrigger AsChild><Button Variant="ButtonVariant.Outline">Workspace details</Button></HoverCardTrigger><HoverCardContent><p class="text-sm">This content stays mounted. Hover or focus to reveal it; Escape dismisses locally.</p></HoverCardContent></HoverCard>
+                        <Tooltip><TooltipTrigger AsChild><Button Variant="ButtonVariant.Outline">Helpful hint</Button></TooltipTrigger><TooltipContent>Browser timers and dismissal</TooltipContent></Tooltip>
+                    </div>
+                    <Accordion Collapsible>
+                        <AccordionItem Value="local"><AccordionTrigger>What responds locally?</AccordionTrigger><AccordionContent>Expansion, keyboard navigation, focus and ARIA state update without waiting for a circuit.</AccordionContent></AccordionItem>
+                        <AccordionItem Value="server"><AccordionTrigger>What still runs on the server?</AccordionTrigger><AccordionContent>Application callbacks and the business logic of components inside each panel.</AccordionContent></AccordionItem>
+                    </Accordion>
+                    <Collapsible><CollapsibleTrigger AsChild><Button Variant="ButtonVariant.Outline">Show adoption note</Button></CollapsibleTrigger><CollapsibleContent><p class="py-3 text-sm text-muted-foreground">Hidden content remains mounted and can still load data or hold subscriptions.</p></CollapsibleContent></Collapsible>
+                </div>
+            </DemoBlock>
+        </DemoSection>
+        <DemoSection Title="Instant tabs for mounted content" Description="Evaluate each tab set before inheriting Browser mode. Use an explicit Blazor override for lazy loading, expensive grids/charts/editors, or content whose mount lifecycle should run only when selected.">
+            <DemoBlock Code="@tabsPolicyCode">
+                <Tabs DefaultValue="overview">
+                    <TabsList><TabsTrigger Value="overview">Overview</TabsTrigger><TabsTrigger Value="activity">Activity</TabsTrigger><TabsTrigger Value="disabled" Disabled>Unavailable</TabsTrigger></TabsList>
+                    <TabsContent Value="overview"><p class="py-4">Small panels switch locally and retain their state.</p></TabsContent>
+                    <TabsContent Value="activity"><p class="py-4">Inactive panels stay mounted. Hidden does not mean lazy or free to initialize.</p></TabsContent>
+                </Tabs>
+            </DemoBlock>
+        </DemoSection>
+    </InteractionModeProvider>
+
+    <DemoSection Title="Data controls and editor drafts" Description="Formatted inputs, tags, OTP, date/time segments, toggles and sliders share local editing with versioned acceptance. Save synchronizes their latest values before validation; invalid or uncertain drafts stop submission.">
+        <DemoBlock><BrowserInputFamilies /></DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="Adopt a policy with exceptions" Description="Explicit component setting → nearest scoped override → application default → library Blazor default.">
         <DemoBlock Code="@policyCode">
             <InteractionModeProvider Mode="InteractionMode.Browser">
@@ -300,6 +344,19 @@
 </div>
 
 @code {
+    private sealed class ExpandedDraft { public string? Notes { get; set; } public string? Title { get; set; } public string? Summary { get; set; } }
+    private readonly ExpandedDraft expandedDraft = new();
+    private string expandedSaved = "No draft saved yet.";
+    private void SaveExpandedDraft() => expandedSaved = $"Saved: {expandedDraft.Title} | {expandedDraft.Notes} | {expandedDraft.Summary}";
+    private const string tabsPolicyCode = """
+        <Tabs InteractionMode="InteractionMode.Browser" DefaultValue="overview">
+            @* Small, mounted panels switch locally. *@
+        </Tabs>
+        <Tabs InteractionMode="InteractionMode.Blazor">
+            @* Explicit exception for heavy or intentionally lazy content. *@
+        </Tabs>
+        """;
+
     private sealed class ProfileDraft {
         [Required, MinLength(4)] public string? Name { get; set; }
         [Required] public string? Note { get; set; }
@@ -351,6 +408,7 @@
     private const string inputCode = """
         <Input InteractionMode="InteractionMode.Browser"
                Value="@acceptedText" ValueChanged="AcceptTextAsync"
+               AcceptedValueAccessor="@(() => acceptedText)"
                ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" />
         // Await application work, then assign acceptedText to accept/normalize.
         // Increment revision with acceptedText to explicitly replace/reset the draft.

@@ -10,7 +10,7 @@ namespace NeoUI.Blazor;
 public partial class Input
 {
     [Inject] private IOptions<InteractionOptions> InteractionDefaults { get; set; } = default!;
-    [CascadingParameter] private BrowserInputScope? InputScope { get; set; }
+    [CascadingParameter] protected BrowserInputScope? InputScope { get; set; }
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
     [CascadingParameter] private PopoverContext? PopoverContext { get; set; }
 
@@ -20,18 +20,26 @@ public partial class Input
     /// <summary>Change to replace the browser draft with Value, including unchanged resets. This invalidates queued edits.</summary>
     [Parameter] public long ValueRevision { get; set; }
 
+    /// <summary>Reads the canonical value after an awaited callback without depending on a child render. For manual compositions; standard binding uses ValueExpression.</summary>
+    [Parameter] public Func<string?>? AcceptedValueAccessor { get; set; }
+
     private bool? _browserInteraction;
     private string? _browserInitialValue;
     private long _browserSequence;
+    protected virtual bool BrowserDraftIsValid => true;
+    protected virtual object? BrowserFormat => null;
+    protected virtual bool CommitOnBlur => false;
+    internal IJSObjectReference? ValidationModule => _inputModule;
     private bool BrowserInteraction => _browserInteraction == true;
-    private string? RenderedValue => BrowserInteraction ? _browserInitialValue : Value;
-    private string? BrowserInputConfiguration => BrowserInteraction ? JsonSerializer.Serialize(new
+    protected string? RenderedValue => BrowserInteraction ? _browserInitialValue : Value;
+    protected string? BrowserInputConfiguration => BrowserInteraction ? JsonSerializer.Serialize(new
     {
         value = Value ?? string.Empty,
         revision = ValueRevision,
         updateOn = UpdateOn.ToString().ToLowerInvariant(),
         debounce = Math.Max(0, DebounceDelay),
         @readonly = Readonly,
+        format = BrowserFormat, commitOnBlur = CommitOnBlur,
         server = !OperatingSystem.IsBrowser()
     }) : null;
 
@@ -107,19 +115,34 @@ public partial class Input
 
     /// <summary>Processes a versioned edit out of band. UI drafts never wait for this callback.</summary>
     [JSInvokable]
-    public async Task<object> OnBrowserInputChanged(string? value, long sequence, long revision)
+    public Task<object> OnBrowserInputChanged(string? value, long sequence, long revision) => ProcessBrowserEditAsync(value, sequence, revision, false);
+
+    /// <summary>Processes a final blur or form snapshot through the same versioned queue.</summary>
+    [JSInvokable]
+    public Task<object> OnBrowserInputCommitted(string? value, long sequence, long revision) => ProcessBrowserEditAsync(value, sequence, revision, true);
+
+    protected virtual async Task<string?> AcceptBrowserDraftAsync(string? value, bool final)
     {
-        if (!BrowserInteraction || revision != ValueRevision || sequence <= _browserSequence || Disabled || Readonly)
-            return new { value = Value ?? string.Empty, sequence, revision, ignored = true };
-        _browserSequence = sequence;
-        // Keep the accepted parameter intact: a rejecting parent may retain the same
-        // render-tree parameter and Blazor then does not set it again.
         if (!ValueChanged.HasDelegate) Value = value;
         await ValueChanged.InvokeAsync(value);
-        if (revision != ValueRevision)
+        if (AcceptedValueAccessor != null) return AcceptedValueAccessor();
+        if (ValueExpression != null) return ValueExpression.Compile().Invoke();
+        return Value;
+    }
+
+    protected virtual bool IsEquivalentBrowserValue(string? draft, string? accepted) => (draft ?? string.Empty) == (accepted ?? string.Empty);
+
+    private async Task<object> ProcessBrowserEditAsync(string? value, long sequence, long revision, bool final)
+    {
+        if (!BrowserInteraction || _browserInputDisposed || revision != ValueRevision || sequence <= _browserSequence || Disabled || Readonly)
             return new { value = Value ?? string.Empty, sequence, revision, ignored = true };
+        _browserSequence = sequence;
+        var accepted = await AcceptBrowserDraftAsync(value, final);
+        if (_browserInputDisposed || revision != ValueRevision)
+            return new { value = Value ?? string.Empty, sequence, revision, ignored = true };
+        Value = accepted;
         if (_validationBehavior != null) await _validationBehavior.NotifyFieldChangedAsync();
         else if (EditContext != null && ValueExpression != null) EditContext.NotifyFieldChanged(FieldIdentifier.Create(ValueExpression));
-        return new { value = Value ?? string.Empty, sequence, revision, ignored = false };
+        return new { value = Value ?? string.Empty, sequence, revision, ignored = false, equivalent = IsEquivalentBrowserValue(value, Value), invalid = !BrowserDraftIsValid };
     }
 }

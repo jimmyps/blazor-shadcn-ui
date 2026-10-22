@@ -45,6 +45,7 @@ public class OtpState
 /// </summary>
 public class OtpContext : PrimitiveContextWithEvents<OtpState>
 {
+    internal bool BrowserInteraction { get; set; }
     private readonly List<ElementReference> _slotRefs = new();
 
     /// <summary>

@@ -21,6 +21,10 @@ namespace NeoUI.Blazor.Primitives;
 /// </remarks>
 public class CollapsibleContext
 {
+    internal bool BrowserInteraction { get; set; }
+    internal string TriggerId { get; } = $"collapse-trigger-{Guid.NewGuid():N}";
+    internal string ContentId { get; } = $"collapse-content-{Guid.NewGuid():N}";
+
     /// <summary>
     /// Gets or sets a value indicating whether the collapsible content is expanded.
     /// </summary>

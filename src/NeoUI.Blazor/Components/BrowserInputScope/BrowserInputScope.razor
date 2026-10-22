@@ -4,7 +4,9 @@
 @inject IJSRuntime JS
 
 <CascadingValue Value="this" IsFixed="true">
+<CascadingValue Name="NeoUIInputScopeId" Value="Id" IsFixed="true">
     <div @ref="root" data-neo-input-scope-root="@Id" data-neo-input-busy="@renderedBusy.ToString().ToLowerInvariant()" style="display:contents" @attributes="AdditionalAttributes">@ChildContent</div>
+</CascadingValue>
 </CascadingValue>
 
 @code {

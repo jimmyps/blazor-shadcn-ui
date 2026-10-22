@@ -32,6 +32,8 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class InputGroupInput : ComponentBase, IAsyncDisposable
 {
+    protected override void OnParametersSet() => ConfigureBrowserMode();
+
     private ElementReference _inputRef;
 
     /// <summary>
@@ -222,6 +224,7 @@ public partial class InputGroupInput : ComponentBase, IAsyncDisposable
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         if (!firstRender)
             return;
 

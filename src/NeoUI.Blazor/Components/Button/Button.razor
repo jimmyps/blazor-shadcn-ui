@@ -11,7 +11,7 @@
     aria-haspopup="@(TriggerContext?.AriaHasPopup)"
     aria-expanded="@(TriggerContext != null && !TriggerContext.BrowserOwned ? TriggerContext.IsOpen.ToString().ToLower() : null)"
     aria-controls="@(TriggerContext?.AriaControls)"
-    @onclick="@(TriggerContext?.BrowserOwned == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+    @onclick="@(TriggerContext?.BrowserOwned == true ? (TriggerContext.BrowserClickPassthrough ? OnClick : default(EventCallback<MouseEventArgs>)) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
     @onkeydown="@(TriggerContext?.BrowserOwned == true || TriggerContext?.OnKeyDown == null ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
     @onmouseenter="@(TriggerContext?.BrowserOwned == true || TriggerContext?.OnMouseEnter == null ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
     @onmouseleave="@(TriggerContext?.BrowserOwned == true || TriggerContext?.OnMouseLeave == null ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"

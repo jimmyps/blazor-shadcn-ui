@@ -83,8 +83,9 @@ function saveState(textarea) {
  * Notify Blazor of content changes (without saving state - for undo/redo)
  * @param {HTMLTextAreaElement} textarea - The textarea element
  */
-function notifyBlazor(textarea) {
+function notifyBlazor(textarea, restoring = false) {
     const data = editorMap.get(textarea);
+    if (data?.browserOwned) { data.restoring = restoring; try { textarea.dispatchEvent(new Event('input',{bubbles:true})); } finally { data.restoring = false; } return; }
     if (data && data.dotNetRef) {
         data.dotNetRef.invokeMethodAsync('OnContentChanged', textarea.value);
     }
@@ -114,8 +115,8 @@ export function undo(textarea) {
     const state = data.history[data.historyIndex];
     textarea.value = state.value;
     textarea.setSelectionRange(state.selection.start, state.selection.end);
-    // Only notify Blazor, don't save state (would corrupt history)
-    notifyBlazor(textarea);
+    // Notify the draft controller without recording the restored state as a new edit.
+    notifyBlazor(textarea, true);
     return true;
 }
 
@@ -134,8 +135,8 @@ export function redo(textarea) {
     const state = data.history[data.historyIndex];
     textarea.value = state.value;
     textarea.setSelectionRange(state.selection.start, state.selection.end);
-    // Only notify Blazor, don't save state (would corrupt history)
-    notifyBlazor(textarea);
+    // Notify the draft controller without recording the restored state as a new edit.
+    notifyBlazor(textarea, true);
     return true;
 }
 
@@ -359,12 +360,12 @@ const inputListenerMap = new WeakMap();
  * @param {HTMLTextAreaElement} textarea - The textarea element
  * @param {DotNetObjectReference} dotNetRef - Reference to Blazor component
  */
-export function initializeListContinuation(textarea, dotNetRef) {
+export function initializeListContinuation(textarea, dotNetRef, browserOwned = false) {
     if (!textarea || editorMap.has(textarea)) return;
 
     // Initialize editor data for history/undo
     const data = {
-        dotNetRef,
+        dotNetRef, browserOwned,
         history: [],
         historyIndex: -1,
         maxHistory: 100
@@ -374,7 +375,30 @@ export function initializeListContinuation(textarea, dotNetRef) {
     // Save initial state
     saveState(textarea);
 
+    const apply = action => {
+        if (textarea.disabled || textarea.readOnly) return;
+        saveState(textarea);
+        if (action === 'bold') insertFormatting(textarea,'**','**','bold text');
+        else if (action === 'italic') insertFormatting(textarea,'*','*','italic text');
+        else if (action === 'underline') insertFormatting(textarea,'<u>','</u>','underlined text');
+        else if (action === 'bullet') insertLinePrefix(textarea,'- ');
+        else if (action === 'number') insertLinePrefix(textarea,'1. ');
+        else if (action === 'heading0') removeLinePrefix(textarea);
+        else if (/^heading[1-3]$/.test(action)) insertLinePrefix(textarea,'#'.repeat(Number(action.at(-1)))+' ');
+        else return;
+        notifyContentChanged(textarea);
+    };
+    const toolbar = event => {
+        const action = event.target.closest('[data-neo-markdown-target]');
+        if (!browserOwned || action?.dataset.neoMarkdownTarget !== textarea.id) return;
+        event.preventDefault(); event.stopImmediatePropagation(); apply(action.dataset.neoMarkdownAction);
+    };
+    if (browserOwned) { data.toolbar = toolbar; textarea.ownerDocument.addEventListener('click',toolbar,true); }
     const handler = (e) => {
+        if (e.isComposing || textarea.disabled || textarea.readOnly) return;
+        if (browserOwned && (e.ctrlKey || e.metaKey) && ['b','i','u'].includes(e.key.toLowerCase())) {
+            e.preventDefault(); apply({b:'bold',i:'italic',u:'underline'}[e.key.toLowerCase()]); return;
+        }
         // Intercept Ctrl+Z/Y for undo/redo (prevent browser's native undo)
         if (e.ctrlKey || e.metaKey) {
             if (e.key === 'z' || e.key === 'Z') {
@@ -470,11 +494,12 @@ export function initializeListContinuation(textarea, dotNetRef) {
 
     // Add input listener for auto-scroll and state saving on typing
     const inputHandler = () => {
+        const restoring = data.restoring;
         // Use requestAnimationFrame to ensure scroll happens after DOM update
         requestAnimationFrame(() => {
             scrollToCursor(textarea);
             // Save state for undo after each input
-            saveState(textarea);
+            if (!restoring) saveState(textarea);
         });
     };
     textarea.addEventListener('input', inputHandler);
@@ -487,6 +512,8 @@ export function initializeListContinuation(textarea, dotNetRef) {
  */
 export function disposeListContinuation(textarea) {
     if (!textarea) return;
+    const data = editorMap.get(textarea);
+    if (data?.toolbar) textarea.ownerDocument.removeEventListener('click',data.toolbar,true);
     const handler = listenerMap.get(textarea);
     if (handler) {
         textarea.removeEventListener('keydown', handler);
@@ -499,4 +526,10 @@ export function disposeListContinuation(textarea) {
     }
     // Clean up editor data (history, dotNetRef)
     editorMap.delete(textarea);
+}
+
+// Explicit revisions start a new document; undo must not resurrect the old draft.
+export function resetHistory(textarea) {
+    const data = editorMap.get(textarea);
+    if (data) { data.history = []; data.historyIndex = -1; saveState(textarea); }
 }

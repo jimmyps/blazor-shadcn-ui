@@ -10,6 +10,8 @@ namespace NeoUI.Blazor.Primitives;
 /// </remarks>
 public class RadioGroupContext<TValue>
 {
+    /// <summary>Whether local interaction attributes are owned by the browser.</summary>
+    public bool BrowserInteraction { get; internal set; }
     /// <summary>
     /// Gets or sets the currently selected value in the radio group.
     /// </summary>

@@ -1,6 +1,8 @@
+import { attachFormat } from './browser-input-formats.js';
 // Razor renders a fixed initial value in Browser mode. Only this controller writes
 // subsequent DOM values; post-render repair cannot prevent stale render-batch writes.
 const controllers = new WeakMap();
+const controllerFor = element => controllers.get(element) ?? element[Symbol.for('NeoUI.BrowserField')];
 const activeScopes = new Map();
 const editFormGuards = new WeakMap();
 let connectionState = true;
@@ -22,10 +24,12 @@ function canInvokeServer() {
 export function initialize(element, bridge) {
     if (!element || controllers.has(element)) return;
     let config = JSON.parse(element.getAttribute('data-neo-input-config') || '{}');
+    const formatting = attachFormat(element, () => config.format);
     let revision = config.revision ?? 0, sequence = 0, draft = element.value;
     let lastSubmitted = config.value ?? '', submittedSequence = 0, acceptedValue = config.value ?? '', composing = false, timer, running = false, disposed = false;
     const queue = [];
-    let heldAck, generation = 0, observedEmpty = (config.value ?? '').length === 0, lockDepth = 0;
+    let lastFinalSequence = -1, equivalentSequence = -1;
+    let heldAck, generation = 0, observedEmpty = formatting.isEmpty(config.value ?? ''), lockDepth = 0;
     const waiters = new Set();
     const finish = (waiter, status) => { clearTimeout(waiter.timer); waiters.delete(waiter); waiter.resolve({ status, fieldId: element.id }); };
     const settleWaiters = () => {
@@ -34,7 +38,8 @@ export function initialize(element, bridge) {
             else if (waiter.revision !== revision) finish(waiter, 'Reset');
             else if (waiter.sequence !== sequence) finish(waiter, 'Changed');
             else if (element.hasAttribute('data-neo-input-uncertain')) finish(waiter, 'Uncertain');
-            else if (!element.hasAttribute('data-neo-input-pending')) finish(waiter, acceptedValue === waiter.value ? 'Success' : 'ValueAdjusted');
+            else if (element.hasAttribute('data-neo-input-invalid')) finish(waiter, 'Invalid');
+            else if (!element.hasAttribute('data-neo-input-pending')) finish(waiter, (acceptedValue === waiter.value || equivalentSequence === waiter.sequence) ? 'Success' : 'ValueAdjusted');
         }
     };
     const emit = () => { settleWaiters(); element.dispatchEvent(new CustomEvent('neoui:input-state', {
@@ -57,6 +62,7 @@ export function initialize(element, bridge) {
     const observeDraft = () => {
         if (draft === element.value) return false;
         draft = element.value; sequence++;
+        if (element.hasAttribute('data-neo-input-invalid')) { element.removeAttribute('data-neo-input-invalid'); element.setCustomValidity(''); formatting.reconcile(); }
         element.removeAttribute('data-neo-input-uncertain');
         pending(true);
         return true;
@@ -65,8 +71,11 @@ export function initialize(element, bridge) {
         if (disposed || ack.revision !== revision || ack.sequence !== sequence) return;
         if (composing) { heldAck = ack; return; }
         if (ack.ignored) { element.setAttribute('data-neo-input-uncertain', ''); emit(); return; }
-        write(ack.value ?? ''); lastSubmitted = acceptedValue = draft; submittedSequence = sequence;
-        observedEmpty = draft.length === 0;
+        element.toggleAttribute('data-neo-input-invalid', Boolean(ack.invalid));
+        if (ack.invalid) element.setCustomValidity('Enter a value supported by this field.');
+        equivalentSequence = ack.equivalent ? sequence : -1;
+        write(ack.value ?? ''); formatting.reconcile(); lastSubmitted = acceptedValue = draft; submittedSequence = sequence;
+        observedEmpty = formatting.isEmpty(draft);
         element.removeAttribute('data-neo-input-uncertain');
         pending(false);
     };
@@ -82,7 +91,7 @@ export function initialize(element, bridge) {
                     if (config.server && !canInvokeServer()) {
                         queue.length = 0; element.setAttribute('data-neo-input-uncertain', ''); emit(); break;
                     }
-                    const ack = await bridge.invokeMethodAsync('OnBrowserInputChanged', edit.value, edit.sequence, edit.revision);
+                    const ack = await bridge.invokeMethodAsync(edit.final ? 'OnBrowserInputCommitted' : 'OnBrowserInputChanged', edit.value, edit.sequence, edit.revision);
                     if (currentGeneration !== generation || disposed || edit.revision !== revision || ack.revision !== revision) continue;
                     // A stale acknowledgement must not paint over a newer draft, but it
                     // still records the server's accepted value. Change-mode emptiness
@@ -102,16 +111,21 @@ export function initialize(element, bridge) {
             }
         } finally { if (currentGeneration === generation) running = false; }
     }
+    const prepareFinal = () => {
+        observeDraft();
+        if (config.commitOnBlur && !config.readonly && lastFinalSequence !== sequence) { sequence++; lastFinalSequence = sequence; pending(true); }
+    };
     const submit = (flushing = false) => {
         cancelTimer();
         if (disposed || composing || element.disabled || (element.readOnly && !flushing && !lockDepth) || !bridge) return;
         observeDraft();
+        if (flushing) prepareFinal();
         if (draft === lastSubmitted && submittedSequence === sequence && !element.hasAttribute('data-neo-input-uncertain')) return;
-        if (!running && !queue.length && draft === acceptedValue && !element.hasAttribute('data-neo-input-uncertain')) {
+        if (!(flushing && config.commitOnBlur) && !running && !queue.length && draft === acceptedValue && !element.hasAttribute('data-neo-input-uncertain')) {
             lastSubmitted = draft; submittedSequence = sequence; pending(false); return;
         }
         lastSubmitted = draft; submittedSequence = sequence;
-        queue.push({ value: draft, sequence, revision });
+        queue.push({ value: draft, sequence, revision, final: flushing });
         pending(true);
         void pump();
     };
@@ -122,22 +136,24 @@ export function initialize(element, bridge) {
         else submit();
     };
     const notifyChangeBoundary = () => {
-        const empty = draft.length === 0, crossed = empty !== observedEmpty;
+        const empty = formatting.isEmpty(draft), crossed = empty !== observedEmpty;
         if (!composing) observedEmpty = empty;
         if (config.updateOn === 'change' && crossed && !composing) submit();
         else schedule();
     };
     const input = () => { observeDraft(); notifyChangeBoundary(); };
     const compositionStart = () => { composing = true; cancelTimer(); };
-    const compositionEnd = () => { composing = false; observeDraft(); if (heldAck) { reconcile(heldAck); heldAck = undefined; } if (document.activeElement !== element) submit(); else notifyChangeBoundary(); };
-    const change = () => { observeDraft(); submit(); };
+    const compositionEnd = () => { composing = false; observeDraft(); if (heldAck) { reconcile(heldAck); heldAck = undefined; } if (document.activeElement !== element) submit(true); else notifyChangeBoundary(); };
+    const change = () => { observeDraft(); submit(true); };
     const observer = new MutationObserver(() => {
         config = JSON.parse(element.getAttribute('data-neo-input-config') || '{}');
         if (lockDepth) element.readOnly = true;
         if (config.revision === revision) return;
         revision = config.revision;
         cancelTimer(); queue.length = 0; heldAck = undefined; generation++; running = false;
-        write(config.value ?? ''); lastSubmitted = acceptedValue = draft; submittedSequence = sequence; observedEmpty = draft.length === 0;
+        if (element.hasAttribute('data-neo-input-invalid')) element.setCustomValidity('');
+        element.removeAttribute('data-neo-input-invalid');
+        write(config.value ?? ''); formatting.reconcile(); lastFinalSequence = -1; lastSubmitted = acceptedValue = draft; submittedSequence = sequence; observedEmpty = formatting.isEmpty(draft);
         element.removeAttribute('data-neo-input-uncertain');
         pending(false);
     });
@@ -167,7 +183,7 @@ export function initialize(element, bridge) {
             if (disposed) return Promise.resolve({ status: 'Disposed', fieldId: element.id });
             if (composing) return Promise.resolve({ status: 'Composing', fieldId: element.id });
             if (element.hasAttribute('data-neo-input-uncertain')) return Promise.resolve({ status: 'Uncertain', fieldId: element.id });
-            observeDraft();
+            prepareFinal();
             return new Promise(resolve => {
                 const waiter = { resolve, sequence, revision, value: draft };
                 waiters.add(waiter);
@@ -179,7 +195,7 @@ export function initialize(element, bridge) {
             });
         },
         dispose() {
-        disposed = true; generation++; queue.length = 0; cancelTimer(); observer.disconnect();
+        disposed = true; formatting.dispose(); generation++; queue.length = 0; cancelTimer(); observer.disconnect();
         element.removeEventListener('beforeinput', preventLockedEdit, true);
         element.removeEventListener('input', input);
         element.removeEventListener('change', change);
@@ -213,8 +229,9 @@ function makeLease(result, releases) {
     };
 }
 function validateNative(elements, forms) {
-    const restores = elements.map(element => controllers.get(element)?.enableNativeValidation()).filter(Boolean);
+    const restores = elements.map(element => controllerFor(element)?.enableNativeValidation()).filter(Boolean);
     try {
+        for (const element of elements) { const result = controllerFor(element)?.validate?.(); if (result && result.status !== 'Success') { element.querySelector('button,input')?.focus(); return result; } }
         for (const field of [...forms.flatMap(form => [...form.elements]), ...elements]) {
             if (!field.checkValidity || field.checkValidity()) continue;
             field.reportValidity();
@@ -224,14 +241,14 @@ function validateNative(elements, forms) {
     } finally { for (const restore of restores) restore(); }
 }
 function begin(elements, timeout, validate = null) {
-    const targets = elements.filter(element => !element.disabled);
+    const targets = elements.filter(element => !element.disabled && !controllerFor(element)?.disabled);
     for (const element of targets) {
-        const controller = controllers.get(element);
+        const controller = controllerFor(element);
         const status = !controller ? 'NotReady' : controller.composing ? 'Composing' : null;
         if (status) return makeLease(Promise.resolve({ status, fieldId: element.id }), []);
     }
-    const releases = targets.map(element => controllers.get(element).lock());
-    const result = Promise.all(targets.map(element => controllers.get(element).flush(timeout)))
+    const releases = targets.map(element => controllerFor(element).lock());
+    const result = Promise.all(targets.map(element => controllerFor(element).flush(timeout)))
         .then(results => results.find(result => result.status !== 'Success') ?? (validate ? validate() : { status: 'Success' }));
     return makeLease(result, releases);
 }
@@ -289,7 +306,7 @@ export function initializeEditForm(root, server = false) {
 export function beginScope(root, scopeId, timeout = 30000, checkNative = false) {
     if (!root?.isConnected) return makeLease(Promise.resolve({ status: 'NotReady' }), []);
     const elements = [...root.ownerDocument.querySelectorAll('[data-neo-input-scope]')]
-        .filter(element => element.dataset.neoInputScope === scopeId && element.hasAttribute('data-neo-input-config'));
+        .filter(element => element.dataset.neoInputScope === scopeId && (element.hasAttribute('data-neo-input-config') || element.hasAttribute('data-neo-browser-field')));
     activeScopes.get(scopeId)?.release();
     const forms = [...root.querySelectorAll('form')].filter(form => form.closest('[data-neo-input-scope-root]') === root);
     const guard = editFormGuards.get(root);

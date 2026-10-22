@@ -1,13 +1,17 @@
 @typeparam TValue
 @namespace NeoUI.Blazor.Primitives
 
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="radio" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { required = Required })">
 <CascadingValue Value="context" IsFixed="false">
     <div role="radiogroup"
          aria-label="@AriaLabel"
          aria-disabled="@Disabled.ToString().ToLower()"
-         @onkeydown="HandleKeyDown"
-         @onkeydown:preventDefault="true"
+         @onkeydown="@(BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
+         @onkeydown:preventDefault="@(!BrowserInteraction)"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
 </CascadingValue>
+
+@if (BrowserInteraction && !string.IsNullOrEmpty(Name)) { <input type="hidden" name="@Name" data-neo-field-hidden /> }
+</BrowserStateHost>

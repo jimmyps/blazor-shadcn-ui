@@ -28,6 +28,10 @@ public class TooltipState
 /// </summary>
 public class TooltipContext : PrimitiveContextWithEvents<TooltipState>
 {
+    internal BrowserFloatingState Browser { get; } = new();
+    internal int BrowserOpenDelay { get; set; }
+    internal int BrowserCloseDelay { get; set; }
+
     /// <summary>
     /// Initializes a new instance of the TooltipContext.
     /// </summary>

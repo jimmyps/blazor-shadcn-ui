@@ -197,7 +197,7 @@ public partial class Checkbox : ComponentBase
         "focus-visible:ring-ring focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50",
         _styleVariant.GetClasses("Checkbox.Root"),
-        (Checked || Indeterminate) ? "bg-primary text-primary-foreground" : "bg-background",
+        BrowserInteraction ? "data-[state=checked]:bg-primary data-[state=indeterminate]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:text-primary-foreground data-[state=unchecked]:bg-background" : (Checked || Indeterminate) ? "bg-primary text-primary-foreground" : "bg-background",
         Class);
 
     /// <summary>
@@ -205,8 +205,10 @@ public partial class Checkbox : ComponentBase
     /// </summary>
     private async Task HandleCheckedChanged(bool value)
     {
-        Checked = value;
+        if (!BrowserInteraction || !CheckedChanged.HasDelegate) Checked = value;
+        var revision = InteractionRevision;
         await CheckedChanged.InvokeAsync(value);
+        if (BrowserInteraction && revision == InteractionRevision) Checked = AcceptedBrowserValue();
 
         // Notify EditContext of field change for validation
         if (_editContext != null && CheckedExpression != null && _fieldIdentifier.FieldName != null)

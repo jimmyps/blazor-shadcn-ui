@@ -14,10 +14,10 @@ else
 {
     <div id="@Context.TriggerId"
          @ref="_triggerRef"
-         @onmouseenter="HandleMouseEnter"
-         @onmouseleave="HandleMouseLeave"
-         @onfocus="HandleFocus"
-         @onblur="HandleBlur"
+         @onmouseenter="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+         @onmouseleave="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
+         @onfocus="@(Context.Browser.Enabled ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleFocus))"
+         @onblur="@(Context.Browser.Enabled ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleBlur))"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
@@ -65,6 +65,8 @@ else
     private TriggerContext TriggerContext => new()
     {
         TriggerId = Context.TriggerId,
+        BrowserOwned = Context.Browser.Enabled,
+        BrowserClickPassthrough = true,
         IsOpen = Context.IsOpen,
         Open = () => Context.Open(_asChildTriggerRef),
         Close = () => Context.Close(),

@@ -1,6 +1,18 @@
 @namespace NeoUI.Blazor
 @typeparam TValue
 
+@if (BrowserInteraction)
+{
+    <BrowserFormattedInput @ref="browserInput" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
+        Id="@EffectiveId" Name="@(EffectiveName ?? string.Empty)" Class="@CssClass" Value="@BrowserValue"
+        DraftIsValid="@(() => browserDraftValid)" AcceptDraft="@AcceptBrowserDraft" EquivalentValue="@EquivalentBrowserValue" Format="@BrowserFormat" ValueRevision="@ValueRevision"
+        UpdateOn="@UpdateOn" DebounceDelay="@DebounceDelay" Placeholder="@Placeholder" Disabled="@Disabled" Readonly="@Readonly"
+        Required="@Required" InputMode="@("decimal")" Autofocus="@Autofocus"
+        AriaLabel="@AriaLabel" AriaDescribedBy="@AriaDescribedBy" AriaInvalid="@EffectiveAriaInvalid"
+        AdditionalAttributes="@AdditionalAttributes" MaxLength="@MaxLength" />
+}
+else
+{
 <input id="@EffectiveId"
 name="@EffectiveName"
 type="text"
@@ -20,3 +32,5 @@ aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLower())"
 @onblur="HandleBlur"
 @attributes="AdditionalAttributes" />
 
+
+}

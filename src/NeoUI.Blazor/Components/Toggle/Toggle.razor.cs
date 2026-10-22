@@ -108,7 +108,7 @@ public partial class Toggle : ComponentBase
             _ => "bg-transparent"
         },
         // Pressed state
-        Pressed ? "bg-accent text-accent-foreground" : "",
+        BrowserInteraction ? "data-[state=on]:bg-accent data-[state=on]:text-accent-foreground" : Pressed ? "bg-accent text-accent-foreground" : "",
         // Size styles
         Size switch
         {

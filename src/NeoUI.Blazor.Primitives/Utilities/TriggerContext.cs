@@ -30,6 +30,9 @@ public class TriggerContext
     /// <summary>Whether a browser controller owns trigger interaction and aria-expanded.</summary>
     public bool BrowserOwned { get; init; }
 
+    /// <summary>Allows an independent application click on a browser-owned hover trigger.</summary>
+    public bool BrowserClickPassthrough { get; init; }
+
     /// <summary>Whether the trigger must be disabled, including AsChild elements.</summary>
     public bool Disabled { get; init; }
 

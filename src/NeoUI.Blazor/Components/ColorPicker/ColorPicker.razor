@@ -53,7 +53,7 @@
                 <div class="h-10 w-10 rounded border border-input shadow-sm flex-shrink-0"
                      style="background-color: @CurrentColorString">
                 </div>
-                <MaskedInput Value="@CurrentColorString"
+                <MaskedInput AcceptedValueAccessor="@(() => CurrentColorString)" Value="@CurrentColorString"
                              ValueChanged="HandleHexInputChange"
                              Mask="@(ShowAlpha ? "#********" : "#******")"
                              MaskChar="@(' ')"
@@ -68,7 +68,7 @@
                     <div class="space-y-1">
                         <label class="text-xs text-muted-foreground">R</label>
                         <NumericInput TValue="int"
-                                      Value="@_red"
+                                      AcceptedValueAccessor="@(() => _red)" Value="@_red"
                                       Min="0" Max="255"
                                       ValueChanged="@HandleRedChange"
                                       MaxLength="3"
@@ -77,7 +77,7 @@
                     <div class="space-y-1">
                         <label class="text-xs text-muted-foreground">G</label>
                         <NumericInput TValue="int"
-                                      Value="@_green"
+                                      AcceptedValueAccessor="@(() => _green)" Value="@_green"
                                       Min="0" Max="255"
                                       ValueChanged="@HandleGreenChange"
                                       MaxLength="3"
@@ -86,7 +86,7 @@
                     <div class="space-y-1">
                         <label class="text-xs text-muted-foreground">B</label>
                         <NumericInput TValue="int"
-                                      Value="@_blue"
+                                      AcceptedValueAccessor="@(() => _blue)" Value="@_blue"
                                       Min="0" Max="255"
                                       ValueChanged="@HandleBlueChange"
                                       MaxLength="3"

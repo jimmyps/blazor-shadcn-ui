@@ -11,13 +11,13 @@ else
 {
     <span @ref="@_triggerRef"
           id="@Context.TriggerId"
-          @onmouseenter="HandleMouseEnter"
-          @onmouseleave="HandleMouseLeave"
-          @onfocus="HandleFocus"
-          @onblur="HandleBlur"
+          @onmouseenter="@(Context.Browser.Enabled ? OnMouseEnter : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+          @onmouseleave="@(Context.Browser.Enabled ? OnMouseLeave : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
+          @onfocus="@(Context.Browser.Enabled ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleFocus))"
+          @onblur="@(Context.Browser.Enabled ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleBlur))"
           @attributes="AdditionalAttributes"
           tabindex="@(Focusable ? "0" : null)"
-          aria-describedby="@(Context.IsOpen ? Context.TooltipId : null)">
+          aria-describedby="@(!Context.Browser.Enabled && Context.IsOpen ? Context.TooltipId : null)">
         @ChildContent
     </span>
 }
@@ -78,6 +78,8 @@ else
     private TriggerContext TriggerContext => new()
     {
         TriggerId = Context.TriggerId,
+        BrowserOwned = Context.Browser.Enabled,
+        BrowserClickPassthrough = true,
         IsOpen = Context.IsOpen,
         Open = () => Context.Open(_asChildTriggerRef),
         Close = () => Context.Close(),
