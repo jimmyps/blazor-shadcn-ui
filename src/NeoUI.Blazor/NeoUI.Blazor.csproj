@@ -24,6 +24,7 @@
     <!-- MinVer Configuration - Version from git tags -->
     <MinVerTagPrefix>components/v</MinVerTagPrefix>
     <MinVerDefaultPreReleaseIdentifiers>beta.0</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerMinimumMajorMinor>4.2</MinVerMinimumMajorMinor>
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,7 +51,7 @@
 
   <ItemGroup Condition="'$(UsePackageReferences)' == 'true'">
     <PackageReference Include="NeoUI.Icons.Lucide" Version="3.1.0" />
-    <PackageReference Include="NeoUI.Blazor.Primitives" Version="4.0.10" />
+    <PackageReference Include="NeoUI.Blazor.Primitives" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>

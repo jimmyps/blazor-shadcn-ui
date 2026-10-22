@@ -23,6 +23,7 @@
     <!-- MinVer Configuration - Version from git tags -->
     <MinVerTagPrefix>primitives/v</MinVerTagPrefix>
     <MinVerDefaultPreReleaseIdentifiers>beta.0</MinVerDefaultPreReleaseIdentifiers>
+    <MinVerMinimumMajorMinor>4.1</MinVerMinimumMajorMinor>
   </PropertyGroup>
 
   <ItemGroup>
