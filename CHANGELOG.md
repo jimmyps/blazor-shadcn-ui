@@ -127,6 +127,7 @@ a tag change and uses public framework APIs. Interactive rendering is required.
 
 ### 🐛 Fix — reconnect reconciliation, touch switching and local UI states
 
+- FloatingPortal checks both portal and owning event-bridge lifetimes before initialization and after each await. Removing a dropdown, popover, Select or submenu during delayed portal rendering/module import no longer passes a disposed DotNetObjectReference to interop and terminates the Server circuit. A controller returned after removal is disposed; ObjectDisposedException is suppressed only after one of those lifetimes has ended. Unrelated errors still propagate.
 - Floating controllers observe rendered configuration after a retained-circuit reconnect. Checked-state resets and close commands reconcile without replaying business callbacks, including resets to the same accepted value.
 - Browser-input completion has deadlines; known disconnected Server transports are not invoked. Rendered scope state releases locks after reconnect. WebAssembly local callbacks continue working offline.
 - Explicit MultiSelect close reaches the browser even when its open observation has not reached the server.

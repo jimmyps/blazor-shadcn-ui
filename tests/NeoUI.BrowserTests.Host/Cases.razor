@@ -4,6 +4,11 @@
     {
         <MountCostCases />
     }
+    else if (Navigation.Uri.Contains("lifecycle=true"))
+    {
+        @if (Navigation.Uri.Contains("global=true")) { <FloatingLifecycleCases /> }
+        else { <InteractionModeProvider Mode="InteractionMode.Browser"><FloatingLifecycleCases /></InteractionModeProvider> }
+    }
     else if (Navigation.Uri.Contains("editform=true"))
     {
         @if (Navigation.Uri.Contains("global=true")) { <StandardFormCases /> }

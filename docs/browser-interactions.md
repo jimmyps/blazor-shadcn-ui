@@ -310,6 +310,17 @@ callbacks must still respect revision/reset guards. Save callbacks must await pe
 A native `form.submit()` bypasses submit events and this barrier; use `requestSubmit()` or
 the component's `SubmitAsync()` instead.
 
+### Removal during asynchronous floating initialization
+
+FloatingPortal captures its owner's event bridge for each initialization attempt and checks
+both portal and owner lifetimes after awaiting portal rendering, module import and controller
+initialization. Removing an owner during a delayed import aborts initialization before the
+disposed bridge reaches interop. A late controller result is disposed. Disposal exceptions
+are ignored only when the portal or that owner bridge has ended; unrelated errors are not
+masked. This also applies under the application-wide Browser default. The lifecycle browser
+fixture delays the actual module request, removes the owner, then verifies an independent
+callback and a freshly mounted control, including submenu actions.
+
 ## Ownership
 
 Razor owns composition, items, item labels, disabled configuration, and application bindings.

@@ -43,4 +43,17 @@ commitRelease.SetResult("true");
 Require(await pending == "false" && selection.Value == "false", "Late menu acknowledgements must not overwrite a reset.");
 selection.Sync("true", 1, 1);
 Require(selection.Value == "true", "Item revisions must issue authoritative resets.");
-Console.WriteLine("Passed: late binding echoes, explicit commands during callbacks, stale menu acknowledgements, item resets.");
+using (var events = new BrowserFloatingEvents())
+{
+    Require(!events.IsDisposed && !BrowserFloatingEvents.IsReferenceDisposed(events.Reference), "A live owner bridge must remain available for initialization.");
+    events.Dispose();
+    Require(events.IsDisposed && BrowserFloatingEvents.IsReferenceDisposed(events.Reference), "A disposed owner must be recognized even though its reference Value now throws.");
+    events.Dispose();
+}
+Require(!BrowserFloatingEvents.IsReferenceDisposed(null), "A portal without an owner bridge remains valid.");
+using (var unrelated = Microsoft.JSInterop.DotNetObjectReference.Create(new object()))
+{
+    unrelated.Dispose();
+    Require(!BrowserFloatingEvents.IsReferenceDisposed(unrelated), "An unrelated disposed object must not be mistaken for an ended floating-owner lifetime.");
+}
+Console.WriteLine("Passed: late binding echoes, explicit commands during callbacks, stale menu acknowledgements, item resets, owner bridge lifetime checks.");

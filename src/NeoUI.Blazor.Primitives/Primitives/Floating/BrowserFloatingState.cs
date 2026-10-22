@@ -54,6 +54,7 @@ internal sealed class BrowserFloatingState
 // One optional bridge per floating layer; no .NET calls are needed for UI mechanics.
 internal sealed class BrowserFloatingEvents : IDisposable
 {
+    internal bool IsDisposed { get; private set; }
     internal Action<double, double>? ContextPosition { get; set; }
     [JSInvokable] public void NotifyContextAsync(double x, double y) => ContextPosition?.Invoke(x, y);
     internal Func<string, bool, Task>? Notify { get; set; }
@@ -71,5 +72,18 @@ internal sealed class BrowserFloatingEvents : IDisposable
     [JSInvokable]
     public Task<string?> CommitMenuAsync(string key, string? proposed) => CommitMenu?.Invoke(key, proposed) ?? Task.FromResult<string?>(null);
 
-    public void Dispose() => Reference.Dispose();
+    // DotNetObjectReference.Value itself throws after disposal. Only the known owner
+    // bridge is inspected; unrelated interop failures must still propagate.
+    internal static bool IsReferenceDisposed(object? bridge)
+    {
+        if (bridge is not DotNetObjectReference<BrowserFloatingEvents> reference) return false;
+        try { return reference.Value.IsDisposed; }
+        catch (ObjectDisposedException) { return true; }
+    }
+
+    public void Dispose()
+    {
+        IsDisposed = true;
+        Reference.Dispose();
+    }
 }

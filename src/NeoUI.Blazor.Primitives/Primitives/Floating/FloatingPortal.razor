@@ -258,21 +258,42 @@
     private string? BrowserConfiguration => BrowserOptions == null ? null :
         System.Text.Json.JsonSerializer.Serialize(new { options = BrowserOptions, position = BrowserPosition }, BrowserJsonOptions);
 
+    private bool BrowserLifetimeEnded(object? events)
+        => browserDisposed || BrowserFloatingEvents.IsReferenceDisposed(events);
+
     private async Task HandleBrowserLifecycleAsync()
     {
-        if (browserController != null) return;
+        // The owner can dispose its bridge before this child portal's DisposeAsync runs.
+        // Keep the bridge used by this attempt stable across each asynchronous boundary.
+        var events = BrowserEvents;
+        if (browserController != null || BrowserLifetimeEnded(events)) return;
         await browserGate.WaitAsync();
         try
         {
-            if (browserDisposed) return;
-            if (!_isMounted) await MountPortalAsync();
+            if (browserController != null || BrowserLifetimeEnded(events)) return;
+            if (!_isMounted)
+            {
+                await MountPortalAsync();
+                if (BrowserLifetimeEnded(events)) return;
+            }
             browserModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import",
                 "./_content/NeoUI.Blazor.Primitives/js/primitives/browser-floating.js");
-            if (browserController == null)
-                browserController = await browserModule.InvokeAsync<IJSObjectReference>("initialize",
-                    _portalContentRef, BrowserOptions, BrowserPosition, BrowserEvents);
+            if (BrowserLifetimeEnded(events)) return;
+            browserController = await browserModule.InvokeAsync<IJSObjectReference>("initialize",
+                _portalContentRef, BrowserOptions, BrowserPosition, events);
+            if (BrowserLifetimeEnded(events))
+            {
+                // Initialization may already have reached JS when removal occurs. Clean
+                // up its late result here; DisposeAsync owns the remaining module handle.
+                var controller = browserController;
+                browserController = null;
+                try { await controller.InvokeVoidAsync("dispose"); }
+                finally { await controller.DisposeAsync(); }
+            }
         }
         catch (JSDisconnectedException) { /* The existing browser controller remains usable locally. */ }
+        catch (ObjectDisposedException) when (BrowserLifetimeEnded(events))
+        { /* Removal can race interop serialization/completion after the lifetime check. */ }
         finally { browserGate.Release(); }
     }
 
