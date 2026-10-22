@@ -192,7 +192,7 @@ test('Interaction Mode is discoverable in navigation, indexes, and spotlight', a
             assert.ok(listeners.some(listener => listener.type === 'input'));
         });
         await session.detach();
-        for (const query of ['Interaction Mode', 'browser-local']) {
+        for (const query of ['Interaction Mode', 'browser-local', 'MultiSelect', 'date/time pickers']) {
             // Input installs its debounced listener asynchronously after the dialog mounts.
             // Discovery tests wait for that listener rather than testing first-keystroke hydration.
             await eventually(async () => {
@@ -236,5 +236,80 @@ test('filter menus reconcile async choices and a browser theme picker retains li
         await popup.getByRole('button', { name: 'Slate', exact: true }).click();
         await eventually(async () => assert.equal(await page.locator('html').evaluate(e => e.classList.contains('base-slate')), true));
         assert.equal(await popup.isVisible(), true);
+    } finally { await browser.close(); }
+});
+
+
+test('composed demo controls inherit browser shells and retain date, time, search, selection and reset behavior', async () => {
+    const browser = await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) {
+        await page.route(origin + '/**', route => route.continue({ headers: {
+            ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true'
+        } }));
+    }
+    const errors = [];
+    page.on('pageerror', error => errors.push(String(error)));
+    const trigger = id => page.getByTestId(id).locator('[aria-haspopup]').first();
+    const popup = async button => page.locator(`[id="${await button.getAttribute('aria-controls')}"]`);
+    try {
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        await page.waitForFunction(() => document.querySelector('[data-local-events]')?.textContent === '0');
+        for (const id of ['demo-date-picker', 'demo-time-picker', 'demo-combobox', 'demo-multiselect']) {
+            const button = trigger(id);
+            const content = await popup(button);
+            await eventually(async () => assert.notEqual(await content.getAttribute('data-neo-browser-content'), null));
+            await button.click();
+            await content.waitFor({ state: 'visible' });
+            if (id === 'demo-date-picker') {
+                await content.getByRole('button', { name: / 15, / }).first().click();
+                await eventually(async () => assert.match(await page.getByTestId('demo-date-value').textContent(), /^\d{4}-\d{2}-15$/));
+                await content.waitFor({ state: 'hidden' });
+            } else if (id === 'demo-time-picker') {
+                const fields = content.locator('select');
+                await fields.nth(0).selectOption('9');
+                await fields.nth(1).selectOption('45');
+                await content.getByRole('button', { name: 'Apply', exact: true }).click();
+                await eventually(async () => assert.equal(await page.getByTestId('demo-time-value').textContent(), '09:45'));
+                await content.waitFor({ state: 'hidden' });
+            } else if (id === 'demo-combobox') {
+                const search = page.getByPlaceholder('Search workspaces', { exact: true });
+                await eventually(async () => assert.equal(await search.evaluate(e => document.activeElement === e), true));
+                await search.fill('Prod');
+                await content.getByRole('option', { name: 'Product', exact: false }).click();
+                await eventually(async () => assert.equal(await page.getByTestId('demo-combo-value').textContent(), 'Product'));
+                await content.waitFor({ state: 'hidden' });
+            } else {
+                const search = page.getByPlaceholder('Search notification workspaces', { exact: true });
+                await eventually(async () => assert.equal(await search.evaluate(e => document.activeElement === e), true));
+                await search.fill('Prod');
+                await content.getByRole('option', { name: 'Product', exact: false }).click();
+                await eventually(async () => assert.equal(await page.getByTestId('demo-multi-value').textContent(), 'Product'));
+                assert.equal(await content.isVisible(), true);
+                await search.fill('Eng');
+                await content.getByRole('option', { name: 'Engineering', exact: false }).click();
+                await eventually(async () => assert.match(await page.getByTestId('demo-multi-value').textContent(), /Engineering/));
+                await button.click();
+                await content.waitFor({ state: 'hidden' });
+            }
+        }
+        await page.getByTestId('demo-composed-reset').click();
+        for (const id of ['demo-date-value', 'demo-time-value', 'demo-combo-value', 'demo-multi-value']) {
+            await eventually(async () => assert.equal(await page.getByTestId(id).textContent(), 'None'));
+        }
+        // Recreated scope clears drafts and search as well as the displayed values.
+        const multi = trigger('demo-multiselect');
+        await eventually(async () => assert.notEqual(await (await popup(multi)).getAttribute('data-neo-browser-content'), null));
+        await multi.click();
+        const search = page.getByPlaceholder('Search notification workspaces', { exact: true });
+        await search.waitFor({ state: 'visible' });
+        assert.equal(await search.inputValue(), '');
+        await multi.click();
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.locator('#composed-controls').scrollIntoViewIfNeeded();
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+        await page.screenshot({ path: join(tmpdir(), 'neoui-composed-controls-mobile.png'), fullPage: true });
+        assert.deepEqual(errors, []);
     } finally { await browser.close(); }
 });

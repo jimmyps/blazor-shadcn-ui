@@ -65,6 +65,12 @@ They therefore still need a circuit in Interactive Server. Search focus and exis
 keyboard handlers are preserved; MultiSelect's `CloseAsync()` clears search and restores
 focus behavior on reopening. Application value resets remain declarative.
 
+The Interaction Mode gallery includes live DatePicker, TimePicker, Combobox, and MultiSelect
+examples under one Browser provider, with bound-value summaries and a shared reset.
+`TimePicker` inherits the policy through its internal Popover; it does not expose a direct
+`InteractionMode` or `InteractionRevision` parameter. Scope it with `InteractionModeProvider`
+for a targeted override. Its native time fields and Apply/Cancel actions remain Blazor handlers.
+
 ## Ownership
 
 Razor owns composition, items, item labels, disabled configuration, and application bindings.
