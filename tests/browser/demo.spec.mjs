@@ -560,3 +560,71 @@ test('spotlight preserves browser drafts and caret while debounced searches are 
         assert.deepEqual(errors, []);
     } finally { await browser.close(); }
 });
+
+
+test('spotlight acknowledges accepted search independently of delayed render completion',
+    { skip: process.env.NEOUI_EXPECT_DEFAULT !== 'Browser' }, async () => {
+    const browser = await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage();
+    const errors = [];
+    page.on('pageerror', error => errors.push(String(error)));
+    await page.addInitScript(() => {
+        const NativeWebSocket = window.WebSocket;
+        window.__heldSpotlightRenders = [];
+        window.WebSocket = class extends NativeWebSocket {
+            send(data) {
+                const message = typeof data === 'string' ? data : new TextDecoder().decode(data);
+                if (window.__holdSpotlightRenders && message.includes('OnRenderCompleted'))
+                    window.__heldSpotlightRenders.push(() => super.send(data));
+                else super.send(data);
+            }
+        };
+        window.__releaseSpotlightRenders = () => {
+            window.__holdSpotlightRenders = false;
+            for (const send of window.__heldSpotlightRenders.splice(0)) send();
+        };
+    });
+    try {
+        await page.goto(url);
+        await page.waitForFunction(() => document.querySelector('[data-local-events]')?.textContent === '0');
+        await page.getByRole('button', { name: /Search components/ }).first().click();
+        const search = page.getByPlaceholder('Type a command or search...', { exact: true });
+        await page.waitForFunction(() => document.querySelector('[data-command-input-wrapper] input')?.dataset.neoInputReady === 'true');
+        await search.evaluate(element => {
+            window.__spotlightRollbacks = [];
+            let expected = element.value;
+            element.addEventListener('input', () => { expected = element.value; });
+            const descriptor = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+            Object.defineProperty(element, 'value', {
+                get() { return descriptor.get.call(this); },
+                set(value) {
+                    if (value !== expected && value !== descriptor.get.call(this))
+                        window.__spotlightRollbacks.push({ expected, actual: value });
+                    descriptor.set.call(this, value);
+                }
+            });
+            window.__holdSpotlightRenders = true;
+            setTimeout(() => window.__releaseSpotlightRenders(), 8000);
+        });
+        // Each accepted query renders grouped/virtualized results. Retain render
+        // completions until the circuit's render buffer applies backpressure.
+        for (let index = 0; index < 16; index++) {
+            await search.fill(index % 2 ? 'combobox' : 'input');
+            await pause(420);
+        }
+        await page.waitForFunction(() => window.__heldSpotlightRenders.length > 0);
+        // Acknowledge the same final edit while the accepted context is ahead of
+        // its descendant render. No second fill is permitted to repair rollback.
+        await search.fill('browser-local');
+        await page.waitForFunction(() => !window.__holdSpotlightRenders);
+        await eventually(async () => {
+            assert.equal(await search.inputValue(), 'browser-local');
+            assert.equal(await search.getAttribute('data-neo-input-pending'), null);
+        });
+        await pause(800);
+        assert.equal(await search.inputValue(), 'browser-local');
+        await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).waitFor();
+        assert.deepEqual(await page.evaluate(() => window.__spotlightRollbacks), []);
+        assert.deepEqual(errors, []);
+    } finally { await browser.close(); }
+});

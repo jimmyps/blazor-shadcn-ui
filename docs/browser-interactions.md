@@ -562,11 +562,15 @@ dotnet run --project demo/NeoUI.Demo.Server -p:CI=true --urls http://localhost:5
 # In another terminal, from tests/browser:
 $env:NEOUI_DEMO_URL = 'http://localhost:5185/components/browser-interactions'
 $env:NEOUI_EXPECT_DEFAULT = 'Browser'
-node --test --test-name-pattern='spotlight preserves' demo.spec.mjs
+node --test --test-name-pattern='spotlight (preserves|acknowledges)' demo.spec.mjs
 # Repeat with NEOUI_BROWSER_ENGINE=webkit for the WebKit engine.
 ```
 
-This test types once, without retrying/refilling the query. It checks draft retention,
+The delayed-render regression withholds render completions and then releases them,
+verifying that the accepted context query is acknowledged without relying on the child
+Input receiving a cascading render first. Business callbacks are not replayed.
+
+Neither check retries a failing query by refilling it. Coverage includes draft retention,
 caret edits, repeated backspacing to empty, spaces during pending searches and result
 selection with delayed circuit traffic. The gallery default remains Blazor unless the
 review host opts in. In an affected application, inspect the open CommandInput's

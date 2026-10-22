@@ -98,6 +98,13 @@ public partial class Input
         }
     }
 
+    // Composed owners can accept a value before their next render reaches this
+    // child. An acknowledgement must not depend on renderer backpressure.
+    internal void AcceptBrowserValue(string? value, long revision)
+    {
+        if (BrowserInteraction && revision == ValueRevision) Value = value;
+    }
+
     /// <summary>Processes a versioned edit out of band. UI drafts never wait for this callback.</summary>
     [JSInvokable]
     public async Task<object> OnBrowserInputChanged(string? value, long sequence, long revision)

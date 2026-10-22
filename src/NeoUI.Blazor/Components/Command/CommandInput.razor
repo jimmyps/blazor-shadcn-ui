@@ -193,9 +193,18 @@
 
     private async Task HandleValueChanged(string? value)
     {
-        if (Context?.BrowserInteraction == true && Context.BrowserSearchChanged != null)
-            await Context.BrowserSearchChanged(value ?? string.Empty);
-        else Context?.SetSearchQuery(value ?? string.Empty);
+        var context = Context;
+        if (context?.BrowserInteraction == true && context.BrowserSearchChanged != null)
+        {
+            var revision = context.InputRevision;
+            await context.BrowserSearchChanged(value ?? string.Empty);
+            // The context already owns the accepted query. Its cascading render
+            // may still be queued (e.g. unacknowledged Server render batches), so
+            // synchronize the child's acknowledgement without waiting for that render.
+            if (ReferenceEquals(Context, context) && revision == context.InputRevision)
+                _inputRef?.AcceptBrowserValue(context.SearchQuery, revision);
+        }
+        else context?.SetSearchQuery(value ?? string.Empty);
     }
 
     /// <summary>
