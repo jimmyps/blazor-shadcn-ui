@@ -152,7 +152,7 @@ export function createController(floating, initialOptions, initialPosition, brid
             cleanup = handle;
             setVisible(true);
             if (options.kind === 'popover') {
-                (content.querySelector('[autofocus], button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') ?? content)
+                (content.querySelector('[data-neo-autofocus]') ?? content.querySelector('[autofocus], button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') ?? content)
                     .focus({ preventScroll: true });
             } else {
                 const enabled = items();
@@ -267,7 +267,12 @@ export function createController(floating, initialOptions, initialPosition, brid
             if (!disabled(trigger())) opened ? close() : void open();
             return;
         }
-        if (!opened || options.kind === 'popover' || target.closest('[data-neo-browser-content]') !== content) return;
+        if (!opened || target.closest('[data-neo-browser-content]') !== content) return;
+        if (options.kind === 'popover') {
+            const action = target.closest('[data-neo-close]');
+            if (action && !disabled(action)) close(true);
+            return;
+        }
         const item = target.closest(itemSelector);
         if (!item) return;
         if (disabled(item)) { stop(event); return; }
@@ -289,6 +294,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (!inside) { close(false); notify('outside', false); }
     };
     const keydown = event => {
+        if (event.isComposing || event.key === 'Process') return;
         const onTrigger = trigger()?.contains(event.target);
         const inContent = event.target.closest('[data-neo-browser-content]') === content;
         if (onTrigger && options.kind !== 'submenu' && ['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
@@ -445,4 +451,13 @@ export function createController(floating, initialOptions, initialPosition, brid
 /** Blazor interop entry point. Disposing also unregisters the controller's DOM listeners. */
 export function initialize(floating, options, position, bridge) {
     return createController(floating, options, position, bridge);
+}
+
+/** Dismisses the browser-owned floating shell containing a composed control. */
+export function closeForElement(element, restoreFocus = true) {
+    const layer = element?.closest('[data-neo-browser-content]');
+    const controller = controllers.get(layer?.id);
+    if (!controller) return false;
+    controller.close(restoreFocus);
+    return true;
 }

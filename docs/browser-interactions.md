@@ -59,8 +59,10 @@ unsupported combinations fail clearly rather than leaving a trigger without a co
 `DatePicker`, `Combobox<TItem>`, and `MultiSelect<TItem>` accept the same nullable
 `InteractionMode` and `InteractionRevision` parameters and forward them to their Popover.
 They inherit application/scoped defaults and can opt out explicitly with Blazor.
-Only the floating shell is browser-owned: calendar actions, filtering/search callbacks,
-selection, validation, and bound value updates still use the current Blazor renderer.
+The floating shell, mounted-item hover/highlighting, and keyboard focus are browser-owned.
+Filtering/search callbacks, value commits, validation, and bound value updates still use
+the current Blazor renderer. Calendar focus/blur and day navigation within rendered content
+are local; rendering a different month still requires the renderer.
 They therefore still need a circuit in Interactive Server. Search focus and existing
 keyboard handlers are preserved; MultiSelect's `CloseAsync()` clears search and restores
 focus behavior on reopening. Application value resets remain declarative.
@@ -70,6 +72,44 @@ examples under one Browser provider, with bound-value summaries and a shared res
 `TimePicker` inherits the policy through its internal Popover; it does not expose a direct
 `InteractionMode` or `InteractionRevision` parameter. Scope it with `InteractionModeProvider`
 for a targeted override. Its native time fields and Apply/Cancel actions remain Blazor handlers.
+
+### Local item interaction audit
+
+| Control | Browser-owned mechanics | Application/content work |
+| --- | --- | --- |
+| DropdownMenu / Select | Hover, focus, keyboard/typeahead, submenus, dismissal, optimistic selection feedback | Existing asynchronous action/value callbacks |
+| Combobox / Command | Active item, hover, Arrow/Home/End navigation, active descendant ARIA, immediate dismissal | Search/filter callbacks and action/value commits |
+| CommandVirtualizedGroup | Highlight/navigation among mounted items; local scroll requests the next window | Blazor Virtualize materializes unmounted rows or fetches data |
+| MultiSelect | Hover, active item, keyboard navigation, Space/Enter routing, immediate Escape/trigger/outside dismissal | Selected values, query callbacks, and load-more work |
+| DatePicker / Calendar | Native hover, focus/blur, active-day ARIA and navigation of rendered days | Asynchronous date commits, disabled-date rules, and new month content |
+| TimePicker / ordinary buttons | Native focus/hover; immediate popover dismissal on Apply/Cancel | Time fields and committed values remain Blazor content |
+
+`CommandContent` also accepts nullable `InteractionMode` for standalone command lists.
+Inside a Popover it inherits that root's actual resolved mode, including explicit Blazor
+exceptions, rather than accidentally picking up a Browser application default. Scoped
+policies and application defaults apply when no enclosing popover supplies the mode.
+Composed controls may observe open/close asynchronously to synchronize their bindings;
+local mechanics do not wait for those observations. Date selection, Combobox item selection,
+and time/range Apply actions dismiss before their application callbacks complete.
+`Calendar.CloseOnSelect` expresses the enclosing browser popover close intent; DatePicker
+sets it automatically, while range calendars can keep the layer open until completion.
+Custom actions inside a browser popover can declare `data-neo-close="true"` to dismiss
+before their existing click callback runs. Native footer controls keep their own Enter/Space
+behavior; Escape still dismisses the layer. IME composition keys do not navigate or dismiss. Hover and mounted-item navigation do
+not invoke .NET. Ordinary Button/LinkButton controls attach hover/focus handlers only when
+an actual trigger behavior subscribes. Scroll thresholds are checked in JavaScript; only
+an eligible load-more request calls the application. Virtualization and calendar month
+materialization remain content boundaries, so disconnected controls cannot invent rows
+or dates whose application rules have not been rendered.
+
+### Input value ownership is a separate follow-up
+
+This local-state work does not yet give Input/Textarea or search queries versioned,
+browser-owned drafts. A complete input mode needs monotonic edit IDs, asynchronous
+acknowledgements that cannot overwrite newer drafts, explicit reset/normalization commands,
+and latest-query checks for autocomplete results. It must preserve caret/selection,
+composition/IME, debounce, blur/change semantics, and EditContext validation. Guarding only
+while an input is focused does not resolve stale renders or authoritative-reset races.
 
 ## Ownership
 

@@ -130,13 +130,13 @@
     </DemoSection>
 
     <div id="composed-controls" class="scroll-mt-24">
-    <DemoSection Title="Date, time, and composed controls" Description="One scoped policy also makes these popovers open and dismiss locally. Their calendars, time fields, search, and selection remain live Blazor controls.">
+    <DemoSection Title="Date, time, and composed controls" Description="One scoped policy keeps floating layers, item highlighting, and keyboard focus local. Application values, search callbacks, and newly rendered content still use Blazor.">
         <DemoBlock Code="@composedCode">
             <InteractionModeProvider Mode="InteractionMode.Browser" @key="composedRevision">
                 <div class="grid gap-6 sm:grid-cols-2">
                     <article class="space-y-3 min-w-0" data-testid="demo-date-picker">
                         <h3 class="font-semibold">Date picker</h3>
-                        <p class="text-sm text-muted-foreground">Reveal the calendar instantly; choosing a date updates the bound value through Blazor.</p>
+                        <p class="text-sm text-muted-foreground">Open the calendar and navigate its visible days locally; choosing a date updates the bound value through Blazor.</p>
                         <DatePicker @bind-SelectedDate="appointmentDate" AriaLabel="Appointment date" Placeholder="Choose a date" Class="w-full" />
                         <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-date-value">@(appointmentDate?.ToString("yyyy-MM-dd") ?? "None")</span></p>
                         <a href="/components/date-picker" class="text-sm underline underline-offset-4">DatePicker examples</a>
@@ -150,14 +150,14 @@
                     </article>
                     <article class="space-y-3 min-w-0" data-testid="demo-combobox">
                         <h3 class="font-semibold">Combobox</h3>
-                        <p class="text-sm text-muted-foreground">The browser reveals the search field. Filtering and choosing a workspace still run through Blazor.</p>
+                        <p class="text-sm text-muted-foreground">Hover highlighting and keyboard navigation stay local. Searching and committing a workspace still use Blazor.</p>
                         <Combobox TItem="string" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Value="assignedWorkspace" Placeholder="Assign a workspace" SearchPlaceholder="Search workspaces" Class="w-full" />
                         <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-combo-value">@(assignedWorkspace ?? "None")</span></p>
                         <a href="/components/combobox" class="text-sm underline underline-offset-4">Combobox examples</a>
                     </article>
                     <article class="space-y-3 min-w-0" data-testid="demo-multiselect">
                         <h3 class="font-semibold">Multi-select</h3>
-                        <p class="text-sm text-muted-foreground">Keep the list open while choosing teams. Search, badges, and selected values use the existing Blazor handlers.</p>
+                        <p class="text-sm text-muted-foreground">Hover, keyboard navigation, and dismissal stay local. Keep the list open while Blazor updates the selected teams.</p>
                         <MultiSelect TItem="string" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Values="notifiedWorkspaces" Placeholder="Notify workspaces" SearchPlaceholder="Search notification workspaces" Class="w-full" />
                         <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-multi-value">@(notifiedWorkspaces.Any() ? string.Join(", ", notifiedWorkspaces) : "None")</span></p>
                         <a href="/components/multi-select" class="text-sm underline underline-offset-4">MultiSelect examples</a>
@@ -182,7 +182,7 @@
                 </div>
             </InteractionModeProvider>
         </DemoBlock>
-        <p class="text-sm text-muted-foreground">The date/time pickers, Combobox, and MultiSelect above inherit this policy too. Their floating shells become local; search, calendar actions, and selection remain Blazor interactions. Large lists and repeated row menus may be better kept in Blazor mode with mount-on-demand content.</p>
+        <p class="text-sm text-muted-foreground">The date/time pickers, Combobox, and MultiSelect above inherit this policy too. Their floating shells and transient focus become local; search, value commits, and new calendar content remain Blazor interactions. Large lists and repeated row menus may be better kept in Blazor mode with mount-on-demand content.</p>
     </DemoSection>
 
     <DemoSection Title="Popover and browser events" Description="Open a floating layer and watch its events without adding server callbacks.">
@@ -298,7 +298,8 @@
                          ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
                          @bind-Values="teams" />
         </InteractionModeProvider>
-        // Opening/dismissal is local; content actions and binding still use Blazor.
+        // Opening, dismissal, hover, and mounted-item navigation are local.
+        // Search callbacks, value commits, and new content still use Blazor.
         // Reset the bound values and increment revision to clear draft UI as well.
         """;
 

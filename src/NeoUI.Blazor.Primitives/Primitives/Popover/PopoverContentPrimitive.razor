@@ -198,7 +198,9 @@
              data-autofocus
              @attributes="AdditionalAttributes"
              data-state="@(Context.Browser.Enabled ? null : (Context.IsOpen ? "open" : "closed"))">
-            @ChildContent
+            <CascadingValue Value="@Context" IsFixed="true">
+                @ChildContent
+            </CascadingValue>
         </div>
     };
 

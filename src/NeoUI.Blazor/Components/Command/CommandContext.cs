@@ -72,6 +72,7 @@ public interface IVirtualizedGroupHandler
 /// </summary>
 public class CommandContext
 {
+    internal bool BrowserInteraction { get; set; }
     private readonly List<CommandItemMetadata> _items = new();
     private readonly List<IVirtualizedGroupHandler> _virtualizedGroups = new();
     private string _searchQuery = string.Empty;

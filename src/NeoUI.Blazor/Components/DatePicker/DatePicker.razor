@@ -1,6 +1,7 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 @inject ILocalizer Localizer
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @* DatePicker - Date selection with Calendar in Popover *@
 
 <Popover InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" @bind-Open="_isOpen">
@@ -15,8 +16,8 @@
             <LucideIcon Name="chevron-down" Class="ml-auto h-4 w-4 opacity-50" />
         }
     </PopoverTrigger>
-    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align" OnContentReady="@HandleContentReady">
-        <Calendar @ref="_calendar" @bind-SelectedDate="_selectedDate"
+    <PopoverContent Class="@GetPopoverContentClass()" Align="@Align" OnContentReady="@(BrowserInteraction ? default(EventCallback) : EventCallback.Factory.Create(this, HandleContentReady))">
+        <Calendar CloseOnSelect="true" @ref="_calendar" SelectedDate="@_selectedDate" SelectedDateChanged="HandleSelectedDate"
                   MinDate="@MinDate"
                   MaxDate="@MaxDate"
                   IsDateDisabled="@IsDateDisabled"
@@ -28,6 +29,9 @@
 </Popover>
 
 @code {
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value);
+
     /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reapply controlled floating state.</summary>
@@ -174,18 +178,15 @@ private System.Globalization.CultureInfo EffectiveCulture =>
         _lastNotifiedDate = _selectedDate;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task HandleSelectedDate(DateOnly? date)
     {
-        await base.OnAfterRenderAsync(firstRender);
-
-        // Close popover and notify when date is selected (only once per selection)
-        if (_selectedDate.HasValue && _selectedDate != _lastNotifiedDate && _isOpen)
-        {
-            _isOpen = false;
-            _lastNotifiedDate = _selectedDate;
-            await SelectedDateChanged.InvokeAsync(_selectedDate);
-            StateHasChanged();
-        }
+        if (!date.HasValue || date == _lastNotifiedDate) return;
+        _selectedDate = date;
+        _lastNotifiedDate = date;
+        _isOpen = false;
+        // A browser-local close may already have reported Open=false. Selection is
+        // an application event and must not depend on that observation's ordering.
+        await SelectedDateChanged.InvokeAsync(date);
     }
 
     private async Task HandleContentReady()

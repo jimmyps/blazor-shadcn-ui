@@ -14,6 +14,12 @@ namespace NeoUI.Blazor;
 /// <typeparam name="TItem">The type of items in the multiselect list.</typeparam>
 public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 {
+    [Inject] private Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults { get; set; } = default!;
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
+    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value);
+    private IJSObjectReference? browserListModule, browserListController, browserScroll;
+    private readonly SemaphoreSlim browserGate = new(1, 1);
+    private bool browserDisposed;
     /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
     [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reapply controlled floating state, including unchanged reset values.</summary>
@@ -397,6 +403,24 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction)
+        {
+            await browserGate.WaitAsync();
+            try
+            {
+                if (browserDisposed) return;
+                browserListModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/browser-list.js");
+                browserListController ??= await browserListModule.InvokeAsync<IJSObjectReference>("initializeInput", _searchInputRef);
+                if (OnLoadMore.HasDelegate && browserScroll == null)
+                {
+                    _dotNetRef ??= DotNetObjectReference.Create(this);
+                    browserScroll = await browserListModule.InvokeAsync<IJSObjectReference>("observeLoadMore", _listboxScrollRef, _dotNetRef);
+                }
+            }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+            finally { browserGate.Release(); }
+            return;
+        }
         // Setup JS when popover opens
         if (_isOpen && !_jsSetupDone)
         {
@@ -794,6 +818,8 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             return;
         }
 
+        if (BrowserInteraction) { await LoadBrowserPageAsync(); return; }
+
         _elementUtilsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/element-utils.js");
 
@@ -804,15 +830,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             {
                 // Scroll events keep arriving while the consumer's async handler runs, before it has
                 // a chance to flip IsLoading. Latch locally so one gesture yields one page fetch.
-                _loadMorePending = true;
-                try
-                {
-                    await OnLoadMore.InvokeAsync();
-                }
-                finally
-                {
-                    _loadMorePending = false;
-                }
+                await LoadBrowserPageAsync();
             }
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException)
@@ -821,10 +839,31 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>Runs a page-load callback after a local scroll threshold is reached.</summary>
+    [JSInvokable]
+    public Task LoadBrowserItems() => HandleListboxScrollAsync();
+
+    private async Task LoadBrowserPageAsync()
+    {
+        _loadMorePending = true;
+        try { await OnLoadMore.InvokeAsync(); }
+        finally { _loadMorePending = false; }
+    }
+
     /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
+        browserDisposed = true;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserScroll != null) { await browserScroll.InvokeVoidAsync("dispose"); await browserScroll.DisposeAsync(); }
+            if (browserListController != null) { await browserListController.InvokeVoidAsync("dispose"); await browserListController.DisposeAsync(); }
+            if (browserListModule != null) await browserListModule.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { browserGate.Release(); }
         await CleanupJsAsync();
 
         if (_multiSelectModule != null)

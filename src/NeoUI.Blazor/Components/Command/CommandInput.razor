@@ -97,6 +97,7 @@
     private Dictionary<string, object> InputAttributes => new()
     {
         { "role", "combobox" },
+        { "data-neo-autofocus", "true" },
         { "aria-autocomplete", "list" },
         { "aria-expanded", "true" },
         { "aria-controls", Context?.ListId ?? "" }
@@ -159,7 +160,7 @@
                 // Initialize command input keyboard navigation
                 // JavaScript will intercept arrow keys and call HandleNavigationKey
                 // Pass AutoFocus so JS can handle focusing the input
-                await _inputModule.InvokeVoidAsync(
+                if (Context?.BrowserInteraction != true) await _inputModule.InvokeVoidAsync(
                     "initializeCommandInput",
                     InputId,
                     _dotNetRef,

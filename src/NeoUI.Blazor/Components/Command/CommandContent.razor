@@ -1,10 +1,15 @@
 @namespace NeoUI.Blazor
-@implements IDisposable
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @inject ILocalizer Localizer
 
 @* Command - self-contained searchable/filterable list component *@
 <CascadingValue Value="_context" IsFixed="false">
-    <div class="@CssClass"
+    <div @ref="browserRoot" data-neo-client-list="@(_context.BrowserInteraction ? "command" : null)"
+         data-neo-list-disabled="@Disabled.ToString().ToLowerInvariant()"
+         data-neo-close-on-select="@CloseOnSelect.ToString().ToLowerInvariant()"
+         class="@CssClass"
          role="group"
          aria-label="@Localizer["Command.MenuAriaLabel"]"
          @attributes="AdditionalAttributes">
@@ -14,6 +19,30 @@
 
 @code {
     private CommandContext _context = new();
+    private ElementReference browserRoot;
+    private IJSObjectReference? browserModule, browserController;
+    private readonly SemaphoreSlim browserGate = new(1, 1);
+    private bool browserDisposed;
+    private bool? browserMode;
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    [CascadingParameter] private PopoverContext? PopoverContext { get; set; }
+    /// <summary>Local hover/navigation for mounted items. Omitted values inherit the enclosing popover or interaction policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_context.BrowserInteraction || browserController != null) return;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserDisposed || browserController != null) return;
+            browserModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/browser-list.js");
+            browserController = await browserModule.InvokeAsync<IJSObjectReference>("initialize", browserRoot);
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { browserGate.Release(); }
+    }
+
     private string _searchQuery = string.Empty;
 
     /// <summary>
@@ -97,6 +126,7 @@
 
     protected override void OnInitialized()
     {
+        _context.BrowserInteraction = ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, PopoverContext);
         _context.OnValueChange = OnValueChange;
         _context.FilterFunction = FilterFunction;
         _context.CloseOnSelect = CloseOnSelect;
@@ -106,6 +136,10 @@
 
     protected override void OnParametersSet()
     {
+        var mode = ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, PopoverContext);
+        if (browserMode.HasValue && browserMode != mode) throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the component with @key.");
+        browserMode = mode;
+        _context.BrowserInteraction = ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, PopoverContext);
         _context.OnValueChange = OnValueChange;
         _context.FilterFunction = FilterFunction;
         _context.CloseOnSelect = CloseOnSelect;
@@ -132,8 +166,17 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         _context.OnStateChanged -= HandleContextStateChanged;
+        browserDisposed = true;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserController != null) { await browserController.InvokeVoidAsync("dispose"); await browserController.DisposeAsync(); }
+            if (browserModule != null) await browserModule.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { browserGate.Release(); }
     }
 }

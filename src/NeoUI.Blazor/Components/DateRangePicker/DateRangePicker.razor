@@ -57,7 +57,7 @@
                         <div class="text-sm font-medium px-3">
                             @(EndDateLabel ?? "To")
                         </div>
-                        <Calendar @ref="_secondCalendar" @bind-SelectedDate="_endDate"
+                        <Calendar CloseOnSelect="@(!ShowButtons && _startDate.HasValue)" @ref="_secondCalendar" @bind-SelectedDate="_endDate"
                                   InitialMonth="@_secondCalendarMonth"
                                   MinDate="@(_startDate ?? MinDate)"
                                   MaxDate="@MaxDate"
@@ -89,7 +89,7 @@
                                     @onclick="ClearSelection">
                                 @Localizer["DateRangePicker.Clear"]
                             </Button>
-                            <Button Variant="ButtonVariant.Default" 
+                            <Button data-neo-close="true" Variant="ButtonVariant.Default"
                                     Size="ButtonSize.Small" 
                                     Disabled="@(!_startDate.HasValue || !_endDate.HasValue)"
                                     @onclick="ApplySelection">

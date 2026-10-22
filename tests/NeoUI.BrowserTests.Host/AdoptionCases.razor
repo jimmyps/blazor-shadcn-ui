@@ -58,8 +58,12 @@
         <p data-testid="multi-value">@string.Join(",", multi)</p>
     </section>
     <section data-testid="composed-date">
-        <DatePicker SelectedDate="@date" SelectedDateChanged="@(value => date = value)" AriaLabel="Choose date" />
+        <DatePicker SelectedDate="@date" SelectedDateChanged="CommitDate" AriaLabel="Choose date" />
         <p data-testid="date-value">@date?.ToString("yyyy-MM-dd")</p>
+    </section>
+    <section data-testid="composed-time">
+        <TimePicker SelectedTime="@time" SelectedTimeChanged="CommitTime" MinuteStep="15" />
+        <p data-testid="time-value">@(time?.ToString("HH:mm") ?? "None")</p>
     </section>
     <section data-testid="composed-exceptions">
         <Combobox TItem="string" InteractionMode="InteractionMode.Blazor" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" Placeholder="Legacy city" />
@@ -70,7 +74,35 @@
 <button data-testid="composed-reset" @onclick="ResetComposed">Reset composed</button>
 <button data-testid="multi-close" @onclick="CloseMulti">Close multiselect externally</button>
 
+<section data-testid="local-command">
+    <CommandContent InteractionMode="InteractionMode.Browser" CloseOnSelect="false">
+        <CommandInput Placeholder="Search local commands" />
+        <CommandList>
+            <CommandItem Value="alpha" OnSelect="CommitLocalCommand">Alpha</CommandItem>
+            <CommandItem Value="disabled" Disabled>Disabled command</CommandItem>
+            <CommandItem Value="beta" OnSelect="CommitLocalCommand">Beta</CommandItem>
+        </CommandList>
+    </CommandContent>
+    <p data-testid="local-command-commits">@localCommandCommits</p>
+</section>
+<section data-testid="local-virtual-command">
+    <CommandContent InteractionMode="InteractionMode.Browser" CloseOnSelect="false">
+        <CommandInput Placeholder="Search virtual commands" />
+        <CommandList>
+            <CommandVirtualizedGroup TItem="string" Items="@localVirtualItems" ItemValue="@(item => item)">
+                <ItemTemplate Context="item">@item</ItemTemplate>
+            </CommandVirtualizedGroup>
+        </CommandList>
+    </CommandContent>
+</section>
+<Button data-testid="plain-button">Plain action</Button>
+<LinkButton Href="#" data-testid="plain-link">Plain link</LinkButton>
+
 @code {
+    private int localCommandCommits;
+    private readonly List<string> localVirtualItems = Enumerable.Range(0, 100).Select(index => $"Virtual {index:D3}").ToList();
+    private async Task CommitLocalCommand() { await Task.Delay(250); localCommandCommits++; }
+
     private bool unread, mentions, assigned, menuReject, menuSlow, resetPending;
     private int menuCommits;
     private long menuRevision;
@@ -78,6 +110,9 @@
     private IEnumerable<string> multi = [];
     private MultiSelect<string>? multiRef;
     private DateOnly? date = new(2026, 10, 21);
+    private TimeOnly? time;
+    private async Task CommitDate(DateOnly? value) { if (menuSlow) await Task.Delay(700); date = value; }
+    private async Task CommitTime(TimeOnly? value) { if (menuSlow) await Task.Delay(700); time = value; }
     private readonly string[] choices = ["Amsterdam", "Bangkok", "Cairo"];
     private async Task ApplyFilter(Action apply)
     {

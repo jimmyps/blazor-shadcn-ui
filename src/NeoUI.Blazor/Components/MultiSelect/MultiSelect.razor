@@ -66,12 +66,12 @@
             </div>
         </PopoverTrigger>
 
-        <PopoverContent Side="@PopoverSide.Bottom"
+        <PopoverContent data-neo-client-list="@(BrowserInteraction ? "multiple" : null)" Side="@PopoverSide.Bottom"
                         Align="@PopoverAlign.Start"
                         CloseOnClickOutside="@AutoClose"
                         CloseOnEscape="false"
                         OnClickOutside="@GetClickOutsideHandler()"
-                        OnContentReady="@HandleContentReady"
+                        OnContentReady="@(BrowserInteraction ? default(EventCallback) : EventCallback.Factory.Create(this, HandleContentReady))"
                         MatchTriggerWidth="@MatchTriggerWidth"
                         Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
             @* Search input section - matches CommandInput styling *@
@@ -96,12 +96,13 @@
                        @bind-value:get="_searchQuery"
                        @bind-value:set="HandleSearchInput"
                        @bind-value:event="oninput"
-                       @onkeydown="HandleSearchKeyDown"
+                       data-neo-autofocus="true"
+                       @onkeydown="@(BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleSearchKeyDown))"
                        class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
             </div>
 
             @* Items list section *@
-            <div id="@($"{Id}-listbox")" @ref="_listboxScrollRef" @onscroll="HandleListboxScrollAsync" role="listbox" aria-multiselectable="true" class="max-h-[250px] overflow-y-auto p-1">
+            <div id="@($"{Id}-listbox")" @ref="_listboxScrollRef" @onscroll="@(!BrowserInteraction && OnLoadMore.HasDelegate ? EventCallback.Factory.Create(this, HandleListboxScrollAsync) : default)" data-neo-load-enabled="@((CanLoadMore && !IsLoading && (SearchQueryChanged.HasDelegate || string.IsNullOrEmpty(_searchQuery))).ToString().ToLowerInvariant())" role="listbox" aria-multiselectable="true" class="max-h-[250px] overflow-y-auto p-1">
                 @if (!HasFilteredItems)
                 {
                     <div class="py-6 text-center text-sm text-muted-foreground">@EffectiveEmptyMessage</div>
@@ -117,7 +118,7 @@
                              @onclick="HandleSelectAllToggle"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <CheckboxPrimitive Checked="@(selectAllState == SelectAllState.All)"
+                            <CheckboxPrimitive tabindex="@(BrowserInteraction ? -1 : 0)" aria-hidden="@(BrowserInteraction ? "true" : null)" Checked="@(selectAllState == SelectAllState.All)"
                                       Indeterminate="@(selectAllState == SelectAllState.Indeterminate)"
                                       class="@CheckboxCssClass"
                                       AriaLabel="@EffectiveSelectAllLabel">
@@ -148,7 +149,7 @@
                              @onclick="GetToggleHandler(item)"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <CheckboxPrimitive Checked="@isSelected"
+                            <CheckboxPrimitive tabindex="@(BrowserInteraction ? -1 : 0)" aria-hidden="@(BrowserInteraction ? "true" : null)" Checked="@isSelected"
                                       class="@CheckboxCssClass"
                                       AriaLabel="@displayText">
                                 @if (isSelected)

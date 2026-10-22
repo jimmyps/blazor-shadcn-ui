@@ -8,6 +8,8 @@
 <div id="@($"vgroup-container-{_id}")"
      class="@CssClass"
      style="@(_hasVisibleItems ? null : "display: none")"
+     data-neo-virtualized="@(Context?.BrowserInteraction == true ? "true" : null)"
+     data-neo-item-count="@(EnableLazyLoading ? _filteredCount : (_filteredItems?.Count ?? 0))"
      role="group"
      aria-labelledby="@(string.IsNullOrWhiteSpace(Heading) ? null : $"command-group-{_id}")">
     @if (!string.IsNullOrWhiteSpace(Heading))
@@ -37,12 +39,13 @@
                 OverscanCount="5">
                 <ItemContent Context="indexed">
                     <div id="@GetItemId(indexed.Index)"
+                         data-neo-index="@indexed.Index"
                          role="option"
-                         aria-selected="@(IsItemFocusedByIndex(indexed.Index) ? "true" : "false")"
-                         data-focused="@(IsItemFocusedByIndex(indexed.Index) ? "true" : "false")"
+                         aria-selected="@(Context?.BrowserInteraction == true ? null : (IsItemFocusedByIndex(indexed.Index) ? "true" : "false"))"
+                         data-focused="@(Context?.BrowserInteraction == true ? null : (IsItemFocusedByIndex(indexed.Index) ? "true" : "false"))"
                          @onclick="@(() => SelectItem(indexed.Item))"
-                         @onmouseenter="@(() => FocusItemByIndex(indexed.Index))"
-                         @onmousemove="HandleMouseMove"
+                         @onmouseenter="@(Context?.BrowserInteraction == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, () => FocusItemByIndex(indexed.Index)))"
+                         @onmousemove="@(Context?.BrowserInteraction == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseMove))"
                          class="@GetItemCssClassByIndex(indexed.Index)">
                         @ItemTemplate(indexed.Item)
                     </div>
@@ -60,12 +63,13 @@
                 OverscanCount="5">
                 <ItemContent Context="indexed">
                     <div id="@GetItemId(indexed.Index)"
+                         data-neo-index="@indexed.Index"
                          role="option"
-                         aria-selected="@(IsItemFocusedByIndex(indexed.Index) ? "true" : "false")"
-                         data-focused="@(IsItemFocusedByIndex(indexed.Index) ? "true" : "false")"
+                         aria-selected="@(Context?.BrowserInteraction == true ? null : (IsItemFocusedByIndex(indexed.Index) ? "true" : "false"))"
+                         data-focused="@(Context?.BrowserInteraction == true ? null : (IsItemFocusedByIndex(indexed.Index) ? "true" : "false"))"
                          @onclick="@(() => SelectItem(indexed.Item))"
-                         @onmouseenter="@(() => FocusItemByIndex(indexed.Index))"
-                         @onmousemove="HandleMouseMove"
+                         @onmouseenter="@(Context?.BrowserInteraction == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, () => FocusItemByIndex(indexed.Index)))"
+                         @onmousemove="@(Context?.BrowserInteraction == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseMove))"
                          class="@GetItemCssClassByIndex(indexed.Index)">
                         @ItemTemplate(indexed.Item)
                     </div>
@@ -534,6 +538,7 @@
 
     private string GetItemCssClassByIndex(int index)
     {
+        if (Context?.BrowserInteraction == true) return "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[focused=true]:bg-accent data-[focused=true]:text-accent-foreground";
         var isFocused = IsItemFocusedByIndex(index);
         var isKeyboardNav = Context?.IsKeyboardNavigating == true;
         var baseClasses = "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none";

@@ -39,6 +39,9 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Combobox<TItem> : ComponentBase
 {
+    [Inject] private Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults { get; set; } = default!;
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
+    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value);
     /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
     [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reapply controlled floating state, including unchanged reset values.</summary>

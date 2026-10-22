@@ -72,10 +72,10 @@
             }
         </div>
         <div class="mt-4 flex justify-end gap-2">
-            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isOpen = false)">
+            <Button data-neo-close="true" Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isOpen = false)">
                 Cancel
             </Button>
-            <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyTime">
+            <Button data-neo-close="true" Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyTime">
                 Apply
             </Button>
         </div>
