@@ -148,9 +148,13 @@ for (const preference of ['system-dark', 'saved-dark']) {
             await page.getByTestId('browser-popover').click();
             await page.getByLabel('Show workspace avatars').waitFor({ state: 'visible' });
             await page.keyboard.press('Escape');
-            await page.getByRole('switch', { name: 'Toggle dark mode', exact: true }).click();
+            const themeToggle = page.getByRole('switch', { name: 'Toggle dark mode', exact: true });
+            // The initial dark class comes from the head script; await the hydrated
+            // server control before exercising its asynchronous persistence callback.
+            await eventually(async () => assert.equal(await themeToggle.getAttribute('aria-checked'), 'true'));
+            await themeToggle.click();
             await eventually(async () => assert.equal(await page.locator('html').evaluate(e => e.classList.contains('dark')), false));
-            assert.equal(await page.evaluate(() => localStorage.getItem('theme')), 'light');
+            await eventually(async () => assert.equal(await page.evaluate(() => localStorage.getItem('theme')), 'light'));
         } finally { await browser.close(); }
     });
 }
