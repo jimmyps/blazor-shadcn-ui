@@ -30,7 +30,8 @@ export function initialize(root) {
     const multiple = root.dataset.neoClientList === 'multiple';
     let active = null, activeId = null, keyboard = false, lastPointer = null, disposed = false, pendingVirtual = null;
     const input = () => root.querySelector('input:not(:disabled)');
-    const items = () => root.dataset.neoListDisabled === 'true' ? [] : [...root.querySelectorAll('[role="option"]')].filter(item =>
+    const staleSearch = () => input()?.hasAttribute('data-neo-input-pending');
+    const items = () => root.dataset.neoListDisabled === 'true' || staleSearch() ? [] : [...root.querySelectorAll('[role="option"]')].filter(item =>
         item.closest('[data-neo-client-list]') === root && !disabled(item) && !item.hidden &&
         getComputedStyle(item).display !== 'none');
     const paint = () => {
@@ -95,6 +96,7 @@ export function initialize(root) {
         }
         if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey ||
             (event.target !== input() && event.target !== root && !event.target.matches('[role="option"]'))) return;
+        if (staleSearch() && ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', ' '].includes(event.key)) { stop(event); return; }
         const available = items();
         const index = available.indexOf(active);
         let next;
@@ -125,13 +127,18 @@ export function initialize(root) {
     const click = event => {
         const item = optionFor(event);
         if (!item) return;
-        if (disabled(item) || root.dataset.neoListDisabled === 'true') { stop(event); return; }
+        if (disabled(item) || root.dataset.neoListDisabled === 'true' || staleSearch()) { stop(event); return; }
         if (!items().includes(item)) return;
         focus(item);
         if (multiple) input()?.focus({ preventScroll: true });
         if (!multiple && root.dataset.neoCloseOnSelect === 'true') closeForElement(root);
     };
     const onInput = () => { keyboard = false; pendingVirtual = null; focus(null); };
+    const onInputState = () => {
+        root.toggleAttribute('data-neo-search-pending', Boolean(staleSearch()));
+        root.setAttribute('aria-busy', String(Boolean(staleSearch())));
+        paint();
+    };
     const onOpenChange = event => {
         const layer = root.closest('[data-neo-browser-content]');
         if (!layer || event.target.getAttribute('aria-controls') !== layer.id || event.detail.open) return;
@@ -145,7 +152,7 @@ export function initialize(root) {
     const observer = new MutationObserver(paint);
     observer.observe(root, { childList: true, subtree: true, characterData: true, attributes: true,
         attributeFilter: ['id', 'data-neo-index', 'disabled', 'aria-disabled', 'data-disabled', 'class', 'hidden', 'data-neo-list-disabled', 'data-neo-item-count'] });
-    const listeners = { pointerover: pointerOver, pointermove: pointerMove, keydown, click, input: onInput };
+    const listeners = { pointerover: pointerOver, pointermove: pointerMove, keydown, click, input: onInput, 'neoui:input-state': onInputState };
     for (const [name, listener] of Object.entries(listeners)) root.addEventListener(name, listener, true);
     doc.addEventListener('neoui:openchange', onOpenChange);
     const controller = {
@@ -164,6 +171,8 @@ export function initialize(root) {
     paint();
     return controller;
 }
+
+export function initializeById(id) { return initializeInput(document.getElementById(id)); }
 
 export function initializeInput(input) { return initialize(input?.closest('[data-neo-client-list]')); }
 

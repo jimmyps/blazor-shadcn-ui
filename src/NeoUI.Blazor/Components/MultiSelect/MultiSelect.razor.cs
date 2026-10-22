@@ -296,6 +296,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// Tracks the current search query for filtering.
     /// </summary>
     private string _searchQuery = string.Empty;
+    private long _searchRevision, _floatingRevision, _externalRevision, _lastFloatingRevision;
 
     /// <summary>
     /// Gets a unique identifier for this multiselect instance.
@@ -370,6 +371,13 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (_externalRevision != InteractionRevision)
+        {
+            _externalRevision = InteractionRevision;
+            _floatingRevision++;
+            _searchRevision++;
+            _searchQuery = string.Empty;
+        }
 
         if (ValueSelector == null)
         {
@@ -410,7 +418,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             {
                 if (browserDisposed) return;
                 browserListModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/browser-list.js");
-                browserListController ??= await browserListModule.InvokeAsync<IJSObjectReference>("initializeInput", _searchInputRef);
+                browserListController ??= await browserListModule.InvokeAsync<IJSObjectReference>("initializeById", $"{Id}-search");
                 if (OnLoadMore.HasDelegate && browserScroll == null)
                 {
                     _dotNetRef ??= DotNetObjectReference.Create(this);
@@ -502,6 +510,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     {
         _isOpen = false;
         _searchQuery = string.Empty;
+        _searchRevision++;
 
         // Notify consumer so they can reload the default dataset for the next open
         if (SearchQueryChanged.HasDelegate)
@@ -530,8 +539,14 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         // Reading _isOpen belongs inside for the same reason.
         await InvokeAsync(async () =>
         {
-            if (!_isOpen) return;
-            await Close();
+            if (!_isOpen && !BrowserInteraction) return;
+            if (BrowserInteraction) _floatingRevision++;
+            // Render the close command before awaiting application search work. The browser
+            // may be open even when its observation has not yet reached the server mirror.
+            var closeTask = Close();
+            _focusDone = false;
+            StateHasChanged();
+            await closeTask;
 
             // Close() bypasses HandleOpenChanged — the Popover is in controlled mode, so setting _isOpen
             // ourselves raises no OpenChanged — and that is the only other place this is cleared. Left set,
@@ -904,7 +919,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// </summary>
     protected override bool ShouldRender()
     {
-        var interactionChanged = _lastInteractionRevision != InteractionRevision || _lastInteractionMode != InteractionMode;
+        var interactionChanged = _lastFloatingRevision != _floatingRevision || _lastInteractionRevision != InteractionRevision || _lastInteractionMode != InteractionMode;
         var itemsChanged = !ReferenceEquals(_lastItems, Items);
         var valuesChanged = !ReferenceEquals(_lastValues, Values);
         var openChanged = _lastIsOpen != _isOpen;
@@ -914,6 +929,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 
         if (interactionChanged || itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged || loadingChanged)
         {
+            _lastFloatingRevision = _floatingRevision;
             _lastInteractionRevision = InteractionRevision;
             _lastInteractionMode = InteractionMode;
             _lastItems = Items;

@@ -1,3 +1,4 @@
+import { initialize as initializeBrowserInput, dispose as disposeBrowserInput } from './browser-input.js';
 // Input component JavaScript module
 // Manages input event handling, validation tooltips, error states, and UpdateOn mode behavior
 
@@ -160,7 +161,7 @@ export function showValidationError(elementId, message) {
  * @param {object} dotNetRef - DotNetObjectReference for callbacks
  * @param {boolean} enableBlurValidation - Whether to call ValidateAndClamp on blur (for UpdateOn=Input + Min/Max)
  */
-export function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null, enableBlurValidation = false) {
+export function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null, enableBlurValidation = false, browserOwned = false) {
     const element = document.getElementById(elementId);
     if (!element) {
         console.warn(`Input element with id '${elementId}' not found`);
@@ -169,6 +170,7 @@ export function initializeInput(elementId, updateOn = 'change', debounceDelay = 
 
     // Clean up any existing state
     disposeInput(elementId);
+    if (browserOwned) { initializeBrowserInput(element, dotNetRef); inputState.set(elementId, { browserElement: element }); return; }
 
     const state = {
         updateOn: updateOn.toLowerCase(),
@@ -282,6 +284,7 @@ export function updateValue(elementId, value) {
     if (!element) return;
 
     const state = inputState.get(elementId);
+    if (state?.browserElement) return;
 
     // If the element is focused and the user has typed something different from what C#
     // is trying to write back, skip the update — their in-progress input takes precedence
@@ -305,6 +308,7 @@ export function updateValue(elementId, value) {
  */
 export function disposeInput(elementId) {
     const state = inputState.get(elementId);
+    if (state?.browserElement) { disposeBrowserInput(state.browserElement); inputState.delete(elementId); return; }
     if (!state) return;
 
     const element = document.getElementById(elementId);

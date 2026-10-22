@@ -3,7 +3,7 @@
 @using NeoUI.Icons.Lucide
 
 <div class="@ContainerClass">
-    <Popover InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
+    <Popover InteractionMode="@InteractionMode" InteractionRevision="@_floatingRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
         <PopoverTrigger role="combobox"
                         aria-expanded="@_isOpen.ToString().ToLower()"
                         aria-controls="@($"{Id}-listbox")"
@@ -89,6 +89,16 @@
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
+                @if (BrowserInteraction)
+                {
+                    <Input Id="@($"{Id}-search")" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
+                           Value="@_searchQuery" ValueChanged="HandleSearchInput" ValueRevision="@_searchRevision"
+                           UpdateOn="InputUpdateMode.Input" Placeholder="@EffectiveSearchPlaceholder" Disabled="@Disabled"
+                           AdditionalAttributes="@(new Dictionary<string, object> { ["data-neo-autofocus"] = "true" })"
+                           Class="flex h-11 w-full rounded-none !border-0 bg-transparent py-3 px-0 !shadow-none text-sm outline-none focus-visible:!ring-0 placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
+                }
+                else
+                {
                 <input @ref="_searchInputRef"
                        id="@($"{Id}-search")"
                        type="text"
@@ -99,6 +109,7 @@
                        data-neo-autofocus="true"
                        @onkeydown="@(BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleSearchKeyDown))"
                        class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
+                }
             </div>
 
             @* Items list section *@

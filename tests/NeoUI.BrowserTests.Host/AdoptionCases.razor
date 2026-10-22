@@ -98,7 +98,39 @@
 <Button data-testid="plain-button">Plain action</Button>
 <LinkButton Href="#" data-testid="plain-link">Plain link</LinkButton>
 
+<section data-testid="slow-search-combo"><Combobox TItem="string" InteractionMode="InteractionMode.Browser" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" @bind-Value="slowComboValue" SearchQueryChanged="SlowSearch" Placeholder="Slow search city" SearchPlaceholder="Slow combo query" /></section>
+<section data-testid="slow-search-multi"><MultiSelect TItem="string" InteractionMode="InteractionMode.Browser" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" @bind-Values="slowMultiValue" SearchQueryChanged="SlowSearch" Placeholder="Slow search cities" SearchPlaceholder="Slow multi query" /></section>
+<p data-testid="slow-search-last">@slowSearchLast</p><p data-testid="slow-search-values">@slowComboValue|@string.Join(",", slowMultiValue)</p>
+<section data-testid="input-cases">
+    <Input InteractionMode="InteractionMode.Browser" Value="@inputValue" ValueChanged="CommitInput" ValueRevision="@inputRevision" UpdateOn="InputUpdateMode.Input" Placeholder="Browser draft" />
+    <Input InteractionMode="InteractionMode.Browser" Value="@changeValue" ValueChanged="CommitChange" ValueRevision="@inputRevision" UpdateOn="InputUpdateMode.Change" Placeholder="Change draft" />
+    <Input InteractionMode="InteractionMode.Browser" Value="@debouncedValue" ValueChanged="CommitDebounced" ValueRevision="@inputRevision" UpdateOn="InputUpdateMode.Input" DebounceDelay="150" Placeholder="Debounced draft" />
+    <p data-testid="input-accepted">@inputValue</p><p data-testid="change-accepted">@changeValue</p><p data-testid="debounced-accepted">@debouncedValue</p>
+    <p data-testid="input-calls">@inputCalls</p><p data-testid="input-renders">@inputRenders</p>
+    <button data-testid="input-render" @onclick="() => inputRenders++">Render parent</button>
+    <button data-testid="input-reset" @onclick="ResetInputs">Reset draft</button>
+    <label><input type="checkbox" @bind="inputReject" data-testid="input-reject" />Reject input</label>
+    <label><input type="checkbox" @bind="inputNormalize" data-testid="input-normalize" />Normalize input</label>
+</section>
+
 @code {
+    private string? slowComboValue;
+    private IEnumerable<string> slowMultiValue = [];
+    private string slowSearchLast = "";
+    private async Task SlowSearch(string query) { await Task.Delay(600); slowSearchLast = query; }
+    private string? inputValue = "seed", changeValue = "seed", debouncedValue = "seed";
+    private long inputRevision;
+    private int inputCalls, inputRenders;
+    private bool inputReject, inputNormalize;
+    private async Task CommitInput(string? value) {
+        var version = inputRevision; var reject = inputReject; var normalize = inputNormalize;
+        inputCalls++; await Task.Delay(700);
+        if (version == inputRevision && !reject) inputValue = normalize ? value?.ToUpperInvariant() : value;
+    }
+    private async Task CommitChange(string? value) { var version = inputRevision; await Task.Delay(400); if (version == inputRevision) changeValue = value; }
+    private async Task CommitDebounced(string? value) { var version = inputRevision; await Task.Delay(400); if (version == inputRevision) debouncedValue = value; }
+    private void ResetInputs() { inputValue = changeValue = debouncedValue = "seed"; inputRevision++; }
+
     private int localCommandCommits;
     private readonly List<string> localVirtualItems = Enumerable.Range(0, 100).Select(index => $"Virtual {index:D3}").ToList();
     private async Task CommitLocalCommand() { await Task.Delay(250); localCommandCommits++; }

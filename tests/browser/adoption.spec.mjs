@@ -140,6 +140,9 @@ test('controlled reset invalidates pending and queued menu acknowledgements', as
     await filter('Unread only').click(); await filter('Unread only').click();
     await radio('Important notifications').click();
     await page.getByTestId('menu-reset').evaluate(e => e.click());
+    // An intermediate Razor render can briefly restore accepted ARIA while the
+    // browser queue is still pending. Wait for the reset command, not that echo.
+    await eventually(async () => assert.equal(await page.getByTestId('filter-menu').getAttribute('aria-expanded'), 'false'));
     await checked(filter('Unread only'), false);
     await checked(radio('All notifications'), true);
     await pause(1700);

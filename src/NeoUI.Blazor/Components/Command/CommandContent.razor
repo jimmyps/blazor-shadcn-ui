@@ -28,6 +28,9 @@
     [CascadingParameter] private PopoverContext? PopoverContext { get; set; }
     /// <summary>Local hover/navigation for mounted items. Omitted values inherit the enclosing popover or interaction policy.</summary>
     [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Change to reapply SearchQuery, including a reset to the same value.</summary>
+    [Parameter] public long SearchRevision { get; set; }
+    private long _lastSearchRevision;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -132,10 +135,12 @@
         _context.CloseOnSelect = CloseOnSelect;
         _context.Disabled = Disabled;
         _context.OnStateChanged += HandleContextStateChanged;
+        _context.BrowserSearchChanged = HandleBrowserSearchChanged;
     }
 
     protected override void OnParametersSet()
     {
+        if (_lastSearchRevision != SearchRevision) { _lastSearchRevision = SearchRevision; _context.InputRevision++; }
         var mode = ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, PopoverContext);
         if (browserMode.HasValue && browserMode != mode) throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the component with @key.");
         browserMode = mode;
@@ -150,6 +155,19 @@
         {
             _context.SetSearchQuery(_searchQuery);
         }
+    }
+
+    private async Task HandleBrowserSearchChanged(string query)
+    {
+        var revision = _context.InputRevision;
+        _searchQuery = query;
+        _context.SetSearchQuery(query);
+        if (SearchQueryChanged.HasDelegate) await SearchQueryChanged.InvokeAsync(query);
+        if (revision != _context.InputRevision) return;
+        // Delayed controlled parameter echoes must not turn into draft reset commands.
+        _searchQuery = query;
+        _context.SetSearchQuery(query);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async void HandleContextStateChanged()

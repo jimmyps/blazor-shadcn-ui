@@ -20,6 +20,8 @@
     <Input @ref="@_inputRef"
            Id="@InputId"
            Type="InputType.Text"
+           InteractionMode="@(Context?.BrowserInteraction == true ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)"
+           ValueRevision="@(Context?.InputRevision ?? 0)"
            Value="@Context?.SearchQuery"
            ValueChanged="HandleValueChanged"
            UpdateOn="InputUpdateMode.Input"
@@ -189,10 +191,11 @@
         }
     }
 
-    private void HandleValueChanged(string? value)
+    private async Task HandleValueChanged(string? value)
     {
-        // Update CommandContext with new search query
-        Context?.SetSearchQuery(value ?? string.Empty);
+        if (Context?.BrowserInteraction == true && Context.BrowserSearchChanged != null)
+            await Context.BrowserSearchChanged(value ?? string.Empty);
+        else Context?.SetSearchQuery(value ?? string.Empty);
     }
 
     /// <summary>

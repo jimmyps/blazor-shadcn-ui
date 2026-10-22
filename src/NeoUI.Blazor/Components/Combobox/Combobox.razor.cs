@@ -253,8 +253,10 @@ public partial class Combobox<TItem> : ComponentBase
     /// <summary>
     /// Validates required parameters.
     /// </summary>
+    private long _searchRevision, _externalSearchRevision;
     protected override void OnParametersSet()
     {
+        if (_externalSearchRevision != InteractionRevision) { _externalSearchRevision = InteractionRevision; _searchRevision++; }
         base.OnParametersSet();
 
         if (ValueSelector == null)
@@ -341,8 +343,7 @@ public partial class Combobox<TItem> : ComponentBase
         Value = newValue;
         await ValueChanged.InvokeAsync(newValue);
 
-        if (ClearSearchOnSelect)
-            _commandSearchQuery = string.Empty;
+        if (ClearSearchOnSelect) { _commandSearchQuery = string.Empty; _searchRevision++; }
 
         // Close the popover after selection
         _isOpen = false;

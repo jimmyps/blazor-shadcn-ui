@@ -313,3 +313,39 @@ test('composed demo controls inherit browser shells and retain date, time, searc
         assert.deepEqual(errors, []);
     } finally { await browser.close(); }
 });
+
+
+test('browser input demo preserves drafts under delayed acceptance, renders, rejection and resets', async () => {
+    const browser = await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) await page.route(origin + '/**', route => route.continue({ headers: { ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true' } }));
+    const errors = []; page.on('pageerror', e => errors.push(String(e)));
+    try {
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const input = page.getByTestId('demo-browser-input');
+        await input.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
+        await input.fill('first draft'); await input.fill('latest draft');
+        await page.getByTestId('demo-input-render').evaluate(e => e.click());
+        assert.equal(await input.inputValue(), 'latest draft');
+        await eventually(async () => assert.equal(await page.getByTestId('demo-input-accepted').textContent(), 'latest draft'));
+        await page.getByTestId('demo-input-reject').check();
+        await input.fill('reject this');
+        await eventually(async () => assert.equal(await input.inputValue(), 'latest draft'));
+        await page.getByTestId('demo-input-reset').evaluate(e => e.click());
+        await eventually(async () => assert.equal(await input.inputValue(), 'Hello'));
+        const change = page.getByTestId('demo-change-input');
+        await page.getByTestId('demo-input-reject').uncheck();
+        await change.fill('change draft');
+        assert.equal(await page.getByTestId('demo-change-accepted').textContent(), 'Hello');
+        await change.blur();
+        await eventually(async () => assert.equal(await page.getByTestId('demo-change-accepted').textContent(), 'change draft'));
+        await page.locator('#input-drafts').scrollIntoViewIfNeeded();
+        await page.screenshot({ path: join(tmpdir(), 'neoui-input-drafts-desktop.png') });
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.locator('#input-drafts').scrollIntoViewIfNeeded();
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth), false);
+        await page.screenshot({ path: join(tmpdir(), 'neoui-input-drafts-mobile.png') });
+        assert.deepEqual(errors, []);
+    } finally { await page.close(); await browser.close(); }
+});

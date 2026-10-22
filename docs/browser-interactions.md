@@ -1,6 +1,6 @@
 # Browser interaction mode (preview)
 
-`DropdownMenu`, `Popover` and `Select<TValue>` now accept an opt-in interaction mode:
+`DropdownMenu`, `Popover`, `Select<TValue>`, `Input`, and the composed controls below accept an opt-in interaction mode:
 
 ```razor
 @using NeoUI.Blazor.Primitives
@@ -102,14 +102,51 @@ an eligible load-more request calls the application. Virtualization and calendar
 materialization remain content boundaries, so disconnected controls cannot invent rows
 or dates whose application rules have not been rendered.
 
-### Input value ownership is a separate follow-up
+### Browser-owned input drafts
 
-This local-state work does not yet give Input/Textarea or search queries versioned,
-browser-owned drafts. A complete input mode needs monotonic edit IDs, asynchronous
-acknowledgements that cannot overwrite newer drafts, explicit reset/normalization commands,
-and latest-query checks for autocomplete results. It must preserve caret/selection,
-composition/IME, debounce, blur/change semantics, and EditContext validation. Guarding only
-while an input is focused does not resolve stale renders or authoritative-reset races.
+`Input` inherits the same interaction policy, with explicit `InteractionMode` overrides.
+Command/Combobox and MultiSelect search fields use it when their enclosing control is in
+Browser mode. Razor renders a fixed initial `value`; subsequent render batches therefore
+cannot overwrite a live draft. Native typing, selection, caret, paste and IME stay local,
+including while blurred. `UpdateOn=Input` sends versioned edit snapshots out of band;
+`UpdateOn=Change` submits on change/blur. Debounce is local and flushes on blur.
+
+Callbacks are serialized in edit order. Every delivered snapshot still runs the application
+callback; debounce can reduce that work. A returned acknowledgement can change the DOM only
+if its edit ID and command revision still match the latest draft. The bound `Value` remains
+the accepted application value. Keep it unchanged to reject an edit, or assign a normalized
+value to acknowledge a correction. Field-change validation runs after the callback.
+
+```razor
+<Input InteractionMode="InteractionMode.Browser"
+       Value="@acceptedText" ValueChanged="AcceptTextAsync"
+       ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" />
+```
+
+Increment `ValueRevision` together with `Value` for an authoritative replacement or reset,
+**even when resetting to the same accepted value**. Ordinary parameter echoes do not replace
+browser drafts. A changed revision clears queued edits and invalidates in-flight
+acknowledgements. An application callback already running cannot be cancelled by this UI
+protocol; applications must guard their own asynchronous writes against a reset as needed.
+Use `SearchRevision` on standalone CommandContent, or `InteractionRevision` on composed
+controls, to explicitly reset search drafts.
+
+Search callbacks are awaited through the input queue. Until the latest query finishes,
+old items remain rendered but cannot be selected through the browser list controller;
+`aria-busy` and `data-neo-search-pending` identify this state. The controller never renders
+search results itself. Fire-and-forget application work is outside this guarantee: await
+result assignment inside `SearchQueryChanged`, or implement request IDs/cancellation in
+your data layer. A long queue still means old server requests take time; use debounce for
+expensive searches.
+
+`data-neo-input-pending` and the `neoui:input-state` event distinguish a draft from acceptance.
+Failed delivery preserves the draft and marks `data-neo-input-uncertain`; queued callbacks
+are discarded and are not automatically replayed on reconnect. A new user edit can retry after a failed delivery. An explicit
+revision also releases new edits if an old acknowledgement never settles. Acknowledgement loss does not prove the server failed.
+Rendered revision commands reconcile after reconnect without requiring a transient JS call.
+
+This first implementation covers Input and composed search fields. Textarea, masked inputs,
+and specialised editor components retain their existing value behavior.
 
 ## Ownership
 
@@ -330,7 +367,7 @@ dotnet run --project tests/NeoUI.BrowserTests.Host -p:CI=true --urls http://loca
 cd tests/browser
 $env:NEOUI_TEST_URL = 'http://localhost:5200'
 $env:NEOUI_EXPECT_DEFAULT = 'Browser'
-node --test adoption.spec.mjs
+node --test adoption.spec.mjs input.spec.mjs
 ```
 
 The normal Server fixture leaves the library Blazor default untouched. The WASM fixture

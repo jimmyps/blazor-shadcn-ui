@@ -519,6 +519,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        ConfigureBrowserInput();
 
         if (_validationBehavior != null)
         {
@@ -574,7 +575,9 @@ public partial class Input : ComponentBase, IAsyncDisposable
                     EffectiveId,
                     UpdateOn.ToString().ToLower(),
                     DebounceDelay,
-                    _dotNetRef
+                    _dotNetRef,
+                    false,
+                    BrowserInteraction
                 );
 
                 _jsInitialized = true;

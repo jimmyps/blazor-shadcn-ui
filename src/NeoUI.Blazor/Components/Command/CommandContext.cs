@@ -246,6 +246,9 @@ public class CommandContext
     /// Updates the search query and notifies subscribers.
     /// </summary>
     /// <param name="query">The new search query.</param>
+    internal Func<string, Task>? BrowserSearchChanged { get; set; }
+    internal long InputRevision { get; set; }
+
     public void SetSearchQuery(string query)
     {
         if (_searchQuery != query)
