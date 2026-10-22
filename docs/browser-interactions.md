@@ -179,6 +179,12 @@ awaits acknowledgements for that snapshot, checks native constraints and validat
 `OnValidSubmit`. The lock lasts through the awaited Save callback. Save clicks, Enter,
 `requestSubmit()` and `BrowserInputForm.SubmitAsync()` use the same path; concurrent
 submits are ignored. `OnInvalidSubmit` follows the usual EditForm validation behavior.
+A form reference exposes `IsSubmitting` throughout synchronization, validation and awaited
+persistence. Inside the form's child content, bind the submit button's `Disabled` state
+and an inline spinner to `form?.IsSubmitting == true`; the form rerenders that content
+when submission starts and finishes. Close a containing dialog from the successful
+`OnValidSubmit` handler after awaiting persistence. Invalid or uncertain submissions
+leave the dialog available for correction.
 `Model` and `EditContext` are mutually exclusive, as in EditForm. Include validators as
 usual. Native pre-submit validation is deferred with `novalidate`, so an old validation
 message cannot prevent the final draft from flushing. Native constraints are checked after

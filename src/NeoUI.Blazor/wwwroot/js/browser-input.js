@@ -79,7 +79,12 @@ export function initialize(element, bridge) {
                         queue.length = 0; element.setAttribute('data-neo-input-uncertain', ''); emit(); break;
                     }
                     const ack = await bridge.invokeMethodAsync('OnBrowserInputChanged', edit.value, edit.sequence, edit.revision);
-                    if (currentGeneration !== generation || disposed || edit.revision !== revision || ack.revision !== revision || ack.sequence !== sequence) continue;
+                    if (currentGeneration !== generation || disposed || edit.revision !== revision || ack.revision !== revision) continue;
+                    // A stale acknowledgement must not paint over a newer draft, but it
+                    // still records the server's accepted value. Change-mode emptiness
+                    // transitions must compare against that value when the draft is cleared.
+                    if (!ack.ignored) acceptedValue = ack.value ?? '';
+                    if (ack.sequence !== sequence) continue;
                     reconcile(ack);
                 } catch {
                     // The server may already have executed the callback. Preserve the draft,

@@ -423,7 +423,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     const controller = {
         get options() { return options; }, get content() { return content; },
         get connected() { return floating.isConnected && trigger()?.isConnected; },
-        get isOpen() { return opened; }, trigger, parent, belongsTo, open, close,
+        get isOpen() { return opened; }, trigger, parent, belongsTo, open, close, focus,
         update(nextOptions, nextPosition) {
             const openCommand = options.openVersion !== nextOptions.openVersion;
             const valueCommand = options.valueVersion !== nextOptions.valueVersion;

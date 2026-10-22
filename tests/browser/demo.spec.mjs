@@ -371,6 +371,11 @@ test('dialog form demo flushes fast drafts before validation and onchange action
             return document.querySelector('[data-testid="demo-profile-saved"]').textContent;
         });
         assert.equal(immediate, 'None');
+        const save = form.getByTestId('demo-form-save');
+        await eventually(async () => assert.equal(await save.isDisabled(), true));
+        assert.equal(await save.getAttribute('aria-busy'), 'true');
+        await save.locator('svg.animate-spin').waitFor({ state: 'visible' });
+        assert.equal(await form.isVisible(), true);
         await eventually(async () => assert.equal(await page.getByTestId('demo-profile-saved').textContent(), 'Latest profile · Final note'));
         await form.waitFor({ state: 'hidden' });
         await page.getByTestId('demo-open-input-form').click();
@@ -381,6 +386,7 @@ test('dialog form demo flushes fast drafts before validation and onchange action
         await form.getByText(/minimum length/).waitFor();
         await eventually(async () => assert.equal(await form.getByTestId('demo-form-feedback').textContent(), 'Review the validation errors before saving.'));
         assert.equal(await form.isVisible(), true);
+        await eventually(async () => assert.equal(await form.getByTestId('demo-form-save').isEnabled(), true));
         assert.equal(await page.getByTestId('demo-profile-saved').textContent(), 'Latest profile · Final note');
         await page.setViewportSize({ width: 390, height: 844 });
         await page.screenshot({ path: join(tmpdir(), 'neoui-form-flush-dialog-mobile.png') });
@@ -391,7 +397,8 @@ test('dialog form demo flushes fast drafts before validation and onchange action
         await input.fill('abcdef');
         assert.equal(await page.getByTestId('demo-boundary-calls').textContent(), '1');
         assert.equal(await page.getByTestId('demo-boundary-value').textContent(), 'a');
-        await input.fill(''); await eventually(async () => assert.equal(await action.isDisabled(), true));
+        for (let i = 0; i < 6; i++) await input.press('Backspace');
+        await eventually(async () => assert.equal(await action.isDisabled(), true));
         assert.equal(await page.getByTestId('demo-boundary-calls').textContent(), '2');
         assert.deepEqual(errors, []);
     } finally { await page.close(); await browser.close(); }
@@ -409,11 +416,13 @@ test('menu-family gallery follows existing demo styling and exposes local intera
         const root = page.locator('[data-menu-family-demo]');
         await root.locator('[data-neo-navigation="menubar"][data-neo-navigation-ready]').waitFor();
         await root.scrollIntoViewIfNeeded();
+        const checkboxHeading = page.getByRole('heading', { name: 'Checkbox and radio menus', exact: true });
+        assert.equal(await checkboxHeading.evaluate(e => Boolean(e.compareDocumentPosition(document.querySelector('#menu-families')) & Node.DOCUMENT_POSITION_FOLLOWING)), true);
         const inbox = root.getByRole('menuitem', { name: 'Inbox', exact: true }); await inbox.click();
         const menu = page.locator(`[id="${await inbox.getAttribute('aria-controls')}"]`);
         const filter = menu.getByRole('menuitemcheckbox', { name: 'Unread only', exact: true });
         await filter.click(); assert.equal(await filter.getAttribute('aria-checked'), 'true');
-        await root.getByRole('menuitem', { name: 'View', exact: true }).hover(); await page.getByRole('menuitem', { name: 'Compact view', exact: true }).waitFor({ state: 'visible' });
+        await root.getByRole('menuitem', { name: 'View', exact: true }).click(); await page.getByRole('menuitem', { name: 'Compact view', exact: true }).waitFor({ state: 'visible' });
         await page.keyboard.press('Escape');
         await root.getByText('Right-click here, or focus and press Shift+F10', { exact: true }).click({ button: 'right' });
         await page.getByRole('menuitem', { name: 'Open conversation', exact: true }).waitFor({ state: 'visible' }); await page.keyboard.press('Escape');

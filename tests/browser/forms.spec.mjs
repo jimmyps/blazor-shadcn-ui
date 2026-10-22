@@ -271,3 +271,37 @@ test('WebAssembly form flushing keeps local .NET callbacks working while the bro
         await eventually(async () => assert.equal(await text('form-saved'), 'Offline local name|Offline local note'));
     } finally { await page.context().setOffline(false); }
 });
+
+
+test('stale nonempty acknowledgements still allow a backspace-to-empty change notification', async () => {
+    const result = await page.evaluate(async () => {
+        const module = await import('/_content/NeoUI.Blazor/js/browser-input.js');
+        const input = document.createElement('input'); document.body.append(input);
+        input.dataset.neoInputConfig = JSON.stringify({ value: '', revision: 0, updateOn: 'change' });
+        const calls = []; let release;
+        module.initialize(input, { invokeMethodAsync: (_, value, sequence, revision) => {
+            calls.push(value);
+            const ack = { value, sequence, revision };
+            return calls.length === 1 ? new Promise(resolve => { release = () => resolve(ack); }) : Promise.resolve(ack);
+        } });
+        for (const value of ['a', 'ab', 'abc']) { input.value = value; input.dispatchEvent(new Event('input')); }
+        release(); await Promise.resolve();
+        const draftAfterStaleAck = input.value;
+        for (const value of ['ab', 'a', '']) { input.value = value; input.dispatchEvent(new InputEvent('input', { inputType: 'deleteContentBackward' })); }
+        await Promise.resolve();
+        const result = { calls, draftAfterStaleAck, finalValue: input.value, pending: input.hasAttribute('data-neo-input-pending') };
+        module.dispose(input); input.remove(); return result;
+    });
+    assert.deepEqual(result, { calls: ['a', ''], draftAfterStaleAck: 'abc', finalValue: '', pending: false });
+});
+test('repeated native Backspace clears a fast change-mode draft and disables the bound action without blur', async () => {
+    const input = page.getByPlaceholder('Boundary input', { exact: true }), action = page.getByTestId('boundary-action');
+    await input.evaluate(e => { e.focus(); for (const value of ['a', 'ab', 'abc', 'abcd', 'abcde', 'abcdef']) { e.value = value; e.dispatchEvent(new Event('input', { bubbles: true })); } });
+    await eventually(async () => assert.equal(await text('boundary-accepted'), 'a'));
+    await eventually(async () => assert.equal(await action.isEnabled(), true));
+    await pause(100);
+    for (let i = 0; i < 6; i++) await input.press('Backspace');
+    await eventually(async () => assert.equal(await action.isDisabled(), true));
+    assert.equal(await text('boundary-calls'), '2'); assert.equal(await input.evaluate(e => document.activeElement === e), true);
+    await input.press('Backspace'); assert.equal(await text('boundary-calls'), '2');
+});

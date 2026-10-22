@@ -132,3 +132,14 @@ test('pill feedback survives unrelated renders and late click echoes after a res
     await page.getByTestId('family-reset').click(); await eventually(async () => assert.equal(await home.getAttribute('data-active'), 'true'));
     await pause(1300); assert.equal(await home.getAttribute('data-active'), 'true');
 });
+
+
+test('clicking a sibling menubar trigger after hover switching keeps the new menu open', async () => {
+    await blockTransport(); await file().click(); await expanded(file(), true);
+    const edit = item('Family Edit');
+    await edit.click(); await expanded(edit, true); await item('Family Undo').waitFor({ state: 'visible' });
+    await pause(250); await expanded(edit, true); await expanded(file(), false);
+    assert.equal(await item('Family Undo').evaluate(e => document.activeElement === e), true);
+    await file().click(); await expanded(file(), true); await expanded(edit, false);
+    await file().click(); await expanded(file(), false);
+});

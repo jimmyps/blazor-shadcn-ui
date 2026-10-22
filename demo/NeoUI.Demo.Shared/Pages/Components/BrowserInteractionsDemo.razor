@@ -22,12 +22,6 @@
         <div><span class="block text-xs font-medium text-muted-foreground">APPLICATION CALLBACKS</span><strong class="block text-2xl font-semibold" data-testid="callback-count">@callbackCount</strong><span class="block text-xs text-muted-foreground">@pendingCallbacks pending · @parentRenders parent renders</span></div>
     </section>
 
-    <section id="menu-families">
-        <DemoSection Title="Menu families and pill navigation" Description="Menubar, ContextMenu, NavigationMenu and SplitButton share the browser interaction policy. Try delayed callbacks while switching and dismissing menus.">
-            <DemoBlock><BrowserMenuFamilies /></DemoBlock>
-        </DemoSection>
-    </section>
-
     <DemoSection Title="Dropdown menus" Description="Compare browser-local opening, focus, submenus, and dismissal with the default Blazor interaction mode. On Interactive Server, the default path includes a server round trip.">
         <DemoBlock>
         <div class="grid gap-6 lg:grid-cols-2">
@@ -137,6 +131,12 @@
         </DemoBlock>
     </DemoSection>
 
+    <section id="menu-families">
+        <DemoSection Title="Menu families and pill navigation" Description="Menubar, ContextMenu, NavigationMenu and SplitButton share the browser interaction policy. Try delayed callbacks while switching and dismissing menus.">
+            <DemoBlock><BrowserMenuFamilies /></DemoBlock>
+        </DemoSection>
+    </section>
+
     <div id="composed-controls" class="scroll-mt-24">
     <DemoSection Title="Date, time, and composed controls" Description="One scoped policy keeps floating layers, item highlighting, and keyboard focus local. Application values, search callbacks, and newly rendered content still use Blazor.">
         <DemoBlock Code="@composedCode">
@@ -212,7 +212,7 @@
                 <DialogTrigger AsChild><Button data-testid="demo-open-input-form">Edit profile in a dialog</Button></DialogTrigger>
                 <DialogContent>
                     <DialogHeader><DialogTitle>Save the latest browser draft</DialogTitle><DialogDescription>Name callbacks wait 600 ms. The note has a 1.2-second debounce; Save flushes both before validating.</DialogDescription></DialogHeader>
-                    <BrowserInputForm Model="@profileDraft" OnValidSubmit="SaveProfileDraft" OnInvalidSubmit="ProfileInvalid" OnFlushFailed="ProfileFlushFailed" FormName="browser-interaction-profile" data-testid="demo-safe-form">
+                    <BrowserInputForm @ref="profileForm" Model="@profileDraft" OnValidSubmit="SaveProfileDraft" OnInvalidSubmit="ProfileInvalid" OnFlushFailed="ProfileFlushFailed" FormName="browser-interaction-profile" data-testid="demo-safe-form">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-sm text-destructive" />
                         <div class="space-y-4 py-4">
@@ -220,7 +220,16 @@
                             <div class="space-y-2"><Label For="demo-profile-note">Note</Label><Input Id="demo-profile-note" @bind-Value="profileDraft.Note" ValueRevision="@profileRevision" UpdateOn="InputUpdateMode.Input" DebounceDelay="1200" Placeholder="Type a note and save immediately" /></div>
                             <p class="text-sm text-muted-foreground" role="status" data-testid="demo-form-feedback">@profileFeedback</p>
                         </div>
-                        <DialogFooter><Button Type="ButtonType.Submit" data-testid="demo-form-save">Save profile</Button></DialogFooter>
+                        <DialogFooter>
+                            <Button Type="ButtonType.Submit" Disabled="@(profileForm?.IsSubmitting == true)" aria-busy="@((profileForm?.IsSubmitting == true).ToString().ToLowerInvariant())" data-testid="demo-form-save">
+                                @if (profileForm?.IsSubmitting == true)
+                                {
+                                    <LucideIcon Name="loader-circle" Size="16" Class="animate-spin" aria-hidden="true" />
+                                    <span>Saving…</span>
+                                }
+                                else { <span>Save profile</span> }
+                            </Button>
+                        </DialogFooter>
                     </BrowserInputForm>
                 </DialogContent>
             </Dialog>
@@ -291,6 +300,7 @@
         [Required, MinLength(4)] public string? Name { get; set; }
         [Required] public string? Note { get; set; }
     }
+    private BrowserInputForm? profileForm;
     private readonly ProfileDraft profileDraft = new();
     private bool editorOpen;
     private long profileRevision;

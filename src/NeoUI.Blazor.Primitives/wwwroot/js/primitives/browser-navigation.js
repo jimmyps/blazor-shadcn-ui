@@ -12,6 +12,7 @@ export function initialize(root, bridge) {
     const pillEchoes = new Set();
     let pillAccepted;
     let expanding = false, lastSidebarOpen = root.querySelector('[data-sidebar="pill-nav"]')?.dataset.neoPillSidebarOpen;
+    let hoverSwitchedTrigger = null;
     let timer, notifications = Promise.resolve(), reconciling = false;
     const triggers = () => [...root.querySelectorAll(kind === 'pill' ? '[data-neo-pill-item]' : '[aria-haspopup][aria-controls]')]
         .filter(t => t.closest('[data-neo-navigation]') === root && (kind !== 'navigation' || !t.closest('[data-neo-navigation-panel]')) && !disabled(t));
@@ -64,11 +65,20 @@ export function initialize(root, bridge) {
     };
     const set = (next, focus = 'none', report = true) => {
         clearTimeout(timer);
+        hoverSwitchedTrigger = null;
         const trigger = triggers().find(t => key(t) === next);
         if (kind === 'menubar') {
             for (const item of triggers()) {
                 const controller = forTrigger(item.id);
-                if (item === trigger) void controller?.open(focus, false);
+                if (item === trigger) {
+                    const wasOpen = controller?.isOpen;
+                    void controller?.open(focus, false);
+                    if (wasOpen && focus !== 'none') {
+                        const items = [...controller.content.querySelectorAll('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]')]
+                            .filter(element => !disabled(element) && !element.hidden);
+                        controller.focus(focus === 'last' ? items.at(-1) : items[0]);
+                    }
+                }
                 else controller?.close(false, false);
             }
         }
@@ -99,6 +109,15 @@ export function initialize(root, bridge) {
             }
             return;
         }
+        if (kind === 'menubar') {
+            const trigger = from(event.target);
+            if (trigger) {
+                event.preventDefault(); event.stopImmediatePropagation();
+                const next = value !== key(trigger) || hoverSwitchedTrigger === trigger ? key(trigger) : '-1';
+                set(next, 'first');
+            }
+            return;
+        }
         if (kind !== 'navigation') return;
         const trigger = from(event.target);
         if (trigger) { event.preventDefault(); event.stopImmediatePropagation(); set(value === key(trigger) ? '' : key(trigger)); }
@@ -113,11 +132,13 @@ export function initialize(root, bridge) {
         const trigger = from(event.target);
         if (trigger && !trigger.contains(event.relatedTarget)) {
             clearTimeout(timer);
-            if (kind === 'menubar') { if (value !== '-1' && value !== '') set(key(trigger)); }
+            if (kind === 'menubar') { if (value !== '-1' && value !== '' && value !== key(trigger)) { set(key(trigger)); hoverSwitchedTrigger = trigger; } }
             else timer = setTimeout(() => set(key(trigger)), config.delay);
         } else if (kind === 'navigation' && root.contains(event.target)) clearTimeout(timer);
     };
     const out = event => {
+        if (kind === 'menubar' && hoverSwitchedTrigger?.contains(event.target) && !hoverSwitchedTrigger.contains(event.relatedTarget))
+            hoverSwitchedTrigger = null;
         if (kind === 'navigation' && root.contains(event.target) && !owns(event.relatedTarget)) {
             clearTimeout(timer); timer = setTimeout(() => set(''), config.delay);
         }
@@ -165,7 +186,10 @@ export function initialize(root, bridge) {
     // focusout precedes focusin; a microtask can still observe the transient BODY focus.
     const focusout = () => setTimeout(() => { if (!disposed && kind === 'navigation' && !owns(doc.activeElement)) set(''); }, 0);
     const listeners = { click, pointerover: over, pointerout: out, keydown, pointerdown: outside, 'neoui:openchange': openchange, focusin, focusout };
-    for (const [name, listener] of Object.entries(listeners)) doc.addEventListener(name, listener, true);
+    // Floating controllers also capture document clicks. Coordinate top-level menubar
+    // clicks first, independent of parent/child interop initialization order.
+    const listenerTarget = name => kind === 'menubar' && name === 'click' ? doc.defaultView : doc;
+    for (const [name, listener] of Object.entries(listeners)) listenerTarget(name).addEventListener(name, listener, true);
     const observer = new MutationObserver(() => {
         if (disposed) return;
         const next = JSON.parse(root.dataset.neoNavigationConfig);
@@ -195,7 +219,7 @@ export function initialize(root, bridge) {
     if (kind === 'menubar' || kind === 'navigation') set(value, 'none', false); else paint();
     const controller = { dispose() {
         if (disposed) return; disposed = true; clearTimeout(timer); observer.disconnect();
-        for (const [name, listener] of Object.entries(listeners)) doc.removeEventListener(name, listener, true);
+        for (const [name, listener] of Object.entries(listeners)) listenerTarget(name).removeEventListener(name, listener, true);
         doc.removeEventListener('neoui:controllerready', ready, true);
         roots.delete(root);
         if (!roots.size) { removalObserver?.disconnect(); removalObserver = null; }
