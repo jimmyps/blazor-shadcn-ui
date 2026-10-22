@@ -276,18 +276,25 @@ test('composed demo controls inherit browser shells and retain date, time, searc
             } else if (id === 'demo-combobox') {
                 const search = page.getByPlaceholder('Search workspaces', { exact: true });
                 await eventually(async () => assert.equal(await search.evaluate(e => document.activeElement === e), true));
+                assert.equal(await search.evaluate(e => JSON.parse(e.dataset.neoInputConfig).debounce), 250);
                 await search.fill('Prod');
+                // Browser lists deliberately block selection until the debounced query is accepted.
+                await eventually(async () => assert.equal(await search.getAttribute('data-neo-input-pending'), null));
                 await content.getByRole('option', { name: 'Product', exact: false }).click();
                 await eventually(async () => assert.equal(await page.getByTestId('demo-combo-value').textContent(), 'Product'));
                 await content.waitFor({ state: 'hidden' });
             } else {
                 const search = page.getByPlaceholder('Search notification workspaces', { exact: true });
                 await eventually(async () => assert.equal(await search.evaluate(e => document.activeElement === e), true));
+                assert.equal(await search.evaluate(e => JSON.parse(e.dataset.neoInputConfig).debounce), 250);
                 await search.fill('Prod');
+                // Browser lists deliberately block selection until the debounced query is accepted.
+                await eventually(async () => assert.equal(await search.getAttribute('data-neo-input-pending'), null));
                 await content.getByRole('option', { name: 'Product', exact: false }).click();
                 await eventually(async () => assert.equal(await page.getByTestId('demo-multi-value').textContent(), 'Product'));
                 assert.equal(await content.isVisible(), true);
                 await search.fill('Eng');
+                await eventually(async () => assert.equal(await search.getAttribute('data-neo-input-pending'), null));
                 await content.getByRole('option', { name: 'Engineering', exact: false }).click();
                 await eventually(async () => assert.match(await page.getByTestId('demo-multi-value').textContent(), /Engineering/));
                 await button.click();

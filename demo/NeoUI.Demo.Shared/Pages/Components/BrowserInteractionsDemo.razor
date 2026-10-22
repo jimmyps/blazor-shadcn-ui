@@ -159,14 +159,14 @@
                     <article class="space-y-3 min-w-0" data-testid="demo-combobox">
                         <h3 class="font-semibold">Combobox</h3>
                         <p class="text-sm text-muted-foreground">Hover highlighting and keyboard navigation stay local. Searching and committing a workspace still use Blazor.</p>
-                        <Combobox TItem="string" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Value="assignedWorkspace" Placeholder="Assign a workspace" SearchPlaceholder="Search workspaces" Class="w-full" />
+                        <Combobox TItem="string" SearchInterval="250" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Value="assignedWorkspace" Placeholder="Assign a workspace" SearchPlaceholder="Search workspaces" Class="w-full" />
                         <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-combo-value">@(assignedWorkspace ?? "None")</span></p>
                         <a href="/components/combobox" class="text-sm underline underline-offset-4">Combobox examples</a>
                     </article>
                     <article class="space-y-3 min-w-0" data-testid="demo-multiselect">
                         <h3 class="font-semibold">Multi-select</h3>
                         <p class="text-sm text-muted-foreground">Hover, keyboard navigation, and dismissal stay local. Keep the list open while Blazor updates the selected teams.</p>
-                        <MultiSelect TItem="string" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Values="notifiedWorkspaces" Placeholder="Notify workspaces" SearchPlaceholder="Search notification workspaces" Class="w-full" />
+                        <MultiSelect TItem="string" SearchInterval="250" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Values="notifiedWorkspaces" Placeholder="Notify workspaces" SearchPlaceholder="Search notification workspaces" Class="w-full" />
                         <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-multi-value">@(notifiedWorkspaces.Any() ? string.Join(", ", notifiedWorkspaces) : "None")</span></p>
                         <a href="/components/multi-select" class="text-sm underline underline-offset-4">MultiSelect examples</a>
                     </article>
@@ -423,10 +423,10 @@
         <InteractionModeProvider Mode="InteractionMode.Browser" @key="revision">
             <DatePicker @bind-SelectedDate="date" />
             <TimePicker @bind-SelectedTime="time" MinuteStep="15" />
-            <Combobox TItem="string" Items="@workspaces"
+            <Combobox TItem="string" SearchInterval="250" Items="@workspaces"
                       ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
                       @bind-Value="workspace" />
-            <MultiSelect TItem="string" Items="@workspaces"
+            <MultiSelect TItem="string" SearchInterval="250" Items="@workspaces"
                          ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
                          @bind-Values="teams" />
         </InteractionModeProvider>

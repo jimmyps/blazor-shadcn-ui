@@ -93,7 +93,7 @@
                 {
                     <Input Id="@($"{Id}-search")" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
                            Value="@_searchQuery" ValueChanged="HandleSearchInput" ValueRevision="@_searchRevision"
-                           UpdateOn="InputUpdateMode.Input" Placeholder="@EffectiveSearchPlaceholder" Disabled="@Disabled"
+                           UpdateOn="InputUpdateMode.Input" DebounceDelay="@SearchInterval" Placeholder="@EffectiveSearchPlaceholder" Disabled="@Disabled"
                            AdditionalAttributes="@(new Dictionary<string, object> { ["data-neo-autofocus"] = "true" })"
                            Class="flex h-11 w-full rounded-none !border-0 bg-transparent py-3 px-0 !shadow-none text-sm outline-none focus-visible:!ring-0 placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
                 }

@@ -145,7 +145,9 @@ old items remain rendered but cannot be selected through the browser list contro
 search results itself. Fire-and-forget application work is outside this guarantee: await
 result assignment inside `SearchQueryChanged`, or implement request IDs/cancellation in
 your data layer. A long queue still means old server requests take time; use debounce for
-expensive searches.
+expensive searches. Set `SearchInterval="250"` on Combobox/CommandInput or on
+Browser-mode MultiSelect to wait for a 250 ms typing pause before applying search.
+These intervals default to 0; the Interaction Mode gallery opts into 250 ms for both composed searches.
 
 `data-neo-input-pending` and the `neoui:input-state` event distinguish a draft from acceptance.
 Failed delivery preserves the draft and marks `data-neo-input-uncertain`; queued callbacks

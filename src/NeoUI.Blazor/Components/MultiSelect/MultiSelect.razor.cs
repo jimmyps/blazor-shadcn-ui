@@ -218,6 +218,14 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     public EventCallback<string> SearchQueryChanged { get; set; }
 
     /// <summary>
+    /// Gets or sets the browser-mode debounce interval in milliseconds before applying search.
+    /// Defaults to 0 (no debounce). Typing remains immediate in the browser.
+    /// </summary>
+    [Parameter]
+    public int SearchInterval { get; set; }
+
+
+    /// <summary>
     /// Gets or sets the callback invoked when the user scrolls near the bottom of the dropdown list.
     /// Use this to load additional items for infinite scroll scenarios.
     /// </summary>
