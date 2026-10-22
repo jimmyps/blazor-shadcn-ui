@@ -70,6 +70,8 @@ edits, rejection/normalization, IME composition, debounce, blur/change, uncertai
 Command/Combobox/MultiSelect search fields retain typed spaces while results are pending;
 Space selection shortcuts apply to list/root targets rather than editable search inputs.
 The gallery spotlight has coverage for delayed searches, caret edits and repeated clearing.
+The Interaction Mode gallery also includes an inline CommandInput example with grouped
+commands, a 300 ms debounce, delayed search feedback, keyboard selection and reset.
 CommandInput now acknowledges the accepted context query directly, independently of
 queued cascading renders. Delayed Server render completion can no longer acknowledge
 an older child Input value and roll back the spotlight draft; revision changes still

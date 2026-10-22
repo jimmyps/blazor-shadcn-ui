@@ -1,0 +1,72 @@
+<section id="command-search" class="scroll-mt-24" data-testid="demo-command-search">
+    <DemoSection Title="Command search" Description="The same CommandInput used by spotlight, with browser-owned typing and navigation. Search has a 300 ms debounce, followed by a deliberately delayed application callback.">
+        <DemoBlock Code="@exampleCode">
+            <div class="grid gap-6 sm:grid-cols-2">
+                <CommandContent @key="revision" InteractionMode="InteractionMode.Browser" SearchQueryChanged="SearchCommands" OnValueChange="SelectCommand" Class="rounded-lg border">
+                    <CommandInput Placeholder="Search demo commands..." SearchInterval="300" />
+                    <CommandList Class="max-h-64">
+                        <CommandEmpty>No matching commands.</CommandEmpty>
+                        <CommandGroup Heading="Workspace">
+                            <CommandItem Value="create-project" SearchText="Create project">Create project</CommandItem>
+                            <CommandItem Value="browse-projects" SearchText="Browse projects">Browse projects</CommandItem>
+                            <CommandItem Value="invite-teammate" SearchText="Invite teammate">Invite teammate</CommandItem>
+                        </CommandGroup>
+                        <CommandGroup Heading="Preferences">
+                            <CommandItem Value="change-theme" SearchText="Change theme">Change theme</CommandItem>
+                            <CommandItem Value="notification-settings" SearchText="Notification settings">Notification settings</CommandItem>
+                            <CommandItem Value="archived-workspace" SearchText="Archived workspace" Disabled>Archived workspace</CommandItem>
+                        </CommandGroup>
+                    </CommandList>
+                </CommandContent>
+                <div class="space-y-3 min-w-0">
+                    <h3 class="font-semibold">Keep typing while search finishes</h3>
+                    <p class="text-sm text-muted-foreground">Callbacks wait 700 ms. Try spaces, edit in the middle, or backspace to empty. Hover and arrow-key highlighting stay local; Enter selects when the latest query has finished.</p>
+                    <p class="text-sm">Processed query: <span class="font-medium" data-testid="demo-command-query">@(string.IsNullOrEmpty(processedQuery) ? "(empty)" : processedQuery)</span></p>
+                    <p class="text-sm">Selected: <span class="font-medium" data-testid="demo-command-selected">@selected</span></p>
+                    <p class="text-sm text-muted-foreground" role="status" data-testid="demo-command-status">@(pending > 0 ? "Processing search…" : "Ready")</p>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="Reset" data-testid="demo-command-reset">Reset command search</Button>
+                    <p class="text-xs text-muted-foreground">Reset recreates this example and invalidates its pending callbacks. Filtering and selection still run through Blazor.</p>
+                    <a href="/components/command" class="text-sm underline underline-offset-4">Command examples</a>
+                </div>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+</section>
+
+@code {
+    private long revision;
+    private int pending;
+    private string processedQuery = string.Empty;
+    private string selected = "None";
+
+    private async Task SearchCommands(string query)
+    {
+        var searchRevision = revision;
+        pending++;
+        try
+        {
+            await Task.Delay(700);
+            if (searchRevision == revision) processedQuery = query;
+        }
+        finally { if (searchRevision == revision) pending--; }
+    }
+
+    private void SelectCommand(string value) => selected = value;
+    private void Reset() { revision++; pending = 0; processedQuery = string.Empty; selected = "None"; }
+
+    private const string exampleCode = """
+        <CommandContent InteractionMode="InteractionMode.Browser"
+                        SearchQueryChanged="SearchAsync" OnValueChange="SelectCommand">
+            <CommandInput Placeholder="Search commands..." SearchInterval="300" />
+            <CommandList>
+                <CommandEmpty>No matching commands.</CommandEmpty>
+                <CommandGroup Heading="Workspace">
+                    <CommandItem Value="create-project" SearchText="Create project">Create project</CommandItem>
+                    <CommandItem Value="browse-projects" SearchText="Browse projects">Browse projects</CommandItem>
+                </CommandGroup>
+            </CommandList>
+        </CommandContent>
+        // Await application search work in SearchAsync. Typing remains local.
+        // Omit InteractionMode to inherit a scoped/application Browser default.
+        """;
+}

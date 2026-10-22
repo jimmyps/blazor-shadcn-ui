@@ -192,7 +192,7 @@ test('Interaction Mode is discoverable in navigation, indexes, and spotlight', a
             assert.ok(listeners.some(listener => listener.type === 'input'));
         });
         await session.detach();
-        for (const query of ['Interaction Mode', 'browser-local', 'MultiSelect', 'date/time pickers', 'BrowserEditForm']) {
+        for (const query of ['Interaction Mode', 'browser-local', 'MultiSelect', 'date/time pickers', 'BrowserEditForm', 'CommandInput']) {
             // Input installs its debounced listener asynchronously after the dialog mounts.
             // Discovery tests wait for that listener rather than testing first-keystroke hydration.
             await search.fill(query);
@@ -506,7 +506,7 @@ test('spotlight preserves browser drafts and caret while debounced searches are 
         const search = page.getByPlaceholder('Type a command or search...', { exact: true });
         await search.waitFor({ state: 'visible' });
         // Configuration is rendered before the asynchronous controller import completes.
-        await page.waitForFunction(() => document.querySelector('[data-command-input-wrapper] input')
+        await page.waitForFunction(() => document.querySelector('input[placeholder="Type a command or search..."]')
             ?.getAttribute('data-neo-input-ready') === 'true');
         assert.equal(JSON.parse(await search.getAttribute('data-neo-input-config')).debounce, 300);
         await search.evaluate(element => {
@@ -589,7 +589,7 @@ test('spotlight acknowledges accepted search independently of delayed render com
         await page.waitForFunction(() => document.querySelector('[data-local-events]')?.textContent === '0');
         await page.getByRole('button', { name: /Search components/ }).first().click();
         const search = page.getByPlaceholder('Type a command or search...', { exact: true });
-        await page.waitForFunction(() => document.querySelector('[data-command-input-wrapper] input')?.dataset.neoInputReady === 'true');
+        await page.waitForFunction(() => document.querySelector('input[placeholder="Type a command or search..."]')?.dataset.neoInputReady === 'true');
         await search.evaluate(element => {
             window.__spotlightRollbacks = [];
             let expected = element.value;
@@ -625,6 +625,57 @@ test('spotlight acknowledges accepted search independently of delayed render com
         assert.equal(await search.inputValue(), 'browser-local');
         await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).waitFor();
         assert.deepEqual(await page.evaluate(() => window.__spotlightRollbacks), []);
+        assert.deepEqual(errors, []);
+    } finally { await browser.close(); }
+});
+
+
+test('CommandInput gallery preserves debounced drafts, keyboard selection and reset during search', async () => {
+    const browser = process.env.NEOUI_BROWSER_ENGINE === 'webkit'
+        ? await webkit.launch({ headless: true })
+        : await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+    const errors = [];
+    page.on('pageerror', error => errors.push(String(error)));
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) await page.route(origin + '/**', route => route.continue({ headers: {
+        ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true'
+    } }));
+    try {
+        await page.goto(url + '#command-search');
+        const root = page.getByTestId('demo-command-search');
+        const search = root.getByPlaceholder('Search demo commands...');
+        await search.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
+        assert.equal(JSON.parse(await search.getAttribute('data-neo-input-config')).debounce, 300);
+        await search.pressSequentially('Create', { delay: 50 });
+        await page.getByTestId('demo-command-status').filter({ hasText: 'Processing' }).waitFor();
+        await search.pressSequentially(' project', { delay: 50 });
+        assert.equal(await search.inputValue(), 'Create project');
+        await eventually(async () => {
+            assert.equal(await search.inputValue(), 'Create project');
+            assert.equal(await page.getByTestId('demo-command-query').textContent(), 'Create project');
+            assert.equal(await search.getAttribute('data-neo-input-pending'), null);
+        });
+        await search.press('ArrowDown'); await search.press('Enter');
+        await eventually(async () => assert.equal(await page.getByTestId('demo-command-selected').textContent(), 'create-project'));
+        await search.fill('nothing matches');
+        await eventually(async () => assert.equal(await search.getAttribute('data-neo-input-pending'), null));
+        await root.getByText('No matching commands.', { exact: true }).waitFor();
+        await search.fill('theme');
+        await page.getByTestId('demo-command-status').filter({ hasText: 'Processing' }).waitFor();
+        await page.getByTestId('demo-command-reset').click();
+        const reset = root.getByPlaceholder('Search demo commands...');
+        await reset.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
+        await pause(1100);
+        assert.equal(await reset.inputValue(), '');
+        assert.equal(await page.getByTestId('demo-command-query').textContent(), '(empty)');
+        assert.equal(await page.getByTestId('demo-command-selected').textContent(), 'None');
+        assert.equal(await root.getByRole('option', { name: 'Archived workspace', exact: true }).getAttribute('aria-disabled'), 'true');
+        await root.screenshot({ path: join(tmpdir(), 'neoui-command-search-demo-desktop.png') });
+        await page.setViewportSize({ width: 390, height: 1000 });
+        await root.scrollIntoViewIfNeeded();
+        assert.equal(await root.evaluate(element => element.scrollWidth <= element.clientWidth + 1), true);
+        await root.screenshot({ path: join(tmpdir(), 'neoui-command-search-demo-mobile.png') });
         assert.deepEqual(errors, []);
     } finally { await browser.close(); }
 });
