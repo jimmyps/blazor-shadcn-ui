@@ -96,7 +96,10 @@ export function initialize(root) {
         }
         if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey ||
             (event.target !== input() && event.target !== root && !event.target.matches('[role="option"]'))) return;
-        if (staleSearch() && ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter', ' '].includes(event.key)) { stop(event); return; }
+        // Space in an editable search field is text, even while results are stale.
+        // Only option/root Space actions participate in the selection guard.
+        if (staleSearch() && (['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'].includes(event.key) ||
+            (event.key === ' ' && event.target !== input()))) { stop(event); return; }
         const available = items();
         const index = available.indexOf(active);
         let next;
@@ -113,7 +116,7 @@ export function initialize(root) {
                 if (multiple || (!selected && root.dataset.neoCloseOnSelect === 'true')) closeForElement(root);
                 return;
             case ' ':
-                if (!multiple || !keyboard || !active) return;
+                if (event.target === input() || !multiple || !keyboard || !active) return;
                 stop(event); active.click(); return;
             case 'Escape':
                 if (closeForElement(root)) stop(event);

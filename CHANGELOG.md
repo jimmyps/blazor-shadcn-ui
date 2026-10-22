@@ -67,6 +67,9 @@ Mode is fixed after initialization; recreate a component with `@key` to change i
 Browser-mode `Input` owns the current value, caret and selection while .NET processes edits asynchronously.
 An acknowledgement for `Pro` cannot overwrite a newer `Product` draft. The protocol covers delayed/rapid
 edits, rejection/normalization, IME composition, debounce, blur/change, uncertain delivery and explicit resets.
+Command/Combobox/MultiSelect search fields retain typed spaces while results are pending;
+Space selection shortcuts apply to list/root targets rather than editable search inputs.
+The gallery spotlight has coverage for delayed searches, caret edits and repeated clearing.
 
 - `ValueRevision` replaces/reset drafts and invalidates queued and in-flight acknowledgements, even when an old acknowledgement never settles.
 - CommandInput, Combobox and MultiSelect searches use the same draft protocol. Search callbacks are awaited; stale rendered results cannot be selected while the latest query is pending.

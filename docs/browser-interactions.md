@@ -555,6 +555,25 @@ $env:NEOUI_EXPECT_DEFAULT = 'Browser'
 node --test adoption.spec.mjs input.spec.mjs
 ```
 
+To exercise the real gallery spotlight under an application Browser default:
+
+```powershell
+dotnet run --project demo/NeoUI.Demo.Server -p:CI=true --urls http://localhost:5185 --BrowserDefault=true
+# In another terminal, from tests/browser:
+$env:NEOUI_DEMO_URL = 'http://localhost:5185/components/browser-interactions'
+$env:NEOUI_EXPECT_DEFAULT = 'Browser'
+node --test --test-name-pattern='spotlight preserves' demo.spec.mjs
+# Repeat with NEOUI_BROWSER_ENGINE=webkit for the WebKit engine.
+```
+
+This test types once, without retrying/refilling the query. It checks draft retention,
+caret edits, repeated backspacing to empty, spaces during pending searches and result
+selection with delayed circuit traffic. The gallery default remains Blazor unless the
+review host opts in. In an affected application, inspect the open CommandInput's
+`data-neo-input-config` attribute: Browser mode emits JSON configuration, while Blazor
+mode omits it. Confirm the interactive host's configuration and explicit overrides
+when the runtime mode differs from the intended policy.
+
 The normal Server fixture leaves the library Blazor default untouched. The WASM fixture
 opts into the Browser application default; circuit reconnection is skipped there because
 WebAssembly has no server circuit.

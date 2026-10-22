@@ -11,6 +11,10 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddNeoUIPrimitives();
+// Opt in when reviewing the whole gallery under the application Browser default.
+if (builder.Configuration.GetValue<bool>("BrowserDefault"))
+    builder.Services.ConfigureNeoUIInteractions(options =>
+        options.DefaultMode = NeoUI.Blazor.Primitives.InteractionMode.Browser);
 builder.Services.AddNeoUIComponents();
 builder.Services.AddSingleton<MockDataService>();
 

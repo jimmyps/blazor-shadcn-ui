@@ -195,12 +195,13 @@ test('Interaction Mode is discoverable in navigation, indexes, and spotlight', a
         for (const query of ['Interaction Mode', 'browser-local', 'MultiSelect', 'date/time pickers', 'BrowserEditForm']) {
             // Input installs its debounced listener asynchronously after the dialog mounts.
             // Discovery tests wait for that listener rather than testing first-keystroke hydration.
+            await search.fill(query);
             await eventually(async () => {
-                await search.fill(query);
-                await search.dispatchEvent('input');
-                await pause(400);
+                assert.equal(await search.inputValue(), query);
                 assert.equal(await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).isVisible(), true);
             });
+            await pause(400);
+            assert.equal(await search.inputValue(), query);
         }
         await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).click();
         await page.getByRole('heading', { name: 'Interaction Mode', exact: true }).waitFor();
@@ -474,6 +475,88 @@ test('menu-family gallery supports iPhone touch switching without flicker', asyn
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'true');
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'false');
         }
+        assert.deepEqual(errors, []);
+    } finally { await browser.close(); }
+});
+
+// Run the Server gallery with --BrowserDefault true and NEOUI_EXPECT_DEFAULT=Browser.
+// This exercises the actual portaled, grouped and virtualized spotlight, rather
+// than substituting the standalone Input examples for CommandInput coverage.
+test('spotlight preserves browser drafts and caret while debounced searches are in flight',
+    { skip: process.env.NEOUI_EXPECT_DEFAULT !== 'Browser' }, async () => {
+    const browser = process.env.NEOUI_BROWSER_ENGINE === 'webkit'
+        ? await webkit.launch({ headless: true })
+        : await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage();
+    const errors = [];
+    page.on('pageerror', error => errors.push(String(error)));
+    await page.addInitScript(() => {
+        const NativeWebSocket = window.WebSocket;
+        window.WebSocket = class extends NativeWebSocket {
+            send(data) {
+                if (window.__delaySpotlightTraffic) setTimeout(() => super.send(data), 250);
+                else super.send(data);
+            }
+        };
+    });
+    try {
+        await page.goto(url);
+        await page.waitForFunction(() => document.querySelector('[data-local-events]')?.textContent === '0');
+        await page.getByRole('button', { name: /Search components/ }).first().click();
+        const search = page.getByPlaceholder('Type a command or search...', { exact: true });
+        await search.waitFor({ state: 'visible' });
+        // Configuration is rendered before the asynchronous controller import completes.
+        await page.waitForFunction(() => document.querySelector('[data-command-input-wrapper] input')
+            ?.getAttribute('data-neo-input-ready') === 'true');
+        assert.equal(JSON.parse(await search.getAttribute('data-neo-input-config')).debounce, 300);
+        await search.evaluate(element => {
+            window.__delaySpotlightTraffic = true;
+            window.__spotlightRollbacks = [];
+            let expected = element.value;
+            element.addEventListener('input', () => { expected = element.value; });
+            const check = () => {
+                if (!element.isConnected) return;
+                if (element.value !== expected) {
+                    window.__spotlightRollbacks.push({ expected, actual: element.value });
+                    expected = element.value;
+                }
+                requestAnimationFrame(check);
+            };
+            requestAnimationFrame(check);
+        });
+        const accepted = async expected => {
+            await eventually(async () => {
+                assert.equal(await search.inputValue(), expected);
+                assert.equal(JSON.parse(await search.getAttribute('data-neo-input-config')).value, expected);
+                assert.equal(await search.getAttribute('data-neo-input-pending'), null);
+            });
+            assert.deepEqual(await page.evaluate(() => window.__spotlightRollbacks), []);
+        };
+        for (let run = 0; run < 3; run++) {
+            await search.pressSequentially('com', { delay: 90 });
+            // Dispatch the first search, then continue before its response arrives.
+            await pause(360);
+            await search.pressSequentially('bobox', { delay: 90 });
+            await accepted('combobox');
+            await page.getByRole('option').filter({ hasText: 'Combobox' }).first().waitFor();
+            await search.evaluate(element => element.setSelectionRange(3, 3));
+            await search.pressSequentially('X', { delay: 90 });
+            await accepted('comXbobox');
+            assert.equal(await search.evaluate(element => element.selectionStart), 4);
+            await search.press('Backspace');
+            await accepted('combobox');
+            await search.evaluate(element => element.setSelectionRange(element.value.length, element.value.length));
+            for (let key = 0; key < 8; key++) {
+                await search.press('Backspace');
+                await pause(90);
+            }
+            await accepted('');
+        }
+        await search.pressSequentially('Interaction Mode', { delay: 50 });
+        await accepted('Interaction Mode');
+        await page.getByRole('option').filter({ hasText: 'Interaction Mode' }).click();
+        await search.waitFor({ state: 'hidden' });
+        await page.getByRole('heading', { name: 'Interaction Mode', exact: true }).waitFor();
         assert.deepEqual(errors, []);
     } finally { await browser.close(); }
 });
