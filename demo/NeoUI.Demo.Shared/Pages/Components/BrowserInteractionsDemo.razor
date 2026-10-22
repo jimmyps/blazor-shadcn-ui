@@ -206,7 +206,7 @@
                 <DialogTrigger AsChild><Button data-testid="demo-open-input-form">Edit profile in a dialog</Button></DialogTrigger>
                 <DialogContent>
                     <DialogHeader><DialogTitle>Save the latest browser draft</DialogTitle><DialogDescription>Name callbacks wait 600 ms. The note has a 1.2-second debounce; Save flushes both before validating.</DialogDescription></DialogHeader>
-                    <BrowserInputForm Model="@profileDraft" OnValidSubmit="SaveProfileDraft" OnFlushFailed="ProfileFlushFailed" FormName="browser-interaction-profile" data-testid="demo-safe-form">
+                    <BrowserInputForm Model="@profileDraft" OnValidSubmit="SaveProfileDraft" OnInvalidSubmit="ProfileInvalid" OnFlushFailed="ProfileFlushFailed" FormName="browser-interaction-profile" data-testid="demo-safe-form">
                         <DataAnnotationsValidator />
                         <ValidationSummary class="text-sm text-destructive" />
                         <div class="space-y-4 py-4">
@@ -288,14 +288,16 @@
     private readonly ProfileDraft profileDraft = new();
     private bool editorOpen;
     private long profileRevision;
-    private string profileFeedback = "Type freely, then save. Validation uses the synchronized model.";
+    private const string ProfileFormHint = "Type freely, then save. Validation uses the synchronized model.";
+    private string profileFeedback = ProfileFormHint;
     private string savedProfile = "None";
     private string? boundaryValue;
     private int boundaryCalls;
     private void BoundaryChanged(string? value) { boundaryValue = value; boundaryCalls++; }
     private void ResetProfileDraft() { profileDraft.Name = profileDraft.Note = null; profileRevision++; profileFeedback = "Draft reset."; }
     private async Task CommitProfileName(string? value) { var revision = profileRevision; await Task.Delay(600); if (revision == profileRevision) profileDraft.Name = value; }
-    private async Task SaveProfileDraft(EditContext _) { profileFeedback = "Saving…"; var snapshot = $"{profileDraft.Name} · {profileDraft.Note}"; await Task.Delay(500); savedProfile = snapshot; profileFeedback = "Saved."; editorOpen = false; }
+    private async Task SaveProfileDraft(EditContext _) { profileFeedback = "Saving…"; var snapshot = $"{profileDraft.Name} · {profileDraft.Note}"; await Task.Delay(500); savedProfile = snapshot; profileFeedback = ProfileFormHint; editorOpen = false; }
+    private void ProfileInvalid(EditContext _) => profileFeedback = "Review the validation errors before saving.";
     private void ProfileFlushFailed(InputFlushResult result) => profileFeedback = $"Not saved: {result.Status}. Review the current field value and try again.";
     private const string formCode = """
         <BrowserInputForm Model="@model" OnValidSubmit="SaveAsync"

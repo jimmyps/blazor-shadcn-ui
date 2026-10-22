@@ -379,6 +379,7 @@ test('dialog form demo flushes fast drafts before validation and onchange action
             const name = form.querySelector('#demo-profile-name'); name.value = 'x'; name.dispatchEvent(new Event('input', { bubbles: true })); form.requestSubmit();
         });
         await form.getByText(/minimum length/).waitFor();
+        await eventually(async () => assert.equal(await form.getByTestId('demo-form-feedback').textContent(), 'Review the validation errors before saving.'));
         assert.equal(await form.isVisible(), true);
         assert.equal(await page.getByTestId('demo-profile-saved').textContent(), 'Latest profile · Final note');
         await page.setViewportSize({ width: 390, height: 844 });
