@@ -324,7 +324,7 @@ public static class ComponentRegistry
             new("drawer",           "Drawer",           "Slide-out panel with gesture controls and backdrop",                            "panel-bottom",          C, OV),
             new("dropdown-menu",    "Dropdown Menu",    "Context menus with items, separators, and shortcuts",                           "panel-top-open",        C, OV),
             new("hover-card",       "Hover Card",       "Rich preview cards on hover with delay control",                               "square-mouse-pointer",  C, OV),
-            new("browser-interactions", "Interaction Mode", "Compare Blazor and browser-local interaction modes for menus, selects, popovers, date/time pickers, Combobox, MultiSelect, and browser-owned Input typing with live Blazor content.", "zap", ComponentTier.Component, ComponentCategories.BrowserInteractions),
+            new("browser-interactions", "Interaction Mode", "Compare Blazor and browser-local interaction modes for menus, selects, popovers, date/time pickers, Combobox, MultiSelect, browser-owned Input typing, BrowserInputForm validation and safe dialog submission with live Blazor content.", "zap", ComponentTier.Component, ComponentCategories.BrowserInteractions),
             new("popover",          "Popover",          "Floating panels for additional content and actions",                            "message-square",        C, OV),
             new("sheet",            "Sheet",            "Side panels that slide in from viewport edges",                                  "panel-right",           C, OV),
             new("tooltip",          "Tooltip",          "Brief informational popups on hover or focus",                                   "message-circle",        C, OV),

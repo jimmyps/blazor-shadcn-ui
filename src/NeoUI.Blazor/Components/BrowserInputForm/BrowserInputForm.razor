@@ -1,0 +1,61 @@
+@namespace NeoUI.Blazor
+@using Microsoft.AspNetCore.Components.Forms
+
+<InteractionModeProvider Mode="InteractionMode.Browser">
+<BrowserInputScope @ref="scope" FlushTimeoutMilliseconds="@FlushTimeoutMilliseconds">
+    <EditForm EditContext="@context" OnSubmit="Submit" FormName="@FormName" aria-busy="@IsSubmitting.ToString().ToLowerInvariant()" @attributes="AdditionalAttributes" novalidate>
+        @ChildContent(context!)
+    </EditForm>
+</BrowserInputScope>
+</InteractionModeProvider>
+
+@code {
+    private BrowserInputScope? scope;
+    private EditContext? context;
+    /// <summary>The form model. Supply Model or EditContext, but not both.</summary>
+    [Parameter] public object? Model { get; set; }
+    /// <summary>An existing editing context.</summary>
+    [Parameter] public EditContext? EditContext { get; set; }
+    /// <summary>Form content, including validators and browser-owned inputs.</summary>
+    [Parameter, EditorRequired] public RenderFragment<EditContext> ChildContent { get; set; } = default!;
+    /// <summary>Invoked only after input synchronization and validation succeed.</summary>
+    [Parameter] public EventCallback<EditContext> OnValidSubmit { get; set; }
+    /// <summary>Invoked when validation of the synchronized model fails.</summary>
+    [Parameter] public EventCallback<EditContext> OnInvalidSubmit { get; set; }
+    /// <summary>Invoked when drafts cannot be safely synchronized. Saving is not attempted.</summary>
+    [Parameter] public EventCallback<InputFlushResult> OnFlushFailed { get; set; }
+    /// <summary>Maximum wait for input acknowledgements. Default is 30 seconds.</summary>
+    [Parameter] public int FlushTimeoutMilliseconds { get; set; } = 30000;
+    /// <summary>The name forwarded to the underlying interactive EditForm.</summary>
+    [Parameter] public string? FormName { get; set; }
+    /// <summary>Additional attributes for the form element.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    /// <summary>True while synchronization, validation or saving is in progress.</summary>
+    public bool IsSubmitting { get; private set; }
+
+    protected override void OnParametersSet()
+    {
+        if ((Model == null) == (EditContext == null))
+            throw new InvalidOperationException("Supply either Model or EditContext to BrowserInputForm.");
+        if (EditContext != null) context = EditContext;
+        else if (context?.Model != Model) context = new EditContext(Model!);
+    }
+
+    /// <summary>Submits through the same barrier as a native click, Enter or requestSubmit().</summary>
+    public async Task SubmitAsync()
+    {
+        if (IsSubmitting || scope == null || context == null) return;
+        IsSubmitting = true;
+        StateHasChanged();
+        try
+        {
+            var result = await scope.SubmitAsync(context,
+                () => OnValidSubmit.InvokeAsync(context), () => OnInvalidSubmit.InvokeAsync(context));
+            if (!result.Success && result.Status != InputFlushStatus.Invalid)
+                await OnFlushFailed.InvokeAsync(result);
+        }
+        finally { IsSubmitting = false; StateHasChanged(); }
+    }
+
+    private Task Submit(EditContext _) => SubmitAsync();
+}

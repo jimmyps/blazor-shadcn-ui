@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />
     <Content Include="../NeoUI.BrowserTests.Host/MountCostCases.razor" Link="MountCostCases.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/FormCases.razor" Link="FormCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/AdoptionCases.razor" Link="AdoptionCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/Cases.razor" Link="Cases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/_Imports.razor" Link="_Imports.razor" />

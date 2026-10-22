@@ -1,0 +1,82 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+@using NeoUI.Blazor
+@using NeoUI.Blazor.Primitives
+
+<section data-testid="form-cases">
+    <BrowserInputForm @ref="form" EditContext="@context" FormName="browser-input-test" OnValidSubmit="Save" OnInvalidSubmit="Invalid" OnFlushFailed="Failed" FlushTimeoutMilliseconds="@timeout" data-testid="safe-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <Input Id="form-name" Required MinLength="4" ShowValidationError Value="@model.Name" ValueChanged="SetName" ValueExpression="@(() => model.Name)" ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" Placeholder="Form name" />
+        <Input Id="form-note" Pattern="[A-Z].*" Value="@model.Note" ValueChanged="SetNote" ValueExpression="@(() => model.Note)" ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" DebounceDelay="5000" Placeholder="Form debounced note" />
+        <button type="submit" data-testid="form-save">Save form</button>
+    </BrowserInputForm>
+    <p data-testid="form-model">@model.Name|@model.Note</p>
+    <p data-testid="form-saved">@saved</p>
+    <p data-testid="form-saves">@saves</p><p data-testid="form-invalid">@invalid</p>
+    <p data-testid="form-status">@status</p><p data-testid="form-calls">@calls</p>
+    <p data-testid="form-modified">@context.IsModified().ToString().ToLowerInvariant()</p>
+    <p data-testid="form-saving">@saving.ToString().ToLowerInvariant()</p>
+    <button data-testid="form-programmatic" @onclick="() => form!.SubmitAsync()">Programmatic save</button>
+    <button data-testid="form-reset" @onclick="Reset">Reset form</button>
+    <label><input type="checkbox" @bind="reject" data-testid="form-reject" />Reject name</label>
+    <label><input type="checkbox" @bind="normalize" data-testid="form-normalize" />Normalize name</label>
+    <label><input type="checkbox" @bind="hang" data-testid="form-hang" />Hold callbacks</label>
+    <label><input type="checkbox" @bind="holdSave" data-testid="form-hold-save" />Hold save</label>
+    <button data-testid="form-release" @onclick="Release">Release work</button>
+    <button data-testid="form-short-timeout" @onclick="() => timeout = 300">Short timeout</button>
+</section>
+<section data-testid="scope-form-cases">
+    <BrowserInputScope @ref="scope">
+        <EditForm Model="@scopeModel" OnSubmit="ScopedSubmit" FormName="scoped-form">
+            <DataAnnotationsValidator />
+            <Input InteractionMode="InteractionMode.Browser" @ref="standalone" Value="@scopeModel.Name" ValueChanged="SetScopedName" UpdateOn="InputUpdateMode.Input" DebounceDelay="5000" Placeholder="Scoped form name" />
+            <button type="submit" data-testid="scope-save">Save scope</button>
+        </EditForm>
+    </BrowserInputScope>
+    <p data-testid="scope-saved">@scopeSaved</p><p data-testid="standalone-status">@standaloneStatus</p>
+    <button data-testid="standalone-flush" @onclick="FlushStandalone">Flush input</button>
+</section>
+<section>
+    <Input InteractionMode="InteractionMode.Browser" Value="@changeValue" ValueChanged="SetChange" UpdateOn="InputUpdateMode.Change" Placeholder="Boundary input" />
+    <button disabled="@string.IsNullOrEmpty(changeValue)" data-testid="boundary-action">Continue</button>
+    <p data-testid="boundary-accepted">@changeValue</p><p data-testid="boundary-calls">@changeCalls</p>
+</section>
+
+@code {
+    private sealed class FormModel {
+        [Required, MinLength(4)] public string? Name { get; set; }
+        [Required] public string? Note { get; set; }
+    }
+    private readonly FormModel model = new(), scopeModel = new() { Note = "scope" };
+    private EditContext context = default!;
+    private BrowserInputForm? form;
+    private BrowserInputScope? scope;
+    private Input? standalone;
+    private string? saved, scopeSaved, changeValue;
+    private string status = "idle", standaloneStatus = "idle";
+    private int calls, saves, invalid, changeCalls, timeout = 5000;
+    private long revision;
+    private bool reject, normalize, hang, holdSave, saving;
+    private TaskCompletionSource? held;
+    protected override void OnInitialized() => context = new EditContext(model);
+    private async Task SetName(string? value) {
+        var version = revision; var refuse = reject; var upper = normalize;
+        calls++; if (hang) { held ??= new(); await held.Task; } else await Task.Delay(150);
+        if (version == revision && !refuse) model.Name = upper ? value?.ToUpperInvariant() : value;
+    }
+    private async Task SetNote(string? value) { var version = revision; await Task.Delay(150); if (version == revision) model.Note = value; }
+    private async Task Save(EditContext _) {
+        saving = true; saves++; saved = $"{model.Name}|{model.Note}";
+        if (holdSave) { held ??= new(); await held.Task; } else await Task.Delay(100);
+        saving = false;
+    }
+    private void Invalid(EditContext _) { invalid++; status = "Invalid"; }
+    private void Failed(InputFlushResult result) => status = result.Status.ToString();
+    private void Reset() { model.Name = model.Note = null; revision++; status = "reset"; }
+    private void Release() { held?.TrySetResult(); held = null; }
+    private async Task SetScopedName(string? value) { await Task.Delay(100); scopeModel.Name = value; }
+    private async Task ScopedSubmit(EditContext edit) => await scope!.SubmitAsync(edit, () => { scopeSaved = scopeModel.Name; return Task.CompletedTask; });
+    private async Task FlushStandalone() => standaloneStatus = (await standalone!.FlushAsync()).Status.ToString();
+    private void SetChange(string? value) { changeValue = value; changeCalls++; }
+}

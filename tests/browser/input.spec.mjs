@@ -227,6 +227,7 @@ test('retained-circuit reconnect preserves the input draft and resets without re
     await eventually(async () => assert.equal(await page.evaluate(async () => {
         try { return await Blazor.reconnect(); } catch { return false; }
     }), true));
+    await page.waitForFunction(() => window.__testSockets.some(s => s.url.includes('_blazor') && s.readyState === WebSocket.OPEN));
     await page.getByTestId('input-reset').evaluate(e => e.click());
     await eventually(async () => assert.equal(await input.inputValue(), 'seed'));
     const before = Number(await value('input-calls'));

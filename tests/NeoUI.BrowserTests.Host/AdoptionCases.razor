@@ -113,6 +113,8 @@
     <label><input type="checkbox" @bind="inputNormalize" data-testid="input-normalize" />Normalize input</label>
 </section>
 
+<FormCases />
+
 @code {
     private string? slowComboValue;
     private IEnumerable<string> slowMultiValue = [];

@@ -1,0 +1,111 @@
+@namespace NeoUI.Blazor
+@using Microsoft.AspNetCore.Components.Forms
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<CascadingValue Value="this" IsFixed="true">
+    <div @ref="root" data-neo-input-scope-root="@Id" data-neo-input-busy="@renderedBusy.ToString().ToLowerInvariant()" style="display:contents" @attributes="AdditionalAttributes">@ChildContent</div>
+</CascadingValue>
+
+@code {
+    internal string Id { get; } = $"neo-input-scope-{Guid.NewGuid():N}";
+    private ElementReference root;
+    private IJSObjectReference? module;
+    private bool busy, disposed, renderedBusy;
+    private long requestId;
+    private DotNetObjectReference<BrowserInputScope>? bridge;
+    private TaskCompletionSource<InputFlushResult>? completion;
+
+    [JSInvokable]
+    public void CompleteFlush(long id, InputFlushResult result)
+    {
+        if (id == requestId && busy && !disposed) completion?.TrySetResult(result);
+    }
+    /// <summary>The inputs and form belonging to this scope. Nested scopes remain independent.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>Maximum wait for input acknowledgements. Default is 30 seconds.</summary>
+    [Parameter] public int FlushTimeoutMilliseconds { get; set; } = 30000;
+    /// <summary>Additional attributes for the transparent scope wrapper.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    /// <summary>Whether a flush or submit is currently in progress.</summary>
+    public bool IsSubmitting => busy;
+
+    /// <summary>Flushes browser inputs. Use SubmitAsync to keep inputs locked through validation and saving.</summary>
+    public Task<InputFlushResult> FlushAsync() => ExecuteAsync(null, null, null);
+
+    /// <summary>Flushes, validates, and saves while holding a browser input snapshot lock.</summary>
+    public Task<InputFlushResult> SubmitAsync(EditContext editContext, Func<Task> onValidSubmit, Func<Task>? onInvalidSubmit = null)
+        => ExecuteAsync(editContext, onValidSubmit, onInvalidSubmit);
+
+    private async Task<InputFlushResult> ExecuteAsync(EditContext? context, Func<Task>? save, Func<Task>? invalid)
+    {
+        if (disposed) return new() { Status = InputFlushStatus.Disposed };
+        if (busy) return new() { Status = InputFlushStatus.Busy };
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(FlushTimeoutMilliseconds);
+        busy = renderedBusy = true;
+        var id = ++requestId;
+        completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        StateHasChanged();
+        IJSObjectReference? lease = null;
+        try
+        {
+            InputFlushResult result;
+            try
+            {
+                using var deadline = new CancellationTokenSource(TimeSpan.FromMilliseconds((long)FlushTimeoutMilliseconds + 1000));
+                module ??= await JS.InvokeAsync<IJSObjectReference>("import", deadline.Token, "./_content/NeoUI.Blazor/js/browser-input.js");
+                if (disposed) return new() { Status = InputFlushStatus.Disposed };
+                bridge ??= DotNetObjectReference.Create(this);
+                lease = await module.InvokeAsync<IJSObjectReference>("beginScope", deadline.Token, root, Id, FlushTimeoutMilliseconds, context != null);
+                await lease.InvokeVoidAsync("watch", deadline.Token, bridge, id, nameof(CompleteFlush), !OperatingSystem.IsBrowser());
+                result = await completion.Task.WaitAsync(deadline.Token);
+            }
+            catch (ObjectDisposedException)
+            { return new() { Status = InputFlushStatus.Disposed }; }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException)
+            { return new() { Status = InputFlushStatus.Uncertain }; }
+            if (result.Status == InputFlushStatus.Invalid && context != null)
+            {
+                context.Validate();
+                if (invalid != null) await invalid();
+                return result;
+            }
+            if (!result.Success) return result;
+            if (context != null && !context.Validate())
+            {
+                if (invalid != null) await invalid();
+                return new() { Status = InputFlushStatus.Invalid };
+            }
+            if (save != null) await save();
+            return result;
+        }
+        finally
+        {
+            renderedBusy = false;
+            if (!disposed) StateHasChanged();
+            if (lease != null)
+            {
+                try {
+                    using var releaseDeadline = new CancellationTokenSource(1000);
+                    await lease.InvokeVoidAsync("release", releaseDeadline.Token); await lease.DisposeAsync();
+                }
+                catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+            }
+            completion = null;
+            busy = false;
+            if (!disposed) StateHasChanged();
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        disposed = true;
+        completion?.TrySetResult(new() { Status = InputFlushStatus.Disposed });
+        bridge?.Dispose();
+        if (module != null)
+        {
+            try { await module.DisposeAsync(); }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        }
+    }
+}

@@ -1,5 +1,7 @@
 @page "/components/browser-interactions"
 @implements IAsyncDisposable
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
 @inject IJSRuntime JS
 
 <PageTitle>Interaction Mode - NeoUI</PageTitle>
@@ -197,6 +199,43 @@
     </DemoSection>
     </div>
 
+    <div id="form-submission" class="scroll-mt-24">
+    <DemoSection Title="Save the latest draft" Description="Type quickly and save immediately. BrowserInputForm flushes pending edits and debounce before validation, then holds the input snapshot through Save.">
+        <DemoBlock Code="@formCode">
+            <Dialog @bind-Open="editorOpen">
+                <DialogTrigger AsChild><Button data-testid="demo-open-input-form">Edit profile in a dialog</Button></DialogTrigger>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>Save the latest browser draft</DialogTitle><DialogDescription>Name callbacks wait 600 ms. The note has a 1.2-second debounce; Save flushes both before validating.</DialogDescription></DialogHeader>
+                    <BrowserInputForm Model="@profileDraft" OnValidSubmit="SaveProfileDraft" OnFlushFailed="ProfileFlushFailed" FormName="browser-interaction-profile" data-testid="demo-safe-form">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-sm text-destructive" />
+                        <div class="space-y-4 py-4">
+                            <div class="space-y-2"><Label For="demo-profile-name">Name (at least 4 characters)</Label><Input Id="demo-profile-name" Value="@profileDraft.Name" ValueChanged="CommitProfileName" ValueExpression="@(() => profileDraft.Name)" ValueRevision="@profileRevision" UpdateOn="InputUpdateMode.Input" Placeholder="Type a profile name" /></div>
+                            <div class="space-y-2"><Label For="demo-profile-note">Note</Label><Input Id="demo-profile-note" @bind-Value="profileDraft.Note" ValueRevision="@profileRevision" UpdateOn="InputUpdateMode.Input" DebounceDelay="1200" Placeholder="Type a note and save immediately" /></div>
+                            <p class="text-sm text-muted-foreground" role="status" data-testid="demo-form-feedback">@profileFeedback</p>
+                        </div>
+                        <DialogFooter><Button Type="ButtonType.Submit" data-testid="demo-form-save">Save profile</Button></DialogFooter>
+                    </BrowserInputForm>
+                </DialogContent>
+            </Dialog>
+            <Button Variant="ButtonVariant.Outline" OnClick="ResetProfileDraft" Class="ml-2">Reset profile</Button>
+            <p class="mt-3 text-sm text-muted-foreground">Saved: <span class="font-medium text-foreground" data-testid="demo-profile-saved">@savedProfile</span></p>
+            <p class="mt-2 text-sm text-muted-foreground">Rejected or corrected values, incomplete composition, resets and uncertain delivery stop submission. Review the field and submit again.</p>
+        </DemoBlock>
+    </DemoSection>
+    </div>
+
+    <DemoSection Title="Enable actions before blur" Description="Change mode notifies only on empty ↔ non-empty transitions while typing. Further non-empty typing stays local until blur/change or an explicit Save flush.">
+        <DemoBlock Code="@boundaryCode">
+            <div class="space-y-3 max-w-md">
+                <Label For="demo-boundary-input">Type to enable Continue; clear to disable it</Label>
+                <Input Id="demo-boundary-input" InteractionMode="InteractionMode.Browser" Value="@boundaryValue" ValueChanged="BoundaryChanged" UpdateOn="InputUpdateMode.Change" data-testid="demo-boundary-input" />
+                <Button Disabled="@string.IsNullOrEmpty(boundaryValue)" data-testid="demo-boundary-action">Continue</Button>
+                <p class="text-sm text-muted-foreground">Callbacks: <span data-testid="demo-boundary-calls">@boundaryCalls</span> · accepted value: <span data-testid="demo-boundary-value">@(boundaryValue ?? "(empty)")</span></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
     <DemoSection Title="Adopt a policy with exceptions" Description="Explicit component setting → nearest scoped override → application default → library Blazor default.">
         <DemoBlock Code="@policyCode">
             <InteractionModeProvider Mode="InteractionMode.Browser">
@@ -242,6 +281,42 @@
 </div>
 
 @code {
+    private sealed class ProfileDraft {
+        [Required, MinLength(4)] public string? Name { get; set; }
+        [Required] public string? Note { get; set; }
+    }
+    private readonly ProfileDraft profileDraft = new();
+    private bool editorOpen;
+    private long profileRevision;
+    private string profileFeedback = "Type freely, then save. Validation uses the synchronized model.";
+    private string savedProfile = "None";
+    private string? boundaryValue;
+    private int boundaryCalls;
+    private void BoundaryChanged(string? value) { boundaryValue = value; boundaryCalls++; }
+    private void ResetProfileDraft() { profileDraft.Name = profileDraft.Note = null; profileRevision++; profileFeedback = "Draft reset."; }
+    private async Task CommitProfileName(string? value) { var revision = profileRevision; await Task.Delay(600); if (revision == profileRevision) profileDraft.Name = value; }
+    private async Task SaveProfileDraft(EditContext _) { profileFeedback = "Saving…"; var snapshot = $"{profileDraft.Name} · {profileDraft.Note}"; await Task.Delay(500); savedProfile = snapshot; profileFeedback = "Saved."; editorOpen = false; }
+    private void ProfileFlushFailed(InputFlushResult result) => profileFeedback = $"Not saved: {result.Status}. Review the current field value and try again.";
+    private const string formCode = """
+        <BrowserInputForm Model="@model" OnValidSubmit="SaveAsync"
+                          OnFlushFailed="ShowSyncFeedback">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <Input @bind-Value="model.Name" UpdateOn="InputUpdateMode.Input" />
+            <Button Type="ButtonType.Submit">Save</Button>
+        </BrowserInputForm>
+        // Browser mode is inherited by Input inside this wrapper.
+        // Flush → acknowledge → validate → save. Inputs stay locked through Save.
+        // Existing EditForm: use BrowserInputScope.SubmitAsync from OnSubmit.
+        """;
+    private const string boundaryCode = """
+        <Input InteractionMode="InteractionMode.Browser"
+               @bind-Value="name" UpdateOn="InputUpdateMode.Change" />
+        <Button Disabled="@string.IsNullOrEmpty(name)">Continue</Button>
+        // While focused: empty/non-empty transitions only.
+        // Final text is delivered on blur/change or an explicit form flush.
+        """;
+
     private string? acceptedDraft = "Hello", acceptedChangeDraft = "Hello";
     private long draftRevision;
     private bool rejectDraft;

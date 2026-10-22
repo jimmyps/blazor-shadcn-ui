@@ -628,6 +628,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
     /// </summary>
     public async ValueTask DisposeAsync()
     {
+        DisposeBrowserFlushes();
         try
         {
             // Unsubscribe from EditContext event

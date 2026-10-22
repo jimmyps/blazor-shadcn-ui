@@ -109,7 +109,15 @@ Command/Combobox and MultiSelect search fields use it when their enclosing contr
 Browser mode. Razor renders a fixed initial `value`; subsequent render batches therefore
 cannot overwrite a live draft. Native typing, selection, caret, paste and IME stay local,
 including while blurred. `UpdateOn=Input` sends versioned edit snapshots out of band;
-`UpdateOn=Change` submits on change/blur. Debounce is local and flushes on blur.
+`UpdateOn=Change` submits the final value on change/blur, and also sends a snapshot
+when typing crosses between empty and non-empty. Further typing within the same state
+sends **no callbacks**. For example, `"" → "a" → "ab" → "abc" → ""` sends `"a"` and `""`
+while focused; blur sends a final value only if it has changed. Empty means length zero;
+whitespace counts as non-empty. Composition sends a boundary only after it completes.
+In Browser mode this lets a bound
+`Disabled="@string.IsNullOrEmpty(name)"` update without waiting for blur. It does not make
+the complete current draft available to Save; use the submission barrier below.
+Debounce is local and flushes on blur.
 
 Callbacks are serialized in edit order. Every delivered snapshot still runs the application
 callback; debounce can reduce that work. A returned acknowledgement can change the DOM only
@@ -147,6 +155,82 @@ Rendered revision commands reconcile after reconnect without requiring a transie
 
 This first implementation covers Input and composed search fields. Textarea, masked inputs,
 and specialised editor components retain their existing value behavior.
+
+### Flush before validating or saving a form
+
+Blur sends a final edit but does not wait for application callbacks. An ordinary Save
+handler can therefore still read an earlier model value. Use `BrowserInputForm` for
+forms containing browser-owned inputs:
+
+```razor
+<BrowserInputForm Model="@model" OnValidSubmit="SaveAsync"
+                  OnFlushFailed="ShowSynchronizationFeedback">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <Input @bind-Value="model.Name" UpdateOn="InputUpdateMode.Input" />
+    <Input @bind-Value="model.Note" UpdateOn="InputUpdateMode.Input" DebounceDelay="500" />
+    <Button Type="ButtonType.Submit">Save</Button>
+</BrowserInputForm>
+```
+
+The wrapper opts its Input descendants into Browser mode (explicit overrides still win).
+It captures and locks the scoped browser fields in one browser task, bypasses debounce,
+awaits acknowledgements for that snapshot, checks native constraints and validates the updated EditContext, then invokes
+`OnValidSubmit`. The lock lasts through the awaited Save callback. Save clicks, Enter,
+`requestSubmit()` and `BrowserInputForm.SubmitAsync()` use the same path; concurrent
+submits are ignored. `OnInvalidSubmit` follows the usual EditForm validation behavior.
+`Model` and `EditContext` are mutually exclusive, as in EditForm. Include validators as
+usual. Native pre-submit validation is deferred with `novalidate`, so an old validation
+message cannot prevent the final draft from flushing. Native constraints are checked after
+acknowledgement with the captured fields temporarily eligible for validation. This component requires an interactive renderer; it is not a static POST handler.
+
+If a draft is adjusted (including rejection or normalization), changed, reset, composing,
+uninitialized, disposed, uncertain, or timed out, persistence is not attempted. The form
+calls `OnFlushFailed` with `InputFlushResult.Status` and the relevant `FieldId` when available.
+An adjusted value is shown for review; a subsequent submit may save it. Delivery failures
+are not retried automatically. `FlushTimeoutMilliseconds` defaults to 30000. Locks release
+on completion/failure, removal, and rendered scope reconciliation after reconnect.
+Server callbacks avoid known offline/reconnecting states using the documented .NET 10
+[reconnect event and modal states](https://learn.microsoft.com/en-us/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-10.0#reflect-the-server-side-connection-state-in-the-ui).
+An application replacing that UI/handler should call `setConnectionAvailable(false/true)`
+from `browser-input.js` in its down/up handlers. This guard is not applied to WebAssembly's
+local .NET callbacks. A lost completion acknowledgement still blocks Save at the deadline.
+
+For an existing EditForm, use the reusable scope and the **OnSubmit** event:
+
+```razor
+<BrowserInputScope @ref="inputs">
+    <EditForm EditContext="@editContext" OnSubmit="SubmitAsync" novalidate>
+        <DataAnnotationsValidator />
+        <Input InteractionMode="InteractionMode.Browser" @bind-Value="model.Name"
+               UpdateOn="InputUpdateMode.Input" />
+        <Button Type="ButtonType.Submit">Save</Button>
+    </EditForm>
+</BrowserInputScope>
+
+@code {
+    private BrowserInputScope? inputs;
+    private async Task SubmitAsync(EditContext context)
+    {
+        var result = await inputs!.SubmitAsync(context, SaveAsync);
+        if (!result.Success) ShowSynchronizationFeedback(result);
+    }
+}
+```
+
+Do not put a flush inside an existing `OnValidSubmit`: validation would already have run
+against the earlier model. `BrowserInputScope.FlushAsync()` and `Input.FlushAsync()` are
+available for custom flows, but only `SubmitAsync` holds the scope lock through Save.
+A standalone Input flush requires Browser mode. For other editors or optimistic selection
+controls, await their application commits before saving; this barrier synchronizes Input
+drafts. Bind ordinary form model values as drafts and validate on submit so a partial
+first-character boundary update can enable actions without being rejected as a complete
+field value. Nested scopes are independent and fields
+explicitly using Blazor or unsupported editors retain their existing synchronization.
+Neither a flush nor validation cancels business writes already in progress; application
+callbacks must still respect revision/reset guards. Save callbacks must await persistence.
+A native `form.submit()` bypasses submit events and this barrier; use `requestSubmit()` or
+the component's `SubmitAsync()` instead.
 
 ## Ownership
 

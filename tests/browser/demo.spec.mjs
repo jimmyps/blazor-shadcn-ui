@@ -349,3 +349,48 @@ test('browser input demo preserves drafts under delayed acceptance, renders, rej
         assert.deepEqual(errors, []);
     } finally { await page.close(); await browser.close(); }
 });
+
+
+test('dialog form demo flushes fast drafts before validation and onchange actions update without blur', async () => {
+    const browser = await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) await page.route(origin + '/**', route => route.continue({ headers: { ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true' } }));
+    const errors = []; page.on('pageerror', e => errors.push(String(e)));
+    try {
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        await page.getByTestId('demo-open-input-form').click();
+        const form = page.getByTestId('demo-safe-form');
+        for (const id of ['demo-profile-name', 'demo-profile-note']) await form.locator(`[id="${id}"][data-neo-input-ready="true"]`).waitFor();
+        const immediate = await form.evaluate(form => {
+            const name = form.querySelector('#demo-profile-name'), note = form.querySelector('#demo-profile-note');
+            for (const value of ['Earlier profile', 'Latest profile']) { name.value = value; name.dispatchEvent(new Event('input', { bubbles: true })); }
+            note.value = 'Final note'; note.dispatchEvent(new Event('input', { bubbles: true }));
+            form.querySelector('button[type="submit"]').click();
+            return document.querySelector('[data-testid="demo-profile-saved"]').textContent;
+        });
+        assert.equal(immediate, 'None');
+        await eventually(async () => assert.equal(await page.getByTestId('demo-profile-saved').textContent(), 'Latest profile · Final note'));
+        await form.waitFor({ state: 'hidden' });
+        await page.getByTestId('demo-open-input-form').click();
+        await form.locator('#demo-profile-name[data-neo-input-ready="true"]').waitFor();
+        await form.evaluate(form => {
+            const name = form.querySelector('#demo-profile-name'); name.value = 'x'; name.dispatchEvent(new Event('input', { bubbles: true })); form.requestSubmit();
+        });
+        await form.getByText(/minimum length/).waitFor();
+        assert.equal(await form.isVisible(), true);
+        assert.equal(await page.getByTestId('demo-profile-saved').textContent(), 'Latest profile · Final note');
+        await page.setViewportSize({ width: 390, height: 844 });
+        await page.screenshot({ path: join(tmpdir(), 'neoui-form-flush-dialog-mobile.png') });
+        await page.keyboard.press('Escape'); await form.waitFor({ state: 'hidden' });
+        const input = page.getByTestId('demo-boundary-input'), action = page.getByTestId('demo-boundary-action');
+        assert.equal(await action.isDisabled(), true);
+        await input.fill('a'); await eventually(async () => assert.equal(await action.isEnabled(), true));
+        await input.fill('abcdef');
+        assert.equal(await page.getByTestId('demo-boundary-calls').textContent(), '1');
+        assert.equal(await page.getByTestId('demo-boundary-value').textContent(), 'a');
+        await input.fill(''); await eventually(async () => assert.equal(await action.isDisabled(), true));
+        assert.equal(await page.getByTestId('demo-boundary-calls').textContent(), '2');
+        assert.deepEqual(errors, []);
+    } finally { await page.close(); await browser.close(); }
+});
