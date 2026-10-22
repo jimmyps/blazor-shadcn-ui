@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 @inject ILocalizer Localizer
@@ -26,9 +27,32 @@
 
 @if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
 {
-    <TooltipProvider>
+    <InteractionModeProvider Mode="@EffectiveMode">
+    @if (EffectiveMode == NeoUI.Blazor.Primitives.InteractionMode.Browser)
+    {
+        <BrowserNavigationHost Kind="pill" Revision="@InteractionRevision">@RenderNavigation()</BrowserNavigationHost>
+    }
+    else { @RenderNavigation() }
+    </InteractionModeProvider>
+}
+
+@code {
+    /// <summary>Overrides scoped and application interaction policy for pill interactions and descendants.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply the server-owned active item after a reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private InteractionMode EffectiveMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
+    private InteractionMode? initialMode;
+    protected override void OnParametersSet()
+    {
+        if (initialMode.HasValue && initialMode.Value != EffectiveMode) throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the pill navigation with @key.");
+        initialMode = EffectiveMode;
+    }
+    private RenderFragment RenderNavigation() => @<TooltipProvider>
     <nav class="@GetClasses()"
          data-sidebar="pill-nav"
+         data-neo-pill-sidebar-open="@(Context?.IsOpen.ToString().ToLowerInvariant())"
          aria-label="@Localizer["Sidebar.Pill.AriaLabel"]"
          @attributes="AdditionalAttributes">
 
@@ -37,6 +61,7 @@
             <TooltipTrigger>
                 <button type="button"
                         class="@GetExpandButtonClasses()"
+                        data-neo-pill-expand
                         @onclick="HandleExpand">
                     <LucideIcon Name="@ExpandIcon" Size="16" />
                     <span class="sr-only">@Localizer["Sidebar.Pill.ExpandButton"]</span>
@@ -59,10 +84,8 @@
         }
 
     </nav>
-    </TooltipProvider>
-}
+    </TooltipProvider>;
 
-@code {
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
 

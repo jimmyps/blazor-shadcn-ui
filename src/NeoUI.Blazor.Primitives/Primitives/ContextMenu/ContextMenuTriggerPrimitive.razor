@@ -1,6 +1,13 @@
 @namespace NeoUI.Blazor.Primitives
 
 @* ContextMenuTriggerPrimitive - element that triggers the context menu on right-click *@
+@if (Family?.Enabled == true)
+{
+    <div id="@BrowserMenu!.TriggerId" tabindex="0" aria-haspopup="menu" aria-controls="@BrowserMenu.ContentId"
+         aria-disabled="@Disabled.ToString().ToLowerInvariant()" @attributes="AdditionalAttributes">@ChildContent</div>
+}
+else
+{
 <div @oncontextmenu="HandleContextMenu"
      @oncontextmenu:preventDefault
      @attributes="AdditionalAttributes"
@@ -9,7 +16,10 @@
     @ChildContent
 </div>
 
+}
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
+    [CascadingParameter] private DropdownMenuContext? BrowserMenu { get; set; }
     [CascadingParameter]
     private ContextMenuContext Context { get; set; } = null!;
 

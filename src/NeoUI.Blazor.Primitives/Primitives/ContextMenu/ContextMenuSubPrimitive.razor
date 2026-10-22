@@ -1,11 +1,22 @@
 @namespace NeoUI.Blazor.Primitives
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuSubPrimitive Open="@Open" OpenChanged="@OpenChanged" OnOpenChange="@OnOpenChange">@ChildContent</DropdownMenuSubPrimitive>
+}
+else
+{
+
 @* ContextMenuSubPrimitive - container for a submenu within a context menu *@
 <CascadingValue Value="@_context" IsFixed="false">
     @ChildContent
 </CascadingValue>
 
+
+}
+
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     private readonly ContextMenuSubContext _context = new();
 
     [CascadingParameter]
@@ -38,6 +49,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (Open.HasValue)
         {
             _context.IsOpen = Open.Value;
@@ -48,6 +60,7 @@
 
     protected override void OnParametersSet()
     {
+        if (Family?.Enabled == true) return;
         if (Open.HasValue && _context.IsOpen != Open.Value)
         {
             _context.IsOpen = Open.Value;

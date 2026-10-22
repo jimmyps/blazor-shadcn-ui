@@ -396,3 +396,38 @@ test('dialog form demo flushes fast drafts before validation and onchange action
         assert.deepEqual(errors, []);
     } finally { await page.close(); await browser.close(); }
 });
+
+
+test('menu-family gallery follows existing demo styling and exposes local interactions', async () => {
+    const browser = await chromium.launch({ headless: true, channel: process.env.NEOUI_BROWSER_CHANNEL ?? 'msedge' });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+    const errors = []; page.on('pageerror', error => errors.push(String(error)));
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) await page.route(origin + '/**', route => route.continue({ headers: { ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true' } }));
+    try {
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const root = page.locator('[data-menu-family-demo]');
+        await root.locator('[data-neo-navigation="menubar"][data-neo-navigation-ready]').waitFor();
+        await root.scrollIntoViewIfNeeded();
+        const inbox = root.getByRole('menuitem', { name: 'Inbox', exact: true }); await inbox.click();
+        const menu = page.locator(`[id="${await inbox.getAttribute('aria-controls')}"]`);
+        const filter = menu.getByRole('menuitemcheckbox', { name: 'Unread only', exact: true });
+        await filter.click(); assert.equal(await filter.getAttribute('aria-checked'), 'true');
+        await root.getByRole('menuitem', { name: 'View', exact: true }).hover(); await page.getByRole('menuitem', { name: 'Compact view', exact: true }).waitFor({ state: 'visible' });
+        await page.keyboard.press('Escape');
+        await root.getByText('Right-click here, or focus and press Shift+F10', { exact: true }).click({ button: 'right' });
+        await page.getByRole('menuitem', { name: 'Open conversation', exact: true }).waitFor({ state: 'visible' }); await page.keyboard.press('Escape');
+        const split = root.locator('[data-neo-split-button]').filter({ has: page.getByRole('button', { name: 'Save view', exact: true }) });
+        const primary = split.getByRole('button', { name: 'Save view', exact: true });
+        const beforeColor = await primary.evaluate(e => getComputedStyle(e).backgroundColor);
+        await split.getByRole('button', { name: 'More options', exact: true }).click(); await page.getByRole('menuitem', { name: 'Save as new view', exact: true }).waitFor({ state: 'visible' });
+        await eventually(async () => assert.notEqual(await primary.evaluate(e => getComputedStyle(e).backgroundColor), beforeColor));
+        await page.keyboard.press('Escape');
+        await root.getByRole('button', { name: 'Demo activity', exact: true }).click(); assert.equal(await root.getByRole('button', { name: 'Demo activity', exact: true }).getAttribute('data-active'), 'true');
+        await root.screenshot({ path: join(tmpdir(), 'neoui-menu-families-desktop.png') });
+        await page.setViewportSize({ width: 390, height: 1000 }); await root.scrollIntoViewIfNeeded();
+        assert.equal(await root.evaluate(e => e.scrollWidth <= e.clientWidth + 1), true);
+        await root.screenshot({ path: join(tmpdir(), 'neoui-menu-families-mobile.png') });
+        assert.deepEqual(errors, []);
+    } finally { await browser.close(); }
+});

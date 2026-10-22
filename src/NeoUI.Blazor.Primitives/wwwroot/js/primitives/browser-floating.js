@@ -49,6 +49,14 @@ export function createController(floating, initialOptions, initialPosition, brid
     let typeahead = '';
     let typeaheadTimer;
     let hoverTimer;
+    let contextPoint = { x: options.x ?? 0, y: options.y ?? 0 };
+    let backdrop, savedOverflow;
+    const positionReference = () => options.kind === 'contextmenu' ? {
+        contextElement: trigger(),
+        getBoundingClientRect: () => ({ x: contextPoint.x, y: contextPoint.y, left: contextPoint.x, top: contextPoint.y,
+            right: contextPoint.x, bottom: contextPoint.y, width: 0, height: 0 })
+    } : trigger();
+    const positionOptions = () => options.kind === 'contextmenu' ? { ...position, strategy: 'fixed', placement: 'bottom-start', offset: 0, padding: options.viewportPadding } : position;
     const trigger = () => doc.getElementById(options.triggerId);
     const parent = () => controllers.get(trigger()?.closest('[data-neo-browser-content]')?.id);
     const belongsTo = other => {
@@ -125,6 +133,8 @@ export function createController(floating, initialOptions, initialPosition, brid
         cleanup?.apply();
         cleanup = null;
         setVisible(false);
+        backdrop?.remove(); backdrop = null;
+        if (savedOverflow !== undefined) { doc.body.style.overflow = savedOverflow; savedOverflow = undefined; }
         focused = null;
         content.removeAttribute('aria-activedescendant');
         if (restoreFocus && !disabled(trigger())) trigger()?.focus({ preventScroll: true });
@@ -144,13 +154,22 @@ export function createController(floating, initialOptions, initialPosition, brid
         trigger()?.setAttribute('aria-expanded', 'true');
         if (report) notify('open', true);
         try {
-            const result = await positioning.computePosition(trigger(), floating, position);
+            const result = await positioning.computePosition(positionReference(), floating, positionOptions());
             if (disposed || !opened || version !== generation) return;
             positioning.applyPosition(floating, result, false);
-            const handle = await positioning.autoUpdate(trigger(), floating, position);
+            const handle = await positioning.autoUpdate(positionReference(), floating, positionOptions());
             if (disposed || !opened || version !== generation) { handle?.apply(); return; }
             cleanup = handle;
             setVisible(true);
+            if (options.kind === 'contextmenu') {
+                if (options.lockScroll && savedOverflow === undefined) { savedOverflow = doc.body.style.overflow; doc.body.style.overflow = 'hidden'; }
+                if (options.overlayClass && !backdrop) {
+                    backdrop = doc.createElement('div'); backdrop.className = options.overlayClass;
+                    Object.assign(backdrop.style, { position: 'fixed', inset: '0', zIndex: String(Number(getComputedStyle(floating).zIndex || 50) - 1) });
+                    backdrop.setAttribute('data-neo-context-backdrop', ''); doc.body.append(backdrop);
+                }
+            }
+            if (initialFocus === 'none') { notify('ready', true); return; }
             if (options.kind === 'popover') {
                 (content.querySelector('[data-neo-autofocus]') ?? content.querySelector('[autofocus], button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') ?? content)
                     .focus({ preventScroll: true });
@@ -237,7 +256,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         paintMenuSelection(key, state);
         if (item.dataset.neoCloseOnSelect !== 'false') {
             let root = controller;
-            while (root.parent()?.options.kind === 'menu' || root.parent()?.options.kind === 'submenu') root = root.parent();
+            while (['menu', 'contextmenu', 'submenu'].includes(root.parent()?.options.kind)) root = root.parent();
             root.close(true);
         }
         emit('valuechange', { key, value: proposed, sequence, pending: true });
@@ -262,7 +281,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     const stop = event => { event.preventDefault(); event.stopImmediatePropagation(); };
     const click = event => {
         const target = event.target;
-        if (trigger()?.contains(target) && options.kind !== 'submenu') {
+        if (trigger()?.contains(target) && options.kind !== 'submenu' && options.kind !== 'contextmenu') {
             stop(event);
             if (!disabled(trigger())) opened ? close() : void open();
             return;
@@ -283,7 +302,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         // Keep action clicks/native links intact, but dismiss before their server handler runs.
         if (item.dataset.neoCloseOnSelect !== 'false') {
             let root = controller;
-            while (root.parent()?.options.kind === 'menu' || root.parent()?.options.kind === 'submenu') root = root.parent();
+            while (['menu', 'contextmenu', 'submenu'].includes(root.parent()?.options.kind)) root = root.parent();
             root.close(true);
         }
     };
@@ -297,11 +316,19 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (event.isComposing || event.key === 'Process') return;
         const onTrigger = trigger()?.contains(event.target);
         const inContent = event.target.closest('[data-neo-browser-content]') === content;
-        if (onTrigger && options.kind !== 'submenu' && ['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
+        if (onTrigger && options.kind !== 'submenu' && options.kind !== 'contextmenu' && ['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
             stop(event);
             if (opened && ['Enter', ' '].includes(event.key)) close();
-            else void open(event.key === 'ArrowUp' ? 'last' : 'first');
+            else if (opened && options.kind !== 'popover') {
+                const enabled = items(); focus(event.key === 'ArrowUp' ? enabled.at(-1) : enabled[0]);
+            } else void open(event.key === 'ArrowUp' ? 'last' : 'first');
             return;
+        }
+        if (onTrigger && options.kind === 'contextmenu' && (event.key === 'ContextMenu' || (event.shiftKey && event.key === 'F10'))) {
+            stop(event);
+            const rect = trigger().getBoundingClientRect();
+            contextPoint = { x: rect.left, y: rect.bottom };
+            reportPoint(); void open(); return;
         }
         if (!opened || !inContent) return;
         if (event.key === 'Escape' && options.closeOnEscape) {
@@ -360,7 +387,18 @@ export function createController(floating, initialOptions, initialPosition, brid
         const item = event.target.closest(itemSelector);
         if (item && !item.contains(event.relatedTarget)) clearTimeout(hoverTimer);
     };
-    const listeners = { click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut };
+    const reportPoint = () => {
+        if (bridge && options.notifyContext) notifications = notifications.then(() => disposed ? undefined : bridge.invokeMethodAsync('NotifyContextAsync', contextPoint.x, contextPoint.y))
+            .catch(error => emit('error', { operation: 'context-position', message: String(error) }));
+    };
+    const contextmenu = event => {
+        if (options.kind !== 'contextmenu' || !trigger()?.contains(event.target) || disabled(trigger())) return;
+        stop(event);
+        contextPoint = { x: event.clientX, y: event.clientY };
+        if (opened) close(false, false);
+        reportPoint(); void open();
+    };
+    const listeners = { contextmenu, click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut };
     const observer = new MutationObserver(() => {
         const json = floating.getAttribute('data-neo-browser-config');
         if (json !== renderedConfiguration) {
@@ -391,6 +429,10 @@ export function createController(floating, initialOptions, initialPosition, brid
             const valueCommand = options.valueVersion !== nextOptions.valueVersion;
             const positionChanged = JSON.stringify(position) !== JSON.stringify(nextPosition);
             options = nextOptions; position = nextPosition;
+            if (openCommand && options.kind === 'contextmenu') {
+                contextPoint = { x: options.x ?? 0, y: options.y ?? 0 };
+                if (opened && options.open) close(false, false);
+            }
             content = doc.getElementById(options.contentId) ?? content;
             content.setAttribute('data-neo-browser-content', '');
             watchTrigger();
@@ -408,10 +450,10 @@ export function createController(floating, initialOptions, initialPosition, brid
                     const version = ++generation;
                     cleanup?.apply(); cleanup = null;
                     void (async () => {
-                        const result = await positioning.computePosition(trigger(), floating, position);
+                        const result = await positioning.computePosition(positionReference(), floating, positionOptions());
                         if (disposed || !opened || version !== generation) return;
                         positioning.applyPosition(floating, result, false);
-                        const handle = await positioning.autoUpdate(trigger(), floating, position);
+                        const handle = await positioning.autoUpdate(positionReference(), floating, positionOptions());
                         if (disposed || !opened || version !== generation) { handle?.apply(); return; }
                         cleanup = handle;
                         setVisible(true);
@@ -445,6 +487,10 @@ export function createController(floating, initialOptions, initialPosition, brid
     setVisible(false);
     if (options.kind === 'select') applySelection(selectedId);
     if (options.open) void open('first', false);
+    emit('controllerready', {});
+    // A mounted submenu may finish hydrating while the pointer is already on its trigger.
+    if (options.kind === 'submenu' && parent()?.isOpen && trigger()?.matches(':hover'))
+        hoverTimer = setTimeout(() => { if (!disposed && parent()?.isOpen && trigger()?.matches(':hover')) void open(); }, 200);
     return controller;
 }
 
@@ -460,4 +506,20 @@ export function closeForElement(element, restoreFocus = true) {
     if (!controller) return false;
     controller.close(restoreFocus);
     return true;
+}
+
+// Shared primitive coordinators operate the same controllers without interop round trips.
+export function forTrigger(id) {
+    return [...controllers.values()].find(controller => controller.options.triggerId === id);
+}
+
+/** Tests logical containment when a composed navigation control contains portaled children. */
+export function ownsFloatingDescendant(root, target) {
+    if (!target) return false;
+    return [...controllers.values()].some(controller => {
+        if (!controller.isOpen || !controller.content.contains(target)) return false;
+        for (let current = controller; current; current = current.parent())
+            if (root.contains(current.trigger())) return true;
+        return false;
+    });
 }

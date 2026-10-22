@@ -54,6 +54,8 @@ internal sealed class BrowserFloatingState
 // One optional bridge per floating layer; no .NET calls are needed for UI mechanics.
 internal sealed class BrowserFloatingEvents : IDisposable
 {
+    internal Action<double, double>? ContextPosition { get; set; }
+    [JSInvokable] public void NotifyContextAsync(double x, double y) => ContextPosition?.Invoke(x, y);
     internal Func<string, bool, Task>? Notify { get; set; }
     internal Func<string, string?, Task<string?>>? CommitMenu { get; set; }
     internal Func<string, Task<string?>>? Commit { get; set; }

@@ -2,6 +2,13 @@
 @implements IContextMenuItem
 @implements IDisposable
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuItemPrimitive Disabled="@Disabled" OnClick="@HandleBrowserClick" CloseOnSelect="@BrowserCloseOnSelect" @attributes="AdditionalAttributes">@ChildContent</DropdownMenuItemPrimitive>
+}
+else
+{
+
 @* ContextMenuItemPrimitive - an individual menu action *@
 <div @ref="_itemRef"
      role="menuitem"
@@ -15,7 +22,13 @@
     @ChildContent
 </div>
 
+
+}
+
 @code {
+    private bool BrowserCloseOnSelect => true;
+    private Task HandleBrowserClick(MouseEventArgs args) => OnClick.InvokeAsync();
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private ContextMenuContext Context { get; set; } = null!;
 
@@ -59,6 +72,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (Context == null)
         {
             throw new InvalidOperationException(
@@ -158,6 +172,7 @@
 
     public void Dispose()
     {
+        if (Family?.Enabled == true) return;
         _hoverCts?.Cancel();
         _hoverCts?.Dispose();
         if (SubContentContext != null)

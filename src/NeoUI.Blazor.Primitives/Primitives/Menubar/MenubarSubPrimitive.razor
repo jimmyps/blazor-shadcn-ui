@@ -1,11 +1,22 @@
 @namespace NeoUI.Blazor.Primitives
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuSubPrimitive Open="@Open" OpenChanged="@OpenChanged" OnOpenChange="@OnOpenChange">@ChildContent</DropdownMenuSubPrimitive>
+}
+else
+{
+
 @* MenubarSubPrimitive - container for a submenu within a menubar menu *@
 <CascadingValue Value="@_context" IsFixed="false">
     @ChildContent
 </CascadingValue>
 
+
+}
+
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     private readonly MenubarSubContext _context = new();
 
     [CascadingParameter]
@@ -41,6 +52,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         // Set depth based on parent submenu depth (for proper z-index stacking)
         // First-level submenu = depth 0, second-level = depth 1, etc.
         EnsureDepth();
@@ -55,6 +67,7 @@
 
     protected override void OnParametersSet()
     {
+        if (Family?.Enabled == true) return;
         if (Open.HasValue && _context.IsOpen != Open.Value)
         {
             _context.IsOpen = Open.Value;

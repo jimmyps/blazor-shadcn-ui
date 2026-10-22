@@ -463,3 +463,22 @@ Deterministic state regressions (including delayed/coalesced Open binding echoes
 ```powershell
 dotnet run --project tests/NeoUI.InteractionStateTests
 ```
+
+
+## Menu families and pill navigation
+
+`Menubar`, `ContextMenu`, `NavigationMenu`, `SplitButton`, and `SidebarPillNav` accept nullable `InteractionMode` and `InteractionRevision`. Omitted settings follow the scoped/application policy; an explicit `InteractionMode.Blazor` remains an exception to a global Browser default.
+
+The implementation is shared at the **primitive layer**: Menubar and ContextMenu adapt to the same DropdownMenu browser controller and selection queues. Styled components forward policy and render persistent selection indicators. Menubar switching/roving focus and NavigationMenu hover timers, panels, keyboard state, ARIA, outside dismissal and link dismissal use a browser coordinator. Application callbacks run after local feedback. Hovering a closed menubar does not open it; hovering a sibling while open switches locally. Disabled triggers are skipped. Native navigation still follows the application's router.
+
+Checkbox/radio items in Menubar and ContextMenu support the same delayed/rejected selection acknowledgements and reset generations as DropdownMenu. Their checkbox items default to staying open. Increment the root `InteractionRevision` to close/reset a family or the checkbox/radio group's `InteractionRevision` to reset only a selection. No business callback is replayed when a rendered command is reconciled.
+
+ContextMenu opens at the pointer position or with the ContextMenu key / Shift+F10. `OpenAt(x, y)` issues a versioned programmatic command. Its optional backdrop and scroll lock are local and released on dismissal/disposal. Coordinates are sent with the asynchronous `OnOpen` notification. The trigger remains available for ordinary left-click actions.
+
+Pill button active feedback is optimistic and local. `OnClick` continues to run application logic asynchronously; use `InteractionRevision` for controlled resets/rejection. Route-based pill items retain NavLink's router-owned active state. `AsChild` content retains its own interactions; dropdown and SplitButton children inherit the pill's resolved policy, and individual controls can explicitly override it. CSS hover needs no server callback. The already-mounted **desktop** sidebar can be revealed immediately by the pill expand action; mobile expansion still uses the existing server-controlled Sheet. This change does not convert the entire Sidebar/Sheet system to Browser mode.
+
+SplitButton's secondary menu inherits/overrides the policy. Both segments reflect its locally updated `aria-expanded` through CSS; the primary action still invokes application code.
+
+Browser menu content and navigation panels remain mounted. Account for the initial rendering/DOM cost when repeating menus across many rows. The form input flush barrier does not await these menu selection queues.
+
+Try the [menu-family gallery](../demo/NeoUI.Demo.Shared/Pages/Components/BrowserMenuFamilies.razor) in the Interaction Mode demo (`#menu-families`).

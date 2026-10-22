@@ -22,6 +22,12 @@
         <div><span class="block text-xs font-medium text-muted-foreground">APPLICATION CALLBACKS</span><strong class="block text-2xl font-semibold" data-testid="callback-count">@callbackCount</strong><span class="block text-xs text-muted-foreground">@pendingCallbacks pending · @parentRenders parent renders</span></div>
     </section>
 
+    <section id="menu-families">
+        <DemoSection Title="Menu families and pill navigation" Description="Menubar, ContextMenu, NavigationMenu and SplitButton share the browser interaction policy. Try delayed callbacks while switching and dismissing menus.">
+            <DemoBlock><BrowserMenuFamilies /></DemoBlock>
+        </DemoSection>
+    </section>
+
     <DemoSection Title="Dropdown menus" Description="Compare browser-local opening, focus, submenus, and dismissal with the default Blazor interaction mode. On Interactive Server, the default path includes a server round trip.">
         <DemoBlock>
         <div class="grid gap-6 lg:grid-cols-2">

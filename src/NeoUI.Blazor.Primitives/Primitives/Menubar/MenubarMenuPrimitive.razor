@@ -3,10 +3,19 @@
 
 @* MenubarMenuPrimitive - groups a trigger and content as a single menu entry *@
 <CascadingValue Value="@_menuContext" IsFixed="false">
-    @ChildContent
+    @if (Family?.Enabled == true)
+    {
+        <div data-neo-menu-value="@_menuContext.Index" style="display:contents">
+            <DropdownMenuPrimitive InteractionMode="InteractionMode.Browser">
+                @ChildContent
+            </DropdownMenuPrimitive>
+        </div>
+    }
+    else { @ChildContent }
 </CascadingValue>
 
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private MenubarContext Context { get; set; } = null!;
 

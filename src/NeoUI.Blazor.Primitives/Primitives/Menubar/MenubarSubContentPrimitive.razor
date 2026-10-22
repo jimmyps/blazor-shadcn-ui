@@ -2,6 +2,13 @@
 @inject IJSRuntime JSRuntime
 @implements IAsyncDisposable
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuSubContentPrimitive CloseOnEscape="@CloseOnEscape" Offset="@Offset" ZIndex="@ZIndex" @attributes="AdditionalAttributes"><CascadingValue Value="Family" IsFixed="true">@ChildContent</CascadingValue></DropdownMenuSubContentPrimitive>
+}
+else
+{
+
 @*
     MenubarSubContentPrimitive - the content panel for a submenu
     Uses FloatingPortal for positioning infrastructure.
@@ -25,7 +32,11 @@
     @RenderSubMenuContent()
 </FloatingPortal>
 
+
+}
+
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
 [CascadingParameter]
 private MenubarContext? MenuContext { get; set; }
 
@@ -88,6 +99,7 @@ private readonly List<IMenubarItem> _menuItems = new();
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (SubContext == null)
         {
             throw new InvalidOperationException(
@@ -209,6 +221,7 @@ private readonly List<IMenubarItem> _menuItems = new();
 
     public async ValueTask DisposeAsync()
     {
+        if (Family?.Enabled == true) return;
         SubContext.OnStateChanged -= HandleContextStateChanged;
 
         // Clean up menu keyboard module

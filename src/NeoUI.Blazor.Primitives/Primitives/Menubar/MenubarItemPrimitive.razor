@@ -2,6 +2,13 @@
 @implements IMenubarItem
 @implements IDisposable
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuItemPrimitive Disabled="@Disabled" OnClick="@HandleBrowserClick" CloseOnSelect="@BrowserCloseOnSelect" @attributes="AdditionalAttributes">@ChildContent</DropdownMenuItemPrimitive>
+}
+else
+{
+
 @* MenubarItemPrimitive - represents an individual menu action *@
 <div @ref="_itemRef"
      role="menuitem"
@@ -15,7 +22,13 @@
     @ChildContent
 </div>
 
+
+}
+
 @code {
+    private bool BrowserCloseOnSelect => CloseOnSelect;
+    private Task HandleBrowserClick(MouseEventArgs args) => OnClick.InvokeAsync(args);
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private MenubarContext Context { get; set; } = null!;
 
@@ -65,6 +78,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (Context == null)
         {
             throw new InvalidOperationException(
@@ -187,6 +201,7 @@
 
     public void Dispose()
     {
+        if (Family?.Enabled == true) return;
         _hoverCts?.Cancel();
         _hoverCts?.Dispose();
         // Unregister this item when disposed

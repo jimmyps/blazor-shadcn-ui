@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 
-<div class="@CssClass" role="group" @attributes="AdditionalAttributes">
+<div data-neo-split-button class="@CssClass" role="group" @attributes="AdditionalAttributes">
     <Button Variant="@Variant"
             Size="@Size"
             Disabled="@Disabled"
@@ -11,7 +11,7 @@
             AriaLabel="@AriaLabel">
         @ChildContent
     </Button>
-    <DropdownMenu @bind-Open="_isOpen">
+    <DropdownMenu InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision">
         <DropdownMenuTrigger AsChild="true">
             <Button Variant="@Variant"
                     Size="@DropdownButtonSize"

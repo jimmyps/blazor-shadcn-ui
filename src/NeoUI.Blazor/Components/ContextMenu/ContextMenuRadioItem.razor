@@ -9,8 +9,7 @@
                                                       class="@CssClass"
                                                       @attributes="AdditionalAttributes">
     <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        @if (IsSelectedInternal)
-        {
+        <span data-neo-selection-indicator style="@(IsSelectedInternal ? null : "display:none")">
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="8"
                  height="8"
@@ -18,12 +17,13 @@
                  fill="currentColor">
                 <circle cx="4" cy="4" r="4" />
             </svg>
-        }
+        </span>
     </span>
     <span>@ChildContent</span>
 </ContextMenuRadioItemPrimitive>
 
 @code {
+    [CascadingParameter] private DropdownMenuRadioGroupContext<TValue>? BrowserRadioGroup { get; set; }
     [CascadingParameter]
     private ContextMenuRadioGroupContext<TValue>? RadioGroupContext { get; set; }
 
@@ -48,7 +48,7 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private bool IsSelectedInternal => RadioGroupContext != null &&
+    private bool IsSelectedInternal => BrowserRadioGroup != null ? EqualityComparer<TValue?>.Default.Equals(BrowserRadioGroup.Value, Value) : RadioGroupContext != null &&
                                        EqualityComparer<TValue?>.Default.Equals(RadioGroupContext.Value, Value);
 
     private string CssClass => ClassNames.cn(

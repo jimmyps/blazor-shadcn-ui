@@ -2,7 +2,7 @@
 @typeparam TValue
 
 @* ContextMenuRadioGroup - styled wrapper for radio items *@
-<ContextMenuRadioGroupPrimitive TValue="TValue"
+<ContextMenuRadioGroupPrimitive InteractionRevision="@InteractionRevision" TValue="TValue"
                                                         Value="@Value"
                                                         ValueChanged="@ValueChanged"
                                                         OnValueChange="@OnValueChange"
@@ -12,6 +12,8 @@
 </ContextMenuRadioGroupPrimitive>
 
 @code {
+    /// <summary>Increment to reset the browser-owned selection.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
     /// <summary>
     /// The content to render inside the radio group.
     /// Typically contains ContextMenuRadioItem components.

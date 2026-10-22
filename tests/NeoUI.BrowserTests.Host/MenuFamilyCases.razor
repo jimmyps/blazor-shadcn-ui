@@ -1,0 +1,75 @@
+<InteractionModeProvider Mode="InteractionMode.Browser">
+<section data-testid="menu-families">
+    <Menubar ActiveIndex="@active" ActiveIndexChanged="SetActive" InteractionRevision="@revision">
+        <MenubarMenu><MenubarTrigger>Family File</MenubarTrigger><MenubarContent>
+            <MenubarItem OnClick="Action">Family action</MenubarItem>
+            <MenubarItem Disabled>Family disabled</MenubarItem>
+            <MenubarCheckboxItem Checked="@filter" CheckedChanged="SetFilter">Family filter</MenubarCheckboxItem>
+            <MenubarRadioGroup TValue="string" Value="@choice" ValueChanged="SetChoice"><MenubarRadioItem TValue="string" Value="@("a")" CloseOnSelect="false">Family A</MenubarRadioItem><MenubarRadioItem TValue="string" Value="@("b")" CloseOnSelect="false">Family B</MenubarRadioItem></MenubarRadioGroup>
+            <MenubarSub><MenubarSubTrigger>Family More</MenubarSubTrigger><MenubarSubContent><MenubarCheckboxItem>Family nested filter</MenubarCheckboxItem><MenubarSub><MenubarSubTrigger>Family Deeper</MenubarSubTrigger><MenubarSubContent><MenubarItem>Family deep action</MenubarItem></MenubarSubContent></MenubarSub></MenubarSubContent></MenubarSub>
+        </MenubarContent></MenubarMenu>
+        <MenubarMenu><MenubarTrigger Disabled>Family unavailable</MenubarTrigger><MenubarContent><MenubarItem>Never open</MenubarItem></MenubarContent></MenubarMenu>
+        <MenubarMenu><MenubarTrigger>Family Edit</MenubarTrigger><MenubarContent><MenubarItem>Family Undo</MenubarItem></MenubarContent></MenubarMenu>
+    </Menubar>
+    <ContextMenu @ref="context" Open="@contextOpen" InteractionRevision="@revision" OnOpen="Opened">
+        <ContextMenuTrigger><span data-testid="family-context">Family context target</span></ContextMenuTrigger>
+        <ContextMenuContent LockScroll OverlayClass="family-backdrop">
+            <ContextMenuItem OnClick="Action">Context action</ContextMenuItem>
+            <ContextMenuCheckboxItem Checked="@contextFilter" CheckedChanged="SetContextFilter">Context filter</ContextMenuCheckboxItem>
+            <ContextMenuRadioGroup TValue="string" Value="@choice" ValueChanged="SetChoice"><ContextMenuRadioItem TValue="string" Value="@("a")" CloseOnSelect="false">Context A</ContextMenuRadioItem><ContextMenuRadioItem TValue="string" Value="@("b")" CloseOnSelect="false">Context B</ContextMenuRadioItem></ContextMenuRadioGroup>
+            <ContextMenuSub><ContextMenuSubTrigger>Context More</ContextMenuSubTrigger><ContextMenuSubContent><ContextMenuItem>Context nested</ContextMenuItem></ContextMenuSubContent></ContextMenuSub>
+        </ContextMenuContent>
+    </ContextMenu>
+    <NavigationMenu Value="@nav" ValueChanged="SetNav" InteractionRevision="@revision">
+        <NavigationMenuList>
+            <NavigationMenuItem Value="one"><NavigationMenuTrigger>Family Products</NavigationMenuTrigger><NavigationMenuContent><NavigationMenuLink Href="#one">Family Product One</NavigationMenuLink><NavigationMenuLink Href="#two">Family Product Two</NavigationMenuLink></NavigationMenuContent></NavigationMenuItem>
+            <NavigationMenuItem Value="two"><NavigationMenuTrigger>Family Resources</NavigationMenuTrigger><NavigationMenuContent><NavigationMenuLink Href="#docs">Family Docs</NavigationMenuLink></NavigationMenuContent></NavigationMenuItem>
+        </NavigationMenuList>
+    </NavigationMenu>
+    <SplitButton data-testid="family-split" OnClick="Action"><ChildContent>Family Save</ChildContent><DropdownContent><SplitButtonItem OnClick="Action">Family Save As</SplitButtonItem><SplitButtonItem Disabled>Split disabled</SplitButtonItem></DropdownContent></SplitButton>
+    <SplitButton InteractionMode="InteractionMode.Blazor" data-testid="family-split-blazor"><ChildContent>Legacy split</ChildContent><DropdownContent><SplitButtonItem>Legacy split action</SplitButtonItem></DropdownContent></SplitButton>
+    <Menubar InteractionMode="InteractionMode.Blazor"><MenubarMenu><MenubarTrigger>Legacy menubar</MenubarTrigger><MenubarContent><MenubarItem>Legacy menubar action</MenubarItem></MenubarContent></MenubarMenu></Menubar>
+    <ContextMenu InteractionMode="InteractionMode.Blazor"><ContextMenuTrigger>Legacy context</ContextMenuTrigger><ContextMenuContent><ContextMenuItem>Legacy context action</ContextMenuItem></ContextMenuContent></ContextMenu>
+    <NavigationMenu InteractionMode="InteractionMode.Blazor"><NavigationMenuList><NavigationMenuItem Value="legacy"><NavigationMenuTrigger>Legacy navigation</NavigationMenuTrigger><NavigationMenuContent>Legacy navigation content</NavigationMenuContent></NavigationMenuItem></NavigationMenuList></NavigationMenu>
+    <SidebarProvider DefaultOpen="false" CookieKey="@((string?)null)" CollapsedMode="SidebarCollapsedMode.Pill" HeightClass="h-auto">
+        <Sidebar><SidebarContent>Family sidebar body</SidebarContent></Sidebar>
+        <SidebarPillNav InteractionRevision="@revision" Class="!relative !top-0 !left-0 !translate-x-0">
+            <ChildContent>
+                <SidebarPillNavItem Label="Family Home" IsActive="@(pill == 0)" OnClick="@(() => SetPill(0))">Home</SidebarPillNavItem>
+                <SidebarPillNavItem Label="Family Inbox" IsActive="@(pill == 1)" OnClick="@(() => SetPill(1))">Inbox</SidebarPillNavItem>
+                <SidebarPillNavItem AsChild><DropdownMenu><DropdownMenuTrigger>Family Pill Menu</DropdownMenuTrigger><DropdownMenuContent><DropdownMenuItem>Family Pill Action</DropdownMenuItem></DropdownMenuContent></DropdownMenu></SidebarPillNavItem>
+            </ChildContent>
+            <TrailingContent><span data-testid="family-pill-render">@renders</span><SplitButton><ChildContent>Pill primary</ChildContent><DropdownContent><SplitButtonItem>Family Pill Split Action</SplitButtonItem></DropdownContent></SplitButton></TrailingContent>
+        </SidebarPillNav>
+    </SidebarProvider>
+    <button data-testid="family-render" @onclick="@(() => renders++)">Render family</button>
+    <button data-testid="family-reset-open" @onclick="ResetOpen">Reset and keep File open</button>
+    <button data-testid="family-reset-delayed" @onclick="ResetDelayed">Reset after reconnect</button>
+    <span data-testid="family-reset-pending">@resetPending.ToString().ToLowerInvariant()</span>
+    <button data-testid="family-reset" @onclick="Reset">Reset families</button>
+    <button data-testid="family-programmatic" @onclick="@(() => context?.OpenAt(220, 180))">Open context programmatically</button>
+    <label><input type="checkbox" @bind="slow" data-testid="family-slow" /> Delay callbacks</label>
+    <label><input type="checkbox" @bind="reject" data-testid="family-reject" /> Reject selections</label>
+    <p data-testid="family-accepted">@filter,@contextFilter,@choice</p><p data-testid="family-actions">@actions</p><p data-testid="family-coordinates">@coordinates</p>
+</section>
+</InteractionModeProvider>
+@code {
+    private int active = -1, actions, pill, renders;
+    private async Task SetPill(int value) { await Wait(); pill = value; }
+    private bool filter, contextFilter, slow, reject, resetPending;
+    private string choice = "a", nav = "", coordinates = "";
+    private bool? contextOpen;
+    private long revision;
+    private ContextMenu? context;
+    private async Task Wait() { if (slow) await Task.Delay(1000); }
+    private async Task SetActive(int value) { await Wait(); active = value; }
+    private async Task SetNav(string value) { await Wait(); nav = value; }
+    private async Task SetFilter(bool value) { await Wait(); if (!reject) filter = value; }
+    private async Task SetContextFilter(bool value) { await Wait(); if (!reject) contextFilter = value; }
+    private async Task SetChoice(string? value) { await Wait(); if (!reject) choice = value ?? "a"; }
+    private async Task Action() { await Wait(); actions++; }
+    private void Opened((double X, double Y) point) => coordinates = $"{point.X:0},{point.Y:0}";
+    private async Task ResetDelayed() { resetPending = true; await InvokeAsync(StateHasChanged); await Task.Delay(1500); Reset(); resetPending = false; }
+    private void ResetOpen() { filter = false; active = 0; revision++; }
+    private void Reset() { pill = 0; filter = contextFilter = false; choice = "a"; active = -1; nav = ""; contextOpen = false; revision++; }
+}

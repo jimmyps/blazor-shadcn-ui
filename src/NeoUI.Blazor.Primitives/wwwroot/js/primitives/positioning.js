@@ -145,7 +145,7 @@ export async function computePosition(reference, floating, options = {}) {
   injectRequiredStyles();
 
   // Validate elements before proceeding
-  if (!isElementReady(reference)) {
+  if (!isElementReady(reference?.contextElement ?? reference)) {
     throw new Error('Reference element is not ready or not in DOM');
   }
   if (!isElementReady(floating)) {

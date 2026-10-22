@@ -9,6 +9,16 @@ public sealed class BrowserFloatingOptions
     public string ContentId { get; set; } = "";
     /// <summary>Behavior: menu, select, popover, or submenu.</summary>
     public string Kind { get; set; } = "popover";
+    /// <summary>Context-menu viewport coordinates for programmatic opening.</summary>
+    public double X { get; set; }
+    /// <summary>Context-menu viewport coordinates for programmatic opening.</summary>
+    public double Y { get; set; }
+    /// <summary>Whether a context-menu shell locks body scrolling.</summary>
+    public bool LockScroll { get; set; }
+    /// <summary>Optional context-menu backdrop classes.</summary>
+    public string? OverlayClass { get; set; }
+    /// <summary>Context-menu viewport edge padding.</summary>
+    public int ViewportPadding { get; set; } = 8;
     /// <summary>Root menu content ID for a submenu.</summary>
     public string? RootContentId { get; set; }
     /// <summary>Initial or explicitly requested open state.</summary>
@@ -29,6 +39,8 @@ public sealed class BrowserFloatingOptions
     public bool Loop { get; set; } = true;
     /// <summary>RTL keyboard navigation.</summary>
     public bool Rtl { get; set; }
+    /// <summary>Send pointer coordinates when context-menu opening is observed.</summary>
+    public bool NotifyContext { get; set; }
     /// <summary>Notify .NET after local open state changes.</summary>
     public bool NotifyOpen { get; set; }
     /// <summary>Notify .NET after Escape dismissal.</summary>

@@ -2,6 +2,13 @@
 @implements IMenubarItem
 @implements IDisposable
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuCheckboxItemPrimitive Disabled="@Disabled" Checked="@Checked" CheckedChanged="@CheckedChanged" OnCheckedChange="@OnCheckedChange" CloseOnSelect="@CloseOnSelect" InteractionRevision="@(Family.Revision + InteractionRevision)" @attributes="AdditionalAttributes">@ChildContent</DropdownMenuCheckboxItemPrimitive>
+}
+else
+{
+
 @* MenubarCheckboxItemPrimitive - a menu item that toggles a boolean state *@
 <div @ref="_itemRef"
      role="menuitemcheckbox"
@@ -15,7 +22,13 @@
     @ChildContent
 </div>
 
+
+}
+
 @code {
+    /// <summary>Increment to reset browser selection, including an unchanged value.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private MenubarContext Context { get; set; } = null!;
 
@@ -70,6 +83,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (Context == null)
         {
             throw new InvalidOperationException(
@@ -123,6 +137,7 @@
 
     public void Dispose()
     {
+        if (Family?.Enabled == true) return;
         // Unregister this item when disposed
         ContentContext?.UnregisterMenuItem(this);
     }

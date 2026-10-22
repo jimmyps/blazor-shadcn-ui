@@ -2,7 +2,7 @@
 @implements IDisposable
 
 @* NavigationMenuItemPrimitive - container for trigger and content *@
-<li role="none" @attributes="AdditionalAttributes">
+<li data-neo-menu-value="@(Context.BrowserEnabled ? Value : null)" role="none" @attributes="AdditionalAttributes">
     <CascadingValue Value="@_itemContext" IsFixed="false">
         @ChildContent
     </CascadingValue>

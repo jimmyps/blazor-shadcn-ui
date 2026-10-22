@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* Styled Menubar component - thin wrapper around Menubar primitive *@
-<MenubarRootPrimitive class="@CssClass"
+<MenubarRootPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" class="@CssClass"
                                           ActiveIndex="@ActiveIndex"
                                           ActiveIndexChanged="@ActiveIndexChanged"
                                           DefaultActiveIndex="@DefaultActiveIndex"
@@ -10,6 +10,11 @@
 </MenubarRootPrimitive>
 
 @code {
+    /// <summary>Overrides scoped and application interaction policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to authoritatively reset browser interaction state.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// The child content to render within the menubar.
     /// Typically includes MenubarMenu components.

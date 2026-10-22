@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using NeoUI.Blazor.Primitives;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace NeoUI.Blazor;
@@ -11,7 +12,7 @@ namespace NeoUI.Blazor;
 /// &lt;SplitButton OnClick="Save" Variant="ButtonVariant.Default"&gt;
 ///     Save
 ///     &lt;DropdownContent&gt;
-///         &lt;SplitButtonItem OnClick="SaveAs"&gt;Save As…&lt;/SplitButtonItem&gt;
+///         &lt;SplitButtonItem OnClick="SaveAs"&gt;Save Asâ€¦&lt;/SplitButtonItem&gt;
 ///         &lt;SplitButtonSeparator /&gt;
 ///         &lt;SplitButtonItem OnClick="Discard"&gt;Discard&lt;/SplitButtonItem&gt;
 ///     &lt;/DropdownContent&gt;
@@ -20,6 +21,11 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class SplitButton : ComponentBase
 {
+    /// <summary>Overrides scoped and application interaction policy for the secondary menu.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reset the secondary menu.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>Gets or sets the primary button label content.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -80,19 +86,17 @@ public partial class SplitButton : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string CssClass => ClassNames.cn("inline-flex", Class);
+    private string CssClass => ClassNames.cn("inline-flex group/split", Class);
 
-    private bool _isOpen;
-
-    private string? OpenActiveClass => _isOpen ? Variant switch
+    private string? OpenActiveClass => Variant switch
     {
-        ButtonVariant.Default     => "!bg-primary/90",
-        ButtonVariant.Destructive => "!bg-destructive/90",
-        ButtonVariant.Outline     => "!bg-accent !text-accent-foreground",
-        ButtonVariant.Secondary   => "!bg-secondary/80",
-        ButtonVariant.Ghost       => "!bg-accent !text-accent-foreground",
-        _                         => null
-    } : null;
+        ButtonVariant.Default => "group-has-[[aria-expanded=true]]/split:!bg-primary/90",
+        ButtonVariant.Destructive => "group-has-[[aria-expanded=true]]/split:!bg-destructive/90",
+        ButtonVariant.Outline => "group-has-[[aria-expanded=true]]/split:!bg-accent group-has-[[aria-expanded=true]]/split:!text-accent-foreground",
+        ButtonVariant.Secondary => "group-has-[[aria-expanded=true]]/split:!bg-secondary/80",
+        ButtonVariant.Ghost => "group-has-[[aria-expanded=true]]/split:!bg-accent group-has-[[aria-expanded=true]]/split:!text-accent-foreground",
+        _ => null
+    };
 
     private string PrimaryButtonClass => ClassNames.cn(
         "!rounded-r-none border-r-0 focus-visible:z-10",
