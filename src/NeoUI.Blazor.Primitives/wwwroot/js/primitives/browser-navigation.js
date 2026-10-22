@@ -128,7 +128,9 @@ export function initialize(root, bridge) {
         }
     };
     const over = event => {
-        if (kind === 'pill') return;
+        // Touch emits pointerover/out around each tap, before its compatibility click.
+        // Let the click own the transition instead of pre-opening then toggling it shut.
+        if (kind === 'pill' || event.pointerType === 'touch') return;
         const trigger = from(event.target);
         if (trigger && !trigger.contains(event.relatedTarget)) {
             clearTimeout(timer);
@@ -137,6 +139,7 @@ export function initialize(root, bridge) {
         } else if (kind === 'navigation' && root.contains(event.target)) clearTimeout(timer);
     };
     const out = event => {
+        if (event.pointerType === 'touch') return;
         if (kind === 'menubar' && hoverSwitchedTrigger?.contains(event.target) && !hoverSwitchedTrigger.contains(event.relatedTarget))
             hoverSwitchedTrigger = null;
         if (kind === 'navigation' && root.contains(event.target) && !owns(event.relatedTarget)) {

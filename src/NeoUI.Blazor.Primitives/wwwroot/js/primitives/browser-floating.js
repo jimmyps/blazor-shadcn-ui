@@ -370,7 +370,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (next) focus(next);
     };
     const pointerOver = event => {
-        if (options.kind === 'popover') return;
+        if (options.kind === 'popover' || event.pointerType === 'touch') return;
         const item = event.target.closest(itemSelector);
         if (!opened || !item || item.closest('[data-neo-browser-content]') !== content || disabled(item)) return;
         if (item.contains(event.relatedTarget)) return;
@@ -384,6 +384,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         }, 200);
     };
     const pointerOut = event => {
+        if (event.pointerType === 'touch') return;
         const item = event.target.closest(itemSelector);
         if (item && !item.contains(event.relatedTarget)) clearTimeout(hoverTimer);
     };

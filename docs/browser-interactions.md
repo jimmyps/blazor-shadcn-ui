@@ -398,6 +398,18 @@ npm test
 
 Tests default to installed Edge. Set `NEOUI_BROWSER_CHANNEL=chrome` to use Chrome. The
 suite preloads locally installed Floating UI, avoiding CDN access in regression runs.
+The menu-family suite also supports WebKit with real touch taps:
+
+```powershell
+npx playwright install webkit
+$env:NEOUI_BROWSER_ENGINE = 'webkit'
+node --test menus.spec.mjs
+Remove-Item Env:NEOUI_BROWSER_ENGINE
+```
+
+Touch taps own menu switching and dismissal; their synthetic hover events do not open
+or close menus. Mouse hover and keyboard navigation retain their existing behavior.
+
 To exercise the shared fixture under WebAssembly:
 
 ```powershell

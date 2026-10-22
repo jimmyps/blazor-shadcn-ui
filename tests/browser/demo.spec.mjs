@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { chromium } from 'playwright';
+import { chromium, webkit, devices } from 'playwright';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 
@@ -437,6 +437,36 @@ test('menu-family gallery follows existing demo styling and exposes local intera
         await page.setViewportSize({ width: 390, height: 1000 }); await root.scrollIntoViewIfNeeded();
         assert.equal(await root.evaluate(e => e.scrollWidth <= e.clientWidth + 1), true);
         await root.screenshot({ path: join(tmpdir(), 'neoui-menu-families-mobile.png') });
+        assert.deepEqual(errors, []);
+    } finally { await browser.close(); }
+});
+
+
+test('menu-family gallery supports iPhone touch switching without flicker', async () => {
+    const browser = process.env.NEOUI_BROWSER_ENGINE === 'webkit'
+        ? await webkit.launch({ headless: true })
+        : await chromium.launch({ headless: true, channel: 'msedge' });
+    const page = await browser.newPage({ ...devices['iPhone 13'] });
+    const errors = []; page.on('pageerror', error => errors.push(String(error)));
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) await page.route(origin + '/**', route => route.continue({ headers: {
+        ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true'
+    } }));
+    try {
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const root = page.locator('[data-menu-family-demo]');
+        await root.locator('[data-neo-navigation="menubar"][data-neo-navigation-ready]').waitFor();
+        await eventually(async () => assert.equal(await page.getByRole('menuitem', { name: 'More actions', exact: true, includeHidden: true }).getAttribute('aria-expanded'), 'false'));
+        const inbox = root.getByRole('menuitem', { name: 'Inbox', exact: true });
+        const view = root.getByRole('menuitem', { name: 'View', exact: true });
+        for (let i = 0; i < 3; i++) {
+            await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'true');
+            await view.tap(); await page.getByRole('menuitem', { name: 'Compact view', exact: true }).waitFor({ state: 'visible' });
+            await pause(400); assert.equal(await view.getAttribute('aria-expanded'), 'true');
+            assert.equal(await inbox.getAttribute('aria-expanded'), 'false');
+            await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'true');
+            await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'false');
+        }
         assert.deepEqual(errors, []);
     } finally { await browser.close(); }
 });

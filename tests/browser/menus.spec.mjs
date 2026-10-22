@@ -1,15 +1,17 @@
 import { test, before, after, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { chromium } from 'playwright';
+import { chromium, webkit } from 'playwright';
 const url = process.env.NEOUI_TEST_URL ?? 'http://localhost:5198';
 let browser, page, errors;
 const pause = ms => new Promise(r => setTimeout(r, ms));
 async function eventually(check) { const start = Date.now(); for (;;) { try { await check(); return; } catch (e) { if (Date.now() - start > 15000) throw e; await pause(30); } } }
-before(async () => { browser = await chromium.launch({ channel: 'msedge', headless: true }); });
+before(async () => { browser = process.env.NEOUI_BROWSER_ENGINE === 'webkit'
+    ? await webkit.launch({ headless: true })
+    : await chromium.launch({ channel: 'msedge', headless: true }); });
 after(async () => { await browser?.close(); });
 beforeEach(async () => {
-    page = await browser.newPage(); errors = []; page.on('pageerror', e => errors.push(String(e)));
+    page = await browser.newPage({ hasTouch: true }); errors = []; page.on('pageerror', e => errors.push(String(e)));
     const core = await readFile(new URL('./node_modules/@floating-ui/core/dist/floating-ui.core.umd.js', import.meta.url), 'utf8');
     const dom = await readFile(new URL('./node_modules/@floating-ui/dom/dist/floating-ui.dom.umd.js', import.meta.url), 'utf8');
     await page.addInitScript(core + '\n' + dom);
@@ -142,4 +144,34 @@ test('clicking a sibling menubar trigger after hover switching keeps the new men
     assert.equal(await item('Family Undo').evaluate(e => document.activeElement === e), true);
     await file().click(); await expanded(file(), true); await expanded(edit, false);
     await file().click(); await expanded(file(), false);
+});
+
+
+test('touch menubar taps switch siblings once and keep submenus usable without a circuit', async () => {
+    await blockTransport(); const edit = item('Family Edit');
+    for (let i = 0; i < 3; i++) {
+        await file().tap(); await expanded(file(), true);
+        await edit.tap(); await expanded(edit, true); await expanded(file(), false);
+        await pause(300); await expanded(edit, true);
+        await file().tap(); await expanded(file(), true); await expanded(edit, false);
+        await item('Family More').tap(); await check('Family nested filter').waitFor({ state: 'visible' });
+        await check('Family nested filter').tap(); await expanded(file(), true);
+        await file().tap(); await expanded(file(), false);
+    }
+    await file().tap(); await expanded(file(), true);
+    // The context target sits underneath the open menu in Chromium's fixture layout.
+    // Tap the empty right edge of the viewport to exercise real outside dismissal.
+    const viewport = page.viewportSize();
+    await page.touchscreen.tap(viewport.width - 8, viewport.height - 8); await expanded(file(), false);
+});
+
+test('touch navigation taps stay closed after dismissal instead of running hover timers', async () => {
+    await blockTransport(); const products = item('Family Products'), resources = item('Family Resources');
+    await products.tap(); await expanded(products, true);
+    await resources.tap(); await expanded(resources, true); await expanded(products, false);
+    await resources.tap(); await expanded(resources, false);
+    await pause(600); await expanded(resources, false);
+    await products.tap(); await expanded(products, true);
+    await page.getByTestId('family-context').tap(); await expanded(products, false);
+    await pause(600); await expanded(products, false);
 });
