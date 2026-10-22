@@ -359,6 +359,7 @@ test('dialog form demo flushes fast drafts before validation and onchange action
     const errors = []; page.on('pageerror', e => errors.push(String(e)));
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
+        await page.getByTestId('demo-browser-input').locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
         await page.getByTestId('demo-open-input-form').click();
         const form = page.getByTestId('demo-safe-form');
         for (const id of ['demo-profile-name', 'demo-profile-note']) await form.locator(`[id="${id}"][data-neo-input-ready="true"]`).waitFor();
