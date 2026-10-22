@@ -45,6 +45,8 @@
     <label><input type="checkbox" @bind="menuReject" data-testid="menu-reject" /> Reject filter changes</label>
     <label><input type="checkbox" @bind="menuSlow" data-testid="menu-slow" /> Delay filter changes</label>
     <button data-testid="menu-reset" @onclick="ResetFilters">Reset filters</button>
+    <p data-testid="menu-reset-pending">@resetPending.ToString().ToLowerInvariant()</p>
+    <button data-testid="menu-reset-delayed" @onclick="ResetFiltersDelayed">Reset while disconnected</button>
 </section>
 <InteractionModeProvider Mode="InteractionMode.Browser">
     <section data-testid="composed-combo">
@@ -69,7 +71,7 @@
 <button data-testid="multi-close" @onclick="CloseMulti">Close multiselect externally</button>
 
 @code {
-    private bool unread, mentions, assigned, menuReject, menuSlow;
+    private bool unread, mentions, assigned, menuReject, menuSlow, resetPending;
     private int menuCommits;
     private long menuRevision;
     private string? notification = "all", combo;
@@ -89,6 +91,7 @@
     private Task SetMentions(bool value) => ApplyFilter(() => mentions = value);
     private Task SetAssigned(bool value) => ApplyFilter(() => assigned = value);
     private Task SetNotification(string? value) => ApplyFilter(() => notification = value);
+    private async Task ResetFiltersDelayed() { resetPending = true; await Task.Delay(1000); ResetFilters(); resetPending = false; }
     private void ResetFilters() { unread = mentions = assigned = false; notification = "all"; menuRevision++; }
     private void ResetComposed() { combo = null; multi = []; date = null; }
     private async Task CloseMulti() { if (multiRef != null) await multiRef.CloseAsync(); }

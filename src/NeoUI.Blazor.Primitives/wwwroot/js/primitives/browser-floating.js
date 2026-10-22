@@ -20,6 +20,16 @@ const disabled = element => !element || element.matches(':disabled, [aria-disabl
 export function createController(floating, initialOptions, initialPosition, bridge = null,
     positioning = { computePosition, applyPosition, autoUpdate }) {
     const doc = floating.ownerDocument;
+    // Initialization can itself have been buffered while disconnected. Prefer the
+    // latest rendered snapshot over the interop arguments captured before reconnect.
+    const readConfiguration = () => {
+        const json = floating.getAttribute('data-neo-browser-config');
+        return json ? JSON.parse(json) : null;
+    };
+    const initialConfiguration = readConfiguration();
+    initialOptions = initialConfiguration?.options ?? initialOptions;
+    initialPosition = initialConfiguration?.position ?? initialPosition;
+    let renderedConfiguration = floating.getAttribute('data-neo-browser-config');
     let options = initialOptions;
     let position = initialPosition;
     let content = doc.getElementById(options.contentId);
@@ -346,6 +356,12 @@ export function createController(floating, initialOptions, initialPosition, brid
     };
     const listeners = { click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut };
     const observer = new MutationObserver(() => {
+        const json = floating.getAttribute('data-neo-browser-config');
+        if (json !== renderedConfiguration) {
+            renderedConfiguration = json;
+            const next = readConfiguration();
+            if (next) controller.update(next.options, next.position);
+        }
         if (options.kind === 'select') applySelection(selectedId);
         syncMenuSelections();
     });
@@ -416,7 +432,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     for (const [name, listener] of Object.entries(listeners)) doc.addEventListener(name, listener, true);
     // Observe structure/config only; JS-owned presentation attributes don't feed back into this observer.
     observer.observe(floating, { childList: true, subtree: true, attributes: true,
-        attributeFilter: ['disabled', 'aria-disabled', 'data-disabled', 'data-neo-text', 'data-neo-check-accepted', 'data-neo-check-version', 'data-neo-check-value', 'aria-checked'] });
+        attributeFilter: ['data-neo-browser-config', 'disabled', 'aria-disabled', 'data-disabled', 'data-neo-text', 'data-neo-check-accepted', 'data-neo-check-version', 'data-neo-check-value', 'aria-checked'] });
     watchTrigger();
     syncMenuSelections();
     observeRemoval(doc);

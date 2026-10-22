@@ -225,34 +225,61 @@ test('composed controls inherit browser shells while preserving server content a
     }
 });
 
-test('a dropped circuit preserves local mechanics and reconnects without replaying commits', async t => {
+for (let run = 1; run <= Number(process.env.NEOUI_RECONNECT_RUNS ?? 3); run++) {
+    test(`a dropped circuit preserves local mechanics and reconnects without replaying commits (run ${run})`, async t => {
+        if (process.env.NEOUI_TEST_RENDERER === 'wasm') { t.skip('WebAssembly has no server circuit'); return; }
+        await page.getByTestId('menu-slow').check();
+        await openFilters();
+        await filter('Unread only').click();
+        await eventually(async () => assert.equal(await page.getByTestId('menu-commits').textContent(), '1'));
+        await page.context().setOffline(true);
+        await page.evaluate(() => window.__testSockets.filter(s => s.url.includes('_blazor')).forEach(s => s.close()));
+        // Invoke DOM events directly while Blazor's reconnect overlay is present.
+        await page.evaluate(() => {
+            document.querySelector('[data-testid="filter-menu"]').click();
+            document.querySelector('[data-testid="filter-menu"]').click();
+        });
+        assert.equal(await page.getByTestId('filter-menu').getAttribute('aria-expanded'), 'true');
+        await page.context().setOffline(false);
+        await eventually(async () => assert.equal(await page.evaluate(async () => {
+            try { return await Blazor.reconnect(); } catch { return false; }
+        }), true), 20000);
+        await eventually(async () => assert.equal(await accepted(), 'true,false,all,false'));
+        // An acknowledgement may remain uncertain across disconnect. The authoritative
+        // reset must reconcile both pending state and visibility without waiting for it.
+        assert.equal(await page.getByTestId('menu-commits').textContent(), '1');
+        await page.getByTestId('menu-reset').evaluate(e => e.click());
+        await checked(filter('Unread only'), false);
+        await eventually(async () => assert.equal(await filter('Unread only').getAttribute('data-neo-pending'), null));
+        await eventually(async () => assert.equal(await page.getByTestId('filter-menu').getAttribute('aria-expanded'), 'false'));
+        assert.equal(await page.getByTestId('menu-commits').textContent(), '1');
+        await openFilters();
+        await filter('Mentions only').click();
+        await eventually(async () => assert.equal(await accepted(), 'false,true,all,false'));
+        assert.equal(await page.getByTestId('menu-commits').textContent(), '2');
+    });
+
+}
+
+test('a reset rendered during disconnection is reconciled when the retained circuit resumes', async t => {
     if (process.env.NEOUI_TEST_RENDERER === 'wasm') { t.skip('WebAssembly has no server circuit'); return; }
-    await page.getByTestId('menu-slow').check();
     await openFilters();
     await filter('Unread only').click();
-    await eventually(async () => assert.equal(await page.getByTestId('menu-commits').textContent(), '1'));
+    await eventually(async () => assert.equal(await accepted(), 'true,false,all,false'));
+    await page.getByTestId('menu-reset-delayed').evaluate(e => e.click());
+    // Ensure the server entered the delayed event before dropping the transport.
+    await eventually(async () => assert.equal(await page.getByTestId('menu-reset-pending').textContent(), 'true'));
     await page.context().setOffline(true);
     await page.evaluate(() => window.__testSockets.filter(s => s.url.includes('_blazor')).forEach(s => s.close()));
-    // Invoke DOM events directly while Blazor's reconnect overlay is present.
-    await page.evaluate(() => {
-        document.querySelector('[data-testid="filter-menu"]').click();
-        document.querySelector('[data-testid="filter-menu"]').click();
-    });
+    await pause(1400);
     assert.equal(await page.getByTestId('filter-menu').getAttribute('aria-expanded'), 'true');
     await page.context().setOffline(false);
     await eventually(async () => assert.equal(await page.evaluate(async () => {
         try { return await Blazor.reconnect(); } catch { return false; }
     }), true), 20000);
-    await eventually(async () => assert.equal(await accepted(), 'true,false,all,false'));
-    await eventually(async () => assert.equal(await filter('Unread only').getAttribute('data-neo-pending'), null));
-    assert.equal(await page.getByTestId('menu-commits').textContent(), '1');
-    await page.getByTestId('menu-reset').evaluate(e => e.click());
     await checked(filter('Unread only'), false);
     await eventually(async () => assert.equal(await page.getByTestId('filter-menu').getAttribute('aria-expanded'), 'false'));
-    await openFilters();
-    await filter('Mentions only').click();
-    await eventually(async () => assert.equal(await accepted(), 'false,true,all,false'));
-    assert.equal(await page.getByTestId('menu-commits').textContent(), '2');
+    assert.equal(await page.getByTestId('menu-commits').textContent(), '1');
 });
 
 test('persistent mounting exposes the initial DOM cost of large lists and repeated row menus', async () => {

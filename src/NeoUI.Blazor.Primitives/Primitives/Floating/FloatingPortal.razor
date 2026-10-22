@@ -243,8 +243,24 @@
     private readonly SemaphoreSlim browserGate = new(1, 1);
     private bool browserDisposed;
 
+    private object BrowserPosition => new
+    {
+        placement = Align == PopoverAlign.Center ? Side.ToValue() : $"{Side.ToValue()}-{Align.ToValue()}",
+        offset = Offset, matchReferenceWidth = MatchAnchorWidth,
+        strategy = Strategy.ToValue(), flip = true, shift = true
+    };
+
+    private static readonly System.Text.Json.JsonSerializerOptions BrowserJsonOptions =
+        new(System.Text.Json.JsonSerializerDefaults.Web);
+
+    // Commands travel with the rendered content, including buffered render batches
+    // resumed after reconnect. They must not depend on a separate interop delivery.
+    private string? BrowserConfiguration => BrowserOptions == null ? null :
+        System.Text.Json.JsonSerializer.Serialize(new { options = BrowserOptions, position = BrowserPosition }, BrowserJsonOptions);
+
     private async Task HandleBrowserLifecycleAsync()
     {
+        if (browserController != null) return;
         await browserGate.WaitAsync();
         try
         {
@@ -252,17 +268,9 @@
             if (!_isMounted) await MountPortalAsync();
             browserModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import",
                 "./_content/NeoUI.Blazor.Primitives/js/primitives/browser-floating.js");
-            var position = new
-            {
-                placement = Align == PopoverAlign.Center ? Side.ToValue() : $"{Side.ToValue()}-{Align.ToValue()}",
-                offset = Offset, matchReferenceWidth = MatchAnchorWidth,
-                strategy = Strategy.ToValue(), flip = true, shift = true
-            };
             if (browserController == null)
                 browserController = await browserModule.InvokeAsync<IJSObjectReference>("initialize",
-                    _portalContentRef, BrowserOptions, position, BrowserEvents);
-            else
-                await browserController.InvokeVoidAsync("update", BrowserOptions, position);
+                    _portalContentRef, BrowserOptions, BrowserPosition, BrowserEvents);
         }
         catch (JSDisconnectedException) { /* The existing browser controller remains usable locally. */ }
         finally { browserGate.Release(); }
@@ -484,6 +492,7 @@
         <div @ref="_portalContentRef"
              @attributes="GetAttributesWithoutStyle()"
              data-portal-content="true"
+             data-neo-browser-config="@BrowserConfiguration"
              style="@GetMergedStyle()">
             <CascadingValue Value="@InteractionPolicy" IsFixed="true">
                 @ChildContent

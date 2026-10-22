@@ -162,13 +162,21 @@ complete even if its acknowledgement is lost. Do not interpret an error as proof
 write occurred, and do not blindly retry non-idempotent operations.
 
 On a retained-circuit reconnect, existing controllers remain and outstanding interop responses
-can settle. No library replay of completed business callbacks is performed. Refresh authoritative
+can settle. Versioned controller settings are carried in the portal's rendered attributes:
+when a resumed render batch contains an `InteractionRevision` reset, the existing controller
+reconciles its open/selection commands directly from that snapshot. This does not require a
+separate post-render JS interop call, and unchanged command versions preserve local state.
+No library replay of completed business callbacks is performed. Refresh authoritative
 application state and increment `InteractionRevision` when you need to reconcile an uncertain
 result. If Blazor cannot resume the circuit, reload/recreate the interactive tree; a full reload
 loses transient browser state. Applications should use idempotency keys/version checks for
 writes that must tolerate retries. Regression coverage drops a real SignalR WebSocket during
 a pending commit, reconnects to the retained circuit, checks completion without duplication,
-and then verifies an explicit reset and subsequent interaction.
+and then verifies an explicit reset closes the menu without an extra business callback, followed
+by another interaction. This scenario runs three times by default (`NEOUI_RECONNECT_RUNS`
+can increase the repetitions). A deterministic controller case also verifies render-only reset
+delivery and initialization from the latest rendered snapshot. Another circuit case buffers
+a server-side reset while disconnected and verifies reconciliation on resume.
 
 ## Persistent content: initial render and DOM cost
 

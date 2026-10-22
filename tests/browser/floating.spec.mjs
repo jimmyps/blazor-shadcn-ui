@@ -231,6 +231,51 @@ test('late positioning cannot reopen a closed layer; rerendered styles and DOM r
     assert.ok(result.cleaned >= 2);
 });
 
+test('rendered configuration reconciles commands without interop updates or callback replay', async () => {
+    const result = await page.evaluate(async () => {
+        const { createController } = await import('/_content/NeoUI.Blazor.Primitives/js/primitives/browser-floating.js');
+        const host = document.createElement('div');
+        host.innerHTML = '<button id="snapshot-trigger">Snapshot</button><div id="snapshot-floating"><div id="snapshot-content" role="menu" tabindex="-1"><div role="menuitem" tabindex="-1">Item</div></div></div>';
+        document.body.append(host);
+        const floating = host.querySelector('#snapshot-floating');
+        const trigger = host.querySelector('button');
+        const options = { triggerId: trigger.id, contentId: 'snapshot-content', kind: 'menu', open: false,
+            openVersion: 1, valueVersion: 1, notifyOpen: true, loop: true };
+        const position = { placement: 'bottom' };
+        const write = next => floating.setAttribute('data-neo-browser-config', JSON.stringify({ options: next, position }));
+        const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+        let callbacks = 0;
+        const bridge = { invokeMethodAsync: async () => { callbacks++; } };
+        const adapter = { computePosition: async () => ({ x: 1, y: 2 }), applyPosition: () => {}, autoUpdate: async () => ({ apply() {} }) };
+        write(options);
+        const controller = createController(floating, options, position, bridge, adapter);
+        await controller.open();
+        await tick();
+        const beforeReset = callbacks;
+        // Only a render batch is delivered; deliberately never call controller.update.
+        const reset = { ...options, openVersion: 2, valueVersion: 2 };
+        write(reset);
+        await tick();
+        const resetClosed = !controller.isOpen && trigger.getAttribute('aria-expanded') === 'false' && floating.inert;
+        const resetCallbacks = callbacks - beforeReset;
+        await controller.open();
+        await tick();
+        // An ambient render changes config but retains the command version.
+        write({ ...reset, loop: false });
+        await tick();
+        const ambientPreserved = controller.isOpen;
+        controller.dispose();
+        // A stale initialization call must also read the current rendered command.
+        write({ ...reset, open: true, openVersion: 3 });
+        const resumed = createController(floating, options, position, bridge, adapter);
+        await tick();
+        const initializedFromRender = resumed.isOpen;
+        resumed.dispose(); host.remove();
+        return { resetClosed, resetCallbacks, ambientPreserved, initializedFromRender };
+    });
+    assert.deepEqual(result, { resetClosed: true, resetCallbacks: 0, ambientPreserved: true, initializedFromRender: true });
+});
+
 test('native and AsChild disabled menu triggers cannot open', async () => {
     for (const trigger of [page.getByTestId('disabled-native').locator('..'), page.getByTestId('disabled-child')]) {
         assert.equal(await trigger.isDisabled(), true);
