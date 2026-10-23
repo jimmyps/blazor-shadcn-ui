@@ -16,6 +16,41 @@ export function initialize(root, bridge) {
     const key = trigger => trigger.dataset.neoStateValue ?? doc.getElementById(trigger.getAttribute('aria-controls'))?.dataset.neoStatePanel;
     const disabled = trigger => config.disabled || trigger.matches(':disabled,[data-disabled="true"]');
     const enabled = () => triggers().filter(trigger => !disabled(trigger));
+    const presence = new WeakMap();
+    const paintDisclosure = (panel, selected) => {
+        let state = presence.get(panel);
+        const changed = state && state.selected !== selected;
+        const previousAnimations = changed ? new Set(panel.getAnimations?.() ?? []) : null;
+        if (changed) {
+            panel.hidden = false;
+            // Establish the old grid layout before changing its state. Otherwise
+            // removing hidden and expanding in one style update skips the transition.
+            panel.getBoundingClientRect();
+        }
+        panel.inert = !selected;
+        panel.setAttribute('aria-hidden', String(!selected));
+        panel.dataset.state = selected ? 'open' : 'closed';
+        if (!state) {
+            presence.set(panel, { selected, revision: 0 });
+            panel.hidden = !selected;
+            return;
+        }
+        if (!changed) return;
+        state.selected = selected;
+        const revision = ++state.revision;
+        if (selected) return;
+        const exitAnimations = (panel.getAnimations?.() ?? []).filter(animation =>
+            !previousAnimations.has(animation) && animation.playState !== 'finished' &&
+            Number.isFinite(animation.effect?.getComputedTiming().endTime));
+        const hide = () => {
+            if (!disposed && panel.isConnected && state.revision === revision && !state.selected)
+                panel.hidden = true;
+        };
+        // Only this panel's new exit motion delays display:none. Child spinners
+        // and unrelated/infinite effects must not keep a closed disclosure alive.
+        if (exitAnimations.length) void Promise.allSettled(exitAnimations.map(animation => animation.finished)).then(hide);
+        else hide();
+    };
     const paint = () => {
         const tabs = config.kind === 'tabs', available = enabled();
         const roving = available.find(trigger => values.has(key(trigger))) ?? available[0];
@@ -28,9 +63,12 @@ export function initialize(root, bridge) {
         }
         for (const panel of panels()) {
             const selected = values.has(panel.dataset.neoStatePanel);
-            panel.hidden = !selected; panel.inert = !selected;
-            panel.setAttribute('aria-hidden', String(!selected));
-            panel.dataset.state = selected ? (tabs ? 'active' : 'open') : (tabs ? 'inactive' : 'closed');
+            if (tabs) {
+                panel.inert = !selected;
+                panel.setAttribute('aria-hidden', String(!selected));
+                panel.hidden = !selected;
+                panel.dataset.state = selected ? 'active' : 'inactive';
+            } else paintDisclosure(panel, selected);
         }
     };
     const notify = () => {

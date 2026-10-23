@@ -190,3 +190,62 @@ test('an AsChild disclosure preserves its application action without waiting to 
         assert.deepEqual(immediate,{visible:true,count:'0'});await page.getByTestId('sweep-disclosure-actions').filter({hasText:'1'}).waitFor();
     }finally{await browser.close();}
 });
+
+
+for (const mode of ['blazor','browser']) for (const family of ['collapsible','accordion'])
+test(`${mode} ${family} animates expansion and collapse without losing final presence`, async()=>{
+    const browser=await launch(),page=await browser.newPage(),errors=[];
+    page.on('pageerror',error=>errors.push(String(error)));
+    try {
+        await page.emulateMedia({reducedMotion:'no-preference'});await page.addInitScript(floatingScript);
+        await page.goto(url+`/?sweep=true&mode=${mode}`);await page.getByTestId('p1-sweep').waitFor();
+        await page.locator('[data-testid="test-host-ready"][data-ready="true"]').waitFor({state:'attached'});
+        const root=page.getByTestId('sweep-disclosures');
+        if(mode==='browser') await page.waitForFunction(()=>document.querySelectorAll('[data-testid="sweep-disclosures"] [data-neo-state-ready=true]').length===3);
+        const trigger=root.getByRole('button',{name:family==='collapsible'?'Standalone disclosure':'First disclosure',exact:true});
+        const panel=root.getByRole('region',{includeHidden:true}).filter({hasText:family==='collapsible'?'Standalone disclosure body':'First disclosure action'});
+        const initial=await panel.evaluate(el=>({property:getComputedStyle(el).transitionProperty,duration:getComputedStyle(el).transitionDuration,height:el.getBoundingClientRect().height}));
+        assert.match(initial.property,/grid-template-rows/);assert.ok(parseFloat(initial.duration)>0);assert.equal(initial.height,0);
+        // Cold WASM work can outlast the 200 ms default before transitionrun is
+        // dispatched. Slow the CSS clock, then pause/finish it without wall-clock waits.
+        await panel.evaluate(el=>el.style.transitionDuration='2s');
+        await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+        if(mode==='browser') await page.evaluate(()=>{window.__nativeSend=WebSocket.prototype.send;WebSocket.prototype.send=function(){};});
+        const arm=()=>panel.evaluate(el=>{
+            window.__neoDisclosureMotion=null;
+            const capture=event=>{
+                if(event.target!==el||event.propertyName!=='grid-template-rows')return;
+                const animation=el.getAnimations().find(item=>item.transitionProperty==='grid-template-rows');
+                if(!animation)return;
+                animation.pause();window.__neoDisclosureMotion=animation;el.removeEventListener('transitionrun',capture);
+            };
+            el.addEventListener('transitionrun',capture);
+        });
+        const midpoint=async()=>{
+            await page.waitForFunction(()=>window.__neoDisclosureMotion?.playState==='paused',undefined,{timeout:10000});
+            return panel.evaluate(el=>{const animation=window.__neoDisclosureMotion;animation.currentTime=animation.effect.getComputedTiming().activeDuration/2;return {height:el.getBoundingClientRect().height,hidden:el.hidden,inert:el.inert,aria:el.getAttribute('aria-hidden')};});
+        };
+        const finish=()=>page.evaluate(async()=>{const animation=window.__neoDisclosureMotion;animation.finish();await animation.finished;await new Promise(resolve=>requestAnimationFrame(resolve));});
+        await arm();await trigger.click();const opening=await midpoint();assert.equal(opening.hidden,false);assert.ok(opening.height>0);await finish();
+        const fullHeight=await panel.evaluate(el=>el.getBoundingClientRect().height);assert.ok(opening.height<fullHeight,`${family} must have an intermediate opening height`);
+        await arm();await trigger.click();const closing=await midpoint();assert.equal(closing.hidden,false);assert.ok(closing.height>0&&closing.height<fullHeight);
+        if(mode==='browser'){
+            assert.equal(closing.inert,true);assert.equal(closing.aria,'true');
+            // A child render during exit must not repaint hidden before motion finishes.
+            await panel.evaluate(el=>el.append(document.createComment('render during exit')));
+            await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));assert.equal(await panel.evaluate(el=>el.hidden),false);
+            // Reverse the paused close. Its cancelled completion must not hide the reopened panel.
+            await arm();await trigger.click();await midpoint();await finish();assert.equal(await panel.evaluate(el=>el.hidden||el.inert),false);
+            assert.equal(await trigger.getAttribute('aria-expanded'),'true');
+            await arm();await trigger.click();await midpoint();
+        }
+        await finish();await panel.waitFor({state:'hidden'});assert.equal(await trigger.getAttribute('aria-expanded'),'false');
+        if(mode==='browser'){
+            assert.equal(await panel.evaluate(el=>el.hidden&&el.inert),true);
+            // Zero-duration CSS (including reduced-motion overrides) needs no presence delay.
+            await panel.evaluate(el=>el.style.transitionDuration='0s');await trigger.click();await panel.waitFor();
+            assert.equal(await trigger.evaluate(el=>{el.click();return document.getElementById(el.getAttribute('aria-controls')).hidden;}),true);
+        }
+        assert.deepEqual(errors,[]);
+    } finally {await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await browser.close();}
+});

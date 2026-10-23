@@ -132,3 +132,13 @@ application value and forwarded attributes, and then dismiss the outer shell by 
 The Browser case also guards against replacing physical hit containment with the logical anchor:
 a marker supplements containment so it cannot close its own listbox before an item click arrives.
 The shared ownership helper retains both physical and logical targets for composed controls.
+
+
+### Disclosure motion regression
+
+Animation tests cover styled Collapsible and Accordion in both modes. They pause actual grid
+transitions to assert intermediate opening and closing heights, then finish the animations and
+verify final presence. Browser cases drop outbound circuit traffic, check immediate inert/ARIA
+state, render a child during exit, reverse an unfinished close, and verify zero-duration CSS
+hides synchronously. These cases run in the existing Server/WASM P1 suites; the CI WASM job
+also runs the four cases with WebKit.

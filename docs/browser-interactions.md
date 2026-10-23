@@ -861,3 +861,15 @@ Input initialization invalidates pending work when disposed, even if its element
 connected during a delayed Browser module import. The shared connection module resolves
 from `document.baseURI`, so path-prefixed hosting and alternative asset URLs use one canonical
 application-base connection URL rather than deriving it from a fingerprinted Input URL.
+
+
+### Disclosure animation and accessibility
+
+Browser Collapsible and Accordion keep CSS expansion/collapse motion. Expansion removes
+`hidden` and establishes the closed layout before changing `data-state` to `open`. Collapse
+updates `aria-expanded`, `aria-hidden` and `inert` immediately, while the panel remains visually
+mounted until its own new finite CSS exit animations/transitions finish. Child animations and
+unrelated or infinite effects do not delay hiding. With no CSS exit motion, hiding is immediate.
+Reopening invalidates an earlier exit completion, including during rapid toggles or child renders.
+The styled components keep their existing grid transition; Blazor-mode behavior and Tabs panel
+switching are unchanged. Browser-mode motion does not wait for application callbacks.

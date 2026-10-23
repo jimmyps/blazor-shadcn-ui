@@ -113,6 +113,12 @@ jobs:
             Push-Location tests/browser
             node --test --test-concurrency=1 p1-sweep.spec.mjs fields.spec.mjs formatted.spec.mjs special.spec.mjs tags.spec.mjs markdown.spec.mjs modes.spec.mjs reviewer.spec.mjs 2>&1 | Tee-Object ../../wasm-tests.log
             $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
+            $env:NEOUI_BROWSER_ENGINE='webkit'
+            try {
+              Push-Location tests/browser
+              node --test --test-name-pattern='animates expansion and collapse' p1-sweep.spec.mjs 2>&1 | Tee-Object ../../disclosure-webkit-tests.log
+              $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
+            } finally { Remove-Item Env:NEOUI_BROWSER_ENGINE }
           } finally { taskkill /PID $wasm.Id /T /F }
           Remove-Item Env:NEOUI_TEST_RENDERER
           $demo=Start-Process dotnet -ArgumentList @('run','--project','demo/NeoUI.Demo.Server','--no-build','--no-launch-profile','--','--urls','http://localhost:5184','--BrowserDefault=true') -WindowStyle Hidden -PassThru -RedirectStandardOutput demo.log -RedirectStandardError demo.error.log
