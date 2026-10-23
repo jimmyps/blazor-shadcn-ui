@@ -1,5 +1,14 @@
 # Menubar Component
 
+## Interaction Mode in v4.5.0
+
+Components and Primitives both target **4.5.0** (unreleased). This control follows the
+`Menus` interaction family, with scoped and explicit overrides. Browser mode keeps supported
+local interaction state responsive while application callbacks and Razor content remain live.
+The default remains Blazor; local feedback does not confirm server acceptance.
+See the [adoption guide](../../../../docs/browser-interactions.md) and
+[v4.5.0 upgrade guide](../../../../docs/upgrading-to-4.5.md) for limits and migration.
+
 A horizontally-oriented menu bar that provides access to a consistent set of commands or actions. Each menu can be opened to reveal dropdown content with items, separators, and keyboard shortcuts.
 
 ## Features

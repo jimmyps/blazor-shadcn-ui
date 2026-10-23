@@ -1,4 +1,7 @@
-# Browser interaction mode (preview)
+# Browser interaction mode — v4.5.0
+
+**Release target: Components and Primitives 4.5.0 (unreleased).** See the
+[upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.
 
 `DropdownMenu`, `Popover`, `Select<TValue>`, `Input`, and the composed controls below accept an opt-in interaction mode:
 
@@ -16,7 +19,7 @@
 
 The default remains `InteractionMode.Blazor`. Browser is an interaction policy, not a new
 Blazor render mode. It supports Interactive Server and WebAssembly. Initialization still
-requires an interactive render; static SSR-only pages are not supported by this preview.
+requires an interactive render; static SSR-only pages are not supported by Browser mode.
 Auto and Hybrid hosting have not been separately runtime-verified.
 
 ## Application defaults and scoped exceptions
@@ -438,7 +441,7 @@ application integration. A fetch/Minimal API adapter can be layered on separatel
 
 The existing Floating UI dependency is reused; applications should preload/bundle it as
 usual to avoid an initial CDN fetch. Local interaction does not eliminate browser layout
-or JavaScript loading cost. This preview uses immediate hide/show rather than preserving
+or JavaScript loading cost. Browser mode uses immediate hide/show rather than preserving
 the legacy exit-animation lifecycle.
 
 ## Circuit interruption and recovery

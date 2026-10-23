@@ -2,10 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-10-22 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
+## 2026-10-22 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
 
-> **Targeting: `v4.2.0` / primitives `v4.1.0`**
-> **Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`.** Additive minor release.
+> **Targeting: `v4.5.0` for both Components and Primitives (unreleased)**
+> **Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`.** Major feature upgrade with aligned package versions.
 > **Opt-in — the library default remains `InteractionMode.Blazor`.** Existing applications keep their current interaction behavior until they opt in.
 
 ---
@@ -201,7 +201,7 @@ BottomSheet Select remains a Blazor exception. Textarea, masked inputs and speci
 existing value behavior. Pill route links retain router ownership; mounted desktop sidebar reveal can run
 locally, while mobile sidebar expansion still uses the server-controlled Sheet.
 
-**Packaging:** Components targets `4.2.0` and requires Primitives `4.1.0`; publish Primitives first.
+**Packaging:** Components and Primitives both target `4.5.0`. Components requires Primitives `4.5.0`; publish Primitives first. Existing tag prefixes remain `primitives/v4.5.0` and `components/v4.5.0`. Icon packages retain their independent versions. See [Upgrading to v4.5.0](docs/upgrading-to-4.5.md).
 MinVer retains tag-derived release versions, with minimum minor ranges set for these development builds.
 
 ---

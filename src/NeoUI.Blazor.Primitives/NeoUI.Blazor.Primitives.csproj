@@ -13,6 +13,7 @@
     <Description>Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.</Description>
     <PackageTags>blazor;primitives;headless;ui;components;accessibility;radix;unstyled;wcag</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>v4.5.0: shared browser controllers for floating UI, menus, disclosures and supported fields; family interaction defaults, versioned acceptance, reconnect reconciliation and lifecycle hardening.</PackageReleaseNotes>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
@@ -23,7 +24,7 @@
     <!-- MinVer Configuration - Version from git tags -->
     <MinVerTagPrefix>primitives/v</MinVerTagPrefix>
     <MinVerDefaultPreReleaseIdentifiers>beta.0</MinVerDefaultPreReleaseIdentifiers>
-    <MinVerMinimumMajorMinor>4.1</MinVerMinimumMajorMinor>
+    <MinVerMinimumMajorMinor>4.5</MinVerMinimumMajorMinor>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,5 +1,14 @@
 # DatePicker Component
 
+## Interaction Mode in v4.5.0
+
+Components and Primitives both target **4.5.0** (unreleased). This control follows the
+`Selection` interaction family, with scoped and explicit overrides. Browser mode keeps supported
+local interaction state responsive while application callbacks and Razor content remain live.
+The default remains Blazor; local feedback does not confirm server acceptance.
+See the [adoption guide](../../../../docs/browser-interactions.md) and
+[v4.5.0 upgrade guide](../../../../docs/upgrading-to-4.5.md) for limits and migration.
+
 Date selection components with Calendar in Popover pattern.
 
 ## Components
