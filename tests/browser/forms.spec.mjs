@@ -61,12 +61,21 @@ test('validation reads the final invalid draft and does not save an earlier vali
 });
 
 test('rejected and normalized drafts stop the first save and expose a correction for review', async () => {
-    await page.getByTestId('form-reject').check(); await defaults(); await submit();
+    await page.getByTestId('form-reject').check();
+    // Capture pending drafts in one task; Playwright round trips can outlast the rejection callback.
+    await page.getByTestId('safe-form').evaluate(form => {
+        for (const [id,value] of [['form-name','Valid name'],['form-note','Final note']]) {
+            const field=form.querySelector('#'+id);field.value=value;field.dispatchEvent(new Event('input',{bubbles:true}));
+        }
+        form.requestSubmit();
+    });
     await eventually(async () => assert.equal(await text('form-status'), 'ValueAdjusted'));
     assert.equal(await text('form-saves'), '0'); assert.equal(await text('form-invalid'), '0');
     assert.equal(await page.getByPlaceholder('Form name', { exact: true }).inputValue(), '');
     await page.getByTestId('form-reject').uncheck(); await page.getByTestId('form-normalize').check();
-    await page.getByPlaceholder('Form name', { exact: true }).fill('normal name'); await submit();
+    await page.getByTestId('safe-form').evaluate(form => {
+        const field=form.querySelector('#form-name');field.value='normal name';field.dispatchEvent(new Event('input',{bubbles:true}));form.requestSubmit();
+    });
     await eventually(async () => assert.equal(await page.getByPlaceholder('Form name', { exact: true }).inputValue(), 'NORMAL NAME'));
     await eventually(async () => assert.equal(await page.getByTestId('safe-form').getAttribute('aria-busy'), 'false'));
     assert.equal(await text('form-saves'), '0');

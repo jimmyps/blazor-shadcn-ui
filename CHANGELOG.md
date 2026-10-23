@@ -6,9 +6,32 @@ All notable changes to this project will be documented in this file.
 
 > **Targeting: `v4.5.0` for both Components and Primitives (unreleased)**
 > **Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`.** Major feature upgrade with aligned package versions.
-> **Opt-in — the library default remains `InteractionMode.Blazor`.** Existing applications keep their current interaction behavior until they opt in.
+> **Opt-in — the library default remains `InteractionMode.Blazor`.** Existing applications retain Blazor interaction ownership; review the API/HTML compatibility notes below.
 
 ---
+
+### 🛠️ Correctness and compatibility review
+
+- Blazor-mode shared hosts skip Browser serialization and browser-only value/options evaluation. Default RadioGroup supports cyclic/non-serializable TValue again; a regression executable verifies default rendering with JSON reflection disabled.
+- Ordinary Input loads the Browser draft/format/Markdown modules dynamically only when opted in. Initialization and disposal retain log-and-continue handling for unexpected interop failures; disposal still ignores normal disconnected/cancelled lifetimes.
+- Partial DateInput/TimeInput drafts cannot flush successfully, including direct field synchronization and `novalidate` forms. Invalid numeric drafts report native validity and `OnFlushFailed`; ordinary native constraints continue suppressing EditForm callbacks, while EditContext validation retains its existing handler semantics.
+- MultiSelect badge removal/Clear All reach their application handlers without toggling the Browser popover. Shared fields and tag search/rejection honor the same connection signal. Work known to be unsent can flush after reconnect without another edit; uncertain in-flight business callbacks are not automatically replayed.
+- Rejected/coalesced UI observations retire unmatched binding echoes. InteractionModeProvider keys its subtree when its resolved scope changes, recreating controllers; flush pending drafts first because remounting resets local component state.
+- Initially open Browser disclosures and the active tab remain visible during prerender. Browser Tabs still mount inactive panels; retain explicit Blazor exceptions for heavy/lazy content.
+- Cancelled RangeSlider pointer gestures restore their starting preview without committing, with touch-action suppression. Calendar avoids post-selection focus after disposal and preserves the default-mode omission of unfocused `data-focused` attributes.
+- Floating positioning defers only observed element resizes out of ResizeObserver delivery; scroll/ancestor updates retain their immediate path in both modes.
+- ColorPicker, TimePicker and DateRangePicker expose `InteractionRevision` consistently for their shell commands.
+- CI now runs deterministic/default-mode compatibility checks, full Server suites for both defaults, family policies, WASM and actual-gallery/WebKit coverage. Logs are retained as workflow artifacts.
+
+### Compatibility and API adoption notes
+
+- Checkbox/Switch `Name` and `Required` are now typed parameters; use those parameters when binding dynamically. Blazor mode preserves explicit legacy attributes; Browser mode uses Name for hidden field values and Required for validation.
+- CommandContent now implements `IAsyncDisposable`; manual lifetime code should await `DisposeAsync`. Razor/Blazor manages it normally.
+- Dropdown triggers now use native `disabled`, affecting focus, CSS and native event behavior as expected for disabled controls.
+- A global Browser policy can expose previously unsupported trigger compositions: triggers with application `OnClick`/custom click handling require an explicit Blazor exception or moving the action into content. These combinations currently fail clearly during initialization.
+- Interaction policy uses `IOptions<InteractionOptions>`. Register NeoUI services in test renderers too (`AddNeoUIPrimitives`, and `AddNeoUIComponents` for styled controls); minimal custom/bUnit service collections may need updating.
+- Selection controls resolve at their root and explicitly forward the result to internal floating/search controls. A provider inside portaled content affects descendants, not the ancestor shell. Inputs family settings deliberately separate ordinary inputs from their enclosing Popover; an explicitly Blazor shell does not override `Inputs = Browser`. See the adoption guide for exceptions and legacy fallback precedence.
+- The existing DateInput/TimeInput `C` shortcut is available in both modes and replaces segments with the current date/time; it is now documented alongside segment navigation/deletion.
 
 ### ✨ Feature — floating UI responds without a server round trip
 

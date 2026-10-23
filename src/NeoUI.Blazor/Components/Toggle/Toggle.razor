@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="toggle" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="toggle" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser">
 <button 
     type="button" 
     aria-pressed="@(BrowserInteraction ? null : Pressed.ToString().ToLowerInvariant())"

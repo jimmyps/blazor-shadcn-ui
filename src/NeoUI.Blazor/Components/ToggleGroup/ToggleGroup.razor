@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="togglegroup" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" Multiple="@(Type == ToggleGroupType.Multiple)" Collapsible="@(!Required)" FieldOptions="@(new { required = Required })">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="togglegroup" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" Multiple="@(Type == ToggleGroupType.Multiple)" Collapsible="@(!Required)" FieldOptions="@(new { required = Required })">
 <div role="group" class="@CssClass">
     <CascadingValue Value="this">
         @ChildContent

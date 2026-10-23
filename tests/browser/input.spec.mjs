@@ -120,6 +120,8 @@ test('a failed delivery preserves the draft without replay and explicit commands
 test('composed search drafts stay local and stale results cannot be selected while the latest query is pending', async () => {
     for (const [id, placeholder] of [['slow-search-combo', 'Slow combo query'], ['slow-search-multi', 'Slow multi query']]) {
         const trigger = page.getByTestId(id).locator('[aria-haspopup]').first();
+        const content = page.locator(`[id="${await trigger.getAttribute('aria-controls')}"]`);
+        await content.locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});
         await trigger.click();
         const input = page.getByPlaceholder(placeholder);
         await input.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();

@@ -1,7 +1,7 @@
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 
-<BrowserStateHost @ref="browserHost" Enabled="@BrowserInteraction" Kind="date" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@BrowserOptions">
+<BrowserStateHost @ref="browserHost" Enabled="@BrowserInteraction" Kind="date" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(BrowserInteraction ? BrowserOptions : null)">
 <div class="@ContainerClass"
      id="@Id"
      role="group"

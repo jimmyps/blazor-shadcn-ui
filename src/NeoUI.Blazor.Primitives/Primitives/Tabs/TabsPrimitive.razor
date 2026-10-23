@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="tabs" Values="@BrowserValues" Revision="@InteractionRevision" Changed="@BrowserChanged" Orientation="@(Orientation == TabsOrientation.Vertical ? "vertical" : "horizontal")" Automatic="@(ActivationMode == TabsActivationMode.Automatic)">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="tabs" Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" Revision="@InteractionRevision" Changed="@BrowserChanged" Orientation="@(Orientation == TabsOrientation.Vertical ? "vertical" : "horizontal")" Automatic="@(ActivationMode == TabsActivationMode.Automatic)">
 
 
 @* Tabs primitive root component - headless, unstyled behavior only *@
@@ -82,7 +82,7 @@
         };
 
         // Sync initial state to context
-        _context.State.ActiveValue = _state.Value;
+        _context.State.ActiveValue = BrowserInteraction ? Value ?? _state.Value : _state.Value;
         _context.State.Orientation = Orientation;
         _context.State.ActivationMode = ActivationMode;
 

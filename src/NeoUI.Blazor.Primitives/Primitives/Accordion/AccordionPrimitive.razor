@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="accordion" Values="@BrowserValues" Revision="@InteractionRevision" Changed="@BrowserChanged" Multiple="@(Type == AccordionType.Multiple)" Collapsible="@Collapsible">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="accordion" Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" Revision="@InteractionRevision" Changed="@BrowserChanged" Multiple="@(Type == AccordionType.Multiple)" Collapsible="@Collapsible">
 
 
 @* Accordion primitive root component - headless, unstyled behavior only *@
@@ -82,7 +82,7 @@
         };
 
         // Sync initial state to context
-        _context.State.OpenValues = new HashSet<string>(_state.Value);
+        _context.State.OpenValues = new HashSet<string>(BrowserInteraction ? Value ?? _state.Value : _state.Value);
         _context.State.Type = Type;
         _context.State.Collapsible = Collapsible;
 

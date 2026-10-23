@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="slider" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@BrowserOptions">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="slider" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(BrowserInteraction ? BrowserOptions : null)">
 <div class="@ContainerCssClass">
     <input 
         type="range" 

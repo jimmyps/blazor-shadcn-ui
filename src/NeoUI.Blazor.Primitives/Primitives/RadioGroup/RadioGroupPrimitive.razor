@@ -1,7 +1,7 @@
 @typeparam TValue
 @namespace NeoUI.Blazor.Primitives
 
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="radio" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { required = Required })">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="radio" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { required = Required })">
 <CascadingValue Value="context" IsFixed="false">
     <div role="radiogroup"
          aria-label="@AriaLabel"

@@ -1,0 +1,44 @@
+@using System.Globalization
+<InteractionModeProvider Mode="@mode">
+    @if (showInput) { <Input @bind-Value="plain" Placeholder="Review plain" UpdateOn="InputUpdateMode.Input" /> }
+    <button @onclick="() => showInput = !showInput" data-testid="review-toggle-input">Toggle input</button>
+    <button @onclick="() => mode = mode == InteractionMode.Browser ? InteractionMode.Blazor : InteractionMode.Browser" data-testid="review-mode">Change mode</button>
+    @if (!Legacy) {
+    <BrowserEditForm Model="@draft" OnValidSubmit="Save" OnFlushFailed="Failed" novalidate data-testid="review-form">
+        <DateInput @bind-Value="draft.Date" Culture="@(CultureInfo.GetCultureInfo("en-GB"))" AriaLabel="Review date" />
+        <TimeInput @bind-Value="draft.Time" Use12Hour="false" AriaLabel="Review time" />
+        <NumericInput TValue="decimal?" @bind-Value="draft.Number" UpdateOn="InputUpdateMode.Input" Placeholder="Review number" />
+        <button type="submit" data-testid="review-save">Save review</button>
+    </BrowserEditForm>
+    }
+    <p data-testid="review-saves">@saves</p><p data-testid="review-failure">@failure</p>
+    <MultiSelect TItem="string" Items="items" @bind-Values="selected" ValueSelector="@(v=>v)" DisplaySelector="@(v=>v)" Placeholder="Review multi" />
+    <button @onclick="() => selected = items" data-testid="review-seed-multi">Seed selections</button>
+    <p data-testid="review-selected">@string.Join(",",selected ?? [])</p>
+    <RangeSlider MinValue="@low" MaxValue="@high" MinValueChanged="ChangedLow" AriaLabel="Review range" />
+    <p data-testid="review-range-calls">@rangeCalls</p>
+</InteractionModeProvider>
+<Tabs InteractionMode="InteractionMode.Browser" Value="one"><TabsList><TabsTrigger Value="one">Initial tab</TabsTrigger><TabsTrigger Value="two">Other tab</TabsTrigger></TabsList><TabsContent Value="one"><span data-testid="review-initial-tab">Initial tab body</span></TabsContent><TabsContent Value="two">Other tab body</TabsContent></Tabs>
+<Accordion InteractionMode="InteractionMode.Browser" Value="@initialAccordion"><AccordionItem Value="one"><AccordionTrigger>Initial disclosure</AccordionTrigger><AccordionContent><span data-testid="review-initial-accordion">Initial accordion body</span></AccordionContent></AccordionItem></Accordion>
+<Collapsible InteractionMode="InteractionMode.Browser" DefaultOpen="true"><CollapsibleTrigger>Initial collapse</CollapsibleTrigger><CollapsibleContent><span data-testid="review-initial-collapse">Initial collapse body</span></CollapsibleContent></Collapsible>
+@if (showCalendar) { <div data-testid="review-calendar"><Calendar SelectedDateChanged="@((DateOnly? date) => { showCalendar = false; })" /></div> }
+<div data-testid="review-echo-tabs"><Tabs InteractionMode="InteractionMode.Browser" Value="@rejectedTab" ValueChanged="RejectTab"><TabsList><TabsTrigger Value="one">Rejected first tab</TabsTrigger><TabsTrigger Value="two">Rejected second tab</TabsTrigger><TabsTrigger Value="three">Rejected third tab</TabsTrigger></TabsList><TabsContent Value="one">Rejected first panel</TabsContent><TabsContent Value="two">Rejected second panel</TabsContent><TabsContent Value="three">Rejected third panel</TabsContent></Tabs></div>
+<button data-testid="review-tab-command" @onclick='() => rejectedTab = "two"'>Set second tab</button><p data-testid="review-tab-reports">@tabReports</p>
+<button data-testid="review-alive" @onclick="() => count++">Alive @count</button>
+@code {
+    [Parameter] public bool Legacy { get; set; }
+    private InteractionMode mode;
+    protected override void OnInitialized() => mode = Legacy ? InteractionMode.Blazor : InteractionMode.Browser;
+    private string? rejectedTab="one"; private int tabReports;
+    private void RejectTab(string? value) => tabReports++;
+    private bool showCalendar = true; private bool showInput = true; private string? plain; private int count, saves, rangeCalls;
+    private double low=20,high=80; private string failure="None";
+    private readonly Draft draft = new();
+    private readonly string[] items=["One","Two"];
+    private IEnumerable<string>? selected=[];
+    private readonly HashSet<string> initialAccordion=["one"];
+    private void Save() => saves++;
+    private void Failed(InputFlushResult result) => failure=result.Status.ToString();
+    private void ChangedLow(double value) { low=value; rangeCalls++; }
+    private sealed class Draft { public DateOnly? Date {get;set;}=new(2026,1,15); public TimeOnly? Time {get;set;}=new(13,45); public decimal? Number {get;set;}=10; }
+}

@@ -86,3 +86,17 @@ The release tag names will be `primitives/v4.5.0` and `components/v4.5.0`, using
 When publishing, release Primitives first and wait for its package to become available before
 publishing Components, whose release build consumes the NuGet dependency. These notes do
 not create tags or publish packages; this branch remains unreleased until that release runs.
+
+
+## Compatibility details to audit
+
+- Register NeoUI services in custom/bUnit renderers for IOptions-based interaction policy.
+- Update manual CommandContent disposal to await DisposeAsync.
+- Use typed Checkbox/Switch Name and Required parameters; native disabled on dropdown triggers changes focus/event behavior.
+- Add explicit Blazor exceptions for trigger OnClick/custom-click compositions when enabling Browser globally.
+- Selection roots explicitly forward their resolved mode to internal shells/search. An Inputs family setting is independent of a Popover shell exception; use an Inputs-specific scope/component override when needed.
+- Provider mode changes recreate the subtree automatically; synchronize drafts before changing policy.
+- Invalid formatted or partial segmented drafts block synchronization even under novalidate and are surfaced through OnFlushFailed. Standard native constraint and EditContext handler semantics are preserved.
+- Known unsent drafts can flush after reconnect; uncertain business callback delivery is not automatically replayed.
+
+See [the detailed compatibility notes and keyboard shortcuts](browser-interactions.md#reviewer-follow-up-precedence-validation-and-compatibility).

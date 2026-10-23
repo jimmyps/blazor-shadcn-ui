@@ -84,8 +84,8 @@
                 else if (context.Validate()) await OnValidSubmit.InvokeAsync(context);
                 else await OnInvalidSubmit.InvokeAsync(context);
             }, validateNative: !NoValidate);
-            // Native constraint failure suppresses submit callbacks, like the browser on a standard EditForm.
-            if (!result.Success && result.Status != InputFlushStatus.Invalid && result.Status != InputFlushStatus.Busy)
+            // Synchronization and native failures must remain observable without running submit handlers.
+            if (!result.Success && !result.NativeValidation && result.Status != InputFlushStatus.Busy)
                 await OnFlushFailed.InvokeAsync(result);
         }
         finally {

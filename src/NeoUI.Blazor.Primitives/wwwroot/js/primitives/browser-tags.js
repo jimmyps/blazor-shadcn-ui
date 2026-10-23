@@ -1,9 +1,10 @@
+import { canInvokeServer } from './browser-connection.js';
 export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVersion) {
     if(getConfig().kind!=='tags')return null;
     const doc=root.ownerDocument,input=root.querySelector('[data-neo-tag-input]'),container=root.querySelector('[data-neo-tag-values]'),status=root.querySelector('[data-neo-tag-status]');
     let results=[],active=-1,timer,querySequence=0,disposed=false;
     const options=()=>getConfig().fieldOptions,list=()=>doc.getElementById(options().contentId);
-    const reject=value=>{status.textContent=`Unable to add ${value}.`;void bridge?.invokeMethodAsync('RejectAsync',value,getVersion()).catch(()=>{});};
+    const reject=value=>{status.textContent=`Unable to add ${value}.`;if(!getConfig().server||canInvokeServer())void bridge?.invokeMethodAsync('RejectAsync',value,getVersion()).catch(()=>{});};
     const close=()=>{results=[];active=-1;if(list())list().hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');};
     const paintResults=()=>{
         const target=list();if(!target)return;target.replaceChildren();
@@ -32,7 +33,7 @@ export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVe
         if(!query.trim())return;
         const filter=values=>values.filter(value=>(options().duplicates||!getValues().some(tag=>tag.toLocaleLowerCase()===value.toLocaleLowerCase()))&&value.toLocaleLowerCase().includes(query.toLocaleLowerCase()));
         if(!options().search){results=filter(options().suggestions??[]);paintResults();return;}
-        timer=setTimeout(async()=>{const version=getVersion();try{const ack=await bridge.invokeMethodAsync('SearchAsync',query,version);if(disposed||sequence!==querySequence||getVersion()!==version||ack.ignored||input.value!==query)return;results=filter(ack.values);paintResults();}catch{if(sequence===querySequence)status.textContent='Suggestions are unavailable.';}},options().debounce??300);
+        timer=setTimeout(async()=>{const version=getVersion();try{if(getConfig().server&&!canInvokeServer()){status.textContent='Suggestions are unavailable.';return;}const ack=await bridge.invokeMethodAsync('SearchAsync',query,version);if(disposed||sequence!==querySequence||getVersion()!==version||ack.ignored||input.value!==query)return;results=filter(ack.values);paintResults();}catch{if(sequence===querySequence)status.textContent='Suggestions are unavailable.';}},options().debounce??300);
     };
     const edited=event=>{if(event.target===input&&!event.isComposing)search();};
     const keydown=event=>{

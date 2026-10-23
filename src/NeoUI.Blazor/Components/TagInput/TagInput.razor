@@ -4,7 +4,7 @@
 
 @if (BrowserInteraction)
 {
-    <BrowserStateHost Enabled Kind="tags" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@BrowserOptions" Search="SearchBrowser" Rejected="@OnTagRejected">
+    <BrowserStateHost Enabled Kind="tags" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(BrowserInteraction ? BrowserOptions : null)" Search="SearchBrowser" Rejected="@OnTagRejected">
         <div @ref="_containerRef" id="@_containerId" class="@ContainerCssClass" @attributes="AdditionalAttributes">
             <span data-neo-tag-values class="contents"></span>
             <input type="text" data-neo-tag-input class="@InputCssClass" placeholder="@(Placeholder ?? Localizer["TagInput.Placeholder"])" disabled="@Disabled" aria-label="@(AriaLabel ?? "Add tag")" aria-autocomplete="@(HasSuggestions ? "list" : null)" aria-controls="@(HasSuggestions ? _contentId : null)" />

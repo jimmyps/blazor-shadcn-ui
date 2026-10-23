@@ -1,8 +1,9 @@
 @namespace NeoUI.Blazor.Primitives
 
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="switch" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues"
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="switch" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues"
     Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { required = Required })">
 <button type="button" data-neo-field-item="@(BrowserInteraction ? "checked" : null)"
+        name="@(!BrowserInteraction ? Name : null)" required="@(!BrowserInteraction && Required)"
         role="switch"
         aria-checked="@(BrowserInteraction ? null : Checked.ToString().ToLower())"
         aria-disabled="@Disabled.ToString().ToLower()"

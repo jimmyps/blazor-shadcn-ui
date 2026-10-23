@@ -633,6 +633,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
             }
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        catch (Exception ex) { LogJsInitializationFailed(Logger, ex.Message, ex); }
         finally
         {
             _dotNetRef?.Dispose();

@@ -4,10 +4,15 @@
 @if (_shouldRender)
 {
     <div role="region" id="@(Context?.BrowserInteraction == true ? Context.ContentId : null)"
-         data-neo-state-panel="@(Context?.BrowserInteraction == true ? "open" : null)" hidden="@(Context?.BrowserInteraction == true)"
-         data-state="@(Context?.BrowserInteraction == true ? null : (Context?.Open ?? false ? "open" : "closed"))"
+         data-neo-state-panel="@(Context?.BrowserInteraction == true ? "open" : null)" hidden="@(Context?.BrowserInteraction == true && !InitialBrowserOpen)"
+         data-state="@((Context?.BrowserInteraction == true ? InitialBrowserOpen : Context?.Open == true) ? "open" : "closed")"
          aria-hidden="@(Context?.BrowserInteraction == true ? null : (!(Context?.Open ?? false)).ToString().ToLowerInvariant())"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
+}
+
+@code {
+    private bool? initialBrowserOpen;
+    private bool InitialBrowserOpen { get { initialBrowserOpen ??= Context?.Open == true; return initialBrowserOpen.Value; } }
 }

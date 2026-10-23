@@ -2,24 +2,11 @@ import { attachFormat } from './browser-input-formats.js';
 // Razor renders a fixed initial value in Browser mode. Only this controller writes
 // subsequent DOM values; post-render repair cannot prevent stale render-batch writes.
 const controllers = new WeakMap();
-const controllerFor = element => controllers.get(element) ?? element[Symbol.for('NeoUI.BrowserField')];
+const controllerFor = element => controllers.get(element) ?? element?.[Symbol.for('NeoUI.BrowserField')];
 const activeScopes = new Map();
 const editFormGuards = new WeakMap();
-let connectionState = true;
-// .NET 10 exposes reconnect state on the reconnect modal. Do not replace the
-// application's handler or inspect private Blazor/SignalR runtime fields.
-document.addEventListener('components-reconnect-state-changed', event => {
-    setConnectionAvailable(event.detail.state === 'hide');
-}, true);
-export function setConnectionAvailable(available) {
-    connectionState = available;
-    document.dispatchEvent(new Event('neoui:input-connection-state'));
-}
-function canInvokeServer() {
-    if (navigator.onLine === false || !connectionState) return false;
-    const modal = document.getElementById('components-reconnect-modal');
-    return !modal?.matches('.components-reconnect-show,.components-reconnect-retrying,.components-reconnect-paused,.components-reconnect-failed,.components-reconnect-rejected');
-}
+export { setConnectionAvailable } from '../../NeoUI.Blazor.Primitives/js/primitives/browser-connection.js';
+import { canInvokeServer } from '../../NeoUI.Blazor.Primitives/js/primitives/browser-connection.js';
 
 export function initialize(element, bridge) {
     if (!element || controllers.has(element)) return;
@@ -89,7 +76,7 @@ export function initialize(element, bridge) {
                 if (edit.revision !== revision) continue;
                 try {
                     if (config.server && !canInvokeServer()) {
-                        queue.length = 0; element.setAttribute('data-neo-input-uncertain', ''); emit(); break;
+                        queue.unshift(edit); break;
                     }
                     const ack = await bridge.invokeMethodAsync(edit.final ? 'OnBrowserInputCommitted' : 'OnBrowserInputChanged', edit.value, edit.sequence, edit.revision);
                     if (currentGeneration !== generation || disposed || edit.revision !== revision || ack.revision !== revision) continue;
@@ -181,6 +168,7 @@ export function initialize(element, bridge) {
         },
         flush(timeout) {
             if (disposed) return Promise.resolve({ status: 'Disposed', fieldId: element.id });
+            if (config.server && !canInvokeServer()) return Promise.resolve({ status: 'Uncertain', fieldId: element.id });
             if (composing) return Promise.resolve({ status: 'Composing', fieldId: element.id });
             if (element.hasAttribute('data-neo-input-uncertain')) return Promise.resolve({ status: 'Uncertain', fieldId: element.id });
             prepareFinal();
@@ -191,6 +179,7 @@ export function initialize(element, bridge) {
                     finish(waiter, 'TimedOut'); element.setAttribute('data-neo-input-uncertain', ''); emit();
                 }, timeout);
                 submit(true);
+                void pump();
                 settleWaiters();
             });
         },
@@ -231,11 +220,11 @@ function makeLease(result, releases) {
 function validateNative(elements, forms) {
     const restores = elements.map(element => controllerFor(element)?.enableNativeValidation()).filter(Boolean);
     try {
-        for (const element of elements) { const result = controllerFor(element)?.validate?.(); if (result && result.status !== 'Success') { element.querySelector('button,input')?.focus(); return result; } }
+        for (const element of elements) { const result = controllerFor(element)?.validate?.(); if (result && result.status !== 'Success') { element.querySelector('button,input')?.focus(); return { ...result, nativeValidation: true }; } }
         for (const field of [...forms.flatMap(form => [...form.elements]), ...elements]) {
             if (!field.checkValidity || field.checkValidity()) continue;
             field.reportValidity();
-            return { status: 'Invalid', fieldId: field.id || null };
+            return { status: 'Invalid', fieldId: field.id || null, nativeValidation: true };
         }
         return { status: 'Success' };
     } finally { for (const restore of restores) restore(); }
@@ -249,7 +238,16 @@ function begin(elements, timeout, validate = null) {
     }
     const releases = targets.map(element => controllerFor(element).lock());
     const result = Promise.all(targets.map(element => controllerFor(element).flush(timeout)))
-        .then(results => results.find(result => result.status !== 'Success') ?? (validate ? validate() : { status: 'Success' }));
+        .then(results => {
+            const failure = results.find(result => result.status !== 'Success');
+            if (failure?.status === 'Invalid') {
+                const field = elements.find(element => element.id === failure.fieldId);
+                const restore = controllerFor(field)?.enableNativeValidation?.();
+                try { field?.reportValidity?.(); } finally { restore?.(); }
+                (field?.matches('input,textarea,select,button') ? field : field?.querySelector('input,button,[tabindex]'))?.focus();
+            }
+            return failure ?? (validate ? validate() : { status: 'Success' });
+        });
     return makeLease(result, releases);
 }
 

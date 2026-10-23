@@ -13,7 +13,7 @@ internal sealed class BrowserFloatingState
     internal long ValueVersion { get; set; }
     internal bool Reporting { get; private set; }
     internal Func<bool, Task>? OpenChanged { get; set; }
-    private bool initialized;
+    private bool initialized, parametersObserved;
     private long revision;
     private bool? parameterOpen;
     private readonly HashSet<bool> pendingOpenEchoes = [];
@@ -22,15 +22,20 @@ internal sealed class BrowserFloatingState
     {
         if (initialized && mode != Mode)
             throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the component with @key.");
+        parametersObserved = true;
         var reset = initialized && revision != commandRevision;
         var changed = open != parameterOpen;
         // EventCallback schedules its parent's render after it returns. Reporting alone
         // cannot suppress those late binding echoes; remember the reported values too.
         var echo = open.HasValue && pendingOpenEchoes.Remove(open.Value);
+        // A completed observation followed by an unchanged parameter render is a
+        // rejection/coalesced render. Its unmatched echoes must not mask a later command.
+        if (reset || (!Reporting && !changed && !echo)) pendingOpenEchoes.Clear();
         if (!initialized || reset || (!Reporting && changed && !echo))
         {
             Open = open ?? defaultOpen;
             OpenVersion++;
+            if (!echo) pendingOpenEchoes.Clear();
         }
         if (initialized && revision != commandRevision) ValueVersion++;
         parameterOpen = open;
@@ -41,6 +46,8 @@ internal sealed class BrowserFloatingState
 
     internal async Task ReportOpenAsync(bool open)
     {
+        if (parametersObserved) pendingOpenEchoes.Clear();
+        parametersObserved = false;
         if (OpenChanged != null) pendingOpenEchoes.Add(open);
         Reporting = true;
         try

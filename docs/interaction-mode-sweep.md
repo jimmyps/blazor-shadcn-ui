@@ -69,3 +69,15 @@ checks stopped before hydration at the new harness's seven-second readiness limi
 that limit with the existing WASM suites (30 seconds) produced a clean 17/17 matrix rerun.
 These were startup timeouts, not failed interaction assertions. Existing WebKit coverage for
 the shared positioning/segmented fixes was retained; physical-device coverage is not claimed.
+
+
+## Reviewer regression gates
+
+The interaction-regressions CI workflow covers both Server defaults, family policies,
+WASM and real gallery/WebKit checks. New reviewer cases cover no-Browser serialization,
+legacy Input module loading/disposal, partial segmented flush under novalidate, observable
+numeric failures, MultiSelect trigger actions, provider remount, cancelled range gestures,
+known-unsent reconnect delivery, shared connection signals and prerendered initial content.
+A JSON-reflection-disabled executable renders cyclic TValue RadioGroup and disabled hosts.
+Scroll positioning remains immediate; only element ResizeObserver writes are deferred.
+Unknown in-flight callbacks retain the no-replay safety contract.

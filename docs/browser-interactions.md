@@ -26,7 +26,9 @@ Auto and Hybrid hosting have not been separately runtime-verified.
 
 The precedence is **explicit component setting → nearest InteractionModeProvider →
 application family setting → application global default → Blazor**. A nullable `InteractionMode` parameter distinguishes
-omission (`null`, inherit) from explicit `InteractionMode.Blazor`.
+omission (`null`, inherit) from explicit `InteractionMode.Blazor`. This is root/family
+resolution; see [composed-input fallback precedence](#reviewer-follow-up-precedence-validation-and-compatibility)
+for ordinary inputs inside Popovers when no Inputs family override is configured.
 
 ```csharp
 using NeoUI.Blazor.Extensions;
@@ -92,6 +94,9 @@ calendar/native/color editor contents into browser-owned data logic.
 
 Configure the policy before mounting controls. Changing an effective mode after initialization
 requires recreating that root/subtree with `@key`; existing controllers do not migrate in place.
+Changing `InteractionModeProvider.Mode` or its applicable family scope now keys and recreates
+its own subtree automatically. Flush/persist drafts before doing so: local unbound component
+state is reset and child lifetimes restart.
 The library default is unchanged for applications that do not opt in.
 
 Select's BottomSheet presentation uses Drawer behavior and requires an explicit
@@ -114,7 +119,7 @@ focus behavior on reopening. Application value resets remain declarative.
 The Interaction Mode gallery includes live DatePicker, TimePicker, Combobox, and MultiSelect
 examples under one Browser provider, with bound-value summaries and a shared reset.
 `TimePicker`, `DateRangePicker` and `ColorPicker` accept nullable `InteractionMode` for their
-Selection-family floating shells. They do not expose an `InteractionRevision` parameter. Its native time fields and Apply/Cancel actions remain Blazor handlers.
+Selection-family floating shells. They also accept `InteractionRevision` for controlled shell resets. Their native time fields and Apply/Cancel actions remain Blazor handlers.
 
 ### Local item interaction audit
 
@@ -707,3 +712,53 @@ shells, ordinary nested inputs, explicit overrides, general scopes and nested fa
 With `NEOUI_FAMILY_POLICY` omitted it tests compatibility of existing composed Blazor
 exceptions and explicit Inputs scopes against an ordinary host. Mode changes after mounting
 still require recreation; family defaults are startup policy, not a live migration mechanism.
+
+
+## Reviewer follow-up: precedence, validation and compatibility
+
+A scope inside a Popover or selection control's content cannot change that ancestor shell's
+already-resolved mode. Selection controls deliberately forward their resolved Selection policy
+to internal Popover/search components. Portal content remains live and inherits applicable
+cascading policy for its own descendant components.
+
+An ordinary Input/Command in a Popover follows an explicit component setting, then an applicable
+scope and configured Inputs family setting. A configured `Inputs = Browser` deliberately wins
+over a parent Popover explicitly set to Blazor: the shell and field are independent families.
+Use an explicit input setting or an Inputs-specific Blazor provider to retain legacy editing.
+Without an Inputs family setting (application or family-specific scope), the existing composed
+Popover-mode fallback is retained before general scoped/global fallback, including explicit
+Blazor shell exceptions inside a general Browser scope. This compatibility fallback is the
+additional enclosing-component step omitted from the short root-policy precedence list.
+
+Partial date/time segments are intrinsically uncommittable and return Invalid from direct flush
+or form synchronization, even with `novalidate`. An all-empty optional value can still commit
+null. Invalid formatted drafts invoke BrowserEditForm.OnFlushFailed and report native validity.
+A native constraint failure *after successful synchronization* has `NativeValidation = true`
+and retains standard native behavior: no submit/validation callbacks. EditContext failures still
+use OnInvalidSubmit; OnSubmit still owns its manual validation.
+
+A known disconnected connection signal prevents text/field/tag application calls. Unsent edits
+are retained and a later explicit flush can deliver them once after reconnection without another
+edit. A callback whose delivery was uncertain is different: synchronization stays blocked until
+an authoritative reset/reconciliation or new edit resolves it. Automatic retransmission could
+repeat business writes, so uncertain callbacks are not silently replayed.
+
+| Segmented DateInput / TimeInput shortcut | Both modes |
+| --- | --- |
+| Left/Right, Home/End, Tab/Shift+Tab | Move between segments |
+| Up/Down | Step the active segment; minutes honor MinuteStep |
+| Backspace/Delete | Clear the active segment; partial drafts block Save |
+| C | Replace all segments with the current local date/time |
+| A/P in an AM/PM segment | Select AM or PM |
+
+Register NeoUI services in bUnit/custom renderer setups as in the application. Interaction
+options are resolved through IOptions; ad hoc service collections may need updating. Manual
+CommandContent lifetime code must now await IAsyncDisposable. Checkbox/Switch Name/Required
+are typed parameters, and dropdown triggers now render native disabled. Unsupported Browser
+trigger OnClick/custom-click combinations require a Blazor exception; a global opt-in does not
+make such application callbacks browser-local.
+
+The interaction-regressions GitHub workflow runs the deterministic and JSON-reflection-disabled
+compatibility executables, full Server suites for both defaults and family policies, WASM,
+gallery and WebKit checks. Workflow logs are uploaded even on failures. Local validation does
+not substitute for the eventual CI outcome.

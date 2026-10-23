@@ -1,3 +1,4 @@
+import { canInvokeServer } from './browser-connection.js';
 import { attachTags } from './browser-tags.js';
 import { attachSegments } from './browser-segments.js';
 // Form-aware data controls share one optimistic queue. Business acceptance is
@@ -11,7 +12,7 @@ export function initialize(root, bridge) {
     let config = JSON.parse(root.dataset.neoStateHost), version = config.version, values = [...config.values];
     let lastSubmittedSequence = -1;
     let accepted = key(values), sequence = 0, generation = 0, disposed = false, running = false, composing = false, locked = 0, timer, dragging;
-    let editor, observer;
+    let editor, observer, dragStart;
     const observe = () => observer?.observe(root,{attributes:true,attributeFilter:['data-neo-state-host'],childList:true,subtree:true});
     const queue = [], waiters = new Set(), doc = root.ownerDocument;
     const own = element => element.closest('[data-neo-browser-field]') === root;
@@ -70,8 +71,7 @@ export function initialize(root, bridge) {
             while (queue.length && !disposed && run === generation) {
                 const edit = queue.shift();
                 try {
-                    const modal = doc.getElementById('components-reconnect-modal');
-                    if (config.server && (navigator.onLine === false || modal?.matches('.components-reconnect-show,.components-reconnect-retrying,.components-reconnect-paused,.components-reconnect-failed,.components-reconnect-rejected'))) throw new Error('Disconnected');
+                    if (config.server && !canInvokeServer()) { queue.unshift(edit); break; }
                     const ack = await bridge.invokeMethodAsync('ChangeAsync',edit.values,edit.sequence,edit.version);
                     if (disposed || run !== generation || edit.version !== version || edit.sequence !== sequence) continue;
                     if (ack.ignored) throw new Error('Uncertain acceptance');
@@ -164,10 +164,11 @@ export function initialize(root, bridge) {
         const thumb=event.target.closest('[data-neo-field-thumb]');
         if(thumb)dragging=Number(thumb.dataset.neoFieldThumb);
         else {const rect=root.querySelector('[data-neo-field-range]').getBoundingClientRect(),options=config.fieldOptions;const target=options.min+(options.vertical?(rect.bottom-event.clientY)/rect.height:(event.clientX-rect.left)/rect.width)*(options.max-options.min);dragging=Math.abs(target-Number(values[0]))<=Math.abs(target-Number(values[1]))?0:1;}
-        event.preventDefault();root.querySelector(`[data-neo-field-thumb="${dragging}"]`)?.focus();moveRange(event);
+        dragStart=[...values];event.preventDefault();root.querySelector(`[data-neo-field-thumb="${dragging}"]`)?.focus();moveRange(event);
         root.setPointerCapture(event.pointerId);
     };
     const pointerUp=event=>{if(dragging!==undefined){moveRange(event);dragging=undefined;if(root.hasPointerCapture(event.pointerId))root.releasePointerCapture(event.pointerId);if(root.hasAttribute('data-neo-field-pending'))notify();}};
+    const pointerCancel=event=>{if(dragging===undefined)return;dragging=undefined;if(root.hasPointerCapture(event.pointerId))root.releasePointerCapture(event.pointerId);if(dragStart){values=dragStart;dragStart=null;sequence++;if(accepted===key(values))delete root.dataset.neoFieldPending;paint();}};
     const beforeInput=event=>{if(locked)event.preventDefault();};
     const paste = event => { if(config.kind==='otp' && event.target.matches('[data-neo-otp-slot]')) {event.preventDefault();editOtp(event.target,event.clipboardData.getData('text'));} };
     const compositionStart = () => composing=true;
@@ -180,16 +181,18 @@ export function initialize(root, bridge) {
         config=next;if(reset)editor?.reset?.();paint();
     });
     observe();
-    root.addEventListener('click',click,true);root.addEventListener('keydown',keydown,true);root.addEventListener('input',input,true);root.addEventListener('change',commit,true);root.addEventListener('paste',paste,true);root.addEventListener('beforeinput',beforeInput,true);root.addEventListener('pointerdown',pointerDown);root.addEventListener('pointermove',moveRange);root.addEventListener('pointerup',pointerUp);root.addEventListener('pointercancel',pointerUp);root.addEventListener('focusin',focus);root.addEventListener('focusout',focus);root.addEventListener('compositionstart',compositionStart);root.addEventListener('compositionend',compositionEnd);
+    root.addEventListener('click',click,true);root.addEventListener('keydown',keydown,true);root.addEventListener('input',input,true);root.addEventListener('change',commit,true);root.addEventListener('paste',paste,true);root.addEventListener('beforeinput',beforeInput,true);root.addEventListener('pointerdown',pointerDown);root.addEventListener('pointermove',moveRange);root.addEventListener('pointerup',pointerUp);root.addEventListener('pointercancel',pointerCancel);root.addEventListener('focusin',focus);root.addEventListener('focusout',focus);root.addEventListener('compositionstart',compositionStart);root.addEventListener('compositionend',compositionEnd);
     const controller={focus(){if(config.disabled)return;if(editor?.focus)editor.focus();else root.querySelector('[data-neo-otp-slot],input:not(:disabled),[data-neo-field-item]:not(:disabled),[data-neo-field-thumb]')?.focus();},get disabled(){return config.disabled;},get composing(){return composing;},enableNativeValidation(){return ()=>{};},
         lock(){editor?.beforeFlush?.();locked++;return()=>{locked--;};},
         validate(){if(editor && !editor.validate())return {status:'Invalid',fieldId:root.id};if(config.kind==='otp' && (values[0]?.length ?? 0)!==config.fieldOptions.length && (config.fieldOptions.required || values[0]?.length))return {status:'Invalid',fieldId:root.id};return config.fieldOptions?.required && (['checkbox','switch'].includes(config.kind) ? !values.includes('checked') : !values.length) ? {status:'Invalid',fieldId:root.id} : {status:'Success'};},
         flush(timeout){
+            if(config.server&&!canInvokeServer())return Promise.resolve({status:'Uncertain',fieldId:root.id});
+            if(editor?.validateDraft && !editor.validateDraft())return Promise.resolve({status:'Invalid',fieldId:root.id});
             if(root.hasAttribute('data-neo-field-uncertain'))return Promise.resolve({status:'Uncertain',fieldId:root.id});
-            return new Promise(resolve=>{const waiter={resolve,sequence,version,value:key(values)};waiters.add(waiter);waiter.timer=setTimeout(()=>{waiters.delete(waiter);root.dataset.neoFieldUncertain='true';resolve({status:'TimedOut',fieldId:root.id});},timeout);if(root.hasAttribute('data-neo-field-pending')&&!running&&!queue.length)notify();settle();});
+            return new Promise(resolve=>{const waiter={resolve,sequence,version,value:key(values)};waiters.add(waiter);waiter.timer=setTimeout(()=>{waiters.delete(waiter);root.dataset.neoFieldUncertain='true';resolve({status:'TimedOut',fieldId:root.id});},timeout);if(root.hasAttribute('data-neo-field-pending')&&!running&&!queue.length)notify();void pump();settle();});
         },
         dispose(){if(disposed)return;disposed=true;editor?.dispose();generation++;clearTimeout(timer);observer.disconnect();queue.length=0;settle();
-            root.removeEventListener('click',click,true);root.removeEventListener('keydown',keydown,true);root.removeEventListener('input',input,true);root.removeEventListener('change',commit,true);root.removeEventListener('paste',paste,true);root.removeEventListener('beforeinput',beforeInput,true);root.removeEventListener('pointerdown',pointerDown);root.removeEventListener('pointermove',moveRange);root.removeEventListener('pointerup',pointerUp);root.removeEventListener('pointercancel',pointerUp);root.removeEventListener('focusin',focus);root.removeEventListener('focusout',focus);root.removeEventListener('compositionstart',compositionStart);root.removeEventListener('compositionend',compositionEnd);delete root[fieldKey];instances.delete(root);
+            root.removeEventListener('click',click,true);root.removeEventListener('keydown',keydown,true);root.removeEventListener('input',input,true);root.removeEventListener('change',commit,true);root.removeEventListener('paste',paste,true);root.removeEventListener('beforeinput',beforeInput,true);root.removeEventListener('pointerdown',pointerDown);root.removeEventListener('pointermove',moveRange);root.removeEventListener('pointerup',pointerUp);root.removeEventListener('pointercancel',pointerCancel);root.removeEventListener('focusin',focus);root.removeEventListener('focusout',focus);root.removeEventListener('compositionstart',compositionStart);root.removeEventListener('compositionend',compositionEnd);delete root[fieldKey];instances.delete(root);
             if(!instances.size){removals?.disconnect();removals=null;}
         }
     };

@@ -92,10 +92,10 @@
                                                 data-neo-close="@(BrowserInteraction && CloseOnSelect ? "true" : null)"
                                                 data-neo-calendar-day="@day.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
                                                 tabindex="-1"
-                                                @onclick="@(async () => { await SelectDate(day.Value); if (!BrowserInteraction) await _calendarRef.FocusAsync(); })"
+                                                @onclick="@(async () => { await SelectDate(day.Value); if (!BrowserInteraction && !browserDisposed) { try { await _calendarRef.FocusAsync(); } catch (Exception ex) when (browserDisposed || ex is JSDisconnectedException) { } } })"
                                                 disabled="@(!IsDateEnabled(day.Value))"
                                                 class="@GetDayClass(day.Value)"
-                                                data-focused="@(BrowserInteraction ? null : IsFocused(day.Value).ToString())"
+                                                data-focused="@(BrowserInteraction ? (bool?)null : IsFocused(day.Value))"
                                                 aria-label="@day.Value.ToString("D", Culture)"
                                                 aria-selected="@IsSelected(day.Value)">
                                             @day.Value.Day

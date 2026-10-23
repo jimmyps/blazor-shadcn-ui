@@ -397,24 +397,19 @@ export function applyPosition(floating, position, makeVisible = false) {
   }
 }
 
-// Size middleware can write the observed floating element's width. Defer these
-// layout writes out of ResizeObserver delivery (notably after a Razor style
-// update in WebKit), and coalesce scroll/resize notifications into one frame.
+// ResizeObserver delivery must not contain layout writes. Scroll, ancestor resize
+// and layout-shift updates retain their immediate callback path in both modes.
 function observePosition(lib, reference, floating, update) {
   let frame = null, disposed = false;
-  const cleanup = lib.autoUpdate(reference, floating, () => {
+  const cleanup = lib.autoUpdate(reference, floating, () => { if (!disposed) void update(); }, { elementResize: false });
+  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
     if (disposed || frame !== null) return;
-    frame = requestAnimationFrame(() => {
-      frame = null;
-      if (!disposed) void update();
-    });
-  });
-  return () => {
-    disposed = true;
-    if (frame !== null) cancelAnimationFrame(frame);
-    frame = null;
-    cleanup();
-  };
+    frame = requestAnimationFrame(() => { frame = null; if (!disposed) void update(); });
+  }) : null;
+  const anchor = reference?.nodeType === 1 ? reference : reference?.contextElement;
+  if (anchor) observer?.observe(anchor);
+  observer?.observe(floating);
+  return () => { disposed = true; observer?.disconnect(); if (frame !== null) cancelAnimationFrame(frame); cleanup(); };
 }
 
 /**

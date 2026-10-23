@@ -1,4 +1,5 @@
-import { initialize as initializeBrowserInput, dispose as disposeBrowserInput } from './browser-input.js';
+let browserInputModule;
+const getBrowserInput = () => browserInputModule ??= import('./browser-input.js');
 // Input component JavaScript module
 // Manages input event handling, validation tooltips, error states, and UpdateOn mode behavior
 
@@ -161,16 +162,16 @@ export function showValidationError(elementId, message) {
  * @param {object} dotNetRef - DotNetObjectReference for callbacks
  * @param {boolean} enableBlurValidation - Whether to call ValidateAndClamp on blur (for UpdateOn=Input + Min/Max)
  */
-export function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null, enableBlurValidation = false, browserOwned = false) {
+export async function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null, enableBlurValidation = false, browserOwned = false) {
     const element = document.getElementById(elementId);
     if (!element) {
         console.warn(`Input element with id '${elementId}' not found`);
         return;
     }
 
-    // Clean up any existing state
-    disposeInput(elementId);
-    if (browserOwned) { initializeBrowserInput(element, dotNetRef); inputState.set(elementId, { browserElement: element }); return; }
+    // Finish asynchronous Browser cleanup before reinitializing the same element.
+    await disposeInput(elementId);
+    if (browserOwned) { const browser = await getBrowserInput(); if (!element.isConnected) return; browser.initialize(element, dotNetRef); inputState.set(elementId, { browserElement: element }); return; }
 
     const state = {
         updateOn: updateOn.toLowerCase(),
@@ -306,9 +307,9 @@ export function updateValue(elementId, value) {
  * Cleans up event listeners and timers
  * @param {string} elementId - The element ID
  */
-export function disposeInput(elementId) {
+export async function disposeInput(elementId) {
     const state = inputState.get(elementId);
-    if (state?.browserElement) { disposeBrowserInput(state.browserElement); inputState.delete(elementId); return; }
+    if (state?.browserElement) { (await getBrowserInput()).dispose(state.browserElement); inputState.delete(elementId); return; }
     if (!state) return;
 
     const element = document.getElementById(elementId);

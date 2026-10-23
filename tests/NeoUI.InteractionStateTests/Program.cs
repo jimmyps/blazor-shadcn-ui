@@ -89,3 +89,23 @@ Require(options.Resolve(null, menuScope, InteractionFamily.Menus) == Interaction
 Require(options.Resolve(null, menuScope, InteractionFamily.Inputs) == InteractionMode.Blazor, "Unrelated scope families fall through to the enclosing scope.");
 Require(options.Resolve(null, new(InteractionMode.Browser, InteractionFamily.Menus), InteractionFamily.Inputs) == options.DefaultMode, "A menu-only scope must not opt unrelated fields in.");
 Console.WriteLine("Passed: family-scoped policies preserve unrelated fields and nested scope fallback.");
+
+var rejectedOpen = new BrowserFloatingState();
+rejectedOpen.Sync(InteractionMode.Browser, false, false, 0);
+rejectedOpen.OpenChanged = _ => Task.CompletedTask;
+await rejectedOpen.ReportOpenAsync(true);
+rejectedOpen.Sync(InteractionMode.Browser, false, false, 0);
+var beforeLaterOpen = rejectedOpen.OpenVersion;
+rejectedOpen.Sync(InteractionMode.Browser, true, false, 0);
+Require(rejectedOpen.Open && rejectedOpen.OpenVersion == beforeLaterOpen + 1, "Unaccepted observations must not swallow later application open commands.");
+Console.WriteLine("Passed: rejected observations retire their pending echoes.");
+
+var renderedReject = new BrowserFloatingState();
+renderedReject.Sync(InteractionMode.Browser, false, false, 0);
+renderedReject.OpenChanged = _ => { renderedReject.Sync(InteractionMode.Browser, false, false, 0); return Task.CompletedTask; };
+await renderedReject.ReportOpenAsync(true);
+await renderedReject.ReportOpenAsync(false);
+var rejectedVersion = renderedReject.OpenVersion;
+renderedReject.Sync(InteractionMode.Browser, true, false, 0);
+Require(renderedReject.Open && renderedReject.OpenVersion == rejectedVersion + 1, "Parent renders during rejected observations must not retain obsolete echo tokens.");
+Console.WriteLine("Passed: callback-time rejection renders do not mask later commands.");

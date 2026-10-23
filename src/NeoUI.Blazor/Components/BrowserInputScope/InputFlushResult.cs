@@ -9,6 +9,8 @@ public sealed record InputFlushResult
     public InputFlushStatus Status { get; init; }
     /// <summary>The input that prevented synchronization, when available.</summary>
     public string? FieldId { get; init; }
+    /// <summary>True for ordinary native constraint validation after a successful synchronization.</summary>
+    public bool NativeValidation { get; init; }
     /// <summary>Whether the captured drafts were acknowledged without correction.</summary>
     public bool Success => Status == InputFlushStatus.Success;
 }

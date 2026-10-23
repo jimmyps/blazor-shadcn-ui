@@ -291,6 +291,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     const click = event => {
         if (isHover()) { if (options.kind === 'tooltip' && trigger()?.contains(event.target)) close(false); return; }
         const target = event.target;
+        if (trigger()?.contains(target) && target.closest('[data-neo-trigger-action]')) return;
         if (trigger()?.contains(target) && options.kind !== 'submenu' && options.kind !== 'contextmenu') {
             stop(event);
             if (!disabled(trigger())) opened ? close() : void open();
@@ -323,6 +324,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (!inside) { close(false); notify('outside', false); }
     };
     const keydown = event => {
+        if (trigger()?.contains(event.target) && event.target.closest('[data-neo-trigger-action]')) return;
         if (event.isComposing || event.key === 'Process') return;
         const onTrigger = trigger()?.contains(event.target);
         if (isHover()) {

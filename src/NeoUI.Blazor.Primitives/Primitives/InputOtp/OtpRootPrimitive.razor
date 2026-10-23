@@ -2,7 +2,7 @@
 @implements IDisposable
 
 @* OtpRoot primitive component - headless, unstyled OTP input behavior *@
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="otp" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { length = Length, pattern = Pattern, required = Required })">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="otp" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { length = Length, pattern = Pattern, required = Required })">
 <CascadingValue Value="this">
     <CascadingValue Value="@_context" IsFixed="false">
         <div role="group"

@@ -5,9 +5,9 @@
 {
     <div id="@Item.ContentId"
          role="region"
-         data-neo-state-panel="@(Item.Context.BrowserInteraction ? Item.Value : null)" hidden="@Item.Context.BrowserInteraction"
+         data-neo-state-panel="@(Item.Context.BrowserInteraction ? Item.Value : null)" hidden="@(Item.Context.BrowserInteraction && !InitialBrowserOpen)"
          aria-labelledby="@Item.TriggerId"
-         data-state="@(Item.Context.BrowserInteraction ? null : (Item.IsOpen ? "open" : "closed"))"
+         data-state="@((Item.Context.BrowserInteraction ? InitialBrowserOpen : Item.IsOpen) ? "open" : "closed")"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
@@ -49,4 +49,9 @@
             throw new InvalidOperationException("AccordionContentPrimitive must be used within an AccordionItemPrimitive component.");
         }
     }
+}
+
+@code {
+    private bool? initialBrowserOpen;
+    private bool InitialBrowserOpen { get { initialBrowserOpen ??= Item.IsOpen; return initialBrowserOpen.Value; } }
 }

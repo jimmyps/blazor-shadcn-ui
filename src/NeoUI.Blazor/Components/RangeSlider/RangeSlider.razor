@@ -1,9 +1,9 @@
 @namespace NeoUI.Blazor
 
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="range" IsField Values="@BrowserValues" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@BrowserOptions">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="range" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(BrowserInteraction ? BrowserOptions : null)">
 <div @ref="_containerRef"
      id="@Id"
-     class="@ContainerCssClass"
+     class="@(BrowserInteraction ? $"{ContainerCssClass} touch-none" : ContainerCssClass)"
      role="group"
      aria-label="@(AriaLabel ?? "Range slider")"
      @attributes="AdditionalAttributes">

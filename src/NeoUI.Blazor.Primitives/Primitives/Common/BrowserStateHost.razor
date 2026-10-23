@@ -58,7 +58,7 @@ else
     private IJSObjectReference? module, controller;
     private DotNetObjectReference<BrowserStateHost>? bridge;
     private readonly SemaphoreSlim gate = new(1,1);
-    private bool disposed, initialized;
+    private bool disposed, initialized, parametersObserved;
     private int reporting;
     private bool? enabled;
     private long revision, version, sequence;
@@ -74,9 +74,12 @@ else
     {
         if (enabled.HasValue && enabled != Enabled) throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the component with @key.");
         enabled = Enabled;
+        if (!Enabled) return;
+        parametersObserved = true;
         var next = Key(Values);
         var echo = echoes.Remove(next);
-        if (!initialized || revision != Revision || (reporting == 0 && next != previous && !echo)) { command = [.. Values]; version++; }
+        if (revision != Revision || (reporting == 0 && next == previous && !echo)) echoes.Clear();
+        if (!initialized || revision != Revision || (reporting == 0 && next != previous && !echo)) { command = [.. Values]; version++; if (!echo) echoes.Clear(); }
         previous = next; revision = Revision; initialized = true;
     }
     /// <summary>Receives versioned application observations after local state changes.</summary>
@@ -84,6 +87,10 @@ else
     {
         if (disposed || Disabled || eventVersion != version || eventSequence <= sequence)
             return new { sequence = eventSequence, version = eventVersion, ignored = true };
+        // Retire prior observations once the owner has rendered. If no parameter pass
+        // occurred, retain tokens for genuinely delayed binding render batches.
+        if (parametersObserved) echoes.Clear();
+        parametersObserved = false;
         sequence = eventSequence;
         echoes.Add(Key(values)); reporting++;
         try { await Changed.InvokeAsync(values); }

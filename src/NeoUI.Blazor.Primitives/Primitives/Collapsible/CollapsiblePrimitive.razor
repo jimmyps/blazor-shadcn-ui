@@ -1,5 +1,5 @@
 @namespace NeoUI.Blazor.Primitives
-<BrowserStateHost Enabled="@BrowserInteraction" Kind="collapsible" Values="@BrowserValues" Revision="@InteractionRevision" Changed="@BrowserChanged" Disabled="@Disabled">
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="collapsible" Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" Revision="@InteractionRevision" Changed="@BrowserChanged" Disabled="@Disabled">
 
 
 <CascadingValue Value="@context" IsFixed="true">

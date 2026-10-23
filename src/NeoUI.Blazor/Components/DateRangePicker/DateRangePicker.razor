@@ -4,7 +4,7 @@
 @inject ILocalizer Localizer
 @* DateRangePicker - Date range selection with two dates *@
 
-<Popover InteractionMode="@InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Selection)" @bind-Open="_isOpen">
+<Popover InteractionRevision="@InteractionRevision" InteractionMode="@InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Selection)" @bind-Open="_isOpen">
     <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
         @if (ShowIcon)
         {
@@ -603,5 +603,7 @@
 @code {
     /// <summary>Overrides scoped and application Selection policy for the floating shell.</summary>
     [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
     [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
 }
