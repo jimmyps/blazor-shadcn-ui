@@ -1,8 +1,9 @@
+@inject Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 @inherits TimePickerBase
 
-<Popover @bind-Open="_isOpen">
+<Popover InteractionMode="@InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Selection)" @bind-Open="_isOpen">
 <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
     @if (ShowIcon)
     {
@@ -90,4 +91,10 @@
             <div>@message</div>
         }
     </div>
+}
+
+@code {
+    /// <summary>Overrides scoped and application Selection interaction policy.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
 }

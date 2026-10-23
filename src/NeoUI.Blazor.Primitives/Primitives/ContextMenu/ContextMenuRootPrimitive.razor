@@ -26,7 +26,7 @@
     /// <summary>Increment to issue an authoritative browser reset.</summary>
     [Parameter] public long InteractionRevision { get; set; }
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
-    private InteractionMode EffectiveMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
+    private InteractionMode EffectiveMode => InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus);
     private readonly BrowserFloatingState mode = new();
 
     private readonly ContextMenuContext _context = new();

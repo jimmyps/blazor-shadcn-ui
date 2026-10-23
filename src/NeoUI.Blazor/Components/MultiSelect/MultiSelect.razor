@@ -3,7 +3,7 @@
 @using NeoUI.Icons.Lucide
 
 <div class="@ContainerClass">
-    <Popover InteractionMode="@InteractionMode" InteractionRevision="@_floatingRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
+    <Popover InteractionMode="@(BrowserInteraction ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)" InteractionRevision="@_floatingRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
         <PopoverTrigger role="combobox"
                         aria-expanded="@_isOpen.ToString().ToLower()"
                         aria-controls="@($"{Id}-listbox")"

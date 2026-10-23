@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
 namespace NeoUI.Blazor;
@@ -51,6 +52,10 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Input : ComponentBase, IAsyncDisposable
 {
+    private static readonly Action<ILogger, string, Exception?> LogJsInitializationFailed =
+        LoggerMessage.Define<string>(LogLevel.Error, new EventId(1, nameof(LogJsInitializationFailed)),
+            "Error initializing input JS: {Message}");
+    [Inject] private ILogger<Input> Logger { get; set; } = default!;
     private IJSObjectReference? _inputModule;
 
     /// <summary>
@@ -579,6 +584,7 @@ public partial class Input : ComponentBase, IAsyncDisposable
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException) { }
         catch (ObjectDisposedException) when (_browserInputDisposed) { }
+        catch (Exception ex) { LogJsInitializationFailed(Logger, ex.Message, ex); }
         finally { _initializationGate.Release(); }
     }
 

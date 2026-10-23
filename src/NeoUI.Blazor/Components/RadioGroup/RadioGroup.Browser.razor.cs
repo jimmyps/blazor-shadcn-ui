@@ -5,7 +5,7 @@ public partial class RadioGroup<TValue>
 {
     [Inject] private Microsoft.Extensions.Options.IOptions<InteractionOptions> BrowserDefaults { get; set; } = default!;
     [CascadingParameter] private InteractionPolicy? BrowserPolicy { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     /// <summary>Overrides scoped and application interaction defaults.</summary>
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reset browser selection.</summary>

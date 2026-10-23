@@ -1,4 +1,4 @@
-<InteractionModeProvider Mode="InteractionMode.Browser">
+<InteractionModeProvider Mode="@Mode">
 <section data-testid="menu-families">
     <Menubar ActiveIndex="@active" ActiveIndexChanged="SetActive" InteractionRevision="@revision">
         <MenubarMenu><MenubarTrigger>Family File</MenubarTrigger><MenubarContent>
@@ -20,12 +20,15 @@
             <ContextMenuSub><ContextMenuSubTrigger>Context More</ContextMenuSubTrigger><ContextMenuSubContent><ContextMenuItem>Context nested</ContextMenuItem></ContextMenuSubContent></ContextMenuSub>
         </ContextMenuContent>
     </ContextMenu>
+    <button data-testid="family-toggle-navigation" @onclick="() => showNavigation = !showNavigation">Toggle navigation</button>
+    @if (showNavigation) {
     <NavigationMenu Value="@nav" ValueChanged="SetNav" InteractionRevision="@revision">
         <NavigationMenuList>
             <NavigationMenuItem Value="one"><NavigationMenuTrigger>Family Products</NavigationMenuTrigger><NavigationMenuContent><NavigationMenuLink Href="#one">Family Product One</NavigationMenuLink><NavigationMenuLink Href="#two">Family Product Two</NavigationMenuLink></NavigationMenuContent></NavigationMenuItem>
             <NavigationMenuItem Value="two"><NavigationMenuTrigger>Family Resources</NavigationMenuTrigger><NavigationMenuContent><NavigationMenuLink Href="#docs">Family Docs</NavigationMenuLink></NavigationMenuContent></NavigationMenuItem>
         </NavigationMenuList>
     </NavigationMenu>
+    }
     <SplitButton data-testid="family-split" OnClick="Action"><ChildContent>Family Save</ChildContent><DropdownContent><SplitButtonItem OnClick="Action">Family Save As</SplitButtonItem><SplitButtonItem Disabled>Split disabled</SplitButtonItem></DropdownContent></SplitButton>
     <SplitButton InteractionMode="InteractionMode.Blazor" data-testid="family-split-blazor"><ChildContent>Legacy split</ChildContent><DropdownContent><SplitButtonItem>Legacy split action</SplitButtonItem></DropdownContent></SplitButton>
     <Menubar InteractionMode="InteractionMode.Blazor"><MenubarMenu><MenubarTrigger>Legacy menubar</MenubarTrigger><MenubarContent><MenubarItem>Legacy menubar action</MenubarItem></MenubarContent></MenubarMenu></Menubar>
@@ -54,6 +57,8 @@
 </section>
 </InteractionModeProvider>
 @code {
+    [Parameter] public InteractionMode Mode { get; set; } = InteractionMode.Browser;
+    private bool showNavigation = true;
     private int active = -1, actions, pill, renders;
     private async Task SetPill(int value) { await Wait(); pill = value; }
     private bool filter, contextFilter, slow, reject, resetPending;

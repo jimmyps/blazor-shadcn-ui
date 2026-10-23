@@ -397,6 +397,26 @@ export function applyPosition(floating, position, makeVisible = false) {
   }
 }
 
+// Size middleware can write the observed floating element's width. Defer these
+// layout writes out of ResizeObserver delivery (notably after a Razor style
+// update in WebKit), and coalesce scroll/resize notifications into one frame.
+function observePosition(lib, reference, floating, update) {
+  let frame = null, disposed = false;
+  const cleanup = lib.autoUpdate(reference, floating, () => {
+    if (disposed || frame !== null) return;
+    frame = requestAnimationFrame(() => {
+      frame = null;
+      if (!disposed) void update();
+    });
+  });
+  return () => {
+    disposed = true;
+    if (frame !== null) cancelAnimationFrame(frame);
+    frame = null;
+    cleanup();
+  };
+}
+
 /**
  * Sets up auto-update for dynamic positioning.
  * @param {HTMLElement} reference - Reference element
@@ -417,7 +437,7 @@ export async function autoUpdate(reference, floating, options = {}) {
     await update();
 
     // Set up auto-update - this returns a cleanup function
-    const cleanupFunc = lib.autoUpdate(reference, floating, update);
+    const cleanupFunc = observePosition(lib, reference, floating, update);
 
     // Store cleanup function in registry with unique ID
     const id = cleanupIdCounter++;
@@ -482,7 +502,7 @@ export async function showFloating(floating, reference = null, options = null) {
         applyPosition(floating, pos, false);
       };
 
-      const cleanupFunc = lib.autoUpdate(reference, floating, update);
+      const cleanupFunc = observePosition(lib, reference, floating, update);
       const cleanupId = cleanupIdCounter++;
       cleanupRegistry.set(cleanupId, cleanupFunc);
       floating._autoUpdateCleanupId = cleanupId;

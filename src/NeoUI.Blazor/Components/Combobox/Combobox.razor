@@ -3,7 +3,7 @@
 @using NeoUI.Icons.Lucide
 <CascadingValue Value="this" IsFixed="true">
     <div class="@ContainerClass">
-        <Popover InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
+        <Popover InteractionMode="@(BrowserInteraction ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)" InteractionRevision="@InteractionRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
             <PopoverTrigger role="combobox"
                            aria-expanded="@GetIsOpen().ToString().ToLower()"
                            aria-controls="@($"{Id}-listbox")"
@@ -27,7 +27,7 @@
                 </svg>
             </PopoverTrigger>
             <PopoverContent Side="@PopoverSide.Bottom" Align="@PopoverAlign.Start" MatchTriggerWidth="@MatchTriggerWidth" OnContentReady="@(BrowserInteraction ? default(EventCallback) : EventCallback.Factory.Create(this, HandleContentReady))" Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
-                <CommandContent SearchRevision="@_searchRevision" FilterFunction="@GetFilterFunction()" SearchQuery="@_commandSearchQuery" SearchQueryChanged="@HandleInternalSearchQueryChanged">
+                <CommandContent InteractionMode="@(BrowserInteraction ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)" SearchRevision="@_searchRevision" FilterFunction="@GetFilterFunction()" SearchQuery="@_commandSearchQuery" SearchQueryChanged="@HandleInternalSearchQueryChanged">
                     <CommandInput @ref="_commandInputRef" AutoFocus="true" Placeholder="@EffectiveSearchPlaceholder" SearchInterval="@SearchInterval" />
                     <CommandList OnLoadMore="@OnLoadMore" IsLoading="@IsLoading" HasMore="@HasMore" EndOfListMessage="@EndOfListMessage" AllowLoadMoreDuringSearch="@SearchQueryChanged.HasDelegate">
                         <CommandEmpty>@EffectiveEmptyMessage</CommandEmpty>

@@ -18,7 +18,7 @@ public partial class TimeInput
     /// <summary>Canonical value getter for manually wired callbacks.</summary>
     [Parameter] public Func<TimeOnly?>? AcceptedValueAccessor { get; set; }
     private BrowserStateHost? browserHost;
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private string[] BrowserValues => _segments.Where(segment => !segment.IsLiteral).Select(segment => segment.Value?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "").ToArray();
     private string[]? browserAccepted;
     private string[] AcceptedBrowserValues() => browserAccepted ?? BrowserValues;

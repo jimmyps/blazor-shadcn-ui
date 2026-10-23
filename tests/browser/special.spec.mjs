@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium, webkit } from 'playwright';
 import { readFile } from 'node:fs/promises';
@@ -8,8 +8,12 @@ const launch = () => process.env.NEOUI_BROWSER_ENGINE === 'webkit' ? webkit.laun
 const sweepPath = process.env.NEOUI_EXPECT_DEFAULT === 'Browser' || process.env.NEOUI_TEST_RENDERER === 'wasm' ? '/?sweep=true&global=true' : '/?sweep=true';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+let sharedBrowser;
+before(async()=>{sharedBrowser=await launch();});
+after(async()=>{await sharedBrowser?.close();});
+
 async function open() {
-    const browser = await launch();
+    const browser = sharedBrowser;
     const page = await browser.newPage();
     await page.addInitScript(floatingScript);
     await page.goto(url + sweepPath);
@@ -31,7 +35,7 @@ test('radio, OTP, date/time segments and both range handles respond with the cir
         const time=root.getByRole('group',{name:'Sweep time',exact:true});await time.getByRole('spinbutton',{name:'minute',exact:true}).focus();await page.keyboard.press('ArrowUp');assert.equal(await time.getByRole('spinbutton',{name:'minute',exact:true}).getAttribute('aria-valuenow'),'46');
         const handles=root.getByRole('slider');await handles.nth(0).focus();await handles.nth(0).press('ArrowRight');assert.equal(await handles.nth(0).getAttribute('aria-valuenow'),'21');
         await handles.nth(1).press('ArrowLeft');assert.equal(await handles.nth(1).getAttribute('aria-valuenow'),'79');
-    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await browser.close();}
+    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await page.close();}
 });
 test('special fields flush a complete OTP and edited segments before Save, and reset without replay',async()=>{
     const {browser,page}=await open();
@@ -45,7 +49,7 @@ test('special fields flush a complete OTP and edited segments before Save, and r
         await page.getByTestId('sweep-special-saved').filter({hasText:'two|1234|2026-10-23|13:46|21|80'}).waitFor();
         await page.getByTestId('sweep-special-reset').click();await page.waitForFunction(()=>document.querySelector('[data-neo-otp-slot]').value==='');
         assert.equal(await root.getByRole('group',{name:'Sweep date',exact:true}).getByRole('spinbutton',{name:'day',exact:true}).getAttribute('aria-valuenow'),'22');
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });
 
 test('segmented input picker selection and Apply/Cancel dismiss their shells without a server callback',async()=>{
@@ -59,7 +63,7 @@ test('segmented input picker selection and Apply/Cancel dismiss their shells wit
         const day=page.locator('[data-neo-browser-content] [data-neo-calendar-day]:not([disabled])').first();await day.waitFor();await day.click();await day.waitFor({state:'hidden'});
         await root.getByRole('button',{name:'Open time picker',exact:true}).click();const apply=page.getByRole('button',{name:'Apply',exact:true});await apply.waitFor();await apply.click();await apply.waitFor({state:'hidden'});
         await root.getByRole('button',{name:'Open time picker',exact:true}).click();const cancel=page.getByRole('button',{name:'Cancel',exact:true});await cancel.click();await cancel.waitFor({state:'hidden'});
-    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await browser.close();}
+    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await page.close();}
 });
 
 test('the existing segmented FocusAsync API reveals empty placeholders and focuses the first local segment',async()=>{
@@ -72,5 +76,5 @@ test('the existing segmented FocusAsync API reveals empty placeholders and focus
         await root.getByRole('button',{name:'Focus empty time',exact:true}).click();
         await page.waitForFunction(()=>document.querySelector('[aria-label="Empty time API"] [data-neo-segment]')===document.activeElement);
         assert.equal(await root.getByRole('group',{name:'Empty time API',exact:true}).locator('[data-neo-segment]').first().isVisible(),true);
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });

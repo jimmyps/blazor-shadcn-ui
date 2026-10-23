@@ -299,7 +299,7 @@
         <DemoBlock><BrowserInputFamilies /></DemoBlock>
     </DemoSection>
 
-    <DemoSection Title="Adopt a policy with exceptions" Description="Explicit component setting → nearest scoped override → application default → library Blazor default.">
+    <DemoSection Title="Adopt a policy with exceptions" Description="Explicit component setting → nearest scoped override → application family setting → application global default → library Blazor default.">
         <DemoBlock Code="@policyCode">
             <InteractionModeProvider Mode="InteractionMode.Browser">
                 <div class="space-y-3" data-testid="browser-theme-picker">
@@ -309,7 +309,7 @@
                 </div>
             </InteractionModeProvider>
         </DemoBlock>
-        <p class="text-sm text-muted-foreground">The date/time pickers, Combobox, and MultiSelect above inherit this policy too. Their floating shells and transient focus become local; search, value commits, and new calendar content remain Blazor interactions. Large lists and repeated row menus may be better kept in Blazor mode with mount-on-demand content.</p>
+        <p class="text-sm text-muted-foreground">Family defaults let floating shells and menus use Browser while inputs and selection controls keep Blazor behavior. Selection includes Select, Combobox, MultiSelect and picker shells, including composed search UI; Inputs includes standalone Command, text fields, structured fields, checkboxes, toggles and sliders. Internal search follows its selection control’s resolved mode. Scoped overrides apply to all families unless their optional Family parameter narrows the scope. The date/time pickers, Combobox, and MultiSelect above inherit their explicit Browser scope. Their floating shells and transient focus become local; search, value commits, and new calendar content remain Blazor interactions. Large lists and repeated row menus may be better kept in Blazor mode with mount-on-demand content.</p>
     </DemoSection>
 
     <DemoSection Title="Popover and browser events" Description="Open a floating layer and watch its events without adding server callbacks.">
@@ -501,9 +501,18 @@
         """;
 
     private const string policyCode = """
-        // Program.cs: opt in application-wide.
+        // Program.cs: adopt UI families while preserving existing form behavior.
         builder.Services.ConfigureNeoUIInteractions(options =>
-            options.DefaultMode = InteractionMode.Browser);
+        {
+            options.DefaultMode = InteractionMode.Blazor;
+            options.Floating = InteractionMode.Browser;
+            options.Menus = InteractionMode.Browser;
+            options.Disclosures = InteractionMode.Browser;
+            options.Inputs = InteractionMode.Blazor;
+            options.Selection = InteractionMode.Blazor;
+        });
+        // Nullable family settings inherit DefaultMode when omitted.
+        // Or set DefaultMode = Browser and keep Inputs/Selection = Blazor.
 
         // A scope overrides the application; an explicit setting overrides the scope.
         <InteractionModeProvider Mode="InteractionMode.Browser">

@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium, webkit } from 'playwright';
 import { readFile } from 'node:fs/promises';
@@ -8,8 +8,12 @@ const launch = () => process.env.NEOUI_BROWSER_ENGINE === 'webkit' ? webkit.laun
 const sweepPath = process.env.NEOUI_EXPECT_DEFAULT === 'Browser' || process.env.NEOUI_TEST_RENDERER === 'wasm' ? '/?sweep=true&global=true' : '/?sweep=true';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+let sharedBrowser;
+before(async()=>{sharedBrowser=await launch();});
+after(async()=>{await sharedBrowser?.close();});
+
 async function open() {
-    const browser = await launch();
+    const browser = sharedBrowser;
     const page = await browser.newPage();
     await page.addInitScript(floatingScript);
     await page.goto(url + sweepPath);
@@ -27,7 +31,7 @@ test('markdown typing, shortcuts, list continuation, undo and toolbar formatting
         await input.press('Control+z');assert.equal(await input.inputValue(),'draft');await pause(60);await input.press('Control+y');assert.equal(await input.inputValue(),'**draft**');
         await input.fill('- first');await input.press('End');await input.press('Enter');assert.equal(await input.inputValue(),'- first\n- ');
         await page.getByRole('button',{name:'Italic (Ctrl+I)',exact:true}).click();assert.match(await input.inputValue(),/\*italic text\*/);
-    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await browser.close();}
+    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await page.close();}
 });
 test('markdown joins the form barrier and explicit reset clears prior undo history',async()=>{
     const {browser,page}=await open();
@@ -37,5 +41,5 @@ test('markdown joins the form barrier and explicit reset clears prior undo histo
         await page.getByTestId('sweep-markdown-saved').filter({hasText:'**Latest markdown**'}).waitFor();
         await page.getByTestId('sweep-markdown-reset').click();await page.waitForFunction(()=>document.querySelector('[placeholder="Sweep markdown"]').value==='Reset document');
         await input.focus();await input.press('Control+z');assert.equal(await input.inputValue(),'Reset document');
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });

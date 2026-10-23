@@ -27,7 +27,7 @@
 
 @if (Context?.CollapsedMode == SidebarCollapsedMode.Pill)
 {
-    <InteractionModeProvider Mode="@EffectiveMode">
+    <InteractionModeProvider Mode="@EffectiveMode" Family="InteractionFamily.Menus">
     @if (EffectiveMode == NeoUI.Blazor.Primitives.InteractionMode.Browser)
     {
         <BrowserNavigationHost Kind="pill" Revision="@InteractionRevision">@RenderNavigation()</BrowserNavigationHost>
@@ -42,7 +42,7 @@
     /// <summary>Increment to reapply the server-owned active item after a reset.</summary>
     [Parameter] public long InteractionRevision { get; set; }
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
-    private InteractionMode EffectiveMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
+    private InteractionMode EffectiveMode => InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus);
     private InteractionMode? initialMode;
     protected override void OnParametersSet()
     {

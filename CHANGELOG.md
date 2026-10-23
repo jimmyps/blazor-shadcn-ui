@@ -48,9 +48,13 @@ The Interaction Mode gallery includes multiline/grouped draft, hover, disclosure
 - MarkdownEditor reuses the textarea draft/form adapter for local typing, formatting shortcuts/toolbars, list continuation and undo/redo. Explicit resets clear document history; undo/redo notifications preserve redo history, and preview HTML still uses server rendering and sanitization.
 - RichTextEditor was audited rather than converted. Its existing Quill callback suppression does not solve stale parent echoes or guarantee selection/undo preservation. Full rich-editor synchronization and modal families remain outside this sweep.
 
+- Input initialization failures retain the existing log-only error policy, keeping independent controls and the circuit usable; Browser forms still refuse unsynchronized drafts.
+
 ### ✨ Feature — application defaults with explicit exceptions
 
-Configure supported controls once:
+Optional nullable `Floating`, `Menus`, `Selection`, `Inputs` and `Disclosures` defaults allow staged adoption. Precedence is explicit component → scoped override → application family setting → application global fallback → Blazor. Selection controls forward their resolved mode to their composed shell/search UI, so Floating alone cannot opt legacy selection fields into Browser behavior. TimePicker, DateRangePicker and ColorPicker expose shell-level overrides.
+
+Configure the global fallback:
 
 ```csharp
 using NeoUI.Blazor.Primitives;
@@ -60,7 +64,7 @@ builder.Services.ConfigureNeoUIInteractions(options =>
     options.DefaultMode = InteractionMode.Browser);
 ```
 
-Resolution is **explicit component setting → scoped `InteractionModeProvider` → application default → library default**.
+Resolution is **explicit component setting → nearest applicable scoped `InteractionModeProvider` → application family setting → application global fallback → library default**.
 An omitted parameter differs from an explicit `InteractionMode.Blazor`, so individual controls can opt out
 of a Browser application default. Composed controls inherit the policy and expose explicit overrides.
 
@@ -75,7 +79,7 @@ of a Browser application default. Composed controls inherit the policy and expos
 </InteractionModeProvider>
 ```
 
-This is one shared application default, rather than separate defaults for each control family.
+Leave a family setting null to inherit `DefaultMode`. Optional provider `Family` scopes one family; other controls inherit outer policies. Pill navigation uses a menu-only scope so embedded fields keep their input policy.
 Mode is fixed after initialization; recreate a component with `@key` to change its mode.
 
 ### ✨ Feature — browser-owned Input drafts and ordered search acknowledgements
@@ -160,6 +164,11 @@ tag requires the documented scope/OnSubmit integration. The wrapper keeps that m
 a tag change and uses public framework APIs. Interactive rendering is required.
 
 ### 🐛 Fix — reconnect reconciliation, touch switching and local UI states
+
+- Floating resize/scroll updates are coalesced onto animation frames, avoiding ResizeObserver delivery-loop errors when Razor reapplies persistent portal styles, including Browser TagInput in WebKit.
+- Browser ToggleGroup acknowledgements treat a canonical null binding as an authoritative empty selection, including multiple selection, instead of falling back to an older parameter.
+- Empty Browser DateInput/TimeInput fields remain keyboard reachable without a picker. Segmented editing preserves minute-step alignment, unset-segment arrow behavior, the C shortcut for today/current time, and AM/PM input rules.
+- Blazor NavigationMenu hover/close timer observations marshal application callbacks onto the renderer dispatcher. Disposing the root cancels its context timers; delayed notifications no longer terminate a Server process with a dispatcher error.
 
 - FloatingPortal checks both portal and owning event-bridge lifetimes before initialization and after each await. Removing a dropdown, popover, Select or submenu during delayed portal rendering/module import no longer passes a disposed DotNetObjectReference to interop and terminates the Server circuit. A controller returned after removal is disposed; ObjectDisposedException is suppressed only after one of those lifetimes has ended. Unrelated errors still propagate.
 - Floating controllers observe rendered configuration after a retained-circuit reconnect. Checked-state resets and close commands reconcile without replaying business callbacks, including resets to the same accepted value.

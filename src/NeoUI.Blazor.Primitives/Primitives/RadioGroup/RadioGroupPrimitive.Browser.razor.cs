@@ -15,7 +15,7 @@ public partial class RadioGroupPrimitive<TValue>
     [Parameter] public Func<TValue?>? AcceptedValueAccessor { get; set; }
     /// <summary>Binding expression for canonical acknowledgement.</summary>
     [Parameter] public Expression<Func<TValue>>? ValueExpression { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private string[] BrowserValues => Value == null ? [] : [JsonSerializer.Serialize(Value)];
     private string[] AcceptedBrowserValues() { var value = AcceptedValueAccessor != null ? AcceptedValueAccessor() : ValueExpression != null ? ValueExpression.Compile().Invoke() : Value; return value == null ? [] : [JsonSerializer.Serialize(value)]; }
     private async Task ChangeBrowser(string[] values)

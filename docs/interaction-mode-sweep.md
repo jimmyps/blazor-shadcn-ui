@@ -34,3 +34,36 @@ Each family requires a baseline regression and focused Server/WASM checks before
 All scoped P1/P2 families are implemented. Full Server regression: 118 passed with one WASM-only skip. Scoped policy sweep: 27 passed. WASM sweep: 21 passed with three Server-only skips, followed by four focused redo/disclosure/picker checks. Final compatibility follow-ups passed 22 Edge checks, 14 WebKit checks and seven WASM checks, including raw mask boundaries, WebKit deletion, read-only snapshots and segmented FocusAsync. The actual gallery passed 12 checks (including mixed-control Save and desktop/mobile layout), plus both application-default spotlight/render-backpressure checks. Server/WASM/gallery builds, deterministic interaction-state checks and JavaScript/whitespace checks passed.
 
 RichTextEditor was audited and remains outside the browser draft/form protocol. Full rich-editor conversion and modal families remain excluded as P3. See browser-interactions.md for canonical manual-composition getters, independent menu/Select commit queues, custom TagTemplate exceptions and Tabs adoption guidance.
+
+
+## Final correctness and family-policy follow-up
+
+Application policy now supports optional nullable Floating, Menus, Selection, Inputs and
+Disclosures defaults. Explicit component settings win, then the nearest applicable scope,
+application family setting and global DefaultMode fallback. Providers may limit a scope to
+one Family; pill navigation uses a menu-only scope internally to preserve embedded field
+policy. Selection controls explicitly forward their resolved mode to their floating and
+search composition. Existing configurations without family settings preserve composed
+Blazor exceptions. The gallery documents staged adoption and includes a standalone radio
+example alongside the mixed form.
+
+The correctness review also fixed canonical null ToggleGroup rejection, initial and
+between-segment keyboard focus, minute-step/shortcut parity, NavigationMenu timer callback
+dispatch/disposal and WebKit floating ResizeObserver delivery errors. Input module import
+failure retains its earlier log-only policy; independent controls survive while Browser Save
+refuses an unsynchronized draft.
+
+Validation before the family-policy follow-up: full Server regression 137 passed with one
+renderer-only skip; focused input/form/two-mode follow-up 77 passed with one skip. Final
+family policy checks passed eight cases across conservative and reverse policies, and the
+final Server compatibility matrix passed 19 cases (three family-configuration-only skips).
+Deterministic interaction/lifetime/family-policy checks and Server/WASM/gallery builds
+passed. The updated gallery passed its mixed-control Save, radio selection and desktop/mobile
+layout check locally and through the restored review tunnel.
+
+WASM follow-up covered 34 unique passing checks with one Server-only skip across the field,
+formatted, Markdown, special-input, tag and both-mode matrix suites. Seven initial matrix
+checks stopped before hydration at the new harness's seven-second readiness limit; aligning
+that limit with the existing WASM suites (30 seconds) produced a clean 17/17 matrix rerun.
+These were startup timeouts, not failed interaction assertions. Existing WebKit coverage for
+the shared positioning/segmented fixes was retained; physical-device coverage is not claimed.

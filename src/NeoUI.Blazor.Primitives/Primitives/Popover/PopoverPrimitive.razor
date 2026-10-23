@@ -57,7 +57,7 @@
     public InteractionMode? InteractionMode { get; set; }
 
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
-    private InteractionMode EffectiveInteractionMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
+    private InteractionMode EffectiveInteractionMode => InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Floating);
 
     /// <summary>Increment to reapply Open and Value, including an unchanged value after a reset.</summary>
     [Parameter]

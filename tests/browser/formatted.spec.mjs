@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium, webkit } from 'playwright';
 import { readFile } from 'node:fs/promises';
@@ -8,8 +8,12 @@ const launch = () => process.env.NEOUI_BROWSER_ENGINE === 'webkit' ? webkit.laun
 const sweepPath = process.env.NEOUI_EXPECT_DEFAULT === 'Browser' || process.env.NEOUI_TEST_RENDERER === 'wasm' ? '/?sweep=true&global=true' : '/?sweep=true';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+let sharedBrowser;
+before(async()=>{sharedBrowser=await launch();});
+after(async()=>{await sharedBrowser?.close();});
+
 async function open() {
-    const browser = await launch();
+    const browser = sharedBrowser;
     const page = await browser.newPage();
     await page.addInitScript(floatingScript);
     await page.goto(url + sweepPath);
@@ -34,7 +38,7 @@ test('formatted drafts preserve incomplete numbers, locale decimals and local ma
         await masked.evaluate(element=>element.setSelectionRange(4,4));await masked.press('Backspace');
         assert.equal(await masked.inputValue(),'124-56_');
         await masked.fill('');assert.equal(await masked.inputValue(),'');
-    } finally {await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await browser.close();}
+    } finally {await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await page.close();}
 });
 test('form flush commits typed numbers, culture values and raw masks before submit, then revisions reset drafts',async()=>{
     const {browser,page}=await open();
@@ -49,7 +53,7 @@ test('form flush commits typed numbers, culture values and raw masks before subm
         await page.getByTestId('sweep-number-reset').click();
         await page.waitForFunction(()=>document.querySelector('[placeholder="Sweep numeric"]').value==='10');
         assert.equal(await masked.inputValue(),'123-456');
-    } finally {await browser.close();}
+    } finally {await page.close();}
 });
 test('incomplete numeric and required mask drafts prevent submitting an older model',async()=>{
     const {browser,page}=await open();
@@ -62,7 +66,7 @@ test('incomplete numeric and required mask drafts prevent submitting an older mo
         await numeric.fill('25');await masked.fill('12');await page.getByTestId('sweep-number-save').click();await pause(400);
         assert.equal(await page.getByTestId('sweep-number-saved').textContent(),'None');
         assert.equal(await masked.evaluate(element=>element.checkValidity()),false);
-    } finally {await browser.close();}
+    } finally {await page.close();}
 });
 
 test('a numerically valid string outside the .NET target range cannot submit an older parsed value',async()=>{
@@ -73,9 +77,11 @@ test('a numerically valid string outside the .NET target range cannot submit an 
         await page.getByTestId('sweep-number-save').click();await numeric.locator('xpath=self::*[@data-neo-input-invalid]').waitFor();
         assert.equal(await page.getByTestId('sweep-number-saved').textContent(),'None');
         assert.equal(await numeric.evaluate(element=>element.checkValidity()),false);
+        // Wait for the rejected submit to release its duplicate-submit guard before retrying.
+        await page.waitForFunction(()=>document.querySelector('[data-testid="sweep-formatted"] form').getAttribute('aria-busy')==='false');
         await numeric.fill('12');await page.getByTestId('sweep-number-save').click();
         await page.getByTestId('sweep-number-saved').filter({hasText:'12||123456'}).waitFor();
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });
 
 test('readonly formatted fields participate in Save without forcing a change callback',async()=>{
@@ -86,7 +92,7 @@ test('readonly formatted fields participate in Save without forcing a change cal
         await numeric.fill('15');await masked.fill('123456');await page.getByTestId('sweep-number-save').click();
         await page.getByTestId('sweep-number-saved').filter({hasText:'15||123456'}).waitFor();
         assert.equal(await page.getByTestId('sweep-readonly-commits').textContent(),'0');
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });
 
 test('an empty mask template sends onchange callbacks only across raw empty/nonempty boundaries',async()=>{
@@ -96,5 +102,5 @@ test('an empty mask template sends onchange callbacks only across raw empty/none
         await input.fill('1');await page.getByTestId('sweep-mask-boundaries').filter({hasText:'1'}).waitFor();
         await input.fill('12');await pause(200);assert.equal(await page.getByTestId('sweep-mask-boundaries').textContent(),'1');
         await input.fill('');await page.getByTestId('sweep-mask-boundaries').filter({hasText:'2'}).waitFor();assert.equal(await input.inputValue(),'');
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });

@@ -22,7 +22,7 @@ Auto and Hybrid hosting have not been separately runtime-verified.
 ## Application defaults and scoped exceptions
 
 The precedence is **explicit component setting → nearest InteractionModeProvider →
-application default → Blazor**. A nullable `InteractionMode` parameter distinguishes
+application family setting → application global default → Blazor**. A nullable `InteractionMode` parameter distinguishes
 omission (`null`, inherit) from explicit `InteractionMode.Blazor`.
 
 ```csharp
@@ -35,6 +35,47 @@ builder.Services.AddNeoUIComponents();
 builder.Services.ConfigureNeoUIInteractions(options =>
     options.DefaultMode = InteractionMode.Browser);
 ```
+
+Family settings are nullable and optional. Existing `DefaultMode` configurations retain their behavior.
+For staged adoption, enable local floating UI without changing legacy fields or selection controls:
+
+```csharp
+builder.Services.ConfigureNeoUIInteractions(options =>
+{
+    options.DefaultMode = InteractionMode.Blazor;
+    options.Floating = InteractionMode.Browser;
+    options.Menus = InteractionMode.Browser;
+    options.Disclosures = InteractionMode.Browser;
+    options.Inputs = InteractionMode.Blazor;
+    options.Selection = InteractionMode.Blazor;
+});
+```
+
+Alternatively set `DefaultMode = Browser` and retain `Inputs = Blazor` and `Selection = Blazor`.
+A null family setting falls back to `DefaultMode`. A scoped provider overrides every application
+family setting; explicit component settings override the scope, including explicit Blazor.
+Optionally limit a scope to one family with
+`<InteractionModeProvider Family="InteractionFamily.Menus" Mode="InteractionMode.Browser">`.
+Other families continue to inherit their nearest applicable outer scope or application policy.
+Pill navigation uses this menu-only scope internally so its menu policy cannot opt embedded
+form fields into Browser mode.
+
+| Family | Supported controls |
+| --- | --- |
+| Floating | Popover, HoverCard, Tooltip; ordinary compositions such as ThemeSwitcher |
+| Menus | DropdownMenu, Menubar, ContextMenu, NavigationMenu, SplitButton and SidebarPillNav |
+| Selection | Select, Combobox, MultiSelect, DatePicker, DateRangePicker, TimePicker and ColorPicker shells |
+| Inputs | Input, Textarea, InputGroup, formatted inputs, standalone Command, Checkbox, Switch, RadioGroup, Toggle/ToggleGroup, Slider/RangeSlider, InputOtp, DateInput/TimeInput, TagInput and MarkdownEditor |
+| Disclosures | Accordion, Collapsible and Tabs |
+
+A selection control forwards its resolved mode explicitly to its Popover and composed search UI.
+`Floating = Browser` therefore does not enable Browser mode for selection controls. With
+`Selection = Browser`, internal Combobox/MultiSelect searches follow that selection mode even
+when standalone `Inputs = Blazor`; keep both Inputs and Selection in Blazor to preserve legacy
+form behavior. Standalone inputs/Command inside an ordinary Popover honor an Inputs family
+setting rather than silently inheriting its shell. Without an Inputs family setting in the application or an applicable family-specific scope they retain
+the existing enclosing-Popover behavior, including explicit Blazor shell exceptions within a Browser scope. Checkbox/radio menu items follow Menus; form Checkbox/RadioGroup controls follow Inputs. A picker shell setting does not convert arbitrary
+calendar/native/color editor contents into browser-owned data logic.
 
 ```razor
 <InteractionModeProvider Mode="InteractionMode.Blazor">
@@ -69,9 +110,8 @@ focus behavior on reopening. Application value resets remain declarative.
 
 The Interaction Mode gallery includes live DatePicker, TimePicker, Combobox, and MultiSelect
 examples under one Browser provider, with bound-value summaries and a shared reset.
-`TimePicker` inherits the policy through its internal Popover; it does not expose a direct
-`InteractionMode` or `InteractionRevision` parameter. Scope it with `InteractionModeProvider`
-for a targeted override. Its native time fields and Apply/Cancel actions remain Blazor handlers.
+`TimePicker`, `DateRangePicker` and `ColorPicker` accept nullable `InteractionMode` for their
+Selection-family floating shells. They do not expose an `InteractionRevision` parameter. Its native time fields and Apply/Cancel actions remain Blazor handlers.
 
 ### Local item interaction audit
 
@@ -85,9 +125,9 @@ for a targeted override. Its native time fields and Apply/Cancel actions remain 
 | TimePicker / ordinary buttons | Native focus/hover; immediate popover dismissal on Apply/Cancel | Time fields and committed values remain Blazor content |
 
 `CommandContent` also accepts nullable `InteractionMode` for standalone command lists.
-Inside a Popover it inherits that root's actual resolved mode, including explicit Blazor
-exceptions, rather than accidentally picking up a Browser application default. Scoped
-policies and application defaults apply when no enclosing popover supplies the mode.
+With an Inputs family setting, an explicit mode wins, followed by scoped and Inputs-family policy.
+Without an Inputs setting it retains the enclosing Popover’s actual resolved mode, preserving
+existing explicit Blazor shell exceptions even inside a Browser scope. Combobox explicitly forwards its Selection mode.
 Composed controls may observe open/close asynchronously to synchronize their bindings;
 local mechanics do not wait for those observations. Date selection, Combobox item selection,
 and time/range Apply actions dismiss before their application callbacks complete.
@@ -651,3 +691,16 @@ RichTextEditor already types in Quill locally, but it does not join the new brow
 The default `npm test` in `tests/browser` now includes the expansion fixtures. Set `NEOUI_TEST_URL` to the Server test host and `NEOUI_EXPECT_DEFAULT=Browser` for its application-default configuration; omit the latter for scoped-policy coverage. Use `NEOUI_TEST_RENDERER=wasm` against the WASM test host and `NEOUI_BROWSER_ENGINE=webkit` for the expansion's WebKit cases. `npm run test:demo` uses `NEOUI_DEMO_URL` to verify the actual gallery, including mixed-control Save and desktop/mobile layout.
 
 Focused regressions include blocked circuit traffic, canonical acknowledgements under render backpressure, empty-mask change boundaries, WebKit deletion across literals, unrepresentable numeric values, read-only snapshots, Markdown redo, public segmented FocusAsync, delayed/rejected changes, explicit resets, retained-circuit reconciliation, and removal during controller import. A debug WASM build and browser emulation do not establish Native AOT, Hybrid or physical-device coverage.
+
+
+### Family-policy regression fixtures
+
+The Server host supports `--FamilyPolicy=conservative` (global Browser with Inputs/Selection
+Blazor) and `--FamilyPolicy=reverse` (global Blazor with Inputs/Selection Browser).
+Run a host with either option, then run `family-policy.spec.mjs` with `NEOUI_TEST_URL`
+pointing at that host and `NEOUI_FAMILY_POLICY` set to the matching policy name. The suite
+checks fields, standalone Command, menus, disclosures, Select/Combobox/MultiSelect, picker
+shells, ordinary nested inputs, explicit overrides, general scopes and nested family scopes.
+With `NEOUI_FAMILY_POLICY` omitted it tests compatibility of existing composed Blazor
+exceptions and explicit Inputs scopes against an ordinary host. Mode changes after mounting
+still require recreation; family defaults are startup policy, not a live migration mechanism.

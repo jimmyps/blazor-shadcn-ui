@@ -19,7 +19,7 @@ public partial class SwitchPrimitive
     [Parameter] public string? Name { get; set; }
     /// <summary>Requires a checked value before form submission.</summary>
     [Parameter] public bool Required { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private string[] BrowserValues => Checked ? ["checked"] : [];
     private string[] AcceptedBrowserValues() => (AcceptedValueAccessor?.Invoke() ?? CheckedExpression?.Compile().Invoke() ?? Checked) ? ["checked"] : [];
     private async Task ChangeBrowser(string[] values)

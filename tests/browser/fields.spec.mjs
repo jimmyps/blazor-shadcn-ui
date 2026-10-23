@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium, webkit } from 'playwright';
 import { readFile } from 'node:fs/promises';
@@ -8,8 +8,12 @@ const launch = () => process.env.NEOUI_BROWSER_ENGINE === 'webkit' ? webkit.laun
 const sweepPath = process.env.NEOUI_EXPECT_DEFAULT === 'Browser' || process.env.NEOUI_TEST_RENDERER === 'wasm' ? '/?sweep=true&global=true' : '/?sweep=true';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+let sharedBrowser;
+before(async()=>{sharedBrowser=await launch();});
+after(async()=>{await sharedBrowser?.close();});
+
 async function open() {
-    const browser = await launch();
+    const browser = sharedBrowser;
     const page = await browser.newPage();
     await page.addInitScript(floatingScript);
     await page.goto(url + sweepPath);
@@ -33,7 +37,7 @@ test('checkbox, switch, toggle, group navigation and slider preview update witho
         const first=root.getByRole('radio',{name:'Sweep choice one'}),second=root.getByRole('radio',{name:'Sweep choice two'});
         await first.focus();await first.press('ArrowRight');assert.equal(await second.getAttribute('aria-checked'),'true');
         const slider=root.getByRole('slider');await slider.fill('75');assert.match(await slider.getAttribute('style'),/75%/);
-    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await browser.close();}
+    }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await page.close();}
 });
 test('forms await latest data field acceptance, retain required validation and support revisioned resets',async()=>{
     const {browser,page}=await open();
@@ -46,7 +50,7 @@ test('forms await latest data field acceptance, retain required validation and s
         await page.getByTestId('sweep-fields-reset').click();
         await root.getByRole('checkbox',{name:'Sweep checkbox'}).locator('xpath=self::*[@aria-checked="false"]').waitFor();
         assert.equal(await root.getByRole('slider').inputValue(),'30');
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });
 
 test('rapid checked changes ignore stale acceptance, reject latest edits and honor resets during application work',async()=>{
@@ -57,12 +61,14 @@ test('rapid checked changes ignore stale acceptance, reject latest edits and hon
         await check.click();await check.click();assert.equal(await check.getAttribute('aria-checked'),'false');
         await page.waitForFunction(()=>!document.querySelector('[data-testid="sweep-delayed"] [data-neo-browser-field]').hasAttribute('data-neo-field-pending'));
         assert.equal(await check.getAttribute('aria-checked'),'false');assert.equal(await page.getByTestId('sweep-delay-count').textContent(),'2');
-        await page.getByTestId('sweep-delay-reject').click();await check.click();assert.equal(await check.getAttribute('aria-checked'),'true');
+        await page.getByTestId('sweep-delay-reject').click();
+        // Read optimistic feedback in the click task, before a fast WASM rejection can complete.
+        assert.equal(await check.evaluate(element=>{element.click();return element.getAttribute('aria-checked');}),'true');
         await check.locator('xpath=self::*[@aria-checked="false"]').waitFor();
         await page.getByTestId('sweep-delay-reject').click();await check.click();await page.getByTestId('sweep-delay-reset').click();
         await pause(700);assert.equal(await check.getAttribute('aria-checked'),'false');
         assert.equal(await page.getByTestId('sweep-delay-value').textContent(),'False');
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });
 test('retained-circuit reconciliation applies a field reset without replaying its business callback',{skip:process.env.NEOUI_TEST_RENDERER==='wasm'},async()=>{
     const {browser,page}=await open();
@@ -72,5 +78,5 @@ test('retained-circuit reconciliation applies a field reset without replaying it
         await page.getByTestId('sweep-delay-offline-reset').click();await page.getByTestId('sweep-delay-reset-pending').filter({hasText:'True'}).waitFor();
         await page.context().setOffline(true);await pause(1500);await page.context().setOffline(false);
         await check.locator('xpath=self::*[@aria-checked="false"]').waitFor();assert.equal(await page.getByTestId('sweep-delay-count').textContent(),'1');
-    }finally{await browser.close();}
+    }finally{await page.close();}
 });

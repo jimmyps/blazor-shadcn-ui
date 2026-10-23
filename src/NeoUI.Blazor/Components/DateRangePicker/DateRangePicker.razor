@@ -1,9 +1,10 @@
+@inject Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 @inject ILocalizer Localizer
 @* DateRangePicker - Date range selection with two dates *@
 
-<Popover @bind-Open="_isOpen">
+<Popover InteractionMode="@InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Selection)" @bind-Open="_isOpen">
     <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
         @if (ShowIcon)
         {
@@ -598,3 +599,9 @@
     }
 }
 
+
+@code {
+    /// <summary>Overrides scoped and application Selection policy for the floating shell.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
+}

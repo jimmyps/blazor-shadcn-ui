@@ -12,6 +12,7 @@
                 <div class="space-y-2"><Label>Time segments</Label><TimeInput @bind-Value="draft.Time" Use12Hour="false" /></div>
                 <div class="space-y-2"><Label>Verification code</Label><InputOtp Length="4" @bind-Value="draft.Code"><InputOtpGroup><InputOtpSlot Index="0" /><InputOtpSlot Index="1" /><InputOtpSlot Index="2" /><InputOtpSlot Index="3" /></InputOtpGroup></InputOtp></div>
                 <div class="space-y-3"><Label>Preferences</Label><div class="flex flex-wrap items-center gap-4"><label class="flex items-center gap-2 text-sm"><Checkbox @bind-Checked="draft.Notifications" /> Notifications</label><label class="flex items-center gap-2 text-sm"><Switch @bind-Checked="draft.Preview" /> Preview</label><Toggle @bind-Pressed="draft.Pinned">Pinned</Toggle></div><ToggleGroup @bind-Value="draft.Density"><ToggleGroupItem Value="compact">Compact</ToggleGroupItem><ToggleGroupItem Value="comfortable">Comfortable</ToggleGroupItem></ToggleGroup></div>
+                <div class="space-y-3"><Label>Digest frequency</Label><RadioGroup TValue="string" @bind-Value="draft.Digest" AriaLabel="Digest frequency"><label class="flex items-center gap-2 text-sm"><RadioGroupItem TValue="string" Value='@("daily")' AriaLabel="Daily digest" /> Daily</label><label class="flex items-center gap-2 text-sm"><RadioGroupItem TValue="string" Value='@("weekly")' AriaLabel="Weekly digest" /> Weekly</label></RadioGroup></div>
                 <div class="space-y-3"><Label>Volume</Label><Slider @bind-Value="draft.Volume" /></div>
                 <div class="space-y-3"><Label>Allowed range</Label><RangeSlider @bind-MinValue="draft.Low" @bind-MaxValue="draft.High" /></div>
                 <div class="space-y-3 sm:col-span-2"><Label>Editor draft</Label><MarkdownEditor @bind-Value="draft.Markdown" Placeholder="Type, select text, then try Ctrl+B or Ctrl+I" DebounceDelay="250" /></div>
@@ -39,6 +40,7 @@
         public bool Preview { get; set; }
         public bool Pinned { get; set; }
         public string? Density { get; set; } = "comfortable";
+        public string? Digest { get; set; } = "daily";
         public double Volume { get; set; } = 30;
         public double Low { get; set; } = 20;
         public double High { get; set; } = 80;

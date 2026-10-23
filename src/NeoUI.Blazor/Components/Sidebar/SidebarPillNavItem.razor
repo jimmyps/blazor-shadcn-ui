@@ -67,7 +67,7 @@ else
 
 @code {
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
-    private bool BrowserOwned => InteractionPolicy?.Mode == InteractionMode.Browser;
+    private bool BrowserOwned => InteractionPolicy?.GetMode(InteractionFamily.Menus) == InteractionMode.Browser;
     private readonly string itemId = $"pill-item-{Guid.NewGuid():N}";
 
     /// <summary>The icon to display. Typically a <see cref="LucideIcon"/>.</summary>

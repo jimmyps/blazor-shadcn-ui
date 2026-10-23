@@ -1,6 +1,12 @@
 @inject NavigationManager Navigation
 <AppProvider>
-    @if (Navigation.Uri.Contains("cost="))
+    <span hidden data-testid="test-host-ready" data-ready="@(testHostReady ? "true" : "false")"></span>
+    @if (Navigation.Uri.Contains("familypolicy=true")) { <FamilyPolicyCases /> }
+    else if (Navigation.Uri.Contains("matrixmenus=true"))
+    {
+        <MenuFamilyCases Mode="@(Navigation.Uri.Contains("mode=blazor") ? InteractionMode.Blazor : InteractionMode.Browser)" />
+    }
+    else if (Navigation.Uri.Contains("cost="))
     {
         <MountCostCases />
     }
@@ -11,7 +17,9 @@
     }
     else if (Navigation.Uri.Contains("sweep=true"))
     {
-        @if (Navigation.Uri.Contains("global=true")) { <P1SweepCases /> }
+        @if (Navigation.Uri.Contains("mode=blazor")) { <InteractionModeProvider Mode="InteractionMode.Blazor"><P1SweepCases /></InteractionModeProvider> }
+        else if (Navigation.Uri.Contains("mode=browser")) { <InteractionModeProvider Mode="InteractionMode.Browser"><P1SweepCases /></InteractionModeProvider> }
+        else if (Navigation.Uri.Contains("global=true")) { <P1SweepCases /> }
         else { <InteractionModeProvider Mode="InteractionMode.Browser"><P1SweepCases /></InteractionModeProvider> }
     }
     else if (Navigation.Uri.Contains("editform=true"))
@@ -100,6 +108,8 @@
 </AppProvider>
 
 @code {
+    private bool testHostReady;
+    protected override void OnAfterRender(bool firstRender) { if (firstRender) { testHostReady = true; StateHasChanged(); } }
     private bool commandOpen;
     private long commandRevision;
     private async Task ReportCommandOpen(bool open) { await Task.Delay(200); commandOpen = open; }

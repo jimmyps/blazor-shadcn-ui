@@ -12,7 +12,7 @@ public partial class Checkbox
     [Parameter] public long InteractionRevision { get; set; }
     /// <summary>Canonical acceptance getter for manually wired callbacks.</summary>
     [Parameter] public Func<bool>? AcceptedValueAccessor { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private async Task HandleIndeterminateChanged(bool value)
     {
         if (BrowserInteraction) Indeterminate = value;

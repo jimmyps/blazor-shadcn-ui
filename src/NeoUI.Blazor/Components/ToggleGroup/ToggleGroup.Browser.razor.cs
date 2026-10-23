@@ -10,7 +10,7 @@ public partial class ToggleGroup
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reset browser state and invalidate pending acknowledgements.</summary>
     [Parameter] public long InteractionRevision { get; set; }
-    internal bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    internal bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     /// <summary>Canonical binding expression for single selection.</summary>
     [Parameter] public Expression<Func<string?>>? ValueExpression { get; set; }
     /// <summary>Canonical binding expression for multiple selection.</summary>
@@ -20,8 +20,8 @@ public partial class ToggleGroup
     [CascadingParameter] private Microsoft.AspNetCore.Components.Forms.EditContext? BrowserEditContext { get; set; }
     private string[] BrowserValues => Type == ToggleGroupType.Multiple ? Values?.ToArray() ?? [] : Value == null ? [] : [Value];
     private string[] AcceptedBrowserValues() => AcceptedValuesAccessor?.Invoke() ?? (Type == ToggleGroupType.Multiple
-        ? (ValuesExpression?.Compile().Invoke() ?? Values)?.ToArray() ?? []
-        : (ValueExpression?.Compile().Invoke() ?? Value) is { } value ? [value] : []);
+        ? (ValuesExpression != null ? ValuesExpression.Compile().Invoke() : Values)?.ToArray() ?? []
+        : (ValueExpression != null ? ValueExpression.Compile().Invoke() : Value) is { } value ? [value] : []);
     private async Task ChangeBrowser(string[] values)
     {
         if (Type == ToggleGroupType.Multiple) { if (!ValuesChanged.HasDelegate) Values = [..values]; await ValuesChanged.InvokeAsync([..values]); }

@@ -80,7 +80,7 @@ else
 
     protected override void OnInitialized()
     {
-        mode.Sync(InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode, null, false, 0);
+        mode.Sync(InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus), null, false, 0);
         _context.BrowserEnabled = mode.Enabled;
         _context.State.Orientation = Orientation;
         
@@ -94,7 +94,7 @@ else
 
     protected override void OnParametersSet()
     {
-        mode.Sync(InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode, null, false, 0);
+        mode.Sync(InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus), null, false, 0);
         _context.State.Orientation = Orientation;
         _context.OpenDelay = DelayDuration;
         _context.CloseDelay = DelayDuration;
@@ -105,11 +105,27 @@ else
         }
     }
 
-    private async void HandleContextStateChanged()
+    private bool disposed;
+
+    private void HandleContextStateChanged()
     {
-        if (ValueChanged.HasDelegate)
+        // Hover/close timers notify from the thread pool. Capture this observation
+        // and marshal the callback (including its renderer work) to the dispatcher.
+        if (!disposed) _ = ReportContextStateAsync(_context.ActiveValue);
+    }
+
+    private async Task ReportContextStateAsync(string value)
+    {
+        try
         {
-            await ValueChanged.InvokeAsync(_context.ActiveValue);
+            await InvokeAsync(async () =>
+            {
+                if (!disposed && ValueChanged.HasDelegate) await ValueChanged.InvokeAsync(value);
+            });
+        }
+        catch (Exception exception)
+        {
+            if (!disposed) await DispatchExceptionAsync(exception);
         }
     }
 
@@ -135,6 +151,8 @@ else
 
     public void Dispose()
     {
+        disposed = true;
         _context.OnStateChanged -= HandleContextStateChanged;
+        _context.Dispose();
     }
 }

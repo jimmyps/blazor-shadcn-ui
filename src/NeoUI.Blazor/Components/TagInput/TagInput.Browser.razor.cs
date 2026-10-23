@@ -17,7 +17,7 @@ public partial class TagInput
     [Parameter] public Expression<Func<IReadOnlyList<string>?>>? TagsExpression { get; set; }
     /// <summary>Canonical acceptance getter for manually wired callbacks.</summary>
     [Parameter] public Func<IReadOnlyList<string>?>? AcceptedTagsAccessor { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private bool browserMounted;
     private string[] BrowserValues => _currentTags.ToArray();
     private string[] AcceptedBrowserValues() => (AcceptedTagsAccessor != null ? AcceptedTagsAccessor() : TagsExpression != null ? TagsExpression.Compile().Invoke() : Tags ?? _currentTags)?.ToArray() ?? [];

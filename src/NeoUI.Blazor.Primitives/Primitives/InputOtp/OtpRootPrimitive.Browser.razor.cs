@@ -18,7 +18,7 @@ public partial class OtpRootPrimitive
     [Parameter] public Func<string?>? AcceptedValueAccessor { get; set; }
     /// <summary>Requires every slot before form submission.</summary>
     [Parameter] public bool Required { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private string[] BrowserValues => [Value ?? _context.Value ?? DefaultValue];
     private string[] AcceptedBrowserValues() => [AcceptedValueAccessor != null ? AcceptedValueAccessor() ?? "" : ValueExpression != null ? ValueExpression.Compile().Invoke() ?? "" : Value ?? _context.Value ?? ""];
     private async Task ChangeBrowser(string[] values)

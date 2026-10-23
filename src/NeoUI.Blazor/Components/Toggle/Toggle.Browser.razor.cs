@@ -10,7 +10,7 @@ public partial class Toggle
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reset browser state and invalidate pending acknowledgements.</summary>
     [Parameter] public long InteractionRevision { get; set; }
-    internal bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    internal bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     /// <summary>Binding expression for canonical acceptance and field notifications.</summary>
     [Parameter] public Expression<Func<bool>>? PressedExpression { get; set; }
     /// <summary>Canonical value getter for manual callbacks.</summary>

@@ -10,7 +10,7 @@ public partial class TabsPrimitive
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reapply a controlled UI state after reset.</summary>
     [Parameter] public long InteractionRevision { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Disclosures)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private string[] BrowserValues => new[] { Value ?? _context.State.ActiveValue }.OfType<string>().ToArray();
     private EventCallback<string[]> BrowserChanged => ValueChanged.HasDelegate || OnValueChange.HasDelegate
         ? EventCallback.Factory.Create<string[]>(this, ReportBrowserAsync) : default;

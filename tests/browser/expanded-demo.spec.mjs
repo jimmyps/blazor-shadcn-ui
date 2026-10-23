@@ -15,6 +15,8 @@ test('the expanded gallery uses existing styles, flushes mixed controls and fits
         const quantity=section.getByPlaceholder('Try a partial number',{exact:true}),tags=section.getByPlaceholder('Type a tag or paste a list',{exact:true}),markdown=section.getByPlaceholder('Type, select text, then try Ctrl+B or Ctrl+I',{exact:true});
         await quantity.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();await markdown.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
         await section.locator('[data-neo-browser-field][data-neo-state-ready]').first().waitFor();
+        await section.getByRole('radio',{name:'Weekly digest',exact:true}).click();
+        assert.equal(await section.getByRole('radio',{name:'Weekly digest',exact:true}).getAttribute('aria-checked'),'true');
         await quantity.fill('7');await tags.fill('Engineering');await markdown.fill('Newest expanded draft');await section.getByRole('button',{name:'Save controls',exact:true}).click();
         await section.getByText('Saved quantity 7, 1 tags and the latest editor draft.',{exact:true}).waitFor();
         assert.equal(await markdown.inputValue(),'Newest expanded draft');assert.match(await section.locator('[data-neo-tag-values]').textContent(),/Engineering/);

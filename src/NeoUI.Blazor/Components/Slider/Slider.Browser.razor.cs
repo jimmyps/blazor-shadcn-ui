@@ -11,7 +11,7 @@ public partial class Slider
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to reset browser state and invalidate pending acknowledgements.</summary>
     [Parameter] public long InteractionRevision { get; set; }
-    internal bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    internal bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     /// <summary>Identifies the bound value for acceptance and form validation.</summary>
     [Parameter] public Expression<Func<double>>? ValueExpression { get; set; }
     /// <summary>Reads canonical acceptance for manual callbacks.</summary>

@@ -72,6 +72,8 @@
         <button @onclick="ResetFields" data-testid="sweep-fields-reset">Reset fields</button>
         <p data-testid="sweep-fields-saved">@fieldsSaved</p>
     </section>
+    <ToggleGroup Value="@("one")" ValueExpression="@(() => rejectedChoice)" ValueChanged="@((string? value) => rejectedChoice = null)"><ToggleGroupItem Value="one">Canonical choice one</ToggleGroupItem><ToggleGroupItem Value="two">Canonical choice two</ToggleGroupItem></ToggleGroup>
+    <ToggleGroup Type="ToggleGroupType.Multiple" Values="@(new List<string> { "one" })" ValuesExpression="@(() => rejectedChoices)" ValuesChanged="@((List<string>? values) => rejectedChoices = null)"><ToggleGroupItem Value="one">Canonical multiple one</ToggleGroupItem><ToggleGroupItem Value="two">Canonical multiple two</ToggleGroupItem></ToggleGroup>
     <section data-testid="sweep-special">
         <BrowserEditForm Model="@special" OnValidSubmit="SaveSpecial">
             <RadioGroup TValue="string" @bind-Value="special.Radio" AriaLabel="Sweep radio" InteractionRevision="@specialRevision"><RadioGroupItem TValue="string" Value="@("one")" AriaLabel="Sweep radio one" /><RadioGroupItem TValue="string" Value="@("disabled")" Disabled AriaLabel="Sweep radio disabled" /><RadioGroupItem TValue="string" Value="@("two")" AriaLabel="Sweep radio two" /></RadioGroup>
@@ -109,10 +111,13 @@
         <DateInput Value="@(new DateOnly(2026,10,22))" AriaLabel="Sweep date picker" />
         <TimeInput Value="@(new TimeOnly(13,45))" Use12Hour="false" AriaLabel="Sweep time picker" />
     </section>
+    <TimeInput @bind-Value="steppedTime" Use12Hour="false" MinuteStep="15" ShowPickerButton="false" AriaLabel="Stepped time" />
     <MaskedInput Value="@boundaryMask" ValueChanged="ChangeBoundaryMask" AcceptedValueAccessor="@(() => boundaryMask)" Mask="000-000" AriaLabel="Sweep boundary mask" />
     <p data-testid="sweep-mask-boundaries">@maskBoundaries</p>
     <section data-testid="sweep-focus-api">
+        <button type="button" data-testid="keyboard-date-entry">Before empty date</button>
         <DateInput @ref="emptyDate" Placeholder="Empty date API" AriaLabel="Empty date API" ShowPickerButton="false" />
+        <button type="button" data-testid="keyboard-time-entry">Before empty time</button>
         <TimeInput @ref="emptyTime" Placeholder="Empty time API" AriaLabel="Empty time API" ShowPickerButton="false" />
         <button type="button" @onclick="() => emptyDate!.FocusAsync()">Focus empty date</button>
         <button type="button" @onclick="() => emptyTime!.FocusAsync()">Focus empty time</button>
@@ -120,10 +125,13 @@
     <p data-testid="sweep-bound">@model.Single</p>
     <p data-testid="sweep-saved">@saved</p>
     <MultiSelect TItem="string" Items="@choices" ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
-                 SearchInterval="250" Placeholder="Sweep select" SearchPlaceholder="Sweep multi search" />
+                 MatchTriggerWidth="true" SearchInterval="250" Placeholder="Sweep select" SearchPlaceholder="Sweep multi search" />
 </section>
 
 @code {
+    private TimeOnly? steppedTime = new TimeOnly(13,7);
+    private List<string>? rejectedChoices = ["one"];
+    private string? rejectedChoice = "one";
     private DateInput? emptyDate;
     private TimeInput? emptyTime;
     private string? boundaryMask;

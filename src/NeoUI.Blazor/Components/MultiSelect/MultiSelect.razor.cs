@@ -16,7 +16,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 {
     [Inject] private Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults { get; set; } = default!;
     [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
-    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value);
+    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, family: NeoUI.Blazor.Primitives.InteractionFamily.Selection);
     private IJSObjectReference? browserListModule, browserListController, browserScroll;
     private readonly SemaphoreSlim browserGate = new(1, 1);
     private bool browserDisposed;

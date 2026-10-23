@@ -15,7 +15,7 @@ public partial class RangeSlider
     [Parameter] public Func<double>? AcceptedMinValueAccessor { get; set; }
     /// <summary>Canonical maximum getter for manual asynchronous callbacks.</summary>
     [Parameter] public Func<double>? AcceptedMaxValueAccessor { get; set; }
-    private bool BrowserInteraction => (InteractionMode ?? BrowserPolicy?.Mode ?? BrowserDefaults.Value.DefaultMode) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+    private bool BrowserInteraction => (BrowserDefaults.Value.Resolve(InteractionMode, BrowserPolicy, InteractionFamily.Inputs)) == NeoUI.Blazor.Primitives.InteractionMode.Browser;
     private string[] BrowserValues => [MinValue.ToString(CultureInfo.InvariantCulture), MaxValue.ToString(CultureInfo.InvariantCulture)];
     private string[] AcceptedBrowserValues() => [(AcceptedMinValueAccessor?.Invoke() ?? MinValueExpression?.Compile().Invoke() ?? MinValue).ToString(CultureInfo.InvariantCulture), (AcceptedMaxValueAccessor?.Invoke() ?? MaxValueExpression?.Compile().Invoke() ?? MaxValue).ToString(CultureInfo.InvariantCulture)];
     private object BrowserOptions => new { min = Min, max = Max, step = Step, vertical = Orientation == SliderOrientation.Vertical, half = HandleHalfSizePx, updateOn = "change" };

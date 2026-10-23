@@ -57,3 +57,35 @@ using (var unrelated = Microsoft.JSInterop.DotNetObjectReference.Create(new obje
     Require(!BrowserFloatingEvents.IsReferenceDisposed(unrelated), "An unrelated disposed object must not be mistaken for an ended floating-owner lifetime.");
 }
 Console.WriteLine("Passed: late binding echoes, explicit commands during callbacks, stale menu acknowledgements, item resets, owner bridge lifetime checks.");
+
+var options = new InteractionOptions();
+foreach (var family in Enum.GetValues<InteractionFamily>())
+{
+    Require(options.Resolve(null, null, family) == InteractionMode.Blazor, $"{family}: library default must remain Blazor.");
+    options.DefaultMode = InteractionMode.Browser;
+    Require(options.Resolve(null, null, family) == InteractionMode.Browser, $"{family}: omitted override inherits global.");
+    options.DefaultMode = InteractionMode.Blazor;
+}
+options.Floating = options.Menus = options.Disclosures = InteractionMode.Browser;
+options.Inputs = options.Selection = InteractionMode.Blazor;
+foreach (var family in Enum.GetValues<InteractionFamily>())
+{
+    var expected = family is InteractionFamily.Inputs or InteractionFamily.Selection ? InteractionMode.Blazor : InteractionMode.Browser;
+    Require(options.Resolve(null, null, family) == expected, $"{family}: independent family default.");
+    Require(options.Resolve(null, new(InteractionMode.Browser), family) == InteractionMode.Browser, $"{family}: scoped override wins.");
+    Require(options.Resolve(InteractionMode.Blazor, new(InteractionMode.Browser), family) == InteractionMode.Blazor, $"{family}: explicit Blazor wins.");
+    Require(options.Resolve(InteractionMode.Browser, new(InteractionMode.Blazor), family) == InteractionMode.Browser, $"{family}: explicit Browser wins.");
+}
+options.DefaultMode = InteractionMode.Browser;
+Require(options.Resolve(null, null, InteractionFamily.Inputs, InteractionMode.Browser) == InteractionMode.Blazor, "Input family must not be bypassed by a Browser popover.");
+options.Inputs = null;
+Require(options.Resolve(null, null, InteractionFamily.Inputs, InteractionMode.Blazor) == InteractionMode.Blazor, "Without a family setting retain composed Blazor exception compatibility.");
+Require(options.Resolve(null, null, InteractionFamily.Inputs) == InteractionMode.Browser, "Clearing a family override restores the global default.");
+Console.WriteLine("Passed: family isolation, global fallback, explicit and scoped precedence, composed input exceptions.");
+
+var outerScope = new InteractionPolicy(InteractionMode.Blazor);
+var menuScope = new InteractionPolicy(InteractionMode.Browser, InteractionFamily.Menus, outerScope);
+Require(options.Resolve(null, menuScope, InteractionFamily.Menus) == InteractionMode.Browser, "Nearest family scope overrides enclosing general scope.");
+Require(options.Resolve(null, menuScope, InteractionFamily.Inputs) == InteractionMode.Blazor, "Unrelated scope families fall through to the enclosing scope.");
+Require(options.Resolve(null, new(InteractionMode.Browser, InteractionFamily.Menus), InteractionFamily.Inputs) == options.DefaultMode, "A menu-only scope must not opt unrelated fields in.");
+Console.WriteLine("Passed: family-scoped policies preserve unrelated fields and nested scope fallback.");

@@ -4,7 +4,7 @@
 @inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @* DatePicker - Date selection with Calendar in Popover *@
 
-<Popover InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" @bind-Open="_isOpen">
+<Popover InteractionMode="@(BrowserInteraction ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)" InteractionRevision="@InteractionRevision" @bind-Open="_isOpen">
     <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
         @if (ShowIcon)
         {
@@ -30,7 +30,7 @@
 
 @code {
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
-    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value);
+    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, family: NeoUI.Blazor.Primitives.InteractionFamily.Selection);
 
     /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
     [Parameter] public InteractionMode? InteractionMode { get; set; }

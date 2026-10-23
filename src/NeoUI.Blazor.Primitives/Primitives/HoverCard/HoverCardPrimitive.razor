@@ -14,7 +14,7 @@
     /// <summary>Increment to reapply a controlled open command after reset.</summary>
     [Parameter] public long InteractionRevision { get; set; }
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
-    private InteractionMode EffectiveMode => InteractionMode ?? InteractionPolicy?.Mode ?? InteractionDefaults.Value.DefaultMode;
+    private InteractionMode EffectiveMode => InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Floating);
     private void SyncBrowser()
     {
         _context.Browser.OpenChanged = OpenChanged.HasDelegate || OnOpenChange.HasDelegate ? async open =>
