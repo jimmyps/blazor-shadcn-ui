@@ -539,21 +539,20 @@ all other portaled components.
 Put `data-neo-floating-owner="anchor-id"` on the **portaled content element** that contains the
 click targets. The value is the ID of a connected element inside the owning popover, usually
 the nested control's trigger or a stable wrapper around it. Use a unique ID per instance and
-keep that anchor mounted while its portal is interactive. For example, the primitive Select
-content forwards unmatched attributes to its portaled listbox:
+keep that anchor mounted while its portal is interactive. For example, styled SelectContent
+forwards unmatched attributes to its portaled listbox:
 
 ```razor
 <Popover InteractionMode="InteractionMode.Browser">
     <PopoverTrigger>Settings</PopoverTrigger>
     <PopoverContent>
         <div id="settings-choice-anchor">
-            <SelectPrimitive TValue="string" InteractionMode="InteractionMode.Blazor">
-                <SelectTriggerPrimitive TValue="string">Choose an option</SelectTriggerPrimitive>
-                <SelectContentPrimitive TValue="string"
-                    data-neo-floating-owner="settings-choice-anchor">
-                    <SelectItemPrimitive TValue="string" Value="@("first")">First</SelectItemPrimitive>
-                </SelectContentPrimitive>
-            </SelectPrimitive>
+            <Select TValue="string" InteractionMode="InteractionMode.Blazor">
+                <SelectTrigger>Choose an option</SelectTrigger>
+                <SelectContent data-neo-floating-owner="settings-choice-anchor">
+                    <SelectItem TValue="string" Value="@("first")">First</SelectItem>
+                </SelectContent>
+            </Select>
         </div>
     </PopoverContent>
 </Popover>
@@ -561,9 +560,10 @@ content forwards unmatched attributes to its portaled listbox:
 
 Custom portals can put the same attribute on their content root. Marking only their trigger,
 or a wrapper that remains in the original DOM, does not mark the portaled click targets. The
-styled SelectContent currently does not expose this attribute; use the primitive when this
-explicit ownership is needed. This marker controls outside-click containment; it does not
-change the nested control's interaction mode, focus management or application callbacks.
+styled SelectContent forwards additional attributes to its listbox; in BottomSheet presentation
+they are applied to the scroll container (BottomSheet still requires Blazor mode). This marker
+controls outside-click containment; it does not change the nested control's interaction mode,
+focus management or application callbacks.
 Clicks outside both layers still dismiss the Browser popover.
 
 ## Persistent content: initial render and DOM cost

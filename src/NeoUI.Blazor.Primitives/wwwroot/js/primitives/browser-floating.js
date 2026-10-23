@@ -331,9 +331,13 @@ export function createController(floating, initialOptions, initialPosition, brid
     };
     const pointerDown = event => {
         if (!opened || !options.closeOnClickOutside) return;
-        const target = logicalTarget(event.target);
+        const target = event.target;
+        const owner = logicalTarget(target);
+        // An ownership marker adds logical containment; it must not discard the
+        // physical hit inside a controller's own content (e.g. a marked Browser Select).
         const inside = [...controllers.values()].some(other => belongsTo(other) &&
-            (other.content.contains(target) || other.trigger()?.contains(target)));
+            (other.content.contains(target) || other.trigger()?.contains(target) ||
+             other.content.contains(owner) || other.trigger()?.contains(owner)));
         if (!inside) { close(false); notify('outside', false); }
     };
     const keydown = event => {
@@ -570,10 +574,10 @@ export function forTrigger(id) {
 /** Tests logical containment when a composed navigation control contains portaled children. */
 export function ownsFloatingDescendant(root, target) {
     if (!target) return false;
-    target = logicalTarget(target);
-    if (root.contains(target)) return true;
+    const owner = logicalTarget(target);
+    if (root.contains(target) || root.contains(owner)) return true;
     return [...controllers.values()].some(controller => {
-        if (!controller.isOpen || !controller.content.contains(target)) return false;
+        if (!controller.isOpen || !(controller.content.contains(target) || controller.content.contains(owner))) return false;
         for (let current = controller; current; current = current.parent())
             if (root.contains(current.trigger())) return true;
         return false;

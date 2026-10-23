@@ -120,3 +120,15 @@ not every possible asynchronous descendant render. The mixed-portal ownership co
 `data-neo-floating-owner` example are documented in the Browser interaction guide. The
 TagInput reset assertion waits for the asynchronous authoritative badge render before checking
 its text; reopening the shell locally does not imply the reset has already reached the browser.
+
+
+### Styled Select content ownership
+
+Styled SelectContent captures additional attributes and forwards them to its primitive listbox,
+or to the scroll container for the Blazor-only BottomSheet presentation. The guide now uses
+styled components in its ownership example. Regression cases select and reselect items in a
+Blazor Select, a Browser Select and a Blazor BottomSheet inside a Browser popover, verify the
+application value and forwarded attributes, and then dismiss the outer shell by clicking outside.
+The Browser case also guards against replacing physical hit containment with the logical anchor:
+a marker supplements containment so it cannot close its own listbox before an item click arrives.
+The shared ownership helper retains both physical and logical targets for composed controls.

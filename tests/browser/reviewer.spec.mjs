@@ -133,3 +133,30 @@ for (const mode of ['default', 'blazor', 'browser']) test(`same-batch dialog and
   assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
+
+for (const [mode,sheet] of [['blazor',false],['browser',false],['blazor',true]]) test(`styled SelectContent forwards portal ownership and preserves interaction (${mode}, sheet=${sheet})`,async()=>{
+ const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(30000);await page.addInitScript(floating);
+ try{
+  await page.goto(`${url}/?selectownership=true&mode=${mode}${sheet?'&sheet=true':''}`);
+  await page.locator('[data-testid="test-host-ready"][data-ready="true"]').waitFor({state:'attached'});
+  const outer=page.getByRole('button',{name:'Owned select settings',exact:true}),shell=page.locator('[id="'+await outer.getAttribute('aria-controls')+'"]');
+  await shell.locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});await outer.click();await shell.waitFor();
+  const trigger=page.getByTestId('ownership-select-trigger'),content=page.getByTestId('ownership-select-content');
+  await trigger.locator('xpath=self::*[@aria-expanded="false"]').waitFor({state:'attached'});await trigger.click();await content.waitFor();
+  assert.equal(await content.getAttribute('data-neo-floating-owner'),'ownership-select-anchor');assert.equal(await content.getAttribute('title'),'Owned choices');
+  assert.equal(await content.evaluate(el=>Boolean(document.getElementById(el.dataset.neoFloatingOwner)?.isConnected)),true);
+  if(!sheet){assert.equal(await content.getAttribute('role'),'listbox');assert.match(await content.getAttribute('class'),/ownership-list/);assert.match(await content.getAttribute('class'),/bg-popover/);assert.equal(await shell.evaluate((el,id)=>el.contains(document.getElementById(id)),await trigger.getAttribute('aria-controls')),false);}
+  assert.deepEqual(await content.evaluate(async el=>{
+   const {ownsFloatingDescendant}=await import(new URL('_content/NeoUI.Blazor.Primitives/js/primitives/browser-floating.js',document.baseURI).href);
+   const option=el.querySelector('[role=option]');
+   return [ownsFloatingDescendant(el,option),ownsFloatingDescendant(document.getElementById(el.dataset.neoFloatingOwner),option),ownsFloatingDescendant(document.querySelector('[data-testid="ownership-outside"]'),option)];
+  }),[true,true,false]);
+  await content.getByRole('option',{name:'Second',exact:true}).click();
+  await page.getByTestId('ownership-server-value').filter({hasText:'second'}).waitFor();await content.waitFor({state:'hidden'});await trigger.locator('xpath=self::*[@aria-expanded="false"]').waitFor({state:'attached'});
+  assert.equal(await outer.getAttribute('aria-expanded'),'true');assert.equal(await shell.isVisible(),true);
+  // Reopen and select again: ownership must not interfere with the nested control's lifecycle.
+  await trigger.click();await content.waitFor();await content.getByRole('option',{name:'First',exact:true}).click();
+  await page.getByTestId('ownership-server-value').filter({hasText:'first'}).waitFor();await content.waitFor({state:'hidden'});await trigger.locator('xpath=self::*[@aria-expanded="false"]').waitFor({state:'attached'});assert.equal(await outer.getAttribute('aria-expanded'),'true');
+  await page.getByTestId('ownership-outside').click();await shell.waitFor({state:'hidden'});await page.getByTestId('ownership-outside').filter({hasText:'Outside 1'}).waitFor();assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});

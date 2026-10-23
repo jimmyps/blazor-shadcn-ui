@@ -15,6 +15,7 @@
     <Content Include="../NeoUI.BrowserTests.Host/PortalRefreshCases.razor" Link="PortalRefreshCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/PortalRefreshBranch.razor" Link="PortalRefreshBranch.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/PortalRefreshLeaf.razor" Link="PortalRefreshLeaf.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/StyledSelectOwnershipCases.razor" Link="StyledSelectOwnershipCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/ReviewLayerCases.razor" Link="ReviewLayerCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FamilyPolicyCases.razor" Link="FamilyPolicyCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/MenuFamilyCases.razor" Link="MenuFamilyCases.razor" />
