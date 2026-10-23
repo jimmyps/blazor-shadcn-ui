@@ -15,6 +15,7 @@ export function initialize(root, bridge) {
     let editor, observer, dragStart;
     const observe = () => observer?.observe(root,{attributes:true,attributeFilter:['data-neo-state-host'],childList:true,subtree:true});
     const queue = [], waiters = new Set(), doc = root.ownerDocument;
+    const rangeRtl = () => getComputedStyle(root.querySelector('[data-neo-field-range]') ?? root).direction === 'rtl';
     const own = element => element.closest('[data-neo-browser-field]') === root;
     const items = () => [...root.querySelectorAll('[data-neo-field-item]')].filter(own);
     const disabled = item => config.disabled || item?.matches(':disabled,[data-disabled="true"]');
@@ -42,15 +43,15 @@ export function initialize(root, bridge) {
         for (const hidden of root.querySelectorAll('[data-neo-field-hidden]')) if (own(hidden)) hidden.value = config.kind === 'checkbox' || config.kind === 'switch' ? String(values.includes('checked')) : config.kind === 'radio' && values.length ? String(JSON.parse(values[0])) : values.join(',');
         const range = root.querySelector('[data-neo-field-range]');
         if (range) {
-            const [low,high] = values.map(Number), options = config.fieldOptions ?? {}, min = options.min ?? 0, max = options.max ?? 100;
+            const [low,high] = values.map(Number), options = config.fieldOptions ?? {}, min = options.min ?? 0, max = options.max ?? 100, rtl = !options.vertical && rangeRtl();
             for (const input of root.querySelectorAll('input[type="range"]')) input.value = values[Number(input.dataset.neoFieldIndex ?? 0)] ?? String(min);
             const percentage = value => max === min ? 0 : (value-min)/(max-min)*100;
-            if (range.matches('input[type="range"]')) range.style.background = `linear-gradient(to right, var(--primary) ${percentage(low)}%, var(--input) ${percentage(low)}%)`;
+            if (range.matches('input[type="range"]')) range.style.background = `linear-gradient(to ${rtl?'left':'right'}, var(--primary) ${percentage(low)}%, var(--input) ${percentage(low)}%)`;
             const fill = root.querySelector('[data-neo-field-fill]');
-            if (fill) { fill.style[options.vertical?'bottom':'left'] = `${percentage(low)}%`; fill.style[options.vertical?'height':'width'] = `${percentage(high)-percentage(low)}%`; }
+            if (fill) { fill.style[options.vertical?'bottom':'left'] = `${rtl?100-percentage(high):percentage(low)}%`; fill.style[options.vertical?'height':'width'] = `${percentage(high)-percentage(low)}%`; }
             for (const thumb of root.querySelectorAll('[data-neo-field-thumb]')) {
                 const value = values[Number(thumb.dataset.neoFieldThumb)]; thumb.setAttribute('aria-valuenow',value);
-                thumb.style[options.vertical ? 'bottom' : 'left'] = `calc(${percentage(Number(value))}% - ${options.half ?? 0}px)`;
+                thumb.style[options.vertical ? 'bottom' : 'left'] = `calc(${rtl?100-percentage(Number(value)):percentage(Number(value))}% - ${options.half ?? 0}px)`;
                 thumb.setAttribute('aria-valuemin',String(Number(thumb.dataset.neoFieldThumb)===1?low:min));thumb.setAttribute('aria-valuemax',String(Number(thumb.dataset.neoFieldThumb)===0?high:max));
             }
         }
@@ -123,7 +124,8 @@ export function initialize(root, bridge) {
     const keydown = event => {
         if(config.kind==='range' && event.target.matches('[data-neo-field-thumb]') && !locked && !config.disabled) {
             const index=Number(event.target.dataset.neoFieldThumb),current=Number(values[index]),options=config.fieldOptions;
-            const steps={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1,PageUp:10,PageDown:-10};
+            const horizontalSign=!options.vertical&&rangeRtl()?-1:1;
+            const steps={ArrowRight:horizontalSign,ArrowUp:1,ArrowLeft:-horizontalSign,ArrowDown:-1,PageUp:10,PageDown:-10};
             if(event.key in steps||['Home','End'].includes(event.key)){event.preventDefault();event.stopImmediatePropagation();rangeValue(index,event.key==='Home'?options.min:event.key==='End'?options.max:current+steps[event.key]*options.step);return;}
         }
         if (config.kind === 'otp' && event.target.matches('[data-neo-otp-slot]') && !event.isComposing && !locked && !config.disabled) {
@@ -153,17 +155,20 @@ export function initialize(root, bridge) {
         changed(next,(config.fieldOptions?.updateOn ?? 'change')==='input');
     };
     const commit = event => {if(event.target.matches('input[type="range"]')&&own(event.target)){input(event);if(root.hasAttribute('data-neo-field-pending'))notify();}};
+    const rangeRatio=event=>{
+        const options=config.fieldOptions,rect=root.querySelector('[data-neo-field-range]').getBoundingClientRect();
+        return options.vertical?(rect.bottom-event.clientY)/rect.height:rangeRtl()?(rect.right-event.clientX)/rect.width:(event.clientX-rect.left)/rect.width;
+    };
     const moveRange=event=>{
         if(dragging===undefined||locked||config.disabled)return;
-        const options=config.fieldOptions,rect=root.querySelector('[data-neo-field-range]').getBoundingClientRect();
-        const ratio=options.vertical?(rect.bottom-event.clientY)/rect.height:(event.clientX-rect.left)/rect.width;
+        const options=config.fieldOptions,ratio=rangeRatio(event);
         rangeValue(dragging,options.min+Math.max(0,Math.min(1,ratio))*(options.max-options.min),false);
     };
     const pointerDown=event=>{
         if(config.kind!=='range'||locked||config.disabled||event.button!==0||!event.target.closest('[data-neo-field-range]'))return;
         const thumb=event.target.closest('[data-neo-field-thumb]');
         if(thumb)dragging=Number(thumb.dataset.neoFieldThumb);
-        else {const rect=root.querySelector('[data-neo-field-range]').getBoundingClientRect(),options=config.fieldOptions;const target=options.min+(options.vertical?(rect.bottom-event.clientY)/rect.height:(event.clientX-rect.left)/rect.width)*(options.max-options.min);dragging=Math.abs(target-Number(values[0]))<=Math.abs(target-Number(values[1]))?0:1;}
+        else {const options=config.fieldOptions;const target=options.min+rangeRatio(event)*(options.max-options.min);dragging=Math.abs(target-Number(values[0]))<=Math.abs(target-Number(values[1]))?0:1;}
         dragStart=[...values];event.preventDefault();root.querySelector(`[data-neo-field-thumb="${dragging}"]`)?.focus();moveRange(event);
         root.setPointerCapture(event.pointerId);
     };

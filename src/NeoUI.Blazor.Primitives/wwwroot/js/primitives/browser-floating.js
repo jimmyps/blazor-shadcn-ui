@@ -14,6 +14,18 @@ function observeRemoval(doc) {
     removalObserver.observe(doc.body, { childList: true, subtree: true });
 }
 const itemSelector = '[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"], [role="option"]';
+// Non-controller portals (for example TagInput suggestions) retain their anchor's
+// logical containment without treating unrelated portaled content as inside.
+function logicalTarget(target) {
+    const seen = new Set();
+    for (let layer; (layer = target?.closest?.('[data-neo-floating-owner]')) && !seen.has(layer);) {
+        seen.add(layer);
+        const owner = layer.ownerDocument.getElementById(layer.dataset.neoFloatingOwner);
+        if (!owner?.isConnected) break;
+        target = owner;
+    }
+    return target;
+}
 const disabled = element => !element || element.matches(':disabled, [aria-disabled="true"], [data-disabled="true"]');
 
 /** Creates a persistent controller. The injectable positioning adapter supports browser regression tests. */
@@ -319,12 +331,13 @@ export function createController(floating, initialOptions, initialPosition, brid
     };
     const pointerDown = event => {
         if (!opened || !options.closeOnClickOutside) return;
+        const target = logicalTarget(event.target);
         const inside = [...controllers.values()].some(other => belongsTo(other) &&
-            (other.content.contains(event.target) || other.trigger()?.contains(event.target)));
+            (other.content.contains(target) || other.trigger()?.contains(target)));
         if (!inside) { close(false); notify('outside', false); }
     };
     const keydown = event => {
-        if (trigger()?.contains(event.target) && event.target.closest('[data-neo-trigger-action]')) return;
+        if (event.key !== 'Escape' && trigger()?.contains(event.target) && event.target.closest('[data-neo-trigger-action]')) return;
         if (event.isComposing || event.key === 'Process') return;
         const onTrigger = trigger()?.contains(event.target);
         if (isHover()) {
@@ -350,10 +363,14 @@ export function createController(floating, initialOptions, initialPosition, brid
             contextPoint = { x: rect.left, y: rect.bottom };
             reportPoint(); void open(); return;
         }
-        if (!opened || !inContent) return;
-        if (event.key === 'Escape' && options.closeOnEscape) {
+        if (opened && (onTrigger || inContent) && event.key === 'Escape' && options.closeOnEscape) {
+            // Let the innermost open controller consume Escape, including when
+            // focus remains on a nested trigger inside this controller's content.
+            if ([...controllers.values()].some(other => other !== controller && other.isOpen && belongsTo(other) &&
+                (other.content.contains(event.target) || other.trigger()?.contains(event.target)))) return;
             stop(event); close(); notify('escape', false); return;
         }
+        if (!opened || !inContent) return;
         if (event.key === 'Tab') { if (options.kind !== 'popover') close(true); return; }
         if (options.kind === 'popover' || event.target.matches('input, textarea, select, [contenteditable="true"]')) return;
         const enabled = items();
@@ -553,6 +570,8 @@ export function forTrigger(id) {
 /** Tests logical containment when a composed navigation control contains portaled children. */
 export function ownsFloatingDescendant(root, target) {
     if (!target) return false;
+    target = logicalTarget(target);
+    if (root.contains(target)) return true;
     return [...controllers.values()].some(controller => {
         if (!controller.isOpen || !controller.content.contains(target)) return false;
         for (let current = controller; current; current = current.parent())

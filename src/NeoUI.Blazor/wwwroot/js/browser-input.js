@@ -5,8 +5,9 @@ const controllers = new WeakMap();
 const controllerFor = element => controllers.get(element) ?? element?.[Symbol.for('NeoUI.BrowserField')];
 const activeScopes = new Map();
 const editFormGuards = new WeakMap();
-export { setConnectionAvailable } from '../../NeoUI.Blazor.Primitives/js/primitives/browser-connection.js';
-import { canInvokeServer } from '../../NeoUI.Blazor.Primitives/js/primitives/browser-connection.js';
+// Resolve from the application's base, not this module's possibly fingerprinted URL.
+const { canInvokeServer, setConnectionAvailable } = await import(new URL('_content/NeoUI.Blazor.Primitives/js/primitives/browser-connection.js', document.baseURI).href);
+export { setConnectionAvailable };
 
 export function initialize(element, bridge) {
     if (!element || controllers.has(element)) return;

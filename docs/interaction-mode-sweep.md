@@ -91,3 +91,12 @@ The gallery discovery check allows retained portals to initialize after enhanced
 search/interaction assertion deadlines remain unchanged. Consult the PR's latest workflow
 run for the current WASM/gallery/WebKit result rather than treating these counts as a blanket
 compatibility guarantee.
+
+The small-item follow-up adds focused-trigger Escape inside a Dialog and nested popovers,
+horizontal RTL range pointer/fill/keys with unchanged vertical stepping, Browser and Blazor
+TagInput suggestions inside a Browser popover, and controlled tag reset/independent server
+actions. The nested case also guards against portal-host refresh feedback during rendering.
+Input lifetime coverage disposes a still-connected element during Browser module import and
+then verifies one fresh controller; asset-alias tests verify one connection module URL at
+both root and path-prefixed application bases. The expanded reviewer suite passes 21 Server
+checks locally; the workflow retains its full both-defaults, WASM and gallery gates.

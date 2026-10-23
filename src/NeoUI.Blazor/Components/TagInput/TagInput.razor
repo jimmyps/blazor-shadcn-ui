@@ -15,7 +15,7 @@
     @if (HasSuggestions && browserMounted)
     {
         <FloatingPortal IsOpen="true" ForceMount="true" AnchorElement="@_containerRef" PortalId="@_portalId" Side="PopoverSide.Bottom" Align="PopoverAlign.Start" Offset="4" MatchAnchorWidth="true" ZIndex="60">
-            <ul id="@_contentId" role="listbox" hidden aria-label="@Localizer["TagInput.TagSuggestions"]" class="rounded-md border bg-popover text-popover-foreground shadow-md outline-none p-1 max-h-48 overflow-y-auto"></ul>
+            <ul id="@_contentId" data-neo-floating-owner="@_containerId" role="listbox" hidden aria-label="@Localizer["TagInput.TagSuggestions"]" class="rounded-md border bg-popover text-popover-foreground shadow-md outline-none p-1 max-h-48 overflow-y-auto"></ul>
         </FloatingPortal>
     }
 }
@@ -89,7 +89,7 @@ else
                     Offset="4"
                     MatchAnchorWidth="true"
                     ZIndex="60">
-        <ul id="@_contentId"
+        <ul id="@_contentId" data-neo-floating-owner="@_containerId"
             role="listbox"
             aria-label="@Localizer["TagInput.TagSuggestions"]"
             class="rounded-md border bg-popover text-popover-foreground shadow-md outline-none p-1 max-h-48 overflow-y-auto">

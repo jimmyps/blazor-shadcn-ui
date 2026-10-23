@@ -215,9 +215,11 @@
         // Uses RefreshPortal (not RegisterPortal) to avoid replacing the RenderFragment
         // delegate, which would break ElementReference stability. The existing delegate
         // captures 'this', so PortalHost reads current ChildContent automatically.
-        // Note: PortalHost ignores refresh calls during its own render cycle, preventing
-        // infinite loops when FloatingPortal is nested inside another portal.
-        if (_isMounted && !string.IsNullOrEmpty(PortalId))
+        // The category host supplies a render context to its descendants. Its current
+        // render already carries these parameters; requesting another refresh here
+        // would loop when a FloatingPortal is nested inside another portal.
+        if (_isMounted && !string.IsNullOrEmpty(PortalId) &&
+            HostRenderContext is not { Category: PortalCategory.Overlay, IsRendering: true })
         {
             PortalService.RefreshPortal(PortalId);
         }
@@ -505,6 +507,8 @@
         // _isPositioned stays TRUE throughout ForceMount visibility cycles.
         // Only reset to false on full unmount (MountPortalAsync or CleanupAsync).
     }
+
+    [CascadingParameter] private NeoUI.Blazor.Primitives.Services.PortalRenderContext? HostRenderContext { get; set; }
 
     [CascadingParameter(Name = "NeoUIInputScopeId")] private string? InputScopeId { get; set; }
     [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }

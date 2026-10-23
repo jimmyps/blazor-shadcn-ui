@@ -97,6 +97,6 @@ not create tags or publish packages; this branch remains unreleased until that r
 - Selection roots explicitly forward their resolved mode to internal shells/search. An Inputs family setting is independent of a Popover shell exception; use an Inputs-specific scope/component override when needed.
 - Provider mode changes recreate the subtree automatically; synchronize drafts before changing policy.
 - Invalid formatted or partial segmented drafts block synchronization even under novalidate and are surfaced through OnFlushFailed. Standard native constraint and EditContext handler semantics are preserved.
-- Known unsent drafts can flush after reconnect; uncertain business callback delivery is not automatically replayed.
+- Known unsent drafts can flush after reconnect; uncertain business callback delivery is not automatically replayed. In OnFlushFailed, reconcile the pending operation and authoritative value, then increment ValueRevision (InteractionRevision for primitive fields/TagInput), even for an unchanged value. Offer visible recovery; do not silently discard the draft or automatically replay Save. See [the recovery example](browser-interactions.md#recovering-from-a-timeout-or-uncertain-delivery).
 
 See [the detailed compatibility notes and keyboard shortcuts](browser-interactions.md#reviewer-follow-up-precedence-validation-and-compatibility).

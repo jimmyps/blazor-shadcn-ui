@@ -37,3 +37,78 @@ test('tag suggestion and rejection callbacks honor the shared disconnected signa
 test('a default-mode calendar removed by its selection callback does not focus a disposed element',async()=>{const{page,errors}=await open(true);try{const calendar=page.getByTestId('review-calendar');assert.ok(await calendar.locator('[data-neo-calendar-day][data-focused]').count()<=1);await calendar.locator('[data-neo-calendar-day]').first().click();await calendar.waitFor({state:'detached'});await page.getByTestId('review-alive').click();await page.getByTestId('review-alive').filter({hasText:'Alive 1'}).waitFor();assert.deepEqual(errors,[]);}finally{await page.close();}});
 
 test('rejected tab observations do not mask a later application command or replay its callback',async()=>{const{page,errors}=await open();try{const root=page.getByTestId('review-echo-tabs');await root.locator('[data-neo-state-ready]').waitFor({state:'attached'});for(const[name,count]of[['Rejected second tab','1'],['Rejected third tab','2']]){await root.getByRole('tab',{name,exact:true}).click();await page.getByTestId('review-tab-reports').filter({hasText:count}).waitFor();}await page.getByTestId('review-tab-command').click();await root.getByRole('tab',{name:'Rejected second tab',exact:true}).locator('xpath=self::*[@aria-selected="true"]').waitFor();assert.equal(await root.getByRole('tab',{name:'Rejected third tab',exact:true}).getAttribute('aria-selected'),'false');assert.equal(await page.getByTestId('review-tab-reports').textContent(),'2');assert.deepEqual(errors,[]);}finally{await page.close();}});
+
+
+async function openLayers(legacyTags=false){
+ const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(30000);await page.addInitScript(floating);await page.goto(url+'/?reviewlayers=true'+(legacyTags?'&legacytags=true':''));await page.locator('[data-testid="test-host-ready"][data-ready="true"]').waitFor({state:'attached'});await page.getByPlaceholder('Review layer ready').locator('xpath=self::*[@data-neo-input-ready]').waitFor();return{page,errors};
+}
+
+test('Escape on a focused Browser popover trigger dismisses its shell before the enclosing dialog',async()=>{
+ const{page,errors}=await openLayers();try{
+  await page.getByRole('button',{name:'Review escape dialog',exact:true}).click();const dialog=page.getByRole('dialog');await dialog.waitFor();
+  const trigger=dialog.getByRole('button',{name:'Review escape popover',exact:true});const content=page.locator('[id="'+await trigger.getAttribute('aria-controls')+'"]');await content.locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});
+  await trigger.click();await content.waitFor();await trigger.focus();await trigger.press('Escape');await content.waitFor({state:'hidden'});assert.equal(await dialog.isVisible(),true);assert.equal(await trigger.getAttribute('aria-expanded'),'false');assert.equal(await trigger.evaluate(el=>el===document.activeElement),true);
+  await trigger.click();await content.waitFor();const inner=content.getByRole('button',{name:'Review inner popover',exact:true}),innerContent=page.locator('[id="'+await inner.getAttribute('aria-controls')+'"]');await inner.click();await innerContent.waitFor();await inner.focus();await inner.press('Escape');await innerContent.waitFor({state:'hidden'});assert.equal(await content.isVisible(),true);assert.equal(await dialog.isVisible(),true);
+  await trigger.focus();await trigger.press('Escape');await content.waitFor({state:'hidden'});await trigger.press('Escape');await dialog.waitFor({state:'hidden'});assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+test('Browser RangeSlider mirrors horizontal RTL pointer, fill and arrow behavior while vertical stepping stays unchanged',async()=>{
+ const{page,errors}=await openLayers();try{
+  const group=page.getByRole('group',{name:'Review range',exact:true}),host=group.locator('xpath=ancestor::*[@data-neo-browser-field]');await host.locator('xpath=self::*[@data-neo-state-ready]').waitFor();await group.evaluate(el=>el.dir='rtl');
+  const low=group.locator('[data-neo-field-thumb="0"]');await low.focus();await low.press('ArrowLeft');assert.equal(await low.getAttribute('aria-valuenow'),'21');await low.press('ArrowRight');assert.equal(await low.getAttribute('aria-valuenow'),'20');
+  const track=group.locator('[data-neo-field-range]'),box=await track.boundingBox();await page.mouse.click(box.x+box.width*.7,box.y+box.height/2);assert.equal(await low.getAttribute('aria-valuenow'),'30');
+  assert.match(await low.getAttribute('style'),/70%/);assert.match(await group.locator('[data-neo-field-fill]').getAttribute('style'),/left: 20%/);
+  const vertical=page.getByRole('group',{name:'Review vertical range',exact:true}).locator('[data-neo-field-thumb="0"]');await vertical.focus();await vertical.press('ArrowUp');assert.equal(await vertical.getAttribute('aria-valuenow'),'21');assert.match(await vertical.getAttribute('style'),/bottom: calc\(21%/);assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+test('a portaled TagInput suggestion belongs to its Browser popover and outside clicks still dismiss it',async()=>{
+ const{page,errors}=await openLayers();try{
+  const trigger=page.getByRole('button',{name:'Review tag popover',exact:true}),content=page.locator('[id="'+await trigger.getAttribute('aria-controls')+'"]');await content.locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});await trigger.click();await content.waitFor();
+  const input=page.getByPlaceholder('Review nested tags');await input.locator('xpath=ancestor::*[@data-neo-state-ready]').waitFor();await page.waitForFunction(()=>Boolean(document.getElementById(document.querySelector('[placeholder="Review nested tags"]').getAttribute('aria-controls'))));await input.fill('Des');await page.getByRole('option',{name:'Design',exact:true}).click();
+  assert.equal(await trigger.getAttribute('aria-expanded'),'true');assert.equal(await content.isVisible(),true);assert.match(await content.locator('[data-neo-tag-values]').textContent(),/Design/);
+  await page.getByTestId('review-tags').filter({hasText:'Design'}).waitFor();await page.getByTestId('review-tag-reset').click();await content.waitFor({state:'hidden'});await trigger.click();await content.waitFor();assert.match(await content.locator('[data-neo-tag-values]').textContent(),/Development/);
+  await page.getByTestId('review-alive').click();await content.waitFor({state:'hidden'});await page.getByTestId('review-alive').filter({hasText:'Alive 1'}).waitFor();assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+
+test('disposing a connected input during Browser import invalidates initialization and a fresh lifetime attaches once',async()=>{
+ const page=await browser.newPage();let release,requested;const gate=new Promise(resolve=>release=resolve),seen=new Promise(resolve=>requested=resolve);
+ try{
+  await page.route('**/review-input-empty',route=>route.fulfill({contentType:'text/html',body:'<input id="review-import-input">'}));
+  await page.route('**/_content/NeoUI.Blazor/js/browser-input.js',async route=>{requested();await gate;await route.continue();});
+  await page.goto(url+'/review-input-empty');await page.evaluate(async()=>{
+   const input=document.getElementById('review-import-input');input.dataset.neoInputConfig=JSON.stringify({value:'',revision:0,updateOn:'input',debounce:0,server:false});
+   window.__importOldCalls=0;window.__importNewCalls=0;window.__inputModule=await import('/_content/NeoUI.Blazor/js/input.js');
+   window.__pendingInputInit=window.__inputModule.initializeInput(input.id,'input',0,{invokeMethodAsync:async()=>{window.__importOldCalls++;throw new Error('Disposed bridge used');}},false,true);
+  });await seen;await page.evaluate(()=>window.__inputModule.disposeInput('review-import-input'));release();await page.evaluate(()=>window.__pendingInputInit);
+  assert.equal(await page.locator('#review-import-input').getAttribute('data-neo-input-ready'),null);
+  const result=await page.evaluate(async()=>{
+   const input=document.getElementById('review-import-input');await window.__inputModule.initializeInput(input.id,'input',0,{invokeMethodAsync:async(name,value,sequence,revision)=>{window.__importNewCalls++;return{value,sequence,revision};}},false,true);
+   input.value='Fresh lifetime';input.dispatchEvent(new Event('input',{bubbles:true}));const module=await import('/_content/NeoUI.Blazor/js/browser-input.js');const flush=await module.flushById(input.id,3000);return{old:window.__importOldCalls,fresh:window.__importNewCalls,status:flush.status};
+  });assert.deepEqual(result,{old:0,fresh:1,status:'Success'});
+ }finally{release();await page.close();}
+});
+
+for(const base of ['/','/review-base/'])test('connection module has one application-base URL across asset aliases: '+base,async()=>{
+ const page=await browser.newPage(),requests=[];try{
+  const source=await readFile(new URL('../../src/NeoUI.Blazor/wwwroot/js/browser-input.js',import.meta.url),'utf8');
+  const connection=await readFile(new URL('../../src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/browser-connection.js',import.meta.url),'utf8');
+  await page.route('**/review-connection-empty',route=>route.fulfill({contentType:'text/html',body:'<base href="'+base+'">'}));
+  await page.route('**/review-alias/browser-input.js',route=>route.fulfill({contentType:'text/javascript',body:source.replace("from './browser-input-formats.js'","from '/_content/NeoUI.Blazor/js/browser-input-formats.js'")}));
+  await page.route('**'+base+'_content/NeoUI.Blazor.Primitives/js/primitives/browser-connection.js',route=>{requests.push(route.request().url());return route.fulfill({contentType:'text/javascript',body:connection});});
+  await page.goto(url+'/review-connection-empty');const result=await page.evaluate(async()=>{
+   const canonical=await import('/_content/NeoUI.Blazor/js/browser-input.js'),alias=await import('/review-alias/browser-input.js');alias.setConnectionAvailable(false);const down=document.documentElement.dataset.neoConnectionAvailable;canonical.setConnectionAvailable(true);return{same:canonical.setConnectionAvailable===alias.setConnectionAvailable,down,up:document.documentElement.dataset.neoConnectionAvailable};
+  });assert.deepEqual(result,{same:true,down:'false',up:'true'});assert.equal(requests.length,1);assert.equal(new URL(requests[0]).pathname,base+'_content/NeoUI.Blazor.Primitives/js/primitives/browser-connection.js');
+ }finally{await page.close();}
+});
+
+
+test('a Blazor TagInput suggestion stays inside a Browser popover and preserves live server callbacks',async()=>{
+ const{page,errors}=await openLayers(true);try{
+  const trigger=page.getByRole('button',{name:'Review tag popover',exact:true}),content=page.locator('[id="'+await trigger.getAttribute('aria-controls')+'"]');await content.locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});await trigger.click();await content.waitFor();
+  const input=page.getByPlaceholder('Review nested tags');assert.equal(await input.locator('xpath=ancestor::*[@data-neo-browser-field]').count(),0);await input.fill('Des');await page.getByRole('option',{name:'Design',exact:true}).click();await page.getByTestId('review-tags').filter({hasText:'Design'}).waitFor();assert.equal(await trigger.getAttribute('aria-expanded'),'true');await page.getByTestId('review-alive').click();await content.waitFor({state:'hidden'});await page.getByTestId('review-alive').filter({hasText:'Alive 1'}).waitFor();assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});

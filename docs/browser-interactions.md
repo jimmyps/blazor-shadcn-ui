@@ -321,6 +321,54 @@ An application replacing that UI/handler should call `setConnectionAvailable(fal
 from `browser-input.js` in its down/up handlers. This guard is not applied to WebAssembly's
 local .NET callbacks. A lost completion acknowledgement still blocks Save at the deadline.
 
+### Recovering from a timeout or uncertain delivery
+
+`TimedOut` and mid-flight delivery failures leave the affected controller `Uncertain`.
+Repeated Save attempts do not clear it. Provide visible recovery from `OnFlushFailed`:
+resolve the outstanding application operation, reload an authoritative value, and increment
+that input's `ValueRevision` **even if the value is unchanged**. For structured/primitive fields (including DateInput/TimeInput) and
+TagInput use their `InteractionRevision` instead. A fresh revision resets the controller's
+uncertainty and draft queue; it does not retry the failed callback or submit the form.
+
+```razor
+<BrowserEditForm Model="@model" OnValidSubmit="Save" OnFlushFailed="RecoverDraft">
+    <Input @bind-Value="model.Text" ValueRevision="@textRevision"
+           UpdateOn="InputUpdateMode.Input" />
+    <p role="status">@recoveryMessage</p>
+    <button type="submit">Save</button>
+</BrowserEditForm>
+
+@code {
+    private long textRevision;
+    private string? recoveryMessage;
+
+    private async Task RecoverDraft(InputFlushResult result)
+    {
+        if (result.Status is not (InputFlushStatus.TimedOut or InputFlushStatus.Uncertain))
+        {
+            recoveryMessage = $"Unable to save: {result.Status}.";
+            return;
+        }
+
+        // App-specific: establish whether pending work completed before reloading.
+        // If it cannot be resolved yet, show a Retry/Reload action and keep Save blocked.
+        model.Text = await ResolvePendingOperationAndReloadTextAsync();
+        textRevision++;
+        recoveryMessage = "Reloaded the confirmed value. Review it before saving again.";
+    }
+}
+```
+
+The application-specific resolver above must handle late business writes, cancellation or
+idempotency as appropriate. Merely incrementing a revision cannot cancel a callback already
+running on the server. Reloading replaces the local draft: explain that to the user and,
+when needed, expose it as an explicit recovery action instead of discarding edits silently.
+For forms with several fields, use `FieldId` to select the affected field, or reconcile and
+reset the whole form deliberately. Do not bump revisions for every failure (for example,
+invalid/composing drafts should remain available for correction), and do not automatically
+replay Save from the failure handler. During a full circuit outage, surface connection status
+using the client events described above; perform server reconciliation after reconnection.
+
 For a custom flow that keeps the literal EditForm tag, use the reusable scope and the **OnSubmit** event:
 
 ```razor
@@ -762,3 +810,16 @@ The interaction-regressions GitHub workflow runs the deterministic and JSON-refl
 compatibility executables, full Server suites for both defaults and family policies, WASM,
 gallery and WebKit checks. Workflow logs are uploaded even on failures. Local validation does
 not substitute for the eventual CI outcome.
+
+
+Browser popover Escape handling includes a focused trigger and gives an open nested floating
+controller priority over its parent. Portaled TagInput suggestions retain their logical anchor
+inside an enclosing Browser popover, so selecting a suggestion does not dismiss that shell;
+clicking outside both still dismisses it. Horizontal Browser RangeSlider follows inherited
+`dir="rtl"` for pointer position, fill/thumb placement and Left/Right keys. Vertical stepping
+and Home/End retain their existing minimum/maximum semantics.
+
+Input initialization invalidates pending work when disposed, even if its element remains
+connected during a delayed Browser module import. The shared connection module resolves
+from `document.baseURI`, so path-prefixed hosting and alternative asset URLs use one canonical
+application-base connection URL rather than deriving it from a fingerprinted Input URL.
