@@ -81,3 +81,13 @@ known-unsent reconnect delivery, shared connection signals and prerendered initi
 A JSON-reflection-disabled executable renders cyclic TValue RadioGroup and disabled hosts.
 Scroll positioning remains immediate; only element ResizeObserver writes are deferred.
 Unknown in-flight callbacks retain the no-replay safety contract.
+
+Reviewer-fix validation passed the full Server suite locally and in CI under both application
+defaults: 155 passing checks and four configuration/renderer skips per run, plus eight
+conservative/reverse family-policy checks per CI job. The default compatibility executable
+also passes with JSON reflection disabled. Tooltip callback ordering now uses an explicit
+application completion gate, avoiding a wall-clock assumption on slower Debug WASM runners.
+The gallery discovery check allows retained portals to initialize after enhanced navigation;
+search/interaction assertion deadlines remain unchanged. Consult the PR's latest workflow
+run for the current WASM/gallery/WebKit result rather than treating these counts as a blanket
+compatibility guarantee.

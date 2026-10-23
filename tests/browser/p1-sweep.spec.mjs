@@ -100,7 +100,9 @@ test('a browser tooltip preserves its action button callback and closes before a
         await page.getByRole('tooltip',{includeHidden:true}).locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});
         await button.focus();await page.getByRole('tooltip').waitFor();
         await button.click();await page.getByRole('tooltip',{includeHidden:true}).waitFor({state:'hidden'});
+        await page.getByTestId('sweep-tooltip-pending').filter({hasText:'Waiting'}).waitFor();
         assert.equal(await page.getByTestId('sweep-tooltip-actions').textContent(),'0');
+        await page.getByTestId('sweep-tooltip-release').click();
         await page.getByTestId('sweep-tooltip-actions').filter({hasText:'1'}).waitFor();
     } finally {await browser.close();}
 });

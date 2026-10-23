@@ -10,6 +10,8 @@
         <TooltipContent>Sweep tooltip content</TooltipContent>
     </Tooltip>
     <p data-testid="sweep-tooltip-actions">@tooltipActions</p>
+    <p data-testid="sweep-tooltip-pending">@(tooltipPending ? "Waiting" : "Idle")</p>
+    <button data-testid="sweep-tooltip-release" @onclick="() => tooltipRelease.TrySetResult()">Complete tooltip work</button>
     <section data-testid="sweep-disclosures">
         <Accordion Collapsible>
             <AccordionItem Value="one"><AccordionTrigger>First disclosure</AccordionTrigger><AccordionContent><button>First disclosure action</button></AccordionContent></AccordionItem>
@@ -185,7 +187,9 @@
     private bool showInputs = true;
     private int independent;
     private int tooltipActions;
-    private async Task TooltipAction() { await Task.Delay(500); tooltipActions++; }
+    private bool tooltipPending;
+    private readonly TaskCompletionSource tooltipRelease = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private async Task TooltipAction() { tooltipPending = true; await tooltipRelease.Task; tooltipActions++; tooltipPending = false; }
     private readonly Draft model = new();
     private string saved = "None";
     private readonly string[] choices = ["Design", "Product", "Engineering"];

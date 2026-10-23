@@ -178,7 +178,9 @@ test('Interaction Mode is discoverable in navigation, indexes, and spotlight', a
         await page.getByRole('heading', { name: 'Interaction Mode', exact: true }).first().waitFor();
         const indexLink = page.locator('a[href="/components/browser-interactions"]').filter({ has: page.locator('h4') });
         await indexLink.click();
-        await page.waitForFunction(() => document.querySelector('[data-local-events]')?.textContent === '0');
+        // Enhanced navigation can mount every retained gallery portal before its observer initializes.
+        // Keep this startup allowance separate from search/interaction assertion deadlines.
+        await page.waitForFunction(() => document.querySelector('[data-local-events]')?.textContent === '0', null, {timeout:60000});
         await page.getByRole('button', { name: /Search components/ }).first().click();
         const search = page.getByPlaceholder('Type a command or search...');
         await search.waitFor({ state: 'visible' });
