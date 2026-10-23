@@ -1,7 +1,8 @@
 @inject NavigationManager Navigation
 <AppProvider>
     <span hidden data-testid="test-host-ready" data-ready="@(testHostReady ? "true" : "false")"></span>
-    @if (Navigation.Uri.Contains("reviewlayers=true")) { <ReviewLayerCases LegacyTags="@(Navigation.Uri.Contains("legacytags=true"))" /> }
+    @if (Navigation.Uri.Contains("portalrefresh=true")) { <PortalRefreshCases Mode="@(Navigation.Uri.Contains("mode=browser") ? InteractionMode.Browser : Navigation.Uri.Contains("mode=blazor") ? InteractionMode.Blazor : (InteractionMode?)null)" /> }
+    else if (Navigation.Uri.Contains("reviewlayers=true")) { <ReviewLayerCases LegacyTags="@(Navigation.Uri.Contains("legacytags=true"))" /> }
     else if (Navigation.Uri.Contains("reviewer=true")) { <ReviewerCases Legacy="@(Navigation.Uri.Contains("legacy=true"))" /> }
     else if (Navigation.Uri.Contains("familypolicy=true")) { <FamilyPolicyCases /> }
     else if (Navigation.Uri.Contains("matrixmenus=true"))

@@ -100,3 +100,23 @@ Input lifetime coverage disposes a still-connected element during Browser module
 then verifies one fresh controller; asset-alias tests verify one connection module URL at
 both root and path-prefixed application bases. The expanded reviewer suite passes 21 Server
 checks locally; the workflow retains its full both-defaults, WASM and gallery gates.
+
+
+### Nested portal render ordering review
+
+The reviewer suite exercises a Dialog with a portaled Popover and a further nested Popover.
+A single event updates all three content levels; the test waits for their new text before
+sending another event. A final registered overlay fragment also schedules a descendant update
+after the existing overlay fragments are evaluated, covering a late-in-batch update. A further descendant-only event suppresses automatic parent rendering, preventing an unrelated
+parent refresh from rescuing a missed update. Five ordinary updates, three simultaneous late
+updates, and the descendant-only update run with omitted interaction mode, explicit Blazor,
+and explicit Browser settings. The explicit Blazor case asserts that Browser controllers
+were not mounted, including when the application default is Browser. The same fixture is
+linked into the WASM host and runs in the existing CI reviewer suite.
+
+The requested scenario did not reproduce stale content with the current render guard; no
+production guard change was made on that evidence. These cases cover the tested ordering,
+not every possible asynchronous descendant render. The mixed-portal ownership contract and
+`data-neo-floating-owner` example are documented in the Browser interaction guide. The
+TagInput reset assertion waits for the asynchronous authoritative badge render before checking
+its text; reopening the shell locally does not imply the reset has already reached the browser.

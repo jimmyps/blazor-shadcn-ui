@@ -68,7 +68,7 @@ test('a portaled TagInput suggestion belongs to its Browser popover and outside 
   const trigger=page.getByRole('button',{name:'Review tag popover',exact:true}),content=page.locator('[id="'+await trigger.getAttribute('aria-controls')+'"]');await content.locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});await trigger.click();await content.waitFor();
   const input=page.getByPlaceholder('Review nested tags');await input.locator('xpath=ancestor::*[@data-neo-state-ready]').waitFor();await page.waitForFunction(()=>Boolean(document.getElementById(document.querySelector('[placeholder="Review nested tags"]').getAttribute('aria-controls'))));await input.fill('Des');await page.getByRole('option',{name:'Design',exact:true}).click();
   assert.equal(await trigger.getAttribute('aria-expanded'),'true');assert.equal(await content.isVisible(),true);assert.match(await content.locator('[data-neo-tag-values]').textContent(),/Design/);
-  await page.getByTestId('review-tags').filter({hasText:'Design'}).waitFor();await page.getByTestId('review-tag-reset').click();await content.waitFor({state:'hidden'});await trigger.click();await content.waitFor();assert.match(await content.locator('[data-neo-tag-values]').textContent(),/Development/);
+  await page.getByTestId('review-tags').filter({hasText:'Design'}).waitFor();await page.getByTestId('review-tag-reset').click();await content.waitFor({state:'hidden'});await trigger.click();await content.waitFor();await content.locator('[data-neo-tag-values]').filter({hasText:'Development'}).waitFor();assert.match(await content.locator('[data-neo-tag-values]').textContent(),/Development/);
   await page.getByTestId('review-alive').click();await content.waitFor({state:'hidden'});await page.getByTestId('review-alive').filter({hasText:'Alive 1'}).waitFor();assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
@@ -110,5 +110,26 @@ test('a Blazor TagInput suggestion stays inside a Browser popover and preserves 
  const{page,errors}=await openLayers(true);try{
   const trigger=page.getByRole('button',{name:'Review tag popover',exact:true}),content=page.locator('[id="'+await trigger.getAttribute('aria-controls')+'"]');await content.locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});await trigger.click();await content.waitFor();
   const input=page.getByPlaceholder('Review nested tags');assert.equal(await input.locator('xpath=ancestor::*[@data-neo-browser-field]').count(),0);await input.fill('Des');await page.getByRole('option',{name:'Design',exact:true}).click();await page.getByTestId('review-tags').filter({hasText:'Design'}).waitFor();assert.equal(await trigger.getAttribute('aria-expanded'),'true');await page.getByTestId('review-alive').click();await content.waitFor({state:'hidden'});await page.getByTestId('review-alive').filter({hasText:'Alive 1'}).waitFor();assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+for (const mode of ['default', 'blazor', 'browser']) test(`same-batch dialog and nested popover content stays current (${mode})`,async()=>{
+ const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));page.setDefaultTimeout(10000);await page.addInitScript(floating);
+ try{
+  await page.goto(url+'/?portalrefresh=true'+(mode==='default'?'':'&mode='+mode));await page.locator('[data-testid="test-host-ready"][data-ready="true"]').waitFor({state:'attached'});
+  await page.getByRole('button',{name:'Open refresh dialog',exact:true}).click();await page.getByTestId('refresh-leaf').filter({hasText:'Leaf 0'}).waitFor();
+  for(let revision=1;revision<=5;revision++){
+   await page.getByTestId('refresh-all').click();
+   // No second server event or independent host refresh may rescue stale content.
+   await page.waitForFunction(r=>['dialog','parent','leaf'].every(id=>document.querySelector(`[data-testid="refresh-${id}"]`)?.textContent.trim()===`${id==='dialog'?'Dialog':id==='parent'?'Parent':'Leaf'} ${r}`),revision);
+  }
+  if(mode==='blazor') assert.equal(await page.locator('[data-neo-browser-content]').count(),0);
+  for(let revision=6;revision<=8;revision++){
+   await page.getByTestId('refresh-late').click();
+   await page.waitForFunction(r=>['dialog','parent','leaf','late-leaf'].every(id=>document.querySelector(`[data-testid="refresh-${id}"]`)?.textContent.trim()===`${id==='dialog'?'Dialog':id==='parent'?'Parent':id==='leaf'?'Leaf':'Late'} ${r}`),revision);
+  }
+  await page.getByTestId('refresh-late-only').click();
+  await page.waitForFunction(()=>document.querySelector('[data-testid=refresh-late-leaf]')?.textContent.trim()==='Late 9');
+  assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });
