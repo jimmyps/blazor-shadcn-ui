@@ -48,6 +48,8 @@ test('menu click, keyboard navigation and dismissal send no circuit messages', a
     await trigger.click();
     await eventually(async () => assert.equal(await menu.getAttribute('data-state'), 'open'));
     await page.keyboard.press('ArrowDown');
+    await eventually(async () => assert.equal(await page.locator(':focus').textContent(), 'Run action'));
+    await page.keyboard.press('ArrowDown');
     await eventually(async () => assert.equal(await page.locator(':focus').textContent(), 'Native link'));
     await page.keyboard.press('Escape');
     assert.equal(await trigger.getAttribute('aria-expanded'), 'false');

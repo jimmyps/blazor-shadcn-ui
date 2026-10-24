@@ -63,6 +63,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     let hoverTimer, hoverOpenTimer, hoverCloseTimer;
     let hoverTouchGesture = null, hoverTouchTap = null;
     const isHover = () => options.kind === 'tooltip' || options.kind === 'hovercard';
+    const isMenu = () => ['menu', 'submenu', 'contextmenu'].includes(options.kind);
     let contextPoint = { x: options.x ?? 0, y: options.y ?? 0 };
     let backdrop, savedOverflow;
     const positionReference = () => options.kind === 'contextmenu' ? {
@@ -118,6 +119,15 @@ export function createController(floating, initialOptions, initialPosition, brid
             content.focus({ preventScroll: true });
         } else focused?.focus({ preventScroll: true });
         focused?.scrollIntoView({ block: 'nearest' });
+    };
+    const clearMenuFocus = () => {
+        focused = null;
+        for (const item of content.querySelectorAll(itemSelector))
+            if (item.closest('[data-neo-browser-content]') === content) item.removeAttribute('data-focused');
+    };
+    const focusContainer = () => {
+        clearMenuFocus();
+        content.focus({ preventScroll: true });
     };
     const applySelection = id => {
         selectedId = id ?? null;
@@ -191,7 +201,11 @@ export function createController(floating, initialOptions, initialPosition, brid
                     backdrop.setAttribute('data-neo-context-backdrop', ''); doc.body.append(backdrop);
                 }
             }
+            // Pointer opening focuses the keyboard container without painting a
+            // fabricated first-item highlight alongside the app's selected item.
+            if (isMenu() && initialFocus === 'none') clearMenuFocus();
             if (isHover() || initialFocus === 'none') { notify('ready', true); return; }
+            if (isMenu() && initialFocus === 'container') { focusContainer(); notify('ready', true); return; }
             if (options.kind === 'popover') {
                 (content.querySelector('[data-neo-autofocus]') ?? content.querySelector('[autofocus], button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex="0"]') ?? content)
                     .focus({ preventScroll: true });
@@ -315,7 +329,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (trigger()?.contains(target) && target.closest('[data-neo-trigger-action]')) return;
         if (trigger()?.contains(target) && options.kind !== 'submenu' && options.kind !== 'contextmenu') {
             stop(event);
-            if (!disabled(trigger())) opened ? close() : void open();
+            if (!disabled(trigger())) opened ? close() : void open(options.kind === 'menu' && event.detail !== 0 ? 'container' : 'first');
             return;
         }
         if (!opened || target.closest('[data-neo-browser-content]') !== content) return;
@@ -328,7 +342,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (!item) return;
         if (disabled(item)) { stop(event); return; }
         const submenu = [...controllers.values()].find(other => other.options.kind === 'submenu' && other.trigger() === item);
-        if (submenu) { stop(event); void submenu.open(); return; }
+        if (submenu) { stop(event); void submenu.open(event.detail === 0 ? 'first' : 'container'); return; }
         if (options.kind === 'select') { stop(event); select(item); return; }
         if (item.dataset.neoCheckKey) { stop(event); selectMenuItem(item); return; }
         // Keep action clicks/native links intact, but dismiss before their server handler runs.
@@ -421,7 +435,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         let next;
         switch (event.key === ' ' && typeahead ? 'TypeaheadSpace' : event.key) {
             case 'ArrowDown': next = options.loop ? enabled[(index + 1) % enabled.length] : enabled[Math.min(index + 1, enabled.length - 1)]; break;
-            case 'ArrowUp': next = options.loop ? enabled[(index <= 0 ? enabled.length : index) - 1] : enabled[Math.max(index - 1, 0)]; break;
+            case 'ArrowUp': next = index < 0 && isMenu() ? enabled.at(-1) : options.loop ? enabled[(index <= 0 ? enabled.length : index) - 1] : enabled[Math.max(index - 1, 0)]; break;
             case 'Home': next = enabled[0]; break;
             case 'End': next = enabled.at(-1); break;
             case 'Enter': case ' ':
@@ -473,7 +487,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         hoverTimer = setTimeout(() => {
             if (!opened || disposed) return;
             for (const child of controllers.values()) if (child.parent() === controller) {
-                if (child.trigger() === item) void child.open(); else child.close(false);
+                if (child.trigger() === item) void child.open('container'); else child.close(false);
             }
         }, 200);
     };
@@ -492,7 +506,7 @@ export function createController(floating, initialOptions, initialPosition, brid
         stop(event);
         contextPoint = { x: event.clientX, y: event.clientY };
         if (opened) close(false, false);
-        reportPoint(); void open();
+        reportPoint(); void open('container');
     };
     const listeners = { focusin: focusIn, focusout: focusOut, contextmenu, click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut,
         ...(isHover() ? { pointermove: hoverTouchMove, pointerup: hoverTouchEnd, pointercancel: hoverTouchEnd } : {}) };
@@ -520,7 +534,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     const controller = {
         get options() { return options; }, get content() { return content; },
         get connected() { return floating.isConnected && trigger()?.isConnected; },
-        get isOpen() { return opened; }, trigger, parent, belongsTo, open, close, focus,
+        get isOpen() { return opened; }, trigger, parent, belongsTo, open, close, focus, focusContainer,
         update(nextOptions, nextPosition) {
             const openCommand = options.openVersion !== nextOptions.openVersion;
             const valueCommand = options.valueVersion !== nextOptions.valueVersion;
@@ -587,7 +601,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     emit('controllerready', {});
     // A mounted submenu may finish hydrating while the pointer is already on its trigger.
     if (options.kind === 'submenu' && parent()?.isOpen && trigger()?.matches(':hover'))
-        hoverTimer = setTimeout(() => { if (!disposed && parent()?.isOpen && trigger()?.matches(':hover')) void open(); }, 200);
+        hoverTimer = setTimeout(() => { if (!disposed && parent()?.isOpen && trigger()?.matches(':hover')) void open('container'); }, 200);
     return controller;
 }
 

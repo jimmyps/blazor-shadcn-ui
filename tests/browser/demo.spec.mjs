@@ -478,6 +478,9 @@ test('menu-family gallery supports iPhone touch switching without flicker', asyn
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'true');
             await view.tap(); await page.getByRole('menuitem', { name: 'Compact view', exact: true }).waitFor({ state: 'visible' });
             await pause(400); assert.equal(await view.getAttribute('aria-expanded'), 'true');
+            const row = page.getByRole('menuitem', { name: 'Compact view', exact: true });
+            assert.equal(await row.evaluate(el => document.activeElement === el.closest('[role="menu"]')), true);
+            assert.equal(await row.locator('xpath=ancestor::*[@role="menu"][1]').locator('[data-focused="true"]').count(), 0);
             assert.equal(await inbox.getAttribute('aria-expanded'), 'false');
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'true');
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'false');

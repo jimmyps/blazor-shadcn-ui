@@ -931,3 +931,9 @@ For a label that users should reach with Tab, prefer a NeoUI Button trigger:
 ```
 
 A plain `<HoverCardTrigger>Neo Summary</HoverCardTrigger>` is also a supported composition; it renders its own div. Do not use `AsChild` around an ordinary HTML element expecting it to consume TriggerContext automatically. Components such as NeoUI Button consume that context and apply the trigger ID and keyboard/focus behavior.
+
+### Menu opening: focus is separate from selection
+
+Mouse/touch opening focuses a menu's container, so opening a dropdown, split/pill menu or menubar does not fabricate a first-item highlight alongside an application-owned current-page background. Pointer-opened context menus and submenus use the same policy. `SelectionIndicator Hover="true"` continues to follow deliberate hover and keyboard focus; it does not change the application's selected value or route.
+
+Keyboard/assistive opening retains first/last-item focus. From a pointer-opened container, ArrowDown enters the first enabled item and ArrowUp enters the last; subsequent navigation skips disabled items. Reopening clears stale browser focus markers. This corrects the earlier Browser-only automatic first-item focus on pointer opening. Blazor-mode behavior, Select selected-option focus and Popover autofocus are unchanged.

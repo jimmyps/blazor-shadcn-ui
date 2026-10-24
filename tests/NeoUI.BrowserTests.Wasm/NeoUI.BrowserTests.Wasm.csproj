@@ -22,6 +22,7 @@
     <Content Include="../NeoUI.BrowserTests.Host/ReviewLayerCases.razor" Link="ReviewLayerCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FamilyPolicyCases.razor" Link="FamilyPolicyCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/MenuFamilyCases.razor" Link="MenuFamilyCases.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/MenuOpeningFocusCases.razor" Link="MenuOpeningFocusCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FormCases.razor" Link="FormCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/StandardFormCases.razor" Link="StandardFormCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FloatingLifecycleCases.razor" Link="FloatingLifecycleCases.razor" />
