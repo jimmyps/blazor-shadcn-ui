@@ -186,7 +186,7 @@ public partial class CheckboxPrimitive : ComponentBase
         }
     }
 
-    // The native button synthesizes one click for Space/Enter. A second keydown
+    // The native button synthesizes one click for Space; Enter is blocked locally. A second keydown
     // toggle races that click, particularly when Server delivery is delayed.
     /// <summary>
     /// Toggles the checked state and notifies listeners.

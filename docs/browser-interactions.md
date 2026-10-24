@@ -899,3 +899,9 @@ unrelated or infinite effects do not delay hiding. With no CSS exit motion, hidi
 Reopening invalidates an earlier exit completion, including during rapid toggles or child renders.
 The styled components keep their existing grid transition; Blazor-mode behavior and Tabs panel
 switching are unchanged. Browser-mode motion does not wait for application callbacks.
+
+### Additional default-mode compatibility notes
+
+- MultiSelect check markers are presentation-only `<span>` elements in both modes. Options retain their selection semantics; there is no nested `role="checkbox"`. Update application CSS and tests that targeted those former checkbox elements; prefer the option's `aria-selected` state.
+- MaskedInput now honors `ShowMask=false` while typing in Blazor mode too. The existing mask still formats entered characters, but no longer fills the unused template when that option is false.
+- Checkbox keyboard activation is Space-only in both modes. A local Enter guard preserves the ARIA checkbox pattern while native Space clicks avoid double toggles.

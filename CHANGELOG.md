@@ -12,7 +12,10 @@ All notable changes to this project will be documented in this file.
 
 ### 🛠️ Correctness and compatibility review
 
-- DataTable column visibility now uses the checkbox change callback for keyboard, label and pointer activation in both interaction modes. Checkbox buttons rely on native Space/Enter clicks, avoiding a second server keydown toggle. Browser TagInput preserves unchanged badge/remove-button nodes across acknowledgements and parent renders, including duplicate values; suggestion selection in both modes commits on completed clicks/taps so cancelled touch scrolling cannot add a tag.
+- TagInput resolves its shared suggestion adapter against the application base URI, preserving apps hosted beneath a sub-path. Checkbox uses Space-only keyboard activation in both modes; a local key guard blocks native Enter activation without adding a second Space toggle.
+- Compatibility: MultiSelect option check markers are presentation-only spans in both modes, replacing nested checkbox roles; update CSS/tests targeting the former checkbox DOM. Default-mode MaskedInput now honors `ShowMask=false` during typing instead of always filling the template.
+
+- DataTable column visibility now uses the checkbox change callback for keyboard, label and pointer activation in both interaction modes. Checkbox buttons rely on native Space clicks (with Enter blocked locally), avoiding a second server keydown toggle. Browser TagInput preserves unchanged badge/remove-button nodes across acknowledgements and parent renders, including duplicate values; suggestion selection in both modes commits on completed clicks/taps so cancelled touch scrolling cannot add a tag.
 
 - Floating portals preserve Floating UI’s matched-width constraints when Blazor rewrites the wrapper style, preventing a visible one-frame width collapse in default-mode Select/Popover opening and parent renders. The ResizeObserver frame boundary and immediate scroll updates remain intact; frame-level tests cover both modes, mounting policies, reopen, resize and closed-state renders.
 

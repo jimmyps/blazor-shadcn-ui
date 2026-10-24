@@ -2,7 +2,7 @@
 
 <BrowserStateHost Enabled="@BrowserInteraction" Kind="checkbox" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues"
     Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { required = Required })">
-<button
+<button @ref="keyboardElement"
     id="@Id"
     type="button"
     data-neo-field-item="@(BrowserInteraction ? "checked" : null)"

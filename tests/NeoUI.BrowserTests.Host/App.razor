@@ -1,9 +1,10 @@
+@inject NavigationManager Navigation
 @page "/"
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <base href="/" />
+    <base href="@Navigation.BaseUri" />
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="_content/NeoUI.Blazor/components.css" />
     <style>body { padding: 32px; } section { margin-bottom: 24px; } button { padding: 8px; } [role=menu], [role=listbox] { min-width: 180px; background: white; border: 1px solid gray; } [data-focused=true] { background: #def; }</style>

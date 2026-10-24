@@ -19,6 +19,16 @@ if (builder.Configuration["FamilyPolicy"] is "conservative" or "reverse")
 }
 builder.Services.AddNeoUIComponents();
 var app = builder.Build();
+if (builder.Configuration["TestPathBase"] is { Length: > 0 } pathBase)
+{
+    app.UsePathBase(pathBase);
+    app.Use(async (context, next) =>
+    {
+        if (context.Request.PathBase != pathBase) { context.Response.StatusCode = 404; return; }
+        await next();
+    });
+}
+app.UseRouting();
 app.UseAntiforgery();
 app.UseStaticFiles();
 app.MapStaticAssets();

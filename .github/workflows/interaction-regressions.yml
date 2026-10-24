@@ -56,6 +56,16 @@ jobs:
             $result=$LASTEXITCODE
             Pop-Location
             if($result){exit $result}
+            $subArgs=@('run','--project','tests/NeoUI.BrowserTests.Host','--no-build','--no-launch-profile','--','--urls','http://localhost:5197','--TestPathBase=/subapp')
+            if ('${{ matrix.mode }}' -eq 'Browser') { $subArgs+='--BrowserDefault=true' }
+            $subHost=Start-Process dotnet -ArgumentList $subArgs -WindowStyle Hidden -PassThru -RedirectStandardOutput subpath.log -RedirectStandardError subpath.error.log
+            try {
+              Wait-Host 'http://localhost:5197/subapp/'
+              $env:NEOUI_TEST_URL='http://localhost:5197/subapp'
+              Push-Location tests/browser
+              node --test --test-concurrency=1 ownership.spec.mjs 2>&1 | Tee-Object ../../subpath-tests.log
+              $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
+            } finally { taskkill /PID $subHost.Id /T /F }
             foreach($policy in @('conservative','reverse')) {
               $port=if($policy -eq 'conservative'){5201}else{5202}
               $fixture=Start-Process dotnet -ArgumentList @('run','--project','tests/NeoUI.BrowserTests.Host','--no-build','--no-launch-profile','--','--urls',"http://localhost:$port","--FamilyPolicy=$policy") -WindowStyle Hidden -PassThru -RedirectStandardOutput "family-$policy.log" -RedirectStandardError "family-$policy.error.log"

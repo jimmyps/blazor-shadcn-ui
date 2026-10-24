@@ -100,3 +100,9 @@ not create tags or publish packages; this branch remains unreleased until that r
 - Known unsent drafts can flush after reconnect; uncertain business callback delivery is not automatically replayed. In OnFlushFailed, reconcile the pending operation and authoritative value, then increment ValueRevision (InteractionRevision for primitive fields/TagInput), even for an unchanged value. Offer visible recovery; do not silently discard the draft or automatically replay Save. See [the recovery example](browser-interactions.md#recovering-from-a-timeout-or-uncertain-delivery).
 
 See [the detailed compatibility notes and keyboard shortcuts](browser-interactions.md#reviewer-follow-up-precedence-validation-and-compatibility).
+
+### Additional default-mode compatibility notes
+
+- MultiSelect check markers are presentation-only `<span>` elements in both modes. Options retain their selection semantics; there is no nested `role="checkbox"`. Update application CSS and tests that targeted those former checkbox elements; prefer the option's `aria-selected` state.
+- MaskedInput now honors `ShowMask=false` while typing in Blazor mode too. The existing mask still formats entered characters, but no longer fills the unused template when that option is false.
+- Checkbox keyboard activation is Space-only in both modes. A local Enter guard preserves the ARIA checkbox pattern while native Space clicks avoid double toggles.

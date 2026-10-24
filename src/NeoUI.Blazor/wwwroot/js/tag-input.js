@@ -1,4 +1,4 @@
-import { attachTagSuggestions } from '/_content/NeoUI.Blazor.Primitives/js/primitives/tag-suggestions.js';
+const { attachTagSuggestions } = await import(new URL('_content/NeoUI.Blazor.Primitives/js/primitives/tag-suggestions.js', document.baseURI).href);
 
 /**
  * Tag Input JavaScript interop module for NeoUI.
