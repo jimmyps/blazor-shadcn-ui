@@ -181,9 +181,23 @@ value to acknowledge a correction. Field-change validation runs after the callba
        ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" />
 ```
 
+While an input is pristine, incoming `Value` changes synchronize its display automatically.
+For example, `<Input @bind-Value="model.Name" />` can mount with an empty name and display
+an asynchronously loaded name later, without a loading guard or `ValueRevision`.
+Synchronization does not invoke `ValueChanged` or mark the field pending. This applies to
+Input, Textarea, InputGroup's text adapters, and the NumericInput, CurrencyInput and
+MaskedInput adapters; it is not a new synchronization policy for structured selection fields.
+
+The first local input/composition or observed draft change ends this pristine window,
+including typing before JavaScript initialization. Accepted, rejected or reverted edits do
+not reopen it: later parameter renders still cannot overwrite an edited draft. An explicit
+`ValueRevision` replacement starts a fresh pristine window for the new value/document.
+Applications should still guard asynchronous model writes if the user may edit before a
+load completes; preserving the display cannot prevent application code overwriting its model.
+
 Increment `ValueRevision` together with `Value` for an authoritative replacement or reset,
 **even when resetting to the same accepted value**. Ordinary parameter echoes do not replace
-browser drafts. A changed revision clears queued edits and invalidates in-flight
+edited browser drafts. A changed revision clears queued edits and invalidates in-flight
 acknowledgements. An application callback already running cannot be cancelled by this UI
 protocol; applications must guard their own asynchronous writes against a reset as needed.
 Use `SearchRevision` on standalone CommandContent, or `InteractionRevision` on composed
