@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { chromium, webkit, devices } from 'playwright';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { readFile } from 'node:fs/promises';
 
 const url = process.env.NEOUI_DEMO_URL ?? 'http://localhost:5184/components/browser-interactions';
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -680,4 +681,24 @@ test('CommandInput gallery preserves debounced drafts, keyboard selection and re
         await root.screenshot({ path: join(tmpdir(), 'neoui-command-search-demo-mobile.png') });
         assert.deepEqual(errors, []);
     } finally { await browser.close(); }
+});
+
+
+test('iPhone taps keep MultiSelect checkbox feedback and tag badges visible',async()=>{
+ const browser=await(process.env.NEOUI_BROWSER_ENGINE==='webkit'?webkit.launch({headless:true}):chromium.launch({headless:true,channel:process.env.NEOUI_BROWSER_CHANNEL??'msedge'}));
+ const page=await browser.newPage({...devices['iPhone 13']}),errors=[];page.on('pageerror',error=>errors.push(String(error)));
+ try{
+  await page.addInitScript(await readFile(new URL('./node_modules/@floating-ui/core/dist/floating-ui.core.umd.js',import.meta.url),'utf8')+'\n'+await readFile(new URL('./node_modules/@floating-ui/dom/dist/floating-ui.dom.umd.js',import.meta.url),'utf8'));
+  await page.goto(url);
+  const initial=page.getByRole('combobox').filter({hasText:'Notify workspaces'});await page.getByPlaceholder('Search notification workspaces').locator('xpath=ancestor::*[@data-neo-browser-content][1]').waitFor({state:'attached'});
+  const trigger=page.locator(`[id="${await initial.getAttribute('id')}"]`);await trigger.tap();
+  const row=page.getByRole('option',{name:'Design',exact:true});const marker=row.locator('[data-neo-multi-indicator]');await marker.tap();
+  await eventually(async()=>assert.match(await trigger.textContent(),/Design/));assert.equal(await row.getAttribute('aria-selected'),'true');assert.equal(await marker.getAttribute('data-state'),'checked');assert.equal(await marker.locator('svg').isVisible(),true);
+  await row.locator('xpath=ancestor::*[@data-neo-client-list][1]').getByRole('button',{name:'Close',exact:true}).tap();
+  await eventually(async()=>assert.equal(await trigger.getAttribute('aria-expanded'),'false'));
+  const input=page.getByPlaceholder('Type a tag or paste a list');await input.locator('xpath=ancestor::*[@data-neo-browser-field][1][@data-neo-state-ready="true"]').waitFor();await input.scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>Boolean(document.getElementById(document.querySelector('[placeholder="Type a tag or paste a list"]').getAttribute('aria-controls'))));
+  await input.fill('Des');await page.getByRole('option',{name:'Design',exact:true}).tap();
+  await input.locator('xpath=..').getByRole('button',{name:'Remove Design',exact:true}).waitFor();assert.equal(await input.inputValue(),'');assert.deepEqual(errors,[]);
+ }finally{await browser.close();}
 });

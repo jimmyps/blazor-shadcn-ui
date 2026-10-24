@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🛠️ Correctness and compatibility review
 
+- MultiSelect checkbox markers are presentation-only children of their option rows, so tapping the square updates selection, the visible checkmark and trigger badges together instead of starting an independent Browser field. TagInput highlights suggestions in place, retaining touch/mouse targets through activation, and legacy suggestions use pointer activation so Safari taps do not depend on synthesized mouse events; touch regressions verify visible badges and accepted values in both modes.
+
 - Specialized editor preservation: Browser MaskedInput reuses the existing JavaScript mask engine instead of a second formatter. Literal-digit prefixes, configured mask characters/templates, focus/caret behavior, selected and formatted paste, IME/mobile deletion and readonly editing retain one owner. The legacy path also honors `ShowMask=false`; empty masks retain native text editing.
 - CurrencyInput preserves full-precision editing values independently of rounded display text, including untouched focus/blur, never-focused form submission, delayed acceptance and explicit edits to a rounded value. Current formatting metadata travels with canonical acknowledgements; real bounds/rejection adjustments still require review.
 - Restored TagInput container focus and keyboard-blur suggestion dismissal. NavigationMenu again drives its existing Tailwind entry/directional/exit motion, with immediate inert/ARIA changes and cancellation-safe presence. Markdown history is captured at the edit so queued layout frames cannot erase redo or resurrect reset history; composition completion records one final state.

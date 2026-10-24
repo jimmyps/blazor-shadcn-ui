@@ -103,8 +103,8 @@ else
                     role="option"
                     aria-selected="@isActive.ToString().ToLower()"
                     class="@SuggestionItemCssClass(isActive)"
-                    @onmousedown="() => SelectSuggestion(suggestion)"
-                    @onmousedown:preventDefault="true">
+                    @onpointerdown="() => SelectSuggestion(suggestion)"
+                    @onpointerdown:preventDefault="true">
                     @suggestion
                 </li>
             }

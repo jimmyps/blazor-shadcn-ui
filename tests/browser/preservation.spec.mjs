@@ -7,8 +7,8 @@ const floating=await readFile(new URL('./node_modules/@floating-ui/core/dist/flo
 let browser;
 before(async()=>{browser=await(process.env.NEOUI_BROWSER_ENGINE==='webkit'?webkit.launch({headless:true}):chromium.launch({channel:'msedge',headless:true}));});
 after(async()=>await browser?.close());
-async function open(mode){
- const page=await browser.newPage();page.setDefaultTimeout(process.env.NEOUI_TEST_RENDERER==='wasm'?40000:12000);
+async function open(mode,pageOptions={}){
+ const page=await browser.newPage(pageOptions);page.setDefaultTimeout(process.env.NEOUI_TEST_RENDERER==='wasm'?40000:12000);
  const errors=[];page.on('pageerror',error=>errors.push(String(error)));
  await page.addInitScript(floating);
  await page.addInitScript(()=>{const add=EventTarget.prototype.addEventListener;EventTarget.prototype.addEventListener=function(type,...args){const result=add.call(this,type,...args);if(this instanceof HTMLInputElement&&['paste','change'].includes(type))this.dataset['preserve'+type]= 'true';return result;};});
@@ -138,3 +138,38 @@ test('Browser: an omitted mask retains native text and emptiness boundaries',asy
   await input.fill('');await page.waitForFunction(()=>window.__unmaskedCalls.length===2);assert.deepEqual(await page.evaluate(()=>window.__unmaskedCalls),['a','']);
  }finally{await close(page,errors);}
 });
+
+for(const mode of ['Blazor','Browser']){
+ test(`${mode}: tapping MultiSelect checkbox markers updates row, checkmark and trigger together`,async()=>{
+  const {page,errors}=await open(mode,{hasTouch:true,viewport:{width:1100,height:900}});try{
+   const initialTrigger=page.getByRole('combobox').filter({hasText:'Preserved multi'});const trigger=page.locator(`[id="${await initialTrigger.getAttribute('id')}"]`);await trigger.tap();
+   const row=page.getByRole('option',{name:'Design',exact:true});await row.waitFor();
+   const marker=row.locator('[data-neo-multi-indicator]');
+   await marker.tap();await page.getByTestId('preserve-multi-model').filter({hasText:'Design'}).waitFor();
+   assert.equal(await row.getAttribute('aria-selected'),'true');assert.equal(await marker.getAttribute('data-state'),'checked');assert.equal(await marker.locator('svg').isVisible(),true);assert.match(await trigger.textContent(),/Design/);
+   await marker.tap();await page.waitForFunction(()=>document.querySelector('[data-testid="preserve-multi-model"]').textContent==='');
+   assert.equal(await marker.getAttribute('data-state'),'unchecked');assert.equal(await marker.locator('svg').count(),0);assert.match(await trigger.textContent(),/Preserved multi/);
+   await marker.tap();await page.getByTestId('preserve-multi-model').filter({hasText:'Design'}).waitFor();
+   const all=page.getByRole('option',{name:/^Select all$/i}).locator('[data-neo-multi-indicator]');assert.equal(await all.getAttribute('data-state'),'indeterminate');
+   await all.tap();await page.waitForFunction(()=>document.querySelector('[data-testid="preserve-multi-model"]').textContent==='Design,Development,Research');assert.equal(await all.getAttribute('data-state'),'checked');
+   await all.tap();await page.waitForFunction(()=>document.querySelector('[data-testid="preserve-multi-model"]').textContent==='');assert.equal(await all.getAttribute('data-state'),'unchecked');
+  }finally{await close(page,errors);}
+ });
+ test(`${mode}: tag suggestion touch activation retains the target and shows accepted badges`,async()=>{
+  const {page,errors}=await open(mode,{hasTouch:true,viewport:{width:1100,height:900}});try{
+   await page.getByPlaceholder('Preserved tags').evaluate(el=>el.dataset.touchTags='true');const input=page.locator('[data-touch-tags]');await input.scrollIntoViewIfNeeded();
+   if(mode==='Browser')await page.waitForFunction(()=>Boolean(document.getElementById(document.querySelector('[placeholder="Preserved tags"]').getAttribute('aria-controls'))));
+   else await input.locator('xpath=self::*[@data-preservepaste="true"]').waitFor();
+   await input.fill('Des');const option=page.getByRole('option',{name:'Design',exact:true});await option.waitFor();
+   if(mode==='Browser'){
+    const activated=await option.evaluate(el=>{el.dispatchEvent(new PointerEvent('pointerover',{bubbles:true,pointerType:'touch'}));const connected=el.isConnected;el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerType:'touch'}));return {connected,badge:document.querySelector('[data-neo-tag-values]').textContent};});
+    assert.equal(activated.connected,true);assert.equal(activated.badge,'Design×');
+   }else await option.tap();
+   await page.getByTestId('preserve-tags-model').filter({hasText:'Design'}).waitFor();
+   const root=input.locator('xpath=..');await root.getByRole('button',{name:'Remove Design',exact:true}).waitFor();assert.equal(await input.inputValue(),'');
+   await input.fill('Res');await page.getByRole('option',{name:'Research',exact:true}).tap();
+   await page.getByTestId('preserve-tags-model').filter({hasText:'Design,Research'}).waitFor();await root.getByRole('button',{name:'Remove Research',exact:true}).waitFor();
+   await root.getByRole('button',{name:'Remove Design',exact:true}).tap();await page.waitForFunction(()=>document.querySelector('[data-testid="preserve-tags-model"]').textContent==='Research');
+  }finally{await close(page,errors);}
+ });
+}

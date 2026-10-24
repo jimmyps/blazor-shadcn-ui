@@ -21,6 +21,9 @@
     <p data-testid="money-model">@Snapshot()</p><p data-testid="money-saved">@saved</p>
     <TagInput @bind-Tags="tags" Suggestions="@suggestions" Placeholder="Preserved tags" />
     <button data-testid="after-tags">After tags</button>
+    <p data-testid="preserve-tags-model">@string.Join(",", tags ?? [])</p>
+    <MultiSelect TItem="string" Items="@suggestions" @bind-Values="selectedTags" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" Placeholder="Preserved multi" />
+    <p data-testid="preserve-multi-model">@string.Join(",", selectedTags ?? [])</p>
     <MarkdownEditor @bind-Value="markdown" ValueRevision="@revision" Placeholder="Preserved markdown" />
     <NavigationMenu @bind-Value="navigation">
         <NavigationMenuList>
@@ -37,6 +40,7 @@
     private string? prefix = "345";
     private long revision;
     private IReadOnlyList<string>? tags;
+    private IEnumerable<string>? selectedTags;
     private readonly string[] suggestions = ["Design", "Development", "Research"];
     private readonly Money money = new();
     private string saved = "None";
