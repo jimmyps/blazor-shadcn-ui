@@ -1,4 +1,4 @@
-import { closeForElement } from '../../NeoUI.Blazor.Primitives/js/primitives/browser-floating.js';
+const { closeForElement } = await import(new URL('_content/NeoUI.Blazor.Primitives/js/primitives/browser-floating.js', document.baseURI).href);
 
 // The rendered items/selection remain Razor-owned. Only transient active-item state is local.
 const instances = new Map();

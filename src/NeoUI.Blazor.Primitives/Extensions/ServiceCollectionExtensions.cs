@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddNeoUIPrimitives(this IServiceCollection services)
     {
         services.AddOptions<InteractionOptions>();
+        services.AddScoped<CheckboxKeyboardService>();
 
         // Register PortalService as scoped for user isolation in Blazor Server
         // Each user session gets its own portal registry

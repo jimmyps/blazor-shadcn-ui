@@ -109,3 +109,32 @@ var rejectedVersion = renderedReject.OpenVersion;
 renderedReject.Sync(InteractionMode.Browser, true, false, 0);
 Require(renderedReject.Open && renderedReject.OpenVersion == rejectedVersion + 1, "Parent renders during rejected observations must not retain obsolete echo tokens.");
 Console.WriteLine("Passed: callback-time rejection renders do not mask later commands.");
+
+// A table's concurrent first renders share one void import, including failures.
+foreach (var failure in new Exception?[] { null, new Microsoft.JSInterop.JSDisconnectedException("closed"), new Microsoft.JSInterop.JSException("blocked") })
+{
+    var runtime = new CountingCheckboxRuntime(failure);
+    var keyboard = new NeoUI.Blazor.Primitives.Services.CheckboxKeyboardService(runtime, Microsoft.Extensions.Logging.Abstractions.NullLogger<NeoUI.Blazor.Primitives.Services.CheckboxKeyboardService>.Instance);
+    var mounts = Enumerable.Range(0, 100).Select(_ => keyboard.EnsureInitializedAsync()).ToArray();
+    Require(runtime.Calls == 1, "100 checkbox mounts must share one import, not one per instance.");
+    runtime.Release();
+    await Task.WhenAll(mounts);
+    await keyboard.EnsureInitializedAsync();
+    Require(runtime.Calls == 1, "Later mounts must not repeat initialization or failed delivery.");
+}
+Console.WriteLine("Passed: shared checkbox guard performs one void import for 100 mounts, catches disconnect/module failure, and retains no per-checkbox module references.");
+
+sealed class CountingCheckboxRuntime(Exception? failure) : Microsoft.JSInterop.IJSRuntime
+{
+    public int Calls { get; private set; }
+    private readonly TaskCompletionSource release = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    public void Release() => release.SetResult();
+    public ValueTask<T> InvokeAsync<T>(string identifier, object?[]? args) => InvokeAsync<T>(identifier, default, args);
+    public async ValueTask<T> InvokeAsync<T>(string identifier, CancellationToken cancellationToken, object?[]? args)
+    {
+        if (identifier != "import" || args?[0]?.ToString() != "./_content/NeoUI.Blazor.Primitives/js/primitives/checkbox.js") throw new Exception("Unexpected checkbox interop.");
+        Calls++; await release.Task;
+        if (failure is not null) throw failure;
+        return default!;
+    }
+}

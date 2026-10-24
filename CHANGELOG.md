@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🛠️ Correctness and compatibility review
 
+- Checkbox keyboard guarding uses one delegated document listener and one shared void module import per circuit/app, rather than per-checkbox imports, module references or disposal. Checkbox retains its original public lifetime API. TagInput logs JavaScript module-load failures and keeps the circuit usable; cross-package interaction imports consistently resolve against the application base URI.
+
 - TagInput resolves its shared suggestion adapter against the application base URI, preserving apps hosted beneath a sub-path. Checkbox uses Space-only keyboard activation in both modes; a local key guard blocks native Enter activation without adding a second Space toggle.
 - Compatibility: MultiSelect option check markers are presentation-only spans in both modes, replacing nested checkbox roles; update CSS/tests targeting the former checkbox DOM. Default-mode MaskedInput now honors `ShowMask=false` during typing instead of always filling the template.
 

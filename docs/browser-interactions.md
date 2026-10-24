@@ -905,3 +905,10 @@ switching are unchanged. Browser-mode motion does not wait for application callb
 - MultiSelect check markers are presentation-only `<span>` elements in both modes. Options retain their selection semantics; there is no nested `role="checkbox"`. Update application CSS and tests that targeted those former checkbox elements; prefer the option's `aria-selected` state.
 - MaskedInput now honors `ShowMask=false` while typing in Blazor mode too. The existing mask still formats entered characters, but no longer fills the unused template when that option is false.
 - Checkbox keyboard activation is Space-only in both modes. A local Enter guard preserves the ARIA checkbox pattern while native Space clicks avoid double toggles.
+
+Checkbox's Enter guard uses one delegated document listener, initialized by a scoped service
+with a shared pending/completed void import. Rendering or remounting a table's checkboxes
+does not add per-instance JS calls/references or an IAsyncDisposable contract. The listener
+lasts for the document lifetime and also covers checkboxes mounted later. Disconnect and
+module-load failures are contained. TagInput logs module-load failures without ending the
+circuit; its existing local editor features require successful initialization.

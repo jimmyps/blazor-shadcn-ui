@@ -5,14 +5,15 @@ import {readFile} from 'node:fs/promises';
 const url=process.env.NEOUI_TEST_URL??'http://localhost:5198';
 const floating=await readFile(new URL('./node_modules/@floating-ui/core/dist/floating-ui.core.umd.js',import.meta.url),'utf8')+'\n'+await readFile(new URL('./node_modules/@floating-ui/dom/dist/floating-ui.dom.umd.js',import.meta.url),'utf8');
 let browser;before(async()=>browser=await(process.env.NEOUI_BROWSER_ENGINE==='webkit'?webkit.launch({headless:true}):chromium.launch({channel:'msedge',headless:true})));after(async()=>browser?.close());
-async function open(mode){
+async function open(mode,failTagModule=false){
  const page=await browser.newPage({hasTouch:true,viewport:{width:1100,height:900}}),errors=[];page.setDefaultTimeout(process.env.NEOUI_TEST_RENDERER==='wasm'?40000:15000);page.on('pageerror',e=>errors.push(String(e)));if(new URL(url).pathname!=='/')page.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/_content/'))errors.push('Asset escaped application base: '+request.url());});
  await page.addInitScript(floating);
- await page.addInitScript(()=>{const add=EventTarget.prototype.addEventListener;EventTarget.prototype.addEventListener=function(type,...args){const result=add.call(this,type,...args);if(this instanceof HTMLInputElement&&type==='paste')this.dataset.ownershipReady='true';return result;};});
+ await page.addInitScript(()=>{const nativeFocus=HTMLElement.prototype.focus;HTMLElement.prototype.focus=function(...args){const result=nativeFocus.apply(this,args);if(this.hasAttribute('data-autofocus'))this.dataset.ownershipAutofocused='true';return result;};const add=EventTarget.prototype.addEventListener;EventTarget.prototype.addEventListener=function(type,...args){const result=add.call(this,type,...args);if(this===document&&type==='keydown'&&args[0]?.name==='preventCheckboxEnter')window.checkboxGuardRegistrations=(window.checkboxGuardRegistrations??0)+1;if(this instanceof HTMLInputElement&&type==='paste')this.dataset.ownershipReady='true';return result;};});
+ if(failTagModule)await page.route('**/tag-input.js',route=>route.fulfill({contentType:'application/javascript',body:'throw new Error("forced TagInput import failure");'}));
  await page.goto(url+`/?interactionownership=true&mode=${mode.toLowerCase()}`);await page.locator('[data-testid="test-host-ready"][data-ready="true"]').waitFor({state:'attached'});
  const input=page.getByRole('textbox',{name:'Ownership tags',exact:true});
  if(mode==='Browser'){await input.locator('xpath=ancestor::*[@data-neo-state-ready="true"]').waitFor();await page.waitForFunction(()=>Boolean(document.getElementById(document.querySelector('input[aria-label="Ownership tags"]').getAttribute('aria-controls'))));}
- else await input.locator('xpath=self::*[@data-ownership-ready="true"]').waitFor();
+ else if(!failTagModule)await input.locator('xpath=self::*[@data-ownership-ready="true"]').waitFor();
  return {page,input,errors};
 }
 async function close(page,errors){await page.close();assert.deepEqual(errors,[]);}
@@ -23,10 +24,10 @@ test('sub-path serves helper modules only beneath the application base',{skip:ne
 for(const mode of ['Blazor','Browser']){
  test(`${mode}: chooser keyboard, label and checkbox clicks update real columns exactly once`,async()=>{
   const {page,errors}=await open(mode);try{
-   const counted=page.getByRole('checkbox',{name:'Counted checkbox',exact:true});await counted.locator('xpath=self::*[@data-neo-checkbox-ready="true"]').waitFor();await counted.focus();await page.keyboard.press('Enter');await page.waitForTimeout(300);assert.equal(await page.getByTestId('checkbox-commits').textContent(),'0');assert.equal(await counted.getAttribute('aria-checked'),'false');
+   const counted=page.getByRole('checkbox',{name:'Counted checkbox',exact:true});await page.waitForFunction(()=>document.documentElement.dataset.neoCheckboxKeyboardReady==='true');await counted.focus();await page.keyboard.press('Enter');await page.waitForTimeout(300);assert.equal(await page.getByTestId('checkbox-commits').textContent(),'0');assert.equal(await counted.getAttribute('aria-checked'),'false');
    for(const [i,key] of ['Space','Space','Space','Space'].entries()){await page.keyboard.press(key);await page.getByTestId('checkbox-commits').filter({hasText:new RegExp(`^${i+1}$`)}).waitFor();assert.equal(await counted.getAttribute('aria-checked'),String(i%2===0));}
    const disabled=page.getByRole('checkbox',{name:'Disabled checkbox',exact:true});assert.equal(await disabled.isDisabled(),true);await disabled.dispatchEvent('click');assert.equal(await page.getByTestId('checkbox-commits').textContent(),'4');
-   await page.getByRole('button',{name:'Columns',exact:true}).first().click();const check=page.locator('[data-portal-content]').getByRole('checkbox',{name:'Name',exact:true});await check.waitFor();
+   await page.evaluate(()=>document.querySelectorAll('[data-autofocus]').forEach(el=>delete el.dataset.ownershipAutofocused));await page.getByRole('button',{name:'Columns',exact:true}).first().click();const check=page.locator('[data-portal-content]').getByRole('checkbox',{name:'Name',exact:true});await check.waitFor();if(mode==='Blazor')await check.locator('xpath=ancestor::*[@data-autofocus][1][@data-ownership-autofocused="true"]').waitFor();
    for(let i=0;i<4;i++){await check.focus();await page.keyboard.press('Space');await page.waitForFunction(expected=>Boolean([...document.querySelectorAll('thead th')].find(el=>el.textContent.trim()==='Name'))===expected,i%2===1);assert.equal(await check.getAttribute('aria-checked'),String(i%2===1));}
    await check.locator('xpath=ancestor::label').locator('span.select-none').click();await page.waitForFunction(()=>![...document.querySelectorAll('thead th')].some(el=>el.textContent.trim()==='Name'));assert.equal(await check.getAttribute('aria-checked'),'false');
    await check.click();await page.waitForFunction(()=>[...document.querySelectorAll('thead th')].some(el=>el.textContent.trim()==='Name'));assert.equal(await check.getAttribute('aria-checked'),'true');
@@ -57,3 +58,25 @@ for(const mode of ['Blazor','Browser']){
   }finally{await close(page,errors);}
  });
 }
+
+test('shared checkbox listener survives 100 mounts, removal and remount without duplication',async()=>{
+ const {page,errors}=await open('Blazor');try{
+  await page.waitForFunction(()=>document.documentElement.dataset.neoCheckboxKeyboardReady==='true');
+  for(let cycle=0;cycle<2;cycle++){
+   await page.getByTestId('ownership-many-toggle').click();const bulk=page.getByTestId('ownership-many');await bulk.getByRole('checkbox').nth(99).waitFor();assert.equal(await bulk.getByRole('checkbox').count(),100);
+   const first=bulk.getByRole('checkbox').first();await first.focus();await page.keyboard.press('Enter');assert.equal(await first.getAttribute('aria-checked'),'false');await page.keyboard.press('Space');await page.waitForFunction(()=>document.querySelector('[data-testid="ownership-many"] button').getAttribute('aria-checked')==='true');
+   assert.equal(await page.evaluate(()=>window.checkboxGuardRegistrations),1);
+   await page.getByTestId('ownership-many-toggle').click();await bulk.waitFor({state:'detached'});
+  }
+  await page.evaluate(async()=>{await import(new URL('_content/NeoUI.Blazor.Primitives/js/primitives/checkbox.js?guard-alias',document.baseURI).href);});assert.equal(await page.evaluate(()=>window.checkboxGuardRegistrations),1);
+ }finally{await close(page,errors);}
+});
+test('TagInput module failure leaves independent server interactions and unmount usable',async()=>{
+ const {page,errors}=await open('Blazor',true);try{
+  await page.waitForFunction(()=>document.documentElement.dataset.neoCheckboxKeyboardReady==='true');
+  await page.getByTestId('ownership-render').click();await page.getByTestId('ownership-render').filter({hasText:'Render 1'}).waitFor();
+  await page.getByTestId('ownership-tags-toggle').click();await page.getByRole('textbox',{name:'Ownership tags',exact:true}).waitFor({state:'detached'});
+  const checkbox=page.getByRole('checkbox',{name:'Counted checkbox',exact:true});await checkbox.focus();await page.keyboard.press('Space');await page.getByTestId('checkbox-commits').filter({hasText:/^1$/}).waitFor();
+  await page.getByTestId('ownership-render').click();await page.getByTestId('ownership-render').filter({hasText:'Render 2'}).waitFor();
+ }finally{await close(page,errors);}
+});

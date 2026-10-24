@@ -368,3 +368,12 @@ routing. This follow-up does not claim full Browser conversion of those features
 - Browser TagInput: badges are reconciled by value and occurrence instead of rebuilding the container. Acknowledgements and unrelated renders retain focused remove buttons; reordered values retain the matching node and removal indices, including duplicate values.
 - TagInput suggestions: both the existing `tag-input.js` and Browser controller use `tag-suggestions.js`. It waits for a completed primary tap, checks movement and release location, ignores pointer cancellation/scroll gestures and suppresses duplicate compatibility clicks. Mouse click and keyboard selection remain supported; disposal removes its listeners.
 - `ownership.spec.mjs` verifies actual column headers/model values, exactly-once checkbox activation, disabled controls, delayed tag acceptance, focus/node identity, reorder/reset/rejection, duplicates, cancellation/scroll and completed tap/click. It joins both Server defaults, WASM and the WebKit/WASM CI path alongside existing preservation tests.
+
+### Delegated guard and module-failure follow-up
+
+The Checkbox Enter guard is delegated once per document, with one cached void import per
+circuit/app. Checkbox has no per-instance JS object reference or async-disposal interface.
+Deterministic coverage verifies 100 concurrent mounts share one import even on disconnect
+or module failure; browser checks cover 100 mounts/remounts and asset aliases retaining one
+listener. TagInput module-load failure coverage verifies independent actions and unmount
+remain usable. Cross-package list, tag and input imports resolve against document.baseURI.

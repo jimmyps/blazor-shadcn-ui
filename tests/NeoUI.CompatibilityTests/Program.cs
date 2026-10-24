@@ -6,6 +6,8 @@ using Microsoft.JSInterop;
 using NeoUI.Blazor.Primitives;
 using NeoUI.Blazor.Primitives.Extensions;
 
+if (typeof(IAsyncDisposable).IsAssignableFrom(typeof(CheckboxPrimitive))) throw new Exception("Checkbox must not expose a per-instance asynchronous disposal contract.");
+
 var services = new ServiceCollection().AddLogging();
 services.AddNeoUIPrimitives();
 services.AddSingleton<IJSRuntime, NoInterop>();

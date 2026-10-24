@@ -6,7 +6,12 @@
     <Checkbox Checked="@checkedValue" CheckedChanged="Checked" AriaLabel="Counted checkbox" />
     <Checkbox Disabled Checked="true" AriaLabel="Disabled checkbox" />
     <p data-testid="checkbox-commits">@checkboxCommits</p>
+    @if (showTags) {
     <TagInput Tags="@tags" TagsChanged="CommitTags" AcceptedTagsAccessor="@(() => tags)" InteractionRevision="@revision" Suggestions="@suggestions" Placeholder="Ownership tags" AriaLabel="Ownership tags" AllowDuplicates />
+    }
+    <button data-testid="ownership-tags-toggle" @onclick="() => showTags = !showTags">Toggle tags</button>
+    <button data-testid="ownership-many-toggle" @onclick="() => showMany = !showMany">Toggle many checkboxes</button>
+    @if (showMany) { <div data-testid="ownership-many">@for (var i = 0; i < 100; i++) { <Checkbox InteractionMode="InteractionMode.Blazor" AriaLabel="@($"Bulk checkbox {i}")" /> }</div> }
     <p data-testid="ownership-tags-model">@string.Join(",", tags ?? [])</p>
     <button data-testid="ownership-render" @onclick="() => renders++">Render @renders</button>
     <button data-testid="ownership-reset" @onclick="Reset">Reset tags</button>
@@ -21,7 +26,8 @@
     private IReadOnlyList<string>? tags = ["Design", "Research"];
     private long revision;
     private int renders, checkboxCommits;
-    private bool checkedValue;
+    private bool checkedValue, showMany;
+    private bool showTags = true;
     private void Checked(bool value) { checkedValue = value; checkboxCommits++; }
     private async Task CommitTags(IReadOnlyList<string>? values) { var generation = revision; await Task.Delay(400); if (generation == revision && !(values?.Contains("reject") ?? false)) tags = values; }
     private void Reset() { revision++; tags = ["Reset"]; }
