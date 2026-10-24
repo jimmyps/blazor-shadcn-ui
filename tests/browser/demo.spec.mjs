@@ -172,9 +172,13 @@ test('Interaction Mode is discoverable in navigation, indexes, and spotlight', a
     try {
         await page.goto(origin + '/');
         await page.getByRole('link', { name: /Interaction Mode Compare/ }).waitFor();
-        const links = await page.locator('aside a').evaluateAll(elements => elements
-            .filter(e => e.getClientRects().length > 0).map(e => e.textContent.trim()));
-        assert.equal(links[links.indexOf('Components') + 1], 'Interaction Mode');
+        // The landing-page card can prerender before the interactive sidebar is visible.
+        await eventually(async () => {
+            const links = await page.locator('aside a').evaluateAll(elements => elements
+                .filter(e => e.getClientRects().length > 0).map(e => e.textContent.trim()));
+            assert.notEqual(links.indexOf('Components'), -1);
+            assert.equal(links[links.indexOf('Components') + 1], 'Interaction Mode');
+        });
         await page.goto(origin + '/components');
         await page.getByRole('heading', { name: 'Interaction Mode', exact: true }).first().waitFor();
         const indexLink = page.locator('a[href="/components/browser-interactions"]').filter({ has: page.locator('h4') });
