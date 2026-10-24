@@ -143,6 +143,6 @@ public partial class Input
         Value = accepted;
         if (_validationBehavior != null) await _validationBehavior.NotifyFieldChangedAsync();
         else if (EditContext != null && ValueExpression != null) EditContext.NotifyFieldChanged(FieldIdentifier.Create(ValueExpression));
-        return new { value = Value ?? string.Empty, sequence, revision, ignored = false, equivalent = IsEquivalentBrowserValue(value, Value), invalid = !BrowserDraftIsValid };
+        return new { value = Value ?? string.Empty, sequence, revision, ignored = false, equivalent = IsEquivalentBrowserValue(value, Value), invalid = !BrowserDraftIsValid, format = BrowserFormat };
     }
 }

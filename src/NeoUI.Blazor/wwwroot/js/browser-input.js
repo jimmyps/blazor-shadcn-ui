@@ -50,7 +50,7 @@ export function initialize(element, bridge) {
     const observeDraft = () => {
         if (draft === element.value) return false;
         draft = element.value; sequence++;
-        if (element.hasAttribute('data-neo-input-invalid')) { element.removeAttribute('data-neo-input-invalid'); element.setCustomValidity(''); formatting.reconcile(); }
+        if (element.hasAttribute('data-neo-input-invalid')) { element.removeAttribute('data-neo-input-invalid'); element.setCustomValidity(''); formatting.validate(); }
         element.removeAttribute('data-neo-input-uncertain');
         pending(true);
         return true;
@@ -62,7 +62,7 @@ export function initialize(element, bridge) {
         element.toggleAttribute('data-neo-input-invalid', Boolean(ack.invalid));
         if (ack.invalid) element.setCustomValidity('Enter a value supported by this field.');
         equivalentSequence = ack.equivalent ? sequence : -1;
-        write(ack.value ?? ''); formatting.reconcile(); lastSubmitted = acceptedValue = draft; submittedSequence = sequence;
+        write(ack.value ?? ''); formatting.reconcile(ack.format); lastSubmitted = acceptedValue = draft; submittedSequence = sequence;
         observedEmpty = formatting.isEmpty(draft);
         element.removeAttribute('data-neo-input-uncertain');
         pending(false);
@@ -100,6 +100,7 @@ export function initialize(element, bridge) {
         } finally { if (currentGeneration === generation) running = false; }
     }
     const prepareFinal = () => {
+        if (!config.readonly) formatting.prepareCommit();
         observeDraft();
         if (config.commitOnBlur && !config.readonly && lastFinalSequence !== sequence) { sequence++; lastFinalSequence = sequence; pending(true); }
     };

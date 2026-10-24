@@ -146,8 +146,10 @@ also runs the four cases with WebKit.
 
 ### Existing JavaScript preservation audit — 2026-10-24
 
-Audit baseline: `a2151714`. This is a findings report, **not a claim that the
-items below have been fixed**. The review covered all 61 shipped JavaScript files
+Audit baseline: `a2151714`. The findings and CI status in this audit describe that
+baseline. The preservation implementation and coverage are recorded in the
+follow-up section below; the historical findings table is not the current fix status.
+The review covered all 61 shipped JavaScript files
 (40 Components, 21 Primitives), their C#/Razor callers, and Browser-mode early
 returns and replacement controllers. Eleven files are Browser controllers/adapters;
 one is the vendored motion runtime. The 49 other modules are inventoried below.
@@ -298,3 +300,64 @@ passed the Blazor Server and WASM/gallery jobs. The Browser Server job failed th
 Markdown redo assertion at `markdown.spec.mjs:31`. The later documentation commits
 contain no runtime fix for that failure. This reinforces the open-finding status;
 it must not be presented as a green final correctness review.
+
+
+### Preservation implementation follow-up
+
+All five confirmed baseline findings now have targeted implementation changes:
+
+- **MaskedInput:** removed the duplicate mask algorithm from the Browser format
+  adapter. Both modes initialize the existing mask editor; the Browser option emits
+  local input signals into the draft queue instead of calling legacy .NET handlers.
+  The common engine retains configured templates, literal prefixes, selected/raw/
+  formatted paste, caret navigation and readonly behavior. Minimal additions cover
+  native `beforeinput`/IME edits, disposal identity and canceling deferred focus
+  positioning when a newer selection or edit exists. `ShowMask=false` is forwarded
+  to the existing engine in the legacy path too. An omitted mask stays native text.
+- **CurrencyInput:** extracted the existing exact editing-value helper for use by
+  both legacy focus and Browser metadata. Browser acknowledgements carry current
+  formatting metadata independently of the next parent render. Focus and final
+  form snapshots use the exact value only for an untouched display alias; a real
+  edit, including explicitly typing the rounded display, is parsed as entered.
+  Equivalence compares against the authoritative numeric value, so display-only
+  rounding does not change the model or force a second Save. Actual clamping,
+  rejection or normalization still yields `ValueAdjusted`.
+- **TagInput:** restored container click-to-focus and the legacy 150 ms blur grace
+  period in the local controller, with cancellation, stale-search invalidation and
+  disposal cleanup. Portaled pointer selection remains possible during the grace
+  period. The old script is an event-to-C# bridge rather than a local tag engine;
+  Browser tokenization/search still requires the local tags implementation.
+- **NavigationMenu:** restored `data-motion` for entry and directional sibling
+  transitions using the existing Tailwind classes. Inert/ARIA update immediately;
+  display removal waits for the panel's own new finite CSS exit effects. Viewports
+  also await child exits, and stale completions cannot hide a reopened panel.
+  No-motion CSS hides synchronously and no business callback gates motion.
+- **MarkdownEditor:** retained the existing module and moved history recording to
+  the input event itself; only layout-dependent scrolling remains deferred. Undo
+  notifications do not create a new edit, duplicate observations do not truncate
+  redo, composition completion records its final state, and pending frame callbacks
+  cannot repopulate reset history.
+
+`preservation.spec.mjs` uses the same fixture in Server and WASM, with explicit
+Browser and Blazor modes under the application policy. Cases exercise literal-digit
+and phone masks, custom mask characters, hidden templates, selection replacement,
+readonly edits, caret positions, mobile deletion, composition, reset, exact currency
+values across USD/EUR/JPY/KWD/hidden-symbol configurations, untouched Save, rapid
+changes with delayed acceptance, intentional rounding edits, tag keyboard blur and
+portaled selection, actual CSS navigation motion/reversal/no-motion behavior, and
+queued-frame Markdown undo/redo/reset/composition. The omitted-mask adapter has a
+separate local notification-boundary test. Browser-local cases suppress outbound
+circuit traffic where applicable.
+
+The suite is mandatory in both Server CI defaults, the WASM suite and an additional
+WebKit/WASM pass. Existing required-mask and emptiness-boundary tests were updated
+only where restoring the legacy empty template changes the visible string; they
+continue asserting validation and exact callback counts. The historical baseline
+CI failure above remains evidence for the redo regression, not the result of this
+follow-up. Current validation results belong to the PR's validation section.
+
+Intentional boundaries from the audit remain: RichTextEditor keeps Quill outside
+the new form protocol; arbitrary TagTemplate uses an explicit Blazor exception;
+ColorPicker's shell can be local while canvas initialization/application updates
+still require the server; MultiSelect retains its documented search-input Space
+routing. This follow-up does not claim full Browser conversion of those features.

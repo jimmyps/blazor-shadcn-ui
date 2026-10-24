@@ -7,6 +7,7 @@
     <RootNamespace>NeoUI.BrowserTests.Host</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="../NeoUI.BrowserTests.Host/EditorPreservationCases.razor" Link="EditorPreservationCases.razor" />
     <ProjectReference Include="../../src/NeoUI.Blazor/NeoUI.Blazor.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all" />

@@ -30,7 +30,7 @@ public partial class CurrencyInput<TValue>
     public Task<InputFlushResult> FlushAsync(int timeoutMilliseconds = 30000) => browserInput?.FlushAsync(timeoutMilliseconds)
         ?? Task.FromResult(new InputFlushResult { Status = BrowserInteraction ? InputFlushStatus.NotReady : InputFlushStatus.NotSupported });
     private bool browserDraftValid = true;
-    private object BrowserFormat => new { kind = "currency", symbol = CurrencyDefinition.Symbol,
+    private object BrowserFormat => new { kind = "currency", editValue = GetEditingValue(GetCultureInfo()), symbol = CurrencyDefinition.Symbol,
         group = GetCultureInfo().NumberFormat.NumberGroupSeparator, @decimal = GetCultureInfo().NumberFormat.NumberDecimalSeparator };
     private string? BrowserValue => CurrentValueAsString;
     private bool ParseBrowser(string? text, out TValue? value)
@@ -40,7 +40,9 @@ public partial class CurrencyInput<TValue>
         return BrowserNumericConversion.TryParse(text, culture, out value);
     }
     private TValue? FinalBrowserValue(TValue? value) => BrowserNumericConversion.Clamp(value, Min, Max);
-    private bool EquivalentBrowserValue(string? draft, string? accepted) => ParseBrowser(draft, out var left) && ParseBrowser(accepted, out var right) && EqualityComparer<TValue?>.Default.Equals(left, right);
+    private bool EquivalentBrowserValue(string? draft, string? accepted) => ParseBrowser(draft, out var left)
+        && (accepted == BrowserValue ? EqualityComparer<TValue?>.Default.Equals(left, Value)
+            : ParseBrowser(accepted, out var right) && EqualityComparer<TValue?>.Default.Equals(left, right));
     private async Task<string?> AcceptBrowserDraft(string? text, bool final)
     {
         browserDraftValid = ParseBrowser(text, out var proposed);

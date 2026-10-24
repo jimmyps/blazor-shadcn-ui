@@ -13,7 +13,9 @@ public sealed class BrowserFormattedInput : Input
     protected override bool IsEquivalentBrowserValue(string? draft, string? accepted) => EquivalentValue?.Invoke(draft, accepted) ?? base.IsEquivalentBrowserValue(draft, accepted);
     [Parameter] public Func<bool>? DraftIsValid { get; set; }
     protected override bool BrowserDraftIsValid => DraftIsValid?.Invoke() ?? true;
-    protected override object? BrowserFormat => Format;
+    /// <summary>Reads fresh formatting metadata after canonical acceptance, before the next child render.</summary>
+    [Parameter] public Func<object?>? FormatAccessor { get; set; }
+    protected override object? BrowserFormat => FormatAccessor?.Invoke() ?? Format;
     protected override bool CommitOnBlur => true;
     protected override Task<string?> AcceptBrowserDraftAsync(string? value, bool final) =>
         AcceptDraft?.Invoke(value, final) ?? Task.FromResult(value);

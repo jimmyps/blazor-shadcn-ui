@@ -39,7 +39,7 @@ test('formatted drafts preserve incomplete numbers, locale decimals and local ma
         await masked.fill('123456');assert.equal(await masked.inputValue(),'123-456');
         await masked.evaluate(element=>element.setSelectionRange(4,4));await masked.press('Backspace');
         assert.equal(await masked.inputValue(),'124-56_');
-        await masked.fill('');assert.equal(await masked.inputValue(),'');
+        await masked.fill('');await masked.blur();assert.equal(await masked.inputValue(),'');
     } finally {await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await page.close();}
 });
 test('form flush commits typed numbers, culture values and raw masks before submit, then revisions reset drafts',async()=>{
@@ -103,6 +103,6 @@ test('an empty mask template sends onchange callbacks only across raw empty/none
         const input=page.getByRole('textbox',{name:'Sweep boundary mask',exact:true});await input.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
         await input.fill('1');await page.getByTestId('sweep-mask-boundaries').filter({hasText:'1'}).waitFor();
         await input.fill('12');await pause(200);assert.equal(await page.getByTestId('sweep-mask-boundaries').textContent(),'1');
-        await input.fill('');await page.getByTestId('sweep-mask-boundaries').filter({hasText:'2'}).waitFor();assert.equal(await input.inputValue(),'');
+        await input.fill('');await page.getByTestId('sweep-mask-boundaries').filter({hasText:'2'}).waitFor();assert.equal(await input.inputValue(),'___-___');
     }finally{await page.close();}
 });

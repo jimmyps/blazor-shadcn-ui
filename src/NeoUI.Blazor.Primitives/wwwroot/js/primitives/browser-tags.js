@@ -2,7 +2,7 @@ import { canInvokeServer } from './browser-connection.js';
 export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVersion) {
     if(getConfig().kind!=='tags')return null;
     const doc=root.ownerDocument,input=root.querySelector('[data-neo-tag-input]'),container=root.querySelector('[data-neo-tag-values]'),status=root.querySelector('[data-neo-tag-status]');
-    let results=[],active=-1,timer,querySequence=0,disposed=false;
+    let results=[],active=-1,timer,blurTimer,querySequence=0,disposed=false;
     const options=()=>getConfig().fieldOptions,list=()=>doc.getElementById(options().contentId);
     const reject=value=>{status.textContent=`Unable to add ${value}.`;if(!getConfig().server||canInvokeServer())void bridge?.invokeMethodAsync('RejectAsync',value,getVersion()).catch(()=>{});};
     const close=()=>{results=[];active=-1;if(list())list().hidden=true;input.setAttribute('aria-expanded','false');input.removeAttribute('aria-activedescendant');};
@@ -54,6 +54,8 @@ export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVe
         const remove=event.target.closest('[data-neo-tag-remove]'),clear=event.target.closest('[data-neo-tag-clear]');
         if(remove&&root.contains(remove)){event.preventDefault();if(!isLocked()&&!getConfig().disabled)change(getValues().filter((value,index)=>index!==Number(remove.dataset.neoTagRemove)));input.focus();}
         if(clear&&root.contains(clear)){event.preventDefault();if(!isLocked()&&!getConfig().disabled)change([]);input.focus();}
+        // Match the existing tag-input.js container click-to-focus behavior.
+        if(root.contains(event.target)&&!event.target.closest('button')&&!getConfig().disabled)input.focus();
     };
     const pointer=event=>{
         const target=list(),item=event.target.closest('[data-neo-tag-suggestion]');
@@ -61,6 +63,16 @@ export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVe
         else if(!root.contains(event.target)&&!target?.contains(event.target)){querySequence++;clearTimeout(timer);close();}
     };
     const hover=event=>{const item=event.target.closest('[data-neo-tag-suggestion]');if(list()?.contains(item)&&active!==Number(item.dataset.neoTagSuggestion)){active=Number(item.dataset.neoTagSuggestion);paintResults();}};
+    const focusin=()=>clearTimeout(blurTimer);
+    const focusout=()=>{
+        clearTimeout(blurTimer);
+        // Preserve the legacy grace period for a pointer selecting a suggestion.
+        blurTimer=setTimeout(()=>{
+            if(disposed||root.contains(doc.activeElement)||list()?.contains(doc.activeElement))return;
+            querySequence++;clearTimeout(timer);close();
+        },150);
+    };
+    root.addEventListener('focusin',focusin);root.addEventListener('focusout',focusout);
     root.addEventListener('input',edited);root.addEventListener('keydown',keydown,true);root.addEventListener('paste',paste,true);root.addEventListener('click',click,true);doc.addEventListener('pointerdown',pointer,true);doc.addEventListener('pointerover',hover);
-    return {paint,validate:()=>!input.value.trim(),beforeFlush(){if(input.value.trim())addMany([input.value]);},reset(){input.value='';querySequence++;clearTimeout(timer);close();},dispose(){disposed=true;querySequence++;clearTimeout(timer);root.removeEventListener('input',edited);root.removeEventListener('keydown',keydown,true);root.removeEventListener('paste',paste,true);root.removeEventListener('click',click,true);doc.removeEventListener('pointerdown',pointer,true);doc.removeEventListener('pointerover',hover);}};
+    return {paint,validate:()=>!input.value.trim(),beforeFlush(){if(input.value.trim())addMany([input.value]);},reset(){input.value='';querySequence++;clearTimeout(timer);clearTimeout(blurTimer);close();},dispose(){disposed=true;querySequence++;clearTimeout(timer);clearTimeout(blurTimer);root.removeEventListener('focusin',focusin);root.removeEventListener('focusout',focusout);root.removeEventListener('input',edited);root.removeEventListener('keydown',keydown,true);root.removeEventListener('paste',paste,true);root.removeEventListener('click',click,true);doc.removeEventListener('pointerdown',pointer,true);doc.removeEventListener('pointerover',hover);}};
 }

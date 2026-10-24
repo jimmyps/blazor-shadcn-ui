@@ -59,14 +59,10 @@ function saveState(textarea) {
         end: textarea.selectionEnd
     };
 
-    // If we're not at the end of history, truncate forward history (discard redo states)
+    // An unchanged observation is not a new edit and must not discard redo.
+    if (data.historyIndex >= 0 && data.history[data.historyIndex].value === value) return;
     if (data.historyIndex < data.history.length - 1) {
         data.history = data.history.slice(0, data.historyIndex + 1);
-    }
-
-    // Don't save duplicate consecutive states (compare value only)
-    if (data.history.length > 0 && data.history[data.historyIndex].value === value) {
-        return;
     }
 
     data.history.push({ value, selection });
@@ -493,17 +489,18 @@ export function initializeListContinuation(textarea, dotNetRef, browserOwned = f
     listenerMap.set(textarea, handler);
 
     // Add input listener for auto-scroll and state saving on typing
-    const inputHandler = () => {
-        const restoring = data.restoring;
-        // Use requestAnimationFrame to ensure scroll happens after DOM update
+    const inputHandler = event => {
+        // Capture history at the edit, not in a later frame that may run after
+        // undo or a document reset. Only layout-dependent scrolling is deferred.
+        if (!data.restoring && !event.isComposing) saveState(textarea);
         requestAnimationFrame(() => {
-            scrollToCursor(textarea);
-            // Save state for undo after each input
-            if (!restoring) saveState(textarea);
+            if (editorMap.get(textarea) === data && textarea.isConnected) scrollToCursor(textarea);
         });
     };
     textarea.addEventListener('input', inputHandler);
     inputListenerMap.set(textarea, inputHandler);
+    data.compositionEnd = () => saveState(textarea);
+    textarea.addEventListener('compositionend', data.compositionEnd);
 }
 
 /**
@@ -514,6 +511,7 @@ export function disposeListContinuation(textarea) {
     if (!textarea) return;
     const data = editorMap.get(textarea);
     if (data?.toolbar) textarea.ownerDocument.removeEventListener('click',data.toolbar,true);
+    if (data?.compositionEnd) textarea.removeEventListener('compositionend',data.compositionEnd);
     const handler = listenerMap.get(textarea);
     if (handler) {
         textarea.removeEventListener('keydown', handler);

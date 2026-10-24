@@ -711,7 +711,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                     var updateOnMode = UpdateOn == InputUpdateMode.Input ? "input" : "change";
                     
                     await _maskModule.InvokeVoidAsync("initializeMaskedInput", 
-                        EffectiveId, Mask, MaskChar, _maskDotNetRef, updateOnMode);
+                        EffectiveId, Mask, MaskChar, _maskDotNetRef, updateOnMode, new { showMask = ShowMask });
                     _isInitialized = true;
                 }
 

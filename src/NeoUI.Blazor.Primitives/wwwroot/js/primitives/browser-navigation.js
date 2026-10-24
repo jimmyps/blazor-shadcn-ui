@@ -25,6 +25,40 @@ export function initialize(root, bridge) {
         if (config.notify) notifications = notifications.then(() => disposed ? undefined : bridge.invokeMethodAsync('NotifyValueAsync', next))
             .catch(error => root.dispatchEvent(new CustomEvent('neoui:error', { bubbles: true, detail: { operation: 'navigation', message: String(error) } })));
     };
+    let paintedValue = '';
+    const presence = new WeakMap();
+    const paintPresence = (element, active, motion, children = []) => {
+        let state = presence.get(element);
+        if (!state) { state = { active: false, revision: 0 }; presence.set(element,state); }
+        const changed = state.active !== active;
+        const previousAnimations = changed ? new Set(element.getAnimations?.() ?? []) : null;
+        if (changed) {
+            element.style.display = '';
+            element.getBoundingClientRect();
+            state.active = active; state.revision++;
+        }
+        element.inert = !active;
+        element.setAttribute('aria-hidden',String(!active));
+        if (motion !== null && changed) element.dataset.motion = motion;
+        else if (motion !== null && !element.hasAttribute('data-motion')) element.dataset.motion = '';
+        element.dataset.state = active ? 'open' : 'closed';
+        if (active) { element.style.display = ''; element.dataset.activated = 'true'; state.exit = null; return null; }
+        if (!changed) {
+            if (!state.exit) element.style.display = 'none';
+            return state.exit;
+        }
+        const revision = state.revision;
+        const animations = (element.getAnimations?.() ?? []).filter(animation => !previousAnimations.has(animation) &&
+            animation.playState !== 'finished' && Number.isFinite(animation.effect?.getComputedTiming().endTime));
+        const hide = () => {
+            if (!disposed && element.isConnected && state.revision === revision && !state.active) {
+                element.style.display = 'none'; state.exit = null;
+            }
+        };
+        const waiting = [...animations.map(animation=>animation.finished),...children.filter(Boolean)];
+        if (!waiting.length) { hide(); return null; }
+        return state.exit = Promise.allSettled(waiting).then(hide);
+    };
     const paint = () => {
         const all = triggers(), selected = all.find(t => key(t) === value);
         if (kind === 'pill') {
@@ -39,20 +73,23 @@ export function initialize(root, bridge) {
                 }
             }
         } else if (kind === 'navigation') {
+            const previous = all.find(trigger=>key(trigger)===paintedValue);
+            const switching = selected && previous && selected !== previous;
+            const forward = switching && all.indexOf(selected)>all.indexOf(previous);
+            const exits = [];
             for (const trigger of all) {
                 const active = trigger === selected;
                 trigger.setAttribute('aria-expanded', String(active)); trigger.dataset.state = active ? 'open' : 'closed';
                 const content = panel(trigger);
                 if (!content) continue;
-                content.style.display = active ? '' : 'none'; content.inert = !active;
-                content.setAttribute('aria-hidden', String(!active)); content.dataset.state = active ? 'open' : 'closed';
-                if (active) content.dataset.activated = 'true';
+                const motion = switching ? active ? (forward?'from-end':'from-start') : trigger === previous ? (forward?'to-start':'to-end') : '' : '';
+                exits.push(paintPresence(content,active,motion));
             }
+            paintedValue = value;
             for (const viewport of root.querySelectorAll('[data-slot="navigation-menu-viewport"]')) {
                 const content = selected && panel(selected);
-                viewport.dataset.state = content ? 'open' : 'closed';
-                viewport.style.display = content ? '' : 'none';
                 if (content) { viewport.style.setProperty('--radix-navigation-menu-viewport-width', `${content.scrollWidth}px`); viewport.style.setProperty('--radix-navigation-menu-viewport-height', `${content.scrollHeight}px`); }
+                paintPresence(viewport,Boolean(content),null,exits);
             }
             for (const indicator of root.querySelectorAll('[data-neo-navigation-indicator]')) {
                 indicator.style.visibility = selected ? 'visible' : 'hidden'; indicator.dataset.state = selected ? 'visible' : 'hidden';

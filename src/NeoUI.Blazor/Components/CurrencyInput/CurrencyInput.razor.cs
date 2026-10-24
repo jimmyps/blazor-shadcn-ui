@@ -581,24 +581,16 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     {
         _isFocused = true;
         
-        // Initialize editing value with current unformatted value (full precision)
-        if (Value != null)
-        {
-            try
-            {
-                var numericValue = Convert.ToDecimal(Value);
-                // Use "G29" to preserve all significant digits while stripping trailing zeros (e.g., 50000.0000 → 50000)
-                _editingValue = numericValue.ToString("G29", CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                _editingValue = null;
-            }
-        }
-        else
-        {
-            _editingValue = null;
-        }
+        _editingValue = GetEditingValue(CultureInfo.InvariantCulture);
+    }
+
+    // Shared by legacy focus and Browser metadata. Display formatting can round;
+    // editing must start from the authoritative numeric value instead.
+    private string? GetEditingValue(CultureInfo culture)
+    {
+        if (Value == null) return null;
+        try { return Convert.ToDecimal(Value).ToString("G29", culture); }
+        catch { return null; }
     }
 
     /// <summary>

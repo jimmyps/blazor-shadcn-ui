@@ -1,3 +1,4 @@
+import { initializeMaskedInput } from './masked-input.js';
 import { initializeListContinuation, disposeListContinuation, resetHistory } from './markdown-editor.js';
 // Formatting runs before the shared draft controller observes native input events.
 // It never sends callbacks or writes a Razor-owned value.
@@ -11,38 +12,16 @@ export function attachFormat(element, getFormat) {
         if (format.decimal && format.decimal !== '.') result = result.split(format.decimal).join('.');
         return result.trim();
     };
-    const definitions = {'0': /[0-9]/, '9': /[0-9 ]/, 'A': /[A-Za-z]/, 'a': /[A-Za-z ]/, '*': /[A-Za-z0-9]/};
-    const mask = (value, format, caret) => {
-        const pattern = format.mask ?? '', raw = [];
-        let index = 0, acceptedBefore = 0;
-        // Consume editable characters and matching literals in order. Invalid
-        // pasted characters are skipped without moving to the next mask slot.
-        for (let source = 0; source < value.length && index < pattern.length; source++) {
-            const char = value[source];
-            while (index < pattern.length && !definitions[pattern[index]]) {
-                if (char === pattern[index]) { index++; break; }
-                index++;
-            }
-            if (definitions[pattern[index]]?.test(char) && char !== format.maskChar) {
-                raw.push(char); index++; if (source < caret) acceptedBefore++;
-            }
-        }
-        if (!raw.length) return {value:'',caret:0,count:0};
-        let result = '', position = 0, nextCaret = 0;
-        for (const char of pattern) {
-            if (definitions[char]) {
-                if (position < raw.length) { result += raw[position++]; if (position <= acceptedBefore) nextCaret = result.length; }
-                else if (format.showMask) result += format.maskChar ?? '_';
-                else break;
-            } else {
-                // Skip only literals adjacent to the insertion point. Placeholder
-                // slots before a later separator must not pull the caret forward.
-                const adjacent = nextCaret === result.length;
-                result += char;
-                if (position === acceptedBefore && adjacent) nextCaret = result.length;
-            }
-        }
-        return {value:result,caret:nextCaret,count:raw.length};
+    let maskEditor, maskKey, currencyFormat = getFormat(), currencyDisplay = element.value, currencyEdited = false;
+    const configureMask = () => {
+        const format = getFormat();
+        if (format?.kind !== 'mask' || !format.mask) { maskEditor?.dispose(); maskEditor = undefined; maskKey = undefined; return; }
+        const next = JSON.stringify([format.mask, format.maskChar, format.showMask]);
+        if (next === maskKey) return;
+        maskEditor?.dispose(); maskKey = next;
+        maskEditor = initializeMaskedInput(element.id, format.mask, format.maskChar ?? '_', null, 'change', {
+            browserOwned: true, showMask: format.showMask, onFormat: () => validate()
+        });
     };
     const validate = () => {
         const format = getFormat(); if (!format) return;
@@ -58,7 +37,7 @@ export function attachFormat(element, getFormat) {
                 if (value && valid) element.setAttribute('aria-valuenow',value); else element.removeAttribute('aria-valuenow');
             }
         } else if (format.kind === 'mask' && format.required && element.value) {
-            const count = mask(element.value,format,element.value.length).count;
+            const count = maskEditor?.rawValue(element.value).length ?? 0;
             const required = [...(format.mask ?? '')].filter(char => ['0','A','*'].includes(char)).length;
             if (count < required) message = 'Complete this value.';
         }
@@ -69,10 +48,7 @@ export function attachFormat(element, getFormat) {
     };
     const normalize = event => {
         const format = getFormat(); if (!format || composing || event?.isComposing) return;
-        if (format.kind === 'mask') {
-            const result = mask(element.value,format,element.selectionStart ?? element.value.length);
-            if (element.value !== result.value) { element.value = result.value; element.setSelectionRange(result.caret,result.caret); }
-        }
+        if (format.kind === 'currency') currencyEdited = true;
         validate();
     };
     const numberKey = event => {
@@ -85,43 +61,36 @@ export function attachFormat(element, getFormat) {
         if (format.max !== null && format.max !== undefined && format.max !== '') next = Math.min(Number(format.max), next);
         element.value = String(Number(next.toPrecision(14))); element.dispatchEvent(new Event('input',{bubbles:true}));
     };
-    const beforeInput = event => {
-        const format = getFormat();
-        if (format?.kind !== 'mask' || element.readOnly || element.disabled || composing || !['deleteContentBackward','deleteContentForward'].includes(event.inputType)) return;
-        const start = element.selectionStart, end = element.selectionEnd;
-        if (start !== end || start === null) return;
-        let position = event.inputType === 'deleteContentBackward' ? start-1 : start;
-        const direction = event.inputType === 'deleteContentBackward' ? -1 : 1;
-        while (position >= 0 && position < (format.mask?.length ?? 0) && !definitions[format.mask[position]]) position += direction;
-        if (position >= 0 && position < element.value.length) {
-            // WebKit computes the native deletion range before beforeinput. A
-            // selection change here does not retarget that deletion across a
-            // literal, so apply this edit explicitly and emit one input event.
-            event.preventDefault();
-            element.setRangeText('',position,position+1,'start');
-            element.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:event.inputType}));
-        }
-    };
+    const exactCurrency = () => getFormat()?.kind === 'currency' && !currencyEdited && currencyFormat?.editValue != null &&
+        element.value === currencyDisplay && !element.hasAttribute('data-neo-input-pending') && !element.hasAttribute('data-neo-input-uncertain');
+    const prepareCommit = () => { if (exactCurrency()) element.value = currencyFormat.editValue; };
     const focus = () => {
         const format = getFormat();
         if (format?.kind === 'currency' && !element.readOnly && !element.disabled) {
-            const text = numberText(element.value,format);
-            element.value = format.decimal === '.' ? text : text.replace('.',format.decimal);
+            // Exact editable text comes from the same C# currency rules as the
+            // legacy editor. Never derive it from a rounded display string.
+            const accepted = exactCurrency();
+            const text = accepted && currencyFormat?.editValue != null ? currencyFormat.editValue : numberText(element.value,format);
+            element.value = accepted && currencyFormat?.editValue != null || format.decimal === '.' ? text : text.replace('.',format.decimal);
         }
     };
     const startComposition = () => composing = true;
     const endComposition = event => {composing = false; normalize(event);};
+    configureMask();
     element.addEventListener('keydown',numberKey);
     element.addEventListener('input',normalize,true);
-    element.addEventListener('beforeinput',beforeInput,true);
     element.addEventListener('focus',focus);
     element.addEventListener('compositionstart',startComposition,true);
     element.addEventListener('compositionend',endComposition,true);
     validate();
-    return { reconcile: validate, isEmpty(value) { const format = getFormat(); return format?.kind === 'mask' ? mask(value,format,value.length).count === 0 : value.length === 0; }, dispose() {
+    return { validate, prepareCommit, reconcile(format) {
+        currencyFormat = format ?? getFormat(); currencyDisplay = element.value; currencyEdited = false;
+        configureMask(); maskEditor?.reconcile(); validate();
+    }, isEmpty(value) { return maskEditor ? !maskEditor.rawValue(value).length : value.length === 0; }, dispose() {
+        maskEditor?.dispose();
         if (markdown) disposeListContinuation(element);
         element.removeEventListener('keydown',numberKey);
-        element.removeEventListener('input',normalize,true); element.removeEventListener('beforeinput',beforeInput,true);
+        element.removeEventListener('input',normalize,true);
         element.removeEventListener('focus',focus); element.removeEventListener('compositionstart',startComposition,true); element.removeEventListener('compositionend',endComposition,true);
     }};
 }

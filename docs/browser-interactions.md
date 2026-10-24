@@ -753,13 +753,29 @@ The P1/P2 scope and consumer review for lazy/heavy tab panels are tracked in [th
 
 Textarea, InputGroupInput and InputGroupTextarea reuse Input's browser draft controller, including IME, debounce, emptiness boundaries, explicit ValueRevision resets and form flushing. NumericInput, CurrencyInput and MaskedInput use the same queue with typed canonical acceptance and a final blur/Save commit. Incomplete or unrepresentable numeric values remain editable but block Save; they cannot silently submit an older parsed value. Locale formatting that preserves the typed value does not require a second Save. Clamping, normalization or rejection that changes the value returns ValueAdjusted so the user can review it.
 
-The [JavaScript preservation audit](interaction-mode-sweep.md) identified outstanding
-parity regressions in MaskedInput and CurrencyInput, plus TagInput focus/blur,
-NavigationMenu motion and a Markdown redo/history race. In particular, literal-digit mask prefixes can be rewritten
-incorrectly, and refocusing an unchanged currency value can lose precision. Resolve
-these findings before broad Browser-mode adoption; the audit records reproductions,
-existing-script reuse boundaries and required regression coverage. These are open
-findings, not completed fixes.
+MaskedInput now uses the existing `masked-input.js` editing engine in both modes.
+Browser mode adapts its edit notifications into the versioned draft queue rather
+than attaching a second formatter or the legacy server notification path. Mask
+literals, configured placeholder characters, `ShowMask`, focus/caret navigation,
+selected paste and readonly behavior remain owned by that editor. An empty mask
+keeps native text editing; an empty displayed mask template still counts as an
+empty value for change-mode boundaries and validation.
+
+CurrencyInput keeps exact editable text separate from rounded display text. For
+example, a stored USD value of `12.34567` can display `$12.35` while focus exposes
+`12.34567`. Untouched focus/blur and Save preserve that exact value, including when
+the field was never focused. Explicitly typing the rounded value is still an edit.
+Current canonical editing metadata accompanies acknowledgements, so fresh editing
+values do not depend on a later parent render. Bounds or application adjustments
+still require review through `ValueAdjusted`.
+
+The [JavaScript preservation audit and follow-up](interaction-mode-sweep.md) record
+the shared-engine changes and parity cases. TagInput preserves container focus and
+blur dismissal; NavigationMenu emits the existing Tailwind motion states and keeps
+exiting panels present until their finite CSS motion ends. Markdown records history
+at the edit rather than from a later animation frame, preserving redo and explicit
+history resets. The support boundaries for custom tag templates, ColorPicker's
+floating shell and RichTextEditor below still apply.
 
 Checkbox, Switch, RadioGroup, Toggle, ToggleGroup, Slider, RangeSlider, InputOtp, DateInput, TimeInput and TagInput use the primitive shared field host. Checked/pressed state, mounted indicators, segment editing, OTP paste/focus and range preview run locally. Their asynchronous accepted values join BrowserInputScope and BrowserEditForm, including fields in floating portals. Use InteractionRevision for authoritative resets. Ordinary binding supplies canonical expressions automatically; manual asynchronous callbacks should supply the corresponding AcceptedValueAccessor (or AcceptedValuesAccessor / AcceptedTagsAccessor / AcceptedMinValueAccessor and AcceptedMaxValueAccessor).
 

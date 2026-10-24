@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file.
 
 ### 🛠️ Correctness and compatibility review
 
+- Specialized editor preservation: Browser MaskedInput reuses the existing JavaScript mask engine instead of a second formatter. Literal-digit prefixes, configured mask characters/templates, focus/caret behavior, selected and formatted paste, IME/mobile deletion and readonly editing retain one owner. The legacy path also honors `ShowMask=false`; empty masks retain native text editing.
+- CurrencyInput preserves full-precision editing values independently of rounded display text, including untouched focus/blur, never-focused form submission, delayed acceptance and explicit edits to a rounded value. Current formatting metadata travels with canonical acknowledgements; real bounds/rejection adjustments still require review.
+- Restored TagInput container focus and keyboard-blur suggestion dismissal. NavigationMenu again drives its existing Tailwind entry/directional/exit motion, with immediate inert/ARIA changes and cancellation-safe presence. Markdown history is captured at the edit so queued layout frames cannot erase redo or resurrect reset history; composition completion records one final state.
+- Added a shared Server/WASM preservation fixture and mandatory cross-mode regression suite, with an additional WebKit/WASM pass for the editor and motion cases.
+
 - Browser checkbox checkmarks and indeterminate indicators use the actual `hidden` attribute for SVG and HTML elements, keeping visible feedback aligned with ARIA state. MaskedInput keeps the caret at the next editable slot instead of skipping unfilled slots before a separator; typing, deletion and resets have focused browser coverage.
 
 - Blazor-mode shared hosts skip Browser serialization and browser-only value/options evaluation. Default RadioGroup supports cyclic/non-serializable TValue again; a regression executable verifies default rendering with JSON reflection disabled.
