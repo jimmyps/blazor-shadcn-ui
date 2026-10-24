@@ -36,7 +36,7 @@ NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor appli
 
 ## ✨ What's New in v4.5.0
 
-**Release target: 4.5.0 for both `NeoUI.Blazor` and `NeoUI.Blazor.Primitives` (unreleased).**
+**Released: 4.5.0 for both `NeoUI.Blazor` and `NeoUI.Blazor.Primitives` on 2026-10-24.**
 This feature upgrade adds opt-in browser ownership of supported interaction states and input
 drafts while Razor content stays live. Application callbacks remain asynchronous; local
 feedback does not confirm a successful server update. The library default remains Blazor.
@@ -700,7 +700,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Release Target**: 4.5.0 for Components and Primitives (unreleased)
+- **Current Release**: 4.5.0 for Components and Primitives
 - **Icon Versions**: Independently versioned
 - **Target Framework**: .NET 10
 - **Package IDs**: 

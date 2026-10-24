@@ -4,7 +4,7 @@ Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind 
 
 ## What's new in v4.5.0
 
-**Release target: 4.5.0 (unreleased), aligned with NeoUI.Blazor.Primitives 4.5.0.**
+**Released: 4.5.0 on 2026-10-24, aligned with NeoUI.Blazor.Primitives 4.5.0.**
 Opt-in Browser Interaction Mode keeps supported floating/menu/disclosure states and input
 drafts responsive while Razor content and application callbacks remain live. Newer edits
 survive delayed acknowledgements; supported fields can synchronize before validation with
@@ -494,7 +494,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Release Target**: 4.5.0 (unreleased; Components and Primitives aligned)
+- **Current Release**: 4.5.0 (Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor
