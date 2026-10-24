@@ -4,6 +4,26 @@
 
 This follow-up implements P1 before P2. P3 (modal Dialog/Sheet/AlertDialog and a complete rich-text editor conversion) is excluded. Existing application defaults and explicit Blazor exceptions remain the adoption policy.
 
+## Current implementation and validation
+
+All scoped P1/P2 families below are implemented. This document retains historical audit
+findings and earlier checkpoints as evidence; they are not unresolved findings or current
+coverage totals. The current behavior and adoption limits are in the
+[interaction guide](browser-interactions.md) and [upgrade guide](upgrading-to-4.5.md).
+
+The final implementation head `0b778dca` passed 456 fresh local checks: 209 Server checks
+under each application default, 13 Blazor-default and 15 Browser-default gallery checks,
+and five WebKit/mobile checks under each default. There were no failures and 12 expected
+conditional skips. State/shared-initialization and static-render compatibility also passed.
+[CI run 40064398518](https://github.com/jimmyps/blazor-shadcn-ui/actions/runs/40064398518)
+is green on that head, including separate family-policy, sub-path, WASM and additional
+WebKit checks. The PR records exact skip reasons and the distinction between local and CI runs.
+
+A known DataTable module-disposal disconnect log after circuit closure remains a separate
+teardown follow-up; no active interaction assertion failed. Native AOT, Hybrid and physical
+device coverage are not established by these checks. P3 modal and full RichTextEditor work
+remain excluded.
+
 ## P1
 
 - Harden accepted-value acknowledgements independently of child rendering. Cover MultiSelect, Command, ordinary binding, table/view search, filter values and dynamic forms. Preserve normalization, rejection and explicit revisions.
@@ -31,7 +51,7 @@ Server-side content remains live, and revealing a panel does not mean its data r
 
 Each family requires a baseline regression and focused Server/WASM checks before it is advertised as supported. Cover application/scoped/explicit precedence, disabled/read-only states, delayed and rejected updates, rapid edits, stale acknowledgements, controlled resets, keyboard/ARIA, retained-circuit reconnect and removal while initialization is pending. Text controls must participate in the existing form flush/validation/duplicate-submit contract.
 
-## Validation checkpoint
+## Historical expansion validation checkpoint
 
 All scoped P1/P2 families are implemented. Full Server regression: 118 passed with one WASM-only skip. Scoped policy sweep: 27 passed. WASM sweep: 21 passed with three Server-only skips, followed by four focused redo/disclosure/picker checks. Final compatibility follow-ups passed 22 Edge checks, 14 WebKit checks and seven WASM checks, including raw mask boundaries, WebKit deletion, read-only snapshots and segmented FocusAsync. The actual gallery passed 12 checks (including mixed-control Save and desktop/mobile layout), plus both application-default spotlight/render-backpressure checks. Server/WASM/gallery builds, deterministic interaction-state checks and JavaScript/whitespace checks passed.
 
@@ -230,7 +250,7 @@ identified cases. The audit itself changes no runtime behavior.
   differences to retain deliberately or align; do not conflate them with a removed
   rich editor engine.
 
-#### Existing-module inventory
+#### Baseline module inventory (before preservation fixes)
 
 “Retained” means the relevant import/initialization remains reachable; it does not
 mean every configuration was exercised on every browser or device.

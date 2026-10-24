@@ -198,8 +198,8 @@ Date selection components with Calendar in Popover pattern.
 ## See Also
 
 - [Calendar Component](../Calendar/README.md) - The underlying calendar used by DatePicker
-- [Popover Component](../Popover/README.md) - The popover container
-- [Button Component](../Button/README.md) - The trigger button
+- [Popover examples](../../../../demo/NeoUI.Demo.Shared/Pages/Components/PopoverDemo.razor) - The popover container
+- [Button examples](../../../../demo/NeoUI.Demo.Shared/Pages/Components/ButtonDemo.razor) - The trigger button
 
 ---
 

@@ -2,6 +2,23 @@
 
 A feature-rich data table built on the `Table` primitive with automatic sorting, filtering, pagination, row selection, and full appearance customization.
 
+## Interaction Mode in v4.5.0
+
+DataTable keeps sorting, filtering, paging and application/data callbacks in Blazor (or the
+configured data pipeline). It does not expose a table-wide `InteractionMode` parameter.
+Its search Input and Checkbox controls follow the `Inputs` family policy, while the column
+chooser's Popover follows `Floating`. Explicit/scoped exceptions follow the normal precedence.
+
+Column visibility uses the checkbox change callback for both keyboard and pointer input;
+clicking its label activates the same control. Checkbox uses Space-only keyboard activation,
+with one shared delegated Enter guard per circuit/app rather than per-row module references.
+Enabling Browser floating shells alone therefore does not change legacy field ownership.
+
+See the [adoption guide](../../../../docs/browser-interactions.md) and
+[v4.5.0 upgrade guide](../../../../docs/upgrading-to-4.5.md) for staged defaults, asynchronous
+acceptance, form synchronization and compatibility notes. Both UI packages target 4.5.0
+(unreleased); this does not move the table's data processing into JavaScript.
+
 ## Features
 
 - ✅ Declarative column API via `DataTableColumn` child components

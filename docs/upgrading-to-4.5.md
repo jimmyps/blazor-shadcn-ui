@@ -45,8 +45,11 @@ covers standalone Command, text/structured fields, boolean/toggle fields, slider
 editors. DateInput/TimeInput are Inputs; DatePicker/TimePicker shells are Selection.
 Menu checkbox/radio items follow Menus. Disclosures covers Accordion, Collapsible and Tabs.
 
-Configure policy before mounting. Recreate a subtree with `@key` when changing its effective
-mode. Explicit Blazor exceptions remain available for individual controls.
+Configure policy before mounting. Changing an `InteractionModeProvider` mode or applicable
+family scope automatically keys and recreates its own subtree. For a direct component mode
+change outside that provider mechanism, recreate the affected root/subtree with `@key`;
+controllers do not migrate in place. Flush/persist drafts first because recreated children
+restart their lifetimes and local state. Explicit Blazor exceptions remain available.
 
 ## Forms and application acceptance
 
