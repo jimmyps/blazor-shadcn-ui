@@ -61,6 +61,7 @@ export function createController(floating, initialOptions, initialPosition, brid
     let typeahead = '';
     let typeaheadTimer;
     let hoverTimer, hoverOpenTimer, hoverCloseTimer;
+    let hoverTouchGesture = null, hoverTouchTap = null;
     const isHover = () => options.kind === 'tooltip' || options.kind === 'hovercard';
     let contextPoint = { x: options.x ?? 0, y: options.y ?? 0 };
     let backdrop, savedOverflow;
@@ -301,7 +302,15 @@ export function createController(floating, initialOptions, initialPosition, brid
     };
     const stop = event => { event.preventDefault(); event.stopImmediatePropagation(); };
     const click = event => {
-        if (isHover()) { if (options.kind === 'tooltip' && trigger()?.contains(event.target)) close(false); return; }
+        if (isHover()) {
+            if (options.kind === 'tooltip' && trigger()?.contains(event.target)) {
+                // A touch tooltip was revealed on pointerup. Its compatibility
+                // click must not immediately dismiss it; action clicks still do.
+                const touchReveal = event.detail !== 0 && hoverTouchTap?.trigger === trigger() && performance.now() <= hoverTouchTap.until;
+                if (!touchReveal) close(false);
+            }
+            return;
+        }
         const target = event.target;
         if (trigger()?.contains(target) && target.closest('[data-neo-trigger-action]')) return;
         if (trigger()?.contains(target) && options.kind !== 'submenu' && options.kind !== 'contextmenu') {
@@ -330,6 +339,13 @@ export function createController(floating, initialOptions, initialPosition, brid
         }
     };
     const pointerDown = event => {
+        if (isHover()) {
+            hoverTouchGesture = null; hoverTouchTap = null;
+            const target = trigger();
+            if (event.pointerType === 'touch' && event.isPrimary !== false &&
+                target?.contains(event.target) && !disabled(target))
+                hoverTouchGesture = { id: event.pointerId, trigger: target, x: event.clientX, y: event.clientY };
+        }
         if (!opened || !options.closeOnClickOutside) return;
         const target = event.target;
         const owner = logicalTarget(target);
@@ -339,6 +355,28 @@ export function createController(floating, initialOptions, initialPosition, brid
             (other.content.contains(target) || other.trigger()?.contains(target) ||
              other.content.contains(owner) || other.trigger()?.contains(owner)));
         if (!inside) { close(false); notify('outside', false); }
+    };
+    const hoverTouchMove = event => {
+        if (hoverTouchGesture?.id === event.pointerId &&
+            Math.hypot(event.clientX - hoverTouchGesture.x, event.clientY - hoverTouchGesture.y) > 10)
+            hoverTouchGesture = null;
+    };
+    const hoverTouchEnd = event => {
+        const gesture = hoverTouchGesture;
+        if (!gesture || gesture.id !== event.pointerId) return;
+        hoverTouchGesture = null;
+        if (event.type !== 'pointerup' || trigger() !== gesture.trigger || !gesture.trigger.contains(event.target) ||
+            Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 10) return;
+        // Safari may emit no click or focus for a text/icon trigger. Reveal on a
+        // completed tap, while keeping native action buttons and links untouched.
+        const action = event.target.closest('button, a[href], input, select, textarea, [role="button"]');
+        if (options.kind === 'tooltip' && action &&
+            (action !== gesture.trigger || action.dataset.neoHoverInformational !== 'true')) return;
+        clearTimeout(hoverOpenTimer); clearTimeout(hoverCloseTimer);
+        const tap = hoverTouchTap = { trigger: gesture.trigger, until: performance.now() + 1000 };
+        // Let WebKit finish its compatibility mouse/click sequence before changing
+        // hit testing; revealing synchronously can retarget the click underneath.
+        hoverOpenTimer = setTimeout(() => { if (!disposed && hoverTouchTap === tap) void open('none'); }, 0);
     };
     const keydown = event => {
         if (event.key !== 'Escape' && trigger()?.contains(event.target) && event.target.closest('[data-neo-trigger-action]')) return;
@@ -456,7 +494,8 @@ export function createController(floating, initialOptions, initialPosition, brid
         if (opened) close(false, false);
         reportPoint(); void open();
     };
-    const listeners = { focusin: focusIn, focusout: focusOut, contextmenu, click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut };
+    const listeners = { focusin: focusIn, focusout: focusOut, contextmenu, click, pointerdown: pointerDown, keydown, pointerover: pointerOver, pointerout: pointerOut,
+        ...(isHover() ? { pointermove: hoverTouchMove, pointerup: hoverTouchEnd, pointercancel: hoverTouchEnd } : {}) };
     const observer = new MutationObserver(() => {
         const json = floating.getAttribute('data-neo-browser-config');
         if (json !== renderedConfiguration) {

@@ -269,12 +269,22 @@
                 </BrowserEditForm>
             </DemoBlock>
         </DemoSection>
-        <DemoSection Title="Hover and disclosure" Description="HoverCard and Tooltip timers, Accordion expansion and Collapsible state stay in the browser. Their mounted content remains live Blazor content.">
+        <DemoSection Title="Hover and disclosure" Description="HoverCard and Tooltip support hover, focus and informational touch taps. Accordion expansion and Collapsible state stay in the browser; mounted content remains live Blazor content.">
             <DemoBlock>
                 <div class="space-y-6">
-                    <div class="flex gap-4">
+                    <div class="flex flex-wrap items-center gap-4" data-hover-interaction-demo>
                         <HoverCard><HoverCardTrigger AsChild><Button Variant="ButtonVariant.Outline">Workspace details</Button></HoverCardTrigger><HoverCardContent><p class="text-sm">This content stays mounted. Hover or focus to reveal it; Escape dismisses locally.</p></HoverCardContent></HoverCard>
                         <Tooltip><TooltipTrigger AsChild><Button Variant="ButtonVariant.Outline">Helpful hint</Button></TooltipTrigger><TooltipContent>Browser timers and dismissal</TooltipContent></Tooltip>
+                        <HoverCard>
+                            <HoverCardTrigger Class="inline-flex cursor-pointer p-2"><span data-testid="summary-hover-trigger"><Badge Variant="BadgeVariant.Outline">Summary preview</Badge></span></HoverCardTrigger>
+                            <HoverCardContent>
+                                <div class="space-y-3" data-testid="summary-hover-details">
+                                    <p class="text-sm">This plain-text trigger supports touch without requiring focus.</p>
+                                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="LoadHoverDetails" data-testid="load-hover-details">Load details</Button>
+                                    @if (lateHoverDetails is not null) { <p class="text-sm" data-testid="late-hover-details">@lateHoverDetails</p> }
+                                </div>
+                            </HoverCardContent>
+                        </HoverCard>
                     </div>
                     <Accordion Collapsible>
                         <AccordionItem Value="local"><AccordionTrigger>What responds locally?</AccordionTrigger><AccordionContent>Expansion, keyboard navigation, focus and ARIA state update without waiting for a circuit.</AccordionContent></AccordionItem>
@@ -344,6 +354,12 @@
 </div>
 
 @code {
+    private string? lateHoverDetails;
+    private async Task LoadHoverDetails()
+    {
+        await Task.Delay(250);
+        lateHoverDetails = "These details arrived through Blazor while the card stayed open.";
+    }
     private sealed class ExpandedDraft { public string? Notes { get; set; } public string? Title { get; set; } public string? Summary { get; set; } }
     private readonly ExpandedDraft expandedDraft = new();
     private string expandedSaved = "No draft saved yet.";

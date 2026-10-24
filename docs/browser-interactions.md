@@ -1,6 +1,8 @@
 # Browser interaction mode — v4.5.0
 
-**Release target: Components and Primitives 4.5.0 (unreleased).** See the
+**Mobile patch:** use Components and Primitives 4.5.1 for informational Tooltip and plain HoverCard touch activation fixes.
+
+**Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.
 
 `DropdownMenu`, `Popover`, `Select<TValue>`, `Input`, and the composed controls below accept an opt-in interaction mode:
@@ -789,7 +791,7 @@ TagInput filters static suggestions and handles tokenization, paste, hover and r
 
 MarkdownEditor uses the textarea draft/form adapter. Formatting shortcuts, toolbar actions, list continuation and undo/redo stay local; an explicit ValueRevision starts a new document and clears prior history. Markdown preview rendering and HTML sanitization remain server work. Revealing Preview does not mean that synchronization or rendering has finished.
 
-HoverCard and Tooltip keep their pointer/focus timers, persistence and Escape dismissal local, while action-button callbacks and inner Blazor content remain live. Accordion and Collapsible share the primitive disclosure controller. Tabs share its keyboard/ARIA and controlled reset protocol, with manual/automatic activation and horizontal/vertical navigation.
+HoverCard and Tooltip keep their pointer/focus timers, persistence and Escape dismissal local, while action-button callbacks and inner Blazor content remain live. Browser mode also reveals informational Tooltip and HoverCard triggers on a completed touch tap, including plain text/icon triggers that cannot receive focus on iOS. Scrolling or cancelled touches do not activate them. A NeoUI Button with no click callback used as an AsChild informational trigger also supports tap-to-reveal. Native action buttons, links or inputs retain their action and dismiss the tooltip; a tap is never intercepted to consume the application click. Accordion and Collapsible share the primitive disclosure controller. Tabs share its keyboard/ARIA and controlled reset protocol, with manual/automatic activation and horizontal/vertical navigation.
 
 ### Review Tabs before inheriting a Browser default
 
@@ -912,3 +914,20 @@ does not add per-instance JS calls/references or an IAsyncDisposable contract. T
 lasts for the document lifetime and also covers checkboxes mounted later. Disconnect and
 module-load failures are contained. TagInput logs module-load failures without ending the
 circuit; its existing local editor features require successful initialization.
+
+### Touch triggers and late-rendered hover content
+
+HoverCard/Tooltip content remains live Razor content. Updating that content after the controller mounts, or mounting the entire control later, does not require switching to Blazor interaction mode. A plain HoverCardTrigger renders a div and cannot receive focus; Browser mode handles its completed touch taps directly. On touch devices, a focusable demo button is therefore not sufficient coverage for text/icon triggers used in applications.
+
+For a label that users should reach with Tab, prefer a NeoUI Button trigger:
+
+```razor
+<HoverCard>
+    <HoverCardTrigger AsChild>
+        <Button Variant="ButtonVariant.Outline">Neo Summary</Button>
+    </HoverCardTrigger>
+    <HoverCardContent>@summaryContent</HoverCardContent>
+</HoverCard>
+```
+
+A plain `<HoverCardTrigger>Neo Summary</HoverCardTrigger>` is also a supported composition; it renders its own div. Do not use `AsChild` around an ordinary HTML element expecting it to consume TriggerContext automatically. Components such as NeoUI Button consume that context and apply the trigger ID and keyboard/focus behavior.

@@ -2,9 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-10-22 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
+## 2026-10-24 — v4.5.1 — Mobile Tooltip and HoverCard activation
 
-> **Targeting: `v4.5.0` for both Components and Primitives (unreleased)**
+> **Targeting: `v4.5.1` for both Components and Primitives**
+> **Packaging:** Components requires Primitives `4.5.1`; publish Primitives first.
+
+- Restored Browser-mode tap activation for informational Tooltip triggers, including nonfocusable text/icons; a compatibility click no longer immediately dismisses the tooltip.
+- Added completed-tap support for plain HoverCard triggers such as summary pills, without relying on mobile focus or synthetic hover. Scroll/cancel gestures do not reveal content; native Tooltip action-button/link behavior and callbacks remain intact.
+- Added iPhone WebKit/Chromium regressions for both modes, live content loaded after opening, and delayed mount/remount. The shared suite runs in Server and WASM CI.
+
+
+## 2026-10-24 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
+
+> **Released: `v4.5.0` for both Components and Primitives on 2026-10-24**
 > **Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`.** Major feature upgrade with aligned package versions.
 > **Opt-in — the library default remains `InteractionMode.Blazor`.** Existing applications retain Blazor interaction ownership; review the API/HTML compatibility notes below.
 

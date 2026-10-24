@@ -14,7 +14,7 @@
     <Description>Over 75+ pre-styled Blazor components built with shadcn/ui design and Tailwind CSS with full .NET 10 support. Beautiful defaults that you can customize to match your brand.</Description>
     <PackageTags>blazor;ui;components;shadcn;tailwind;styled;design-system</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>v4.5.0: opt-in Browser Interaction Mode with family defaults, responsive input drafts, safe form synchronization, expanded composed controls and lifecycle hardening. Requires NeoUI.Blazor.Primitives 4.5.0.</PackageReleaseNotes>
+    <PackageReleaseNotes>v4.5.1: restores Browser-mode mobile Tooltip and plain HoverCard tap activation, preserves application action callbacks and supports live late-rendered content. Requires NeoUI.Blazor.Primitives 4.5.1.</PackageReleaseNotes>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
@@ -52,7 +52,7 @@
 
   <ItemGroup Condition="'$(UsePackageReferences)' == 'true'">
     <PackageReference Include="NeoUI.Icons.Lucide" Version="3.1.0" />
-    <PackageReference Include="NeoUI.Blazor.Primitives" Version="4.5.0" />
+    <PackageReference Include="NeoUI.Blazor.Primitives" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>
