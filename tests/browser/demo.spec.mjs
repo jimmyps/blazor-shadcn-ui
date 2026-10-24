@@ -703,8 +703,9 @@ test('iPhone taps keep MultiSelect checkbox feedback and tag badges visible',asy
   await marker.evaluate(el=>{for(let index=0;index<9;index++)el.click();});
   await eventually(async()=>assert.equal(await page.getByTestId('demo-multi-value').textContent(),'Design'));
   const content=row.locator('xpath=ancestor::*[@data-neo-client-list][1]');
-  await content.getByRole('button',{name:'Clear',exact:true}).tap();await eventually(async()=>assert.equal(await page.getByTestId('demo-multi-value').textContent(),'None'));
-  assert.equal(await marker.getAttribute('data-state'),'unchecked');assert.match(await trigger.textContent(),/Notify workspaces/);
+  await content.getByRole('button',{name:'Clear',exact:true}).tap();
+  // The parent model label can render before the child option's canonical marker.
+  await eventually(async()=>{assert.equal(await page.getByTestId('demo-multi-value').textContent(),'None');assert.equal(await marker.getAttribute('data-state'),'unchecked');assert.match(await trigger.textContent(),/Notify workspaces/);});
   await content.getByRole('button',{name:'Close',exact:true}).tap();
   await eventually(async()=>assert.equal(await trigger.getAttribute('aria-expanded'),'false'));
   const input=page.getByPlaceholder('Type a tag or paste a list');await input.locator('xpath=ancestor::*[@data-neo-browser-field][1][@data-neo-state-ready="true"]').waitFor();await input.scrollIntoViewIfNeeded();

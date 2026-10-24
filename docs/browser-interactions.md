@@ -779,6 +779,8 @@ floating shell and RichTextEditor below still apply.
 
 Checkbox, Switch, RadioGroup, Toggle, ToggleGroup, Slider, RangeSlider, InputOtp, DateInput, TimeInput and TagInput use the primitive shared field host. Checked/pressed state, mounted indicators, segment editing, OTP paste/focus and range preview run locally. Their asynchronous accepted values join BrowserInputScope and BrowserEditForm, including fields in floating portals. Use InteractionRevision for authoritative resets. Ordinary binding supplies canonical expressions automatically; manual asynchronous callbacks should supply the corresponding AcceptedValueAccessor (or AcceptedValuesAccessor / AcceptedTagsAccessor / AcceptedMinValueAccessor and AcceptedMaxValueAccessor).
 
+TagInput preserves unchanged badge/remove-button nodes across acknowledgements so keyboard focus survives accepted updates. In both modes, a shared gesture adapter selects suggestions only after a completed tap or click; scrolling, cancelled pointers and releases outside an item do not add tags.
+
 TagInput filters static suggestions and handles tokenization, paste, hover and removal locally. OnSearchSuggestions remains application work, with the configured SuggestionDebounceMs (300 ms by default); stale search results cannot replace a newer query. Server Validate and TagsChanged can reject optimistic tags. Save tokenizes a remaining draft before taking the snapshot. A Razor TagTemplate requires an explicit Blazor exception because the browser cannot construct arbitrary Razor components:
 
 ```razor

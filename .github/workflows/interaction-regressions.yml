@@ -111,7 +111,7 @@ jobs:
             Wait-Host 'http://localhost:5199'
             $env:NEOUI_TEST_URL='http://localhost:5199';$env:NEOUI_TEST_RENDERER='wasm'
             Push-Location tests/browser
-            node --test --test-concurrency=1 p1-sweep.spec.mjs fields.spec.mjs formatted.spec.mjs special.spec.mjs tags.spec.mjs markdown.spec.mjs modes.spec.mjs reviewer.spec.mjs preservation.spec.mjs geometry.spec.mjs 2>&1 | Tee-Object ../../wasm-tests.log
+            node --test --test-concurrency=1 p1-sweep.spec.mjs fields.spec.mjs formatted.spec.mjs special.spec.mjs tags.spec.mjs markdown.spec.mjs modes.spec.mjs reviewer.spec.mjs preservation.spec.mjs geometry.spec.mjs ownership.spec.mjs 2>&1 | Tee-Object ../../wasm-tests.log
             $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
             $env:NEOUI_BROWSER_ENGINE='webkit'
             try {
@@ -119,7 +119,7 @@ jobs:
               node --test --test-concurrency=1 --test-name-pattern='animates expansion and collapse|checkbox indicators visibly|masked typing keeps' p1-sweep.spec.mjs modes.spec.mjs 2>&1 | Tee-Object ../../disclosure-webkit-tests.log
               $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
               Push-Location tests/browser
-              node --test --test-concurrency=1 preservation.spec.mjs geometry.spec.mjs 2>&1 | Tee-Object ../../preservation-webkit-tests.log
+              node --test --test-concurrency=1 preservation.spec.mjs geometry.spec.mjs ownership.spec.mjs 2>&1 | Tee-Object ../../preservation-webkit-tests.log
               $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
             } finally { Remove-Item Env:NEOUI_BROWSER_ENGINE }
           } finally { taskkill /PID $wasm.Id /T /F }

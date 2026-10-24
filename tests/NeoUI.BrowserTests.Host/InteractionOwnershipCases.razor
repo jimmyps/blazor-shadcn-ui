@@ -1,0 +1,29 @@
+<InteractionModeProvider Mode="@Mode">
+<section data-testid="ownership-cases">
+    <DataTable TData="Row" Data="@rows" ShowPagination="false" ColumnsVisibility="true">
+        <Columns><DataTableColumn TData="Row" TValue="string" Property="@(r => r.Name)" Header="Name" /><DataTableColumn TData="Row" TValue="string" Property="@(r => r.Email)" Header="Email" /></Columns>
+    </DataTable>
+    <Checkbox Checked="@checkedValue" CheckedChanged="Checked" AriaLabel="Counted checkbox" />
+    <Checkbox Disabled Checked="true" AriaLabel="Disabled checkbox" />
+    <p data-testid="checkbox-commits">@checkboxCommits</p>
+    <TagInput Tags="@tags" TagsChanged="CommitTags" AcceptedTagsAccessor="@(() => tags)" InteractionRevision="@revision" Suggestions="@suggestions" Placeholder="Ownership tags" AriaLabel="Ownership tags" AllowDuplicates />
+    <p data-testid="ownership-tags-model">@string.Join(",", tags ?? [])</p>
+    <button data-testid="ownership-render" @onclick="() => renders++">Render @renders</button>
+    <button data-testid="ownership-reset" @onclick="Reset">Reset tags</button>
+    <button data-testid="ownership-reorder" @onclick="Reorder">Reorder tags</button>
+</section>
+</InteractionModeProvider>
+@code {
+    [Parameter] public InteractionMode Mode { get; set; }
+    private sealed class Row { public string Name { get; set; } = "Ada"; public string Email { get; set; } = "ada@example.test"; }
+    private readonly Row[] rows = [new()];
+    private readonly string[] suggestions = ["Design", "Development", "Research", "Other"];
+    private IReadOnlyList<string>? tags = ["Design", "Research"];
+    private long revision;
+    private int renders, checkboxCommits;
+    private bool checkedValue;
+    private void Checked(bool value) { checkedValue = value; checkboxCommits++; }
+    private async Task CommitTags(IReadOnlyList<string>? values) { var generation = revision; await Task.Delay(400); if (generation == revision && !(values?.Contains("reject") ?? false)) tags = values; }
+    private void Reset() { revision++; tags = ["Reset"]; }
+    private void Reorder() { revision++; tags = tags?.Reverse().ToArray(); }
+}

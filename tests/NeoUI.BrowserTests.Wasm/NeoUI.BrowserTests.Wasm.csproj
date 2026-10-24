@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="../NeoUI.BrowserTests.Host/EditorPreservationCases.razor" Link="EditorPreservationCases.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/InteractionOwnershipCases.razor" Link="InteractionOwnershipCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FloatingGeometryCases.razor" Link="FloatingGeometryCases.razor" />
     <ProjectReference Include="../../src/NeoUI.Blazor/NeoUI.Blazor.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0" />

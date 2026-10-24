@@ -1,3 +1,4 @@
+import { attachTagSuggestions } from './tag-suggestions.js';
 import { canInvokeServer } from './browser-connection.js';
 export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVersion) {
     if(getConfig().kind!=='tags')return null;
@@ -22,9 +23,21 @@ export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVe
         paintActive();
     };
     const paint=()=>{
-        const values=getValues();container.replaceChildren();
-        values.forEach((value,index)=>{const badge=doc.createElement('span');badge.className=options().badgeClass;badge.append(doc.createTextNode(value));
-            const button=doc.createElement('button');button.type='button';button.dataset.neoTagRemove=String(index);button.disabled=getConfig().disabled;button.setAttribute('aria-label',String(options().removeLabel??'Remove {tag}').replace('{tag}',value));button.textContent='×';button.className='ml-0.5 rounded-full px-1';badge.append(button);container.append(badge);});
+        const values=getValues(),focused=container.contains(doc.activeElement)?doc.activeElement:null;
+        // Reuse badges by value/occurrence: acknowledgements must not detach a
+        // focused remove button, including when duplicate tags are allowed.
+        const available=new Map();
+        for(const badge of container.children){const queue=available.get(badge._neoTagValue)??[];queue.push(badge);available.set(badge._neoTagValue,queue);}
+        const retained=new Set();
+        values.forEach((value,index)=>{
+            let badge=available.get(value)?.shift();
+            if(!badge){badge=doc.createElement('span');badge._neoTagValue=value;badge.append(doc.createTextNode(value));const button=doc.createElement('button');button.type='button';button.textContent='×';button.className='ml-0.5 rounded-full px-1';badge.append(button);}
+            badge.className=options().badgeClass;
+            const button=badge.lastElementChild;button.dataset.neoTagRemove=String(index);button.disabled=getConfig().disabled;button.setAttribute('aria-label',String(options().removeLabel??'Remove {tag}').replace('{tag}',value));
+            retained.add(badge);if(container.children[index]!==badge)container.insertBefore(badge,container.children[index]??null);
+        });
+        for(const badge of [...container.children])if(!retained.has(badge))badge.remove();
+        if(focused&&doc.activeElement!==focused&&!getConfig().disabled)(focused.isConnected?focused:input).focus({preventScroll:true});
         const clear=root.querySelector('[data-neo-tag-clear]');if(clear)clear.hidden=!values.length;
     };
     const addMany=texts=>{
@@ -67,10 +80,10 @@ export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVe
         if(root.contains(event.target)&&!event.target.closest('button')&&!getConfig().disabled)input.focus();
     };
     const pointer=event=>{
-        const target=list(),item=event.target.closest('[data-neo-tag-suggestion]');
-        if(target?.contains(item)){event.preventDefault();addMany([results[Number(item.dataset.neoTagSuggestion)]]);input.focus();}
-        else if(!root.contains(event.target)&&!target?.contains(event.target)){querySequence++;clearTimeout(timer);close();}
+        const target=list();
+        if(!root.contains(event.target)&&!target?.contains(event.target)){querySequence++;clearTimeout(timer);close();}
     };
+    const detachSuggestions=attachTagSuggestions(doc,list,item=>{const value=results[Number(item.dataset.neoTagSuggestion)];if(value!==undefined&&!list()?.hidden){addMany([value]);input.focus();}});
     const hover=event=>{const item=event.target.closest('[data-neo-tag-suggestion]');if(list()?.contains(item)&&active!==Number(item.dataset.neoTagSuggestion)){active=Number(item.dataset.neoTagSuggestion);paintActive();}};
     const focusin=()=>clearTimeout(blurTimer);
     const focusout=()=>{
@@ -83,5 +96,5 @@ export function attachTags(root,getConfig,getValues,change,isLocked,bridge,getVe
     };
     root.addEventListener('focusin',focusin);root.addEventListener('focusout',focusout);
     root.addEventListener('input',edited);root.addEventListener('keydown',keydown,true);root.addEventListener('paste',paste,true);root.addEventListener('click',click,true);doc.addEventListener('pointerdown',pointer,true);doc.addEventListener('pointerover',hover);
-    return {paint,validate:()=>!input.value.trim(),beforeFlush(){if(input.value.trim())addMany([input.value]);},reset(){input.value='';querySequence++;clearTimeout(timer);clearTimeout(blurTimer);close();},dispose(){disposed=true;querySequence++;clearTimeout(timer);clearTimeout(blurTimer);root.removeEventListener('focusin',focusin);root.removeEventListener('focusout',focusout);root.removeEventListener('input',edited);root.removeEventListener('keydown',keydown,true);root.removeEventListener('paste',paste,true);root.removeEventListener('click',click,true);doc.removeEventListener('pointerdown',pointer,true);doc.removeEventListener('pointerover',hover);}};
+    return {paint,validate:()=>!input.value.trim(),beforeFlush(){if(input.value.trim())addMany([input.value]);},reset(){input.value='';querySequence++;clearTimeout(timer);clearTimeout(blurTimer);close();},dispose(){disposed=true;querySequence++;clearTimeout(timer);clearTimeout(blurTimer);root.removeEventListener('focusin',focusin);root.removeEventListener('focusout',focusout);root.removeEventListener('input',edited);root.removeEventListener('keydown',keydown,true);root.removeEventListener('paste',paste,true);root.removeEventListener('click',click,true);doc.removeEventListener('pointerdown',pointer,true);detachSuggestions();doc.removeEventListener('pointerover',hover);}};
 }

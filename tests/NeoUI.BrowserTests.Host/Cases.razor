@@ -1,7 +1,8 @@
 @inject NavigationManager Navigation
 <AppProvider>
     <span hidden data-testid="test-host-ready" data-ready="@(testHostReady ? "true" : "false")"></span>
-    @if (Navigation.Uri.Contains("geometry=true")) { <FloatingGeometryCases Mode="@(Navigation.Uri.Contains("mode=browser") ? InteractionMode.Browser : InteractionMode.Blazor)" Persistent="@(!Navigation.Uri.Contains("mount=false"))" /> }
+    @if (Navigation.Uri.Contains("ownership=true")) { <InteractionOwnershipCases Mode="@(Navigation.Uri.Contains("mode=browser") ? InteractionMode.Browser : InteractionMode.Blazor)" /> }
+    else if (Navigation.Uri.Contains("geometry=true")) { <FloatingGeometryCases Mode="@(Navigation.Uri.Contains("mode=browser") ? InteractionMode.Browser : InteractionMode.Blazor)" Persistent="@(!Navigation.Uri.Contains("mount=false"))" /> }
     else if (Navigation.Uri.Contains("preservation=true")) { <EditorPreservationCases Mode="@(Navigation.Uri.Contains("mode=blazor") ? InteractionMode.Blazor : InteractionMode.Browser)" /> }
     else if (Navigation.Uri.Contains("selectownership=true")) { <StyledSelectOwnershipCases Mode="@(Navigation.Uri.Contains("mode=browser") ? InteractionMode.Browser : InteractionMode.Blazor)" BottomSheet="@(Navigation.Uri.Contains("sheet=true"))" /> }
     else if (Navigation.Uri.Contains("portalrefresh=true")) { <PortalRefreshCases Mode="@(Navigation.Uri.Contains("mode=browser") ? InteractionMode.Browser : Navigation.Uri.Contains("mode=blazor") ? InteractionMode.Blazor : (InteractionMode?)null)" /> }

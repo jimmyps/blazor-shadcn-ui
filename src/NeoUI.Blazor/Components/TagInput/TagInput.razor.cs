@@ -179,7 +179,7 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
             _dotNetRef = DotNetObjectReference.Create(this);
             await _jsModule.InvokeVoidAsync("initialize",
                 _containerRef, _inputRef, _dotNetRef, _instanceId,
-                new { triggers = (int)AddTrigger });
+                new { triggers = (int)AddTrigger, contentId = _contentId });
             _jsInitialized = true;
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException or InvalidOperationException)
@@ -381,6 +381,13 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
             StateHasChanged();
         }
         catch (OperationCanceledException) { }
+    }
+
+    [JSInvokable]
+    public async Task JsSelectSuggestion(string suggestion)
+    {
+        if (_disposed || Disabled || !_suggestionsOpen || !_filteredSuggestions.Contains(suggestion)) return;
+        await SelectSuggestion(suggestion);
     }
 
     private async Task SelectSuggestion(string suggestion)

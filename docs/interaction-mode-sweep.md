@@ -361,3 +361,10 @@ the new form protocol; arbitrary TagTemplate uses an explicit Blazor exception;
 ColorPicker's shell can be local while canvas initialization/application updates
 still require the server; MultiSelect retains its documented search-input Space
 routing. This follow-up does not claim full Browser conversion of those features.
+
+### Ownership follow-up — 2026-10-24
+
+- DataTable column chooser: the checkbox callback now owns column visibility in both modes, with the label delegating pointer activation to that same checkbox. Native button Space/Enter activation replaces the legacy keydown toggle, preventing duplicate toggles and checked/column mismatches.
+- Browser TagInput: badges are reconciled by value and occurrence instead of rebuilding the container. Acknowledgements and unrelated renders retain focused remove buttons; reordered values retain the matching node and removal indices, including duplicate values.
+- TagInput suggestions: both the existing `tag-input.js` and Browser controller use `tag-suggestions.js`. It waits for a completed primary tap, checks movement and release location, ignores pointer cancellation/scroll gestures and suppresses duplicate compatibility clicks. Mouse click and keyboard selection remain supported; disposal removes its listeners.
+- `ownership.spec.mjs` verifies actual column headers/model values, exactly-once checkbox activation, disabled controls, delayed tag acceptance, focus/node identity, reorder/reset/rejection, duplicates, cancellation/scroll and completed tap/click. It joins both Server defaults, WASM and the WebKit/WASM CI path alongside existing preservation tests.

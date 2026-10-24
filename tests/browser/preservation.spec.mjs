@@ -162,7 +162,7 @@ for(const mode of ['Blazor','Browser']){
    else await input.locator('xpath=self::*[@data-preservepaste="true"]').waitFor();
    await input.fill('Des');const option=page.getByRole('option',{name:'Design',exact:true});await option.waitFor();
    if(mode==='Browser'){
-    const activated=await option.evaluate(el=>{el.dispatchEvent(new PointerEvent('pointerover',{bubbles:true,pointerType:'touch'}));const connected=el.isConnected;el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerType:'touch'}));return {connected,badge:document.querySelector('[data-neo-tag-values]').textContent};});
+    const activated=await option.evaluate(el=>{el.dispatchEvent(new PointerEvent('pointerover',{bubbles:true,pointerType:'touch'}));const connected=el.isConnected;const rect=el.getBoundingClientRect(),options={bubbles:true,cancelable:true,pointerType:'touch',pointerId:3,button:0,clientX:rect.x+rect.width/2,clientY:rect.y+rect.height/2};el.dispatchEvent(new PointerEvent('pointerdown',options));el.dispatchEvent(new PointerEvent('pointerup',options));el.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,button:0,detail:1}));return {connected,badge:document.querySelector('[data-neo-tag-values]').textContent};});
     assert.equal(activated.connected,true);assert.equal(activated.badge,'Design×');
    }else await option.tap();
    await page.getByTestId('preserve-tags-model').filter({hasText:'Design'}).waitFor();

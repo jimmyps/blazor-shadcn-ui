@@ -103,8 +103,7 @@ else
                     role="option"
                     aria-selected="@isActive.ToString().ToLower()"
                     class="@SuggestionItemCssClass(isActive)"
-                    @onpointerdown="() => SelectSuggestion(suggestion)"
-                    @onpointerdown:preventDefault="true">
+                    data-neo-tag-suggestion="@suggestion">
                     @suggestion
                 </li>
             }

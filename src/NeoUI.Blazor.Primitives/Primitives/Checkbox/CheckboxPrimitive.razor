@@ -15,8 +15,6 @@
     disabled="@Disabled"
     tabindex="@(Disabled ? -1 : 0)"
     @onclick="@(BrowserInteraction ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
-    @onkeydown="@(BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
-    @onkeydown:preventDefault="@(!BrowserInteraction && shouldPreventDefault)"
     @attributes="AdditionalAttributes">
     @ChildContent
 </button>

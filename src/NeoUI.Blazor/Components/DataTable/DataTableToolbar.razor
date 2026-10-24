@@ -57,12 +57,11 @@
                     <div class="text-sm font-medium mb-1">@Localizer["DataTable.ToggleColumns"]</div>
                     @foreach (var column in Columns)
                     {
-                        <div class="flex items-center gap-2 p-1 hover:bg-accent rounded-sm transition-colors cursor-pointer"
-                             @onclick="@(() => OnColumnVisibilityChanged?.Invoke(column.Id, !column.Visible))"
-                             @onclick:stopPropagation="true">
-                            <Checkbox Checked="@column.Visible" Class="pointer-events-none" />
+                        <label class="flex items-center gap-2 p-1 hover:bg-accent rounded-sm transition-colors cursor-pointer">
+                            <Checkbox Checked="@column.Visible" AriaLabel="@column.Header"
+                                      CheckedChanged="@(value => OnColumnVisibilityChanged?.Invoke(column.Id, value))" />
                             <span class="text-sm flex-1 select-none">@column.Header</span>
-                        </div>
+                        </label>
                     }
                 </div>
             </PopoverContent>
