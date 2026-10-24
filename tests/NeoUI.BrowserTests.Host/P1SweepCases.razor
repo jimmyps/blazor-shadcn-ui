@@ -5,9 +5,46 @@
         <HoverCardTrigger AsChild><Button>Sweep hover</Button></HoverCardTrigger>
         <HoverCardContent><button data-testid="sweep-hover-child">Live hover action</button></HoverCardContent>
     </HoverCard>
+    <HoverCard OpenDelay="30" CloseDelay="80">
+        <HoverCardTrigger Class="inline-block p-2"><span data-testid="sweep-touch-hover">Touch hover text</span></HoverCardTrigger>
+        <HoverCardContent>
+            <div data-testid="sweep-touch-hover-content">
+                @if (touchHoverLoaded) { <p data-testid="sweep-touch-hover-loaded">Late hover content</p> }
+                <button data-testid="sweep-touch-hover-child" @onclick="() => touchHoverActions++">Touch hover action @touchHoverActions</button>
+            </div>
+        </HoverCardContent>
+    </HoverCard>
+    <HoverCard OpenDelay="30" CloseDelay="80">
+        <HoverCardTrigger Class="inline-block p-2"><span data-testid="sweep-conditional-hover">Conditional hover content</span></HoverCardTrigger>
+        @if (touchHoverLoaded)
+        {
+            <HoverCardContent><span data-testid="sweep-conditional-hover-content">Conditionally mounted content</span></HoverCardContent>
+        }
+    </HoverCard>
+    <button data-testid="sweep-load-hover" @onclick="() => touchHoverLoaded = true">Load hover content</button>
+    <button data-testid="sweep-mount-hover" @onclick="() => showLateHover = !showLateHover">Toggle late hover</button>
+    @if (showLateHover)
+    {
+        <HoverCard OpenDelay="30" CloseDelay="80">
+            <HoverCardTrigger Class="inline-block p-2"><span data-testid="sweep-late-hover">Late mounted hover</span></HoverCardTrigger>
+            <HoverCardContent><span data-testid="sweep-late-hover-content">Late mounted content</span></HoverCardContent>
+        </HoverCard>
+    }
     <Tooltip DelayDuration="30" HideDelay="20">
         <TooltipTrigger AsChild><Button OnClick="TooltipAction">Sweep tooltip</Button></TooltipTrigger>
         <TooltipContent>Sweep tooltip content</TooltipContent>
+    </Tooltip>
+    <Tooltip DelayDuration="30" HideDelay="20">
+        <TooltipTrigger><span data-testid="sweep-focus-tooltip">Focus tooltip text</span></TooltipTrigger>
+        <TooltipContent><span data-testid="sweep-focus-tooltip-content">Focus tooltip description</span></TooltipContent>
+    </Tooltip>
+    <Tooltip DelayDuration="30" HideDelay="20">
+        <TooltipTrigger AsChild><Button data-testid="sweep-info-tooltip" AriaLabel="More information">i</Button></TooltipTrigger>
+        <TooltipContent><span data-testid="sweep-info-tooltip-content">Icon button information</span></TooltipContent>
+    </Tooltip>
+    <Tooltip DelayDuration="30" HideDelay="20">
+        <TooltipTrigger Focusable="false"><span data-testid="sweep-touch-tooltip">Touch tooltip text</span></TooltipTrigger>
+        <TooltipContent><span data-testid="sweep-touch-tooltip-content">Touch tooltip description</span></TooltipContent>
     </Tooltip>
     <p data-testid="sweep-tooltip-actions">@tooltipActions</p>
     <p data-testid="sweep-tooltip-pending">@(tooltipPending ? "Waiting" : "Idle")</p>
@@ -137,6 +174,9 @@
 </section>
 
 @code {
+    private int touchHoverActions;
+    private bool touchHoverLoaded;
+    private bool showLateHover;
     private string? caretMask;
     private TimeOnly? steppedTime = new TimeOnly(13,7);
     private List<string>? rejectedChoices = ["one"];

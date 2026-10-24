@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test --test-concurrency=1 floating.spec.mjs lifecycle.spec.mjs initialization.spec.mjs family-policy.spec.mjs acceptance.spec.mjs p1-sweep.spec.mjs formatted.spec.mjs fields.spec.mjs special.spec.mjs tags.spec.mjs markdown.spec.mjs modes.spec.mjs reviewer.spec.mjs adoption.spec.mjs input.spec.mjs forms.spec.mjs editform.spec.mjs menus.spec.mjs preservation.spec.mjs geometry.spec.mjs ownership.spec.mjs",
+    "test": "node --test --test-concurrency=1 floating.spec.mjs lifecycle.spec.mjs initialization.spec.mjs family-policy.spec.mjs acceptance.spec.mjs p1-sweep.spec.mjs tooltip-touch.spec.mjs formatted.spec.mjs fields.spec.mjs special.spec.mjs tags.spec.mjs markdown.spec.mjs modes.spec.mjs reviewer.spec.mjs adoption.spec.mjs input.spec.mjs forms.spec.mjs editform.spec.mjs menus.spec.mjs preservation.spec.mjs geometry.spec.mjs ownership.spec.mjs",
     "test:demo": "node --test --test-concurrency=1 demo.spec.mjs expanded-demo.spec.mjs"
   },
   "devDependencies": {
