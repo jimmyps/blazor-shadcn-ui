@@ -167,7 +167,7 @@
                         <h3 class="font-semibold">Multi-select</h3>
                         <p class="text-sm text-muted-foreground">Hover, keyboard navigation, and dismissal stay local. Keep the list open while Blazor updates the selected teams.</p>
                         <MultiSelect TItem="string" SearchInterval="250" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Values="notifiedWorkspaces" Placeholder="Notify workspaces" SearchPlaceholder="Search notification workspaces" Class="w-full" />
-                        <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-multi-value">@(notifiedWorkspaces.Any() ? string.Join(", ", notifiedWorkspaces) : "None")</span></p>
+                        <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-multi-value">@(notifiedWorkspaces?.Any() == true ? string.Join(", ", notifiedWorkspaces) : "None")</span></p>
                         <a href="/components/multi-select" class="text-sm underline underline-offset-4">MultiSelect examples</a>
                     </article>
                 </div>
@@ -472,7 +472,7 @@
     private DateOnly? appointmentDate;
     private TimeOnly? appointmentTime;
     private string? assignedWorkspace;
-    private IEnumerable<string> notifiedWorkspaces = [];
+    private IEnumerable<string>? notifiedWorkspaces = [];
     private long composedRevision;
     private readonly string[] composedWorkspaces = ["Design", "Product", "Engineering", "Support"];
     private void ResetComposed()

@@ -698,7 +698,14 @@ test('iPhone taps keep MultiSelect checkbox feedback and tag badges visible',asy
   const trigger=page.locator(`[id="${await initial.getAttribute('id')}"]`);await trigger.tap();
   const row=page.getByRole('option',{name:'Design',exact:true});const marker=row.locator('[data-neo-multi-indicator]');await marker.tap();
   await eventually(async()=>assert.match(await trigger.textContent(),/Design/));assert.equal(await row.getAttribute('aria-selected'),'true');assert.equal(await marker.getAttribute('data-state'),'checked');assert.equal(await marker.locator('svg').isVisible(),true);
-  await row.locator('xpath=ancestor::*[@data-neo-client-list][1]').getByRole('button',{name:'Close',exact:true}).tap();
+  // Empty selection is represented as null by MultiSelect's existing binding contract.
+  await marker.tap();await eventually(async()=>assert.equal(await page.getByTestId('demo-multi-value').textContent(),'None'));
+  await marker.evaluate(el=>{for(let index=0;index<9;index++)el.click();});
+  await eventually(async()=>assert.equal(await page.getByTestId('demo-multi-value').textContent(),'Design'));
+  const content=row.locator('xpath=ancestor::*[@data-neo-client-list][1]');
+  await content.getByRole('button',{name:'Clear',exact:true}).tap();await eventually(async()=>assert.equal(await page.getByTestId('demo-multi-value').textContent(),'None'));
+  assert.equal(await marker.getAttribute('data-state'),'unchecked');assert.match(await trigger.textContent(),/Notify workspaces/);
+  await content.getByRole('button',{name:'Close',exact:true}).tap();
   await eventually(async()=>assert.equal(await trigger.getAttribute('aria-expanded'),'false'));
   const input=page.getByPlaceholder('Type a tag or paste a list');await input.locator('xpath=ancestor::*[@data-neo-browser-field][1][@data-neo-state-ready="true"]').waitFor();await input.scrollIntoViewIfNeeded();
   await page.waitForFunction(()=>Boolean(document.getElementById(document.querySelector('[placeholder="Type a tag or paste a list"]').getAttribute('aria-controls'))));

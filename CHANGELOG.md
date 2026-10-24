@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🛠️ Correctness and compatibility review
 
+- The Interaction Mode demo handles MultiSelect’s existing null empty-selection value when rendering the selected-workspaces label. Deselecting the last item, rapid toggles and Clear no longer terminate the Server circuit; mobile gallery coverage includes those paths.
+
 - MultiSelect checkbox markers are presentation-only children of their option rows, so tapping the square updates selection, the visible checkmark and trigger badges together instead of starting an independent Browser field. TagInput highlights suggestions in place, retaining touch/mouse targets through activation, and legacy suggestions use pointer activation so Safari taps do not depend on synthesized mouse events; touch regressions verify visible badges and accepted values in both modes.
 
 - Specialized editor preservation: Browser MaskedInput reuses the existing JavaScript mask engine instead of a second formatter. Literal-digit prefixes, configured mask characters/templates, focus/caret behavior, selected and formatted paste, IME/mobile deletion and readonly editing retain one owner. The legacy path also honors `ShowMask=false`; empty masks retain native text editing.
