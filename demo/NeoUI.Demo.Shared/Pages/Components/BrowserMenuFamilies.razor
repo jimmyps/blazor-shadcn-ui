@@ -1,0 +1,67 @@
+<InteractionModeProvider Mode="InteractionMode.Browser">
+<div class="space-y-6" data-menu-family-demo>
+    <div class="flex flex-wrap items-center gap-3">
+        <Menubar InteractionRevision="@revision">
+            <MenubarMenu><MenubarTrigger>Inbox</MenubarTrigger><MenubarContent>
+                <MenubarItem OnClick="Save">Refresh inbox</MenubarItem>
+                <MenubarCheckboxItem Checked="@unread" CheckedChanged="SetUnread">Unread only</MenubarCheckboxItem>
+                <MenubarRadioGroup TValue="string" Value="@priority" ValueChanged="SetPriority">
+                    <MenubarRadioItem TValue="string" Value="@("all")" CloseOnSelect="false">All priorities</MenubarRadioItem>
+                    <MenubarRadioItem TValue="string" Value="@("high")" CloseOnSelect="false">High priority</MenubarRadioItem>
+                </MenubarRadioGroup>
+                <MenubarSub><MenubarSubTrigger>More actions</MenubarSubTrigger><MenubarSubContent><MenubarItem OnClick="Save">Archive selected</MenubarItem><MenubarItem Disabled>Delete permanently</MenubarItem></MenubarSubContent></MenubarSub>
+            </MenubarContent></MenubarMenu>
+            <MenubarMenu><MenubarTrigger>View</MenubarTrigger><MenubarContent><MenubarItem OnClick="Save">Compact view</MenubarItem><MenubarItem OnClick="Save">Comfortable view</MenubarItem></MenubarContent></MenubarMenu>
+        </Menubar>
+        <SplitButton OnClick="Save"><ChildContent>Save view</ChildContent><DropdownContent><SplitButtonItem OnClick="Save">Save as new view</SplitButtonItem><SplitButtonItem Disabled>Publish view</SplitButtonItem></DropdownContent></SplitButton>
+        <Button Variant="ButtonVariant.Outline" OnClick="Reset">Reset menus</Button>
+    </div>
+    <ContextMenu InteractionRevision="@revision">
+        <ContextMenuTrigger Class="flex min-h-24 items-center justify-center rounded-lg border border-dashed p-6 text-sm text-muted-foreground">Right-click here, or focus and press Shift+F10</ContextMenuTrigger>
+        <ContextMenuContent>
+            <ContextMenuItem OnClick="Save">Open conversation</ContextMenuItem>
+            <ContextMenuCheckboxItem Checked="@unread" CheckedChanged="SetUnread">Unread only</ContextMenuCheckboxItem>
+            <ContextMenuSub><ContextMenuSubTrigger>Move to</ContextMenuSubTrigger><ContextMenuSubContent><ContextMenuItem OnClick="Save">Archive</ContextMenuItem><ContextMenuItem OnClick="Save">Follow up</ContextMenuItem></ContextMenuSubContent></ContextMenuSub>
+        </ContextMenuContent>
+    </ContextMenu>
+    <NavigationMenu InteractionRevision="@revision">
+        <NavigationMenuList>
+            <NavigationMenuItem Value="guides"><NavigationMenuTrigger>Guides</NavigationMenuTrigger><NavigationMenuContent Class="w-64 p-3"><NavigationMenuLink Href="#menu-families" Class="block rounded-md p-3 hover:bg-accent">Adopting browser mode</NavigationMenuLink><NavigationMenuLink Href="#form-submission" Class="block rounded-md p-3 hover:bg-accent">Safe form submission</NavigationMenuLink></NavigationMenuContent></NavigationMenuItem>
+            <NavigationMenuItem Value="examples"><NavigationMenuTrigger>Examples</NavigationMenuTrigger><NavigationMenuContent Class="w-64 p-3"><NavigationMenuLink Href="#composed-controls" Class="block rounded-md p-3 hover:bg-accent">Composed controls</NavigationMenuLink></NavigationMenuContent></NavigationMenuItem>
+        </NavigationMenuList>
+    </NavigationMenu>
+    <div class="rounded-lg border p-4 space-y-3" data-neo-sidebar-provider>
+        <p class="text-sm text-muted-foreground">Pill navigation shares the policy with embedded dropdowns and split buttons.</p>
+        <CascadingValue Value="pillContext" IsFixed="true">
+            <SidebarPillNav InteractionRevision="@revision" Class="!relative !top-0 !left-0 !translate-x-0 !opacity-100 !translate-y-0 !pointer-events-auto w-fit max-w-full">
+                <ChildContent>
+                    <SidebarPillNavItem Label="Demo inbox" IsActive="@(activePill == 0)" OnClick="@(() => SetPill(0))"><LucideIcon Name="inbox" Size="16" /></SidebarPillNavItem>
+                    <SidebarPillNavItem Label="Demo activity" IsActive="@(activePill == 1)" OnClick="@(() => SetPill(1))"><LucideIcon Name="activity" Size="16" /></SidebarPillNavItem>
+                    <SidebarPillNavItem AsChild><DropdownMenu><DropdownMenuTrigger>Filters</DropdownMenuTrigger><DropdownMenuContent><DropdownMenuCheckboxItem Checked="@unread" CheckedChanged="SetUnread">Unread only</DropdownMenuCheckboxItem><DropdownMenuItem OnClick="Save">Manage filters</DropdownMenuItem></DropdownMenuContent></DropdownMenu></SidebarPillNavItem>
+                </ChildContent>
+                <TrailingContent><SplitButton Size="ButtonSize.Small" OnClick="Save"><ChildContent>Save</ChildContent><DropdownContent><SplitButtonItem OnClick="Save">Save as new view</SplitButtonItem></DropdownContent></SplitButton></TrailingContent>
+            </SidebarPillNav>
+        </CascadingValue>
+    </div>
+    <div class="flex flex-wrap gap-4 text-sm">
+        <label class="flex items-center gap-2"><input type="checkbox" @bind="slow" /> Delay application callbacks (800 ms)</label>
+        <label class="flex items-center gap-2"><input type="checkbox" @bind="reject" /> Reject filter changes</label>
+    </div>
+    <p class="text-sm text-muted-foreground" aria-live="polite">Accepted: @(unread ? "unread only" : "all messages"), @priority priorities · @saved completed actions</p>
+    <p class="text-xs text-muted-foreground">Opening, hover, keyboard navigation and dismissal stay local. Active pill feedback is optimistic; increment InteractionRevision to reset it. Sidebar mobile expansion still uses the existing Sheet behavior.</p>
+</div>
+</InteractionModeProvider>
+@code {
+    private bool unread, slow = true, reject;
+    private string priority = "all";
+    private int saved, activePill;
+    private long revision;
+    private readonly SidebarContext pillContext = new();
+    protected override void OnInitialized() => pillContext.Initialize(open: false, collapsedMode: SidebarCollapsedMode.Pill);
+    private async Task Wait() { if (slow) await Task.Delay(800); }
+    private async Task Save() { await Wait(); saved++; }
+    private async Task SetUnread(bool value) { await Wait(); if (!reject) unread = value; }
+    private async Task SetPriority(string? value) { await Wait(); if (!reject) priority = value ?? "all"; }
+    private async Task SetPill(int value) { await Wait(); activePill = value; }
+    private void Reset() { unread = false; priority = "all"; activePill = 0; revision++; }
+}

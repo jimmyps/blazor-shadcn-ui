@@ -1,0 +1,24 @@
+<Popover InteractionMode="InteractionMode.Browser">
+    <PopoverTrigger>Owned select settings</PopoverTrigger>
+    <PopoverContent>
+        <div id="ownership-select-anchor">
+            <Select TValue="string" InteractionMode="Mode" @bind-Value="value">
+                <SelectTrigger data-testid="ownership-select-trigger"><SelectValue Placeholder="Choose an option" /></SelectTrigger>
+                <SelectContent Presentation="@(BottomSheet ? SelectPresentation.BottomSheet : SelectPresentation.Popover)"
+                    Class="ownership-list" data-testid="ownership-select-content"
+                    data-neo-floating-owner="ownership-select-anchor" title="Owned choices">
+                    <SelectItem TValue="string" Value="@("first")" Text="First">First</SelectItem>
+                    <SelectItem TValue="string" Value="@("second")" Text="Second">Second</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
+    </PopoverContent>
+</Popover>
+<p data-testid="ownership-server-value">@value</p>
+<button style="position:fixed;right:24px;bottom:24px" data-testid="ownership-outside" @onclick="() => outsideClicks++">Outside @outsideClicks</button>
+@code {
+    [Parameter] public InteractionMode Mode { get; set; } = InteractionMode.Blazor;
+    [Parameter] public bool BottomSheet { get; set; }
+    private string? value;
+    private int outsideClicks;
+}

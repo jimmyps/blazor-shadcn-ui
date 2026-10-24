@@ -47,6 +47,14 @@ public class SelectState<TValue>
 /// <typeparam name="TValue">The type of the selected value.</typeparam>
 public class SelectContext<TValue> : PrimitiveContextWithEvents<SelectState<TValue>>
 {
+    internal Dictionary<string, (TValue? Value, bool Disabled, string? Text)> BrowserItems { get; } = new();
+    internal Func<string, Task<string?>>? CommitBrowserSelection { get; set; }
+    internal string? BrowserSelectedId => BrowserItems.FirstOrDefault(i => EqualityComparer<TValue?>.Default.Equals(i.Value.Value, State.Value)).Key;
+    /// <summary>Whether interaction state is owned by the browser.</summary>
+    public bool IsBrowserInteraction => Browser.Enabled;
+    internal void RefreshBrowserValue() => NotifyStateChanged();
+    internal BrowserFloatingState Browser { get; } = new();
+
     /// <summary>
     /// Callback invoked when the selected value changes.
     /// </summary>

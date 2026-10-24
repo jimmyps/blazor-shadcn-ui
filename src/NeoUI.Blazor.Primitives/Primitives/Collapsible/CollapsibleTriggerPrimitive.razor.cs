@@ -89,6 +89,10 @@ public partial class CollapsibleTriggerPrimitive : ComponentBase
     /// </summary>
     private TriggerContext TriggerContext => new()
     {
+        BrowserOwned = Context?.BrowserInteraction == true,
+        BrowserClickPassthrough = Context?.BrowserInteraction == true,
+        TriggerId = Context?.BrowserInteraction == true ? Context.TriggerId : null,
+        AriaControls = Context?.BrowserInteraction == true ? Context.ContentId : null,
         IsOpen = Context?.Open ?? false,
         Toggle = () => Context?.Toggle?.Invoke()
     };

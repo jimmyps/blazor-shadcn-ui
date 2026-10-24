@@ -12,13 +12,16 @@
 
 @{
     // Track which portals are being rendered in this cycle
+    _renderContext ??= new(Category);
+    _renderContext.Category = Category;
+    _renderContext.IsRendering = true;
     _renderedThisCycle.Clear();
 }
 @foreach (var portal in PortalService.GetPortals(Category))
 {
     _renderedThisCycle.Add(portal.Key);
     <div @key="portal.Key" data-portal-id="@portal.Key" data-category="@Category.ToString().ToLowerInvariant()" class="neoui-portal" style="display: contents;">
-        @portal.Value
+        <CascadingValue Value="@_renderContext" IsFixed="true">@portal.Value</CascadingValue>
     </div>
 }
 
@@ -29,6 +32,7 @@
     [Parameter, EditorRequired]
     public PortalCategory Category { get; set; }
 
+    private PortalRenderContext? _renderContext;
     private readonly HashSet<string> _renderedThisCycle = new();
     private IJSObjectReference? _portalModule;
 
@@ -52,6 +56,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (_renderContext != null) _renderContext.IsRendering = false;
         if (firstRender)
         {
             // Load portal.js to initialize the auto-focus observer

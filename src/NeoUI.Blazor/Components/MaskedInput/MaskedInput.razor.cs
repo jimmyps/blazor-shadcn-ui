@@ -610,6 +610,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        ConfigureBrowserMode();
         
         if (ShowValidationError)
         {
@@ -618,7 +619,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                 getEffectiveId: () => EffectiveId,
                 getEditContext: () => EditContext,
                 shouldShowValidation: () => ShowValidationError,
-                getJsModule: () => _inputModule
+                getJsModule: () => BrowserInteraction ? browserInput?.ValidationModule : _inputModule
             );
         }
     }
@@ -629,6 +630,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        ConfigureBrowserMode();
 
         if (_validationBehavior != null)
         {
@@ -666,6 +668,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         if (firstRender)
         {
             try
@@ -708,7 +711,7 @@ public partial class MaskedInput : ComponentBase, IAsyncDisposable
                     var updateOnMode = UpdateOn == InputUpdateMode.Input ? "input" : "change";
                     
                     await _maskModule.InvokeVoidAsync("initializeMaskedInput", 
-                        EffectiveId, Mask, MaskChar, _maskDotNetRef, updateOnMode);
+                        EffectiveId, Mask, MaskChar, _maskDotNetRef, updateOnMode, new { showMask = ShowMask });
                     _isInitialized = true;
                 }
 

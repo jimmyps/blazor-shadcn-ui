@@ -2,6 +2,36 @@
 
 Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
+## What's new in v4.5.0
+
+**Release target: 4.5.0 (unreleased), aligned with NeoUI.Blazor.Primitives 4.5.0.**
+Opt-in Browser Interaction Mode keeps supported floating/menu/disclosure states and input
+drafts responsive while Razor content and application callbacks remain live. Newer edits
+survive delayed acknowledgements; supported fields can synchronize before validation with
+`BrowserEditForm`, retaining existing EditForm validators and submit-handler semantics.
+Local feedback does not confirm server persistence. The default remains Blazor.
+
+```csharp
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Extensions;
+
+builder.Services.ConfigureNeoUIInteractions(options =>
+{
+    options.DefaultMode = InteractionMode.Blazor;
+    options.Floating = InteractionMode.Browser;
+    options.Menus = InteractionMode.Browser;
+    // Preserve legacy form fields and selection controls during staged adoption.
+    options.Inputs = InteractionMode.Blazor;
+    options.Selection = InteractionMode.Blazor;
+});
+```
+
+`Disclosures` is another optional family default; review heavy/lazy Tabs before enabling it.
+Components requires Primitives 4.5.0; icon package versions remain independent.
+See the [upgrade guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/upgrading-to-4.5.md),
+[adoption guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md)
+and [Interaction Mode demo](https://demos.neoui.io/components/browser-interactions).
+
 ## ✨ Features
 
 - **🎨 Zero Configuration**: Pre-built CSS included - no Tailwind setup required
@@ -464,7 +494,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Version**: 4.0.0
+- **Release Target**: 4.5.0 (unreleased; Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

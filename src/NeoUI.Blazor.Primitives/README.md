@@ -2,6 +2,37 @@
 
 Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.
 
+## What's new in v4.5.0
+
+**Release target: 4.5.0 (unreleased), aligned with NeoUI.Blazor 4.5.0.**
+Shared primitive controllers now support opt-in browser-local floating/menu/disclosure
+interactions and supported field feedback, with versioned acceptance, reset, reconnect and
+initialization-lifetime handling. Floating contents remain live Blazor components; application
+callbacks still run through the renderer. The default remains Blazor.
+
+```csharp
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Extensions;
+
+builder.Services.ConfigureNeoUIInteractions(options =>
+{
+    options.DefaultMode = InteractionMode.Blazor;
+    options.Floating = InteractionMode.Browser;
+    options.Menus = InteractionMode.Browser;
+    // Preserve legacy form fields and selection controls during staged adoption.
+    options.Inputs = InteractionMode.Blazor;
+    options.Selection = InteractionMode.Blazor;
+});
+```
+
+`Disclosures` controls Accordion, Collapsible and Tabs. Select follows Selection, and
+checkbox/radio menu items follow Menus while standalone form fields follow Inputs.
+Explicit component settings override scoped policy, then family/global application defaults.
+Review mounted Tabs and large floating content before opting in. Styled input adapters and
+`BrowserEditForm` are provided by NeoUI.Blazor, rather than this headless package.
+See the [upgrade guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/upgrading-to-4.5.md)
+and [adoption guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md).
+
 ## ✨ Features
 
 - **🎭 Headless & Unstyled**: Complete control over styling - primitives provide behavior, accessibility, and state management without imposing any visual design
@@ -11,7 +42,7 @@ Headless, unstyled Blazor primitive components with full accessibility support. 
 - **🔒 Type-Safe**: Full C# type safety with IntelliSense support
 - **🔄 State Management**: Built-in controlled and uncontrolled state patterns
 - **⌨️ Keyboard Navigation**: Full keyboard support for all interactive components
-- **📦 Zero Dependencies**: No CSS or JavaScript required - bring your own styling
+- **📦 Headless Styling**: Bring your own CSS; bundled JavaScript handles supported browser interactions
 
 ## 📦 Installation
 
@@ -429,7 +460,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Current Version**: 4.0.0
+- **Release Target**: 4.5.0 (unreleased; Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives

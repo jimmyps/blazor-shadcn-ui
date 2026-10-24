@@ -48,7 +48,7 @@
                             Heading="Components"
                             Items="@_sortedComponents"
                             ItemValue="@(entry => entry.Route)"
-                            ItemSearchText="@(entry => entry.Title)"
+                            ItemSearchText="@(entry => $"{entry.Title} {entry.Category.DisplayName} {entry.Description}")"
                             MaxDisplayCount="0">
                         <ItemTemplate Context="entry">
                             <LucideIcon Name="@entry.Icon" Size="16" Class="mr-2 text-primary" />
@@ -63,7 +63,7 @@
                             Heading="Primitives"
                             Items="@_sortedPrimitives"
                             ItemValue="@(entry => entry.Route)"
-                            ItemSearchText="@(entry => entry.Title)"
+                            ItemSearchText="@(entry => $"{entry.Title} {entry.Category.DisplayName} {entry.Description}")"
                             MaxDisplayCount="0">
                         <ItemTemplate Context="entry">
                             <LucideIcon Name="@entry.Icon" Size="16" Class="mr-2 text-muted-foreground" />

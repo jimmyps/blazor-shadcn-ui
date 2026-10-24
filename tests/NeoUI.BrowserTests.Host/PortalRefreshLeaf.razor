@@ -1,0 +1,9 @@
+<Popover InteractionMode="Mode" Open="true"><PopoverTrigger>Refresh leaf trigger</PopoverTrigger>
+    <PopoverContent CloseOnClickOutside="false" CloseOnEscape="false"><p data-testid="refresh-leaf">Leaf @Revision</p><p data-testid="refresh-late-leaf">Late @lateRevision</p></PopoverContent>
+</Popover>
+@code {
+    private int lateRevision;
+    public void UpdateLate(int value) { lateRevision = value; StateHasChanged(); }
+    [Parameter] public int Revision { get; set; }
+    [Parameter] public InteractionMode? Mode { get; set; }
+}

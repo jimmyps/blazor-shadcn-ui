@@ -2,6 +2,15 @@
 @namespace NeoUI.Blazor
 @implements IDisposable
 
+@if (SelectContext?.IsBrowserInteraction == true)
+{
+    <span id="@SelectContext.ValueId" data-neo-placeholder="@Placeholder">
+        <span data-neo-value-fallback>@(SelectContext.DisplayText ?? Placeholder)</span>
+        <span data-neo-value-display></span>
+    </span>
+}
+else
+{
 @if (!string.IsNullOrWhiteSpace(SelectContext?.DisplayText))
 {
     @SelectContext.DisplayText
@@ -9,6 +18,8 @@
 else
 {
     <span class="text-muted-foreground">@Placeholder</span>
+}
+
 }
 
 @code {

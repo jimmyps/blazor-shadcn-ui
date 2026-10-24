@@ -11,11 +11,11 @@
    The outer @if caused a race: multiple StateHasChanged calls from parent and sub contexts
    could trigger intermediate re-renders where the FloatingPortal was still mounted but
    about to be destroyed, causing a flash in Interactive Server mode. *@
-<FloatingPortal IsOpen="@SubContext.IsOpen"
+<FloatingPortal BrowserOptions="@GetBrowserOptions()" BrowserEvents="@browserEvents?.Reference" IsOpen="@SubContext.IsOpen"
                 AnchorElement="@SubContext.TriggerElement"
                 PortalId="@_portalId"
                 ParentPortalId="@GetParentPortalId()"
-                ForceMount="false"
+                ForceMount="@(MenuContext?.Browser.Enabled == true)"
                 Side="PopoverSide.Right"
                 Align="PopoverAlign.Start"
                 Offset="@Offset"
@@ -83,6 +83,15 @@ private readonly List<IDropdownMenuItem> _menuItems = new();
     /// </summary>
     private int EffectiveZIndex => ZIndex ?? (ZIndexLevels.PopoverContent + SubContext.Depth);
 
+    private BrowserFloatingEvents? browserEvents;
+    private BrowserFloatingOptions? GetBrowserOptions() => MenuContext?.Browser.Enabled == true ? new()
+    {
+        TriggerId = SubContext.BrowserTriggerId, ContentId = SubContext.BrowserContentId,
+        RootContentId = MenuContext.ContentId, Kind = "submenu", CloseOnEscape = CloseOnEscape,
+        Rtl = MenuContext.BrowserRtl, Open = SubContext.Browser.Open, OpenVersion = SubContext.Browser.OpenVersion,
+        NotifyOpen = SubContext.Browser.OpenChanged != null
+    } : null;
+
     protected override void OnInitialized()
     {
         if (SubContext == null)
@@ -90,6 +99,14 @@ private readonly List<IDropdownMenuItem> _menuItems = new();
             throw new InvalidOperationException(
                 "DropdownMenuSubContentPrimitive must be used within a DropdownMenuSubPrimitive component.");
         }
+
+        if (MenuContext?.Browser.Enabled == true)
+            browserEvents = new BrowserFloatingEvents
+            {
+                CommitMenu = (key, value) => MenuContext.BrowserSelections.TryGetValue(key, out var selection)
+                    ? selection.CommitAsync(value) : Task.FromResult<string?>(null),
+                Notify = (name, open) => name == "open" ? SubContext.Browser.ReportOpenAsync(open) : Task.CompletedTask
+            };
 
         _portalId = $"dropdown-submenu-{SubContext.GetHashCode()}";
         _instanceId = $"dropdown-sub-{SubContext.GetHashCode()}";
@@ -112,11 +129,12 @@ private readonly List<IDropdownMenuItem> _menuItems = new();
     private RenderFragment RenderSubMenuContent() => __builder =>
     {
         <div @ref="_contentRef"
+             id="@(MenuContext?.Browser.Enabled == true ? SubContext.BrowserContentId : null)"
              role="menu"
              tabindex="-1"
-             @onmouseleave="HandleMouseLeave"
+             @onmouseleave="@(MenuContext?.Browser.Enabled == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
              @attributes="AdditionalAttributes"
-             data-state="open">
+             data-state="@(MenuContext?.Browser.Enabled == true ? null : "open")">
             @* Re-cascade MenuContext since FloatingPortal breaks cascading chain *@
             <CascadingValue Value="MenuContext" IsFixed="false">
                 <CascadingValue Value="@this" IsFixed="true">
@@ -130,6 +148,7 @@ private readonly List<IDropdownMenuItem> _menuItems = new();
 
     private async Task HandleFloatingReady()
     {
+        if (MenuContext?.Browser.Enabled == true) return;
         // Set up JavaScript keyboard navigation with submenu mode
         await SetupKeyboardNavAsync();
     }
@@ -202,6 +221,7 @@ private readonly List<IDropdownMenuItem> _menuItems = new();
 
     public async ValueTask DisposeAsync()
     {
+        browserEvents?.Dispose();
         SubContext.OnStateChanged -= HandleContextStateChanged;
 
         // Clean up menu keyboard module

@@ -44,6 +44,7 @@ public enum NavigationMenuOrientation
 /// </summary>
 public class NavigationMenuContext : PrimitiveContextWithEvents<NavigationMenuState>, IDisposable
 {
+    internal bool BrowserEnabled { get; set; }
     private readonly List<string> _items = new();
     private readonly object _lock = new();
     private System.Threading.Timer? _closeTimer;

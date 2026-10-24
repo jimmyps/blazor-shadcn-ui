@@ -1,8 +1,11 @@
+let browserInputModule;
+const getBrowserInput = () => browserInputModule ??= import('./browser-input.js');
 // Input component JavaScript module
 // Manages input event handling, validation tooltips, error states, and UpdateOn mode behavior
 
 // Track elements with active input handling (event listeners, debounce timers, etc.)
 const inputState = new Map();
+const inputInitializations = new WeakMap();
 
 // Track elements with active validation and their update modes
 const validationState = new Map();
@@ -160,15 +163,27 @@ export function showValidationError(elementId, message) {
  * @param {object} dotNetRef - DotNetObjectReference for callbacks
  * @param {boolean} enableBlurValidation - Whether to call ValidateAndClamp on blur (for UpdateOn=Input + Min/Max)
  */
-export function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null, enableBlurValidation = false) {
+export async function initializeInput(elementId, updateOn = 'change', debounceDelay = 0, dotNetRef = null, enableBlurValidation = false, browserOwned = false) {
     const element = document.getElementById(elementId);
     if (!element) {
         console.warn(`Input element with id '${elementId}' not found`);
         return;
     }
 
-    // Clean up any existing state
-    disposeInput(elementId);
+    // Finish asynchronous Browser cleanup before reinitializing the same element.
+    const cleanup = disposeInput(elementId);
+    const token = {};
+    inputInitializations.set(element, token);
+    const current = () => inputInitializations.get(element) === token && element.isConnected && document.getElementById(elementId) === element;
+    await cleanup;
+    if (!current()) return;
+    if (browserOwned) {
+        const browser = await getBrowserInput();
+        if (!current()) return;
+        browser.initialize(element, dotNetRef);
+        inputState.set(elementId, { browserElement: element });
+        return;
+    }
 
     const state = {
         updateOn: updateOn.toLowerCase(),
@@ -282,6 +297,7 @@ export function updateValue(elementId, value) {
     if (!element) return;
 
     const state = inputState.get(elementId);
+    if (state?.browserElement) return;
 
     // If the element is focused and the user has typed something different from what C#
     // is trying to write back, skip the update — their in-progress input takes precedence
@@ -303,8 +319,13 @@ export function updateValue(elementId, value) {
  * Cleans up event listeners and timers
  * @param {string} elementId - The element ID
  */
-export function disposeInput(elementId) {
+export async function disposeInput(elementId) {
+    const pendingElement = document.getElementById(elementId);
+    if (pendingElement) inputInitializations.delete(pendingElement);
     const state = inputState.get(elementId);
+    // Retire this lifetime synchronously, before any module-import await.
+    inputState.delete(elementId);
+    if (state?.browserElement) { inputInitializations.delete(state.browserElement); (await getBrowserInput()).dispose(state.browserElement); return; }
     if (!state) return;
 
     const element = document.getElementById(elementId);

@@ -3,7 +3,7 @@
 @using NeoUI.Icons.Lucide
 
 <div class="@ContainerClass">
-    <Popover Open="_isOpen" OpenChanged="HandleOpenChanged">
+    <Popover InteractionMode="@(BrowserInteraction ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)" InteractionRevision="@_floatingRevision" Open="_isOpen" OpenChanged="HandleOpenChanged">
         <PopoverTrigger role="combobox"
                         aria-expanded="@_isOpen.ToString().ToLower()"
                         aria-controls="@($"{Id}-listbox")"
@@ -20,7 +20,7 @@
                             @GetDisplayText(value)
                             <button type="button"
                                     class="@TagRemoveButtonCssClass"
-                                    aria-label="@($"Remove {GetDisplayText(value)}")"
+                                    data-neo-trigger-action aria-label="@($"Remove {GetDisplayText(value)}")"
                                     @onclick="GetRemoveHandler(value)"
                                     @onclick:stopPropagation="true">
                                 <LucideIcon Name="x" Size="12" Class="h-3 w-3" />
@@ -56,7 +56,7 @@
                 {
                     <button type="button"
                             class="rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-1 focus:ring-ring"
-                            aria-label="@Localizer["MultiSelect.ClearAllAriaLabel"]"
+                            data-neo-trigger-action aria-label="@Localizer["MultiSelect.ClearAllAriaLabel"]"
                             @onclick="ClearAll"
                             @onclick:stopPropagation="true">
                         <LucideIcon Name="x" Size="14" Class="h-3.5 w-3.5" />
@@ -66,12 +66,12 @@
             </div>
         </PopoverTrigger>
 
-        <PopoverContent Side="@PopoverSide.Bottom"
+        <PopoverContent data-neo-client-list="@(BrowserInteraction ? "multiple" : null)" Side="@PopoverSide.Bottom"
                         Align="@PopoverAlign.Start"
                         CloseOnClickOutside="@AutoClose"
                         CloseOnEscape="false"
                         OnClickOutside="@GetClickOutsideHandler()"
-                        OnContentReady="@HandleContentReady"
+                        OnContentReady="@(BrowserInteraction ? default(EventCallback) : EventCallback.Factory.Create(this, HandleContentReady))"
                         MatchTriggerWidth="@MatchTriggerWidth"
                         Class="@(MatchTriggerWidth ? "!p-0" : $"{PopoverWidth} !p-0")">
             @* Search input section - matches CommandInput styling *@
@@ -89,18 +89,31 @@
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
+                @if (BrowserInteraction)
+                {
+                    <Input Id="@($"{Id}-search")" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
+                           Value="@_searchQuery" AcceptedValueAccessor="@(() => _searchQuery)" ValueChanged="HandleSearchInput" ValueRevision="@_searchRevision"
+                           UpdateOn="InputUpdateMode.Input" DebounceDelay="@SearchInterval" Placeholder="@EffectiveSearchPlaceholder" Disabled="@Disabled"
+                           AdditionalAttributes="@(new Dictionary<string, object> { ["data-neo-autofocus"] = "true" })"
+                           Class="flex h-11 w-full rounded-none !border-0 bg-transparent py-3 px-0 !shadow-none text-sm outline-none focus-visible:!ring-0 placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
+                }
+                else
+                {
                 <input @ref="_searchInputRef"
                        id="@($"{Id}-search")"
                        type="text"
                        placeholder="@EffectiveSearchPlaceholder"
-                       value="@_searchQuery"
-                       @oninput="HandleSearchInput"
-                       @onkeydown="HandleSearchKeyDown"
+                       @bind-value:get="_searchQuery"
+                       @bind-value:set="HandleSearchInput"
+                       @bind-value:event="oninput"
+                       data-neo-autofocus="true"
+                       @onkeydown="@(BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleSearchKeyDown))"
                        class="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 ml-2" />
+                }
             </div>
 
             @* Items list section *@
-            <div id="@($"{Id}-listbox")" @ref="_listboxScrollRef" @onscroll="HandleListboxScrollAsync" role="listbox" aria-multiselectable="true" class="max-h-[250px] overflow-y-auto p-1">
+            <div id="@($"{Id}-listbox")" @ref="_listboxScrollRef" @onscroll="@(!BrowserInteraction && OnLoadMore.HasDelegate ? EventCallback.Factory.Create(this, HandleListboxScrollAsync) : default)" data-neo-load-enabled="@((CanLoadMore && !IsLoading && (SearchQueryChanged.HasDelegate || string.IsNullOrEmpty(_searchQuery))).ToString().ToLowerInvariant())" role="listbox" aria-multiselectable="true" class="max-h-[250px] overflow-y-auto p-1">
                 @if (!HasFilteredItems)
                 {
                     <div class="py-6 text-center text-sm text-muted-foreground">@EffectiveEmptyMessage</div>
@@ -116,10 +129,10 @@
                              @onclick="HandleSelectAllToggle"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <CheckboxPrimitive Checked="@(selectAllState == SelectAllState.All)"
-                                      Indeterminate="@(selectAllState == SelectAllState.Indeterminate)"
-                                      class="@CheckboxCssClass"
-                                      AriaLabel="@EffectiveSelectAllLabel">
+                            @* The option owns selection; this is a visual marker, not a nested field. *@
+                            <span aria-hidden="true" data-neo-multi-indicator
+                                  data-state="@(selectAllState == SelectAllState.All ? "checked" : selectAllState == SelectAllState.Indeterminate ? "indeterminate" : "unchecked")"
+                                  class="@CheckboxCssClass">
                                 @if (selectAllState == SelectAllState.All)
                                 {
                                     <LucideIcon Name="check" Size="14" Class="h-3.5 w-3.5 stroke-current" />
@@ -128,7 +141,7 @@
                                 {
                                     <LucideIcon Name="minus" Size="14" Class="h-3.5 w-3.5 stroke-current" />
                                 }
-                            </CheckboxPrimitive>
+                            </span>
                             <span class="font-medium">@EffectiveSelectAllLabel</span>
                         </div>
                         <Separator Decorative="false" Class="my-1" />
@@ -147,14 +160,14 @@
                              @onclick="GetToggleHandler(item)"
                              @onclick:stopPropagation="true"
                              class="@ItemCssClass">
-                            <CheckboxPrimitive Checked="@isSelected"
-                                      class="@CheckboxCssClass"
-                                      AriaLabel="@displayText">
+                            <span aria-hidden="true" data-neo-multi-indicator
+                                  data-state="@(isSelected ? "checked" : "unchecked")"
+                                  class="@CheckboxCssClass">
                                 @if (isSelected)
                                 {
                                     <LucideIcon Name="check" Size="14" Class="h-3.5 w-3.5 stroke-current" />
                                 }
-                            </CheckboxPrimitive>
+                            </span>
                             <span>@displayText</span>
                         </div>
                     }

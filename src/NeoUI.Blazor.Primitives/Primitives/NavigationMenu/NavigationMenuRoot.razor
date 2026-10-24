@@ -1,7 +1,17 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
 
 @* NavigationMenuRoot primitive component - headless navigation behavior *@
+@if (_context.BrowserEnabled)
+{
+    <BrowserNavigationHost Kind="navigation" Value="@Value" ValueChanged="@ValueChanged" Revision="@InteractionRevision"
+        Delay="@DelayDuration" Vertical="@(Orientation == NavigationMenuOrientation.Vertical)" role="navigation" aria-label="@AriaLabel" @attributes="AdditionalAttributes">
+        <CascadingValue Value="_context" IsFixed="true">@ChildContent</CascadingValue>
+    </BrowserNavigationHost>
+}
+else
+{
 <nav @attributes="AdditionalAttributes"
      @onkeydown="HandleKeyDown"
      role="navigation"
@@ -11,7 +21,15 @@
     </CascadingValue>
 </nav>
 
+}
 @code {
+    /// <summary>Overrides scoped and application interaction policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reset the browser-owned active menu.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private readonly BrowserFloatingState mode = new();
+
     private readonly NavigationMenuContext _context = new();
 
     /// <summary>
@@ -62,6 +80,8 @@
 
     protected override void OnInitialized()
     {
+        mode.Sync(InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus), null, false, 0);
+        _context.BrowserEnabled = mode.Enabled;
         _context.State.Orientation = Orientation;
         
         if (!string.IsNullOrEmpty(Value))
@@ -74,6 +94,7 @@
 
     protected override void OnParametersSet()
     {
+        mode.Sync(InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus), null, false, 0);
         _context.State.Orientation = Orientation;
         _context.OpenDelay = DelayDuration;
         _context.CloseDelay = DelayDuration;
@@ -84,11 +105,27 @@
         }
     }
 
-    private async void HandleContextStateChanged()
+    private bool disposed;
+
+    private void HandleContextStateChanged()
     {
-        if (ValueChanged.HasDelegate)
+        // Hover/close timers notify from the thread pool. Capture this observation
+        // and marshal the callback (including its renderer work) to the dispatcher.
+        if (!disposed) _ = ReportContextStateAsync(_context.ActiveValue);
+    }
+
+    private async Task ReportContextStateAsync(string value)
+    {
+        try
         {
-            await ValueChanged.InvokeAsync(_context.ActiveValue);
+            await InvokeAsync(async () =>
+            {
+                if (!disposed && ValueChanged.HasDelegate) await ValueChanged.InvokeAsync(value);
+            });
+        }
+        catch (Exception exception)
+        {
+            if (!disposed) await DispatchExceptionAsync(exception);
         }
     }
 
@@ -114,6 +151,8 @@
 
     public void Dispose()
     {
+        disposed = true;
         _context.OnStateChanged -= HandleContextStateChanged;
+        _context.Dispose();
     }
 }

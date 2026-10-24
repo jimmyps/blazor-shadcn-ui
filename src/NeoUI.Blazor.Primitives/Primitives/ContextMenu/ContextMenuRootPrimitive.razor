@@ -1,12 +1,34 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
 
 @* ContextMenuRoot primitive component - headless context menu behavior *@
+<CascadingValue Value="family" IsFixed="true">
 <CascadingValue Value="@_context" IsFixed="false">
-    @ChildContent
+    @if (family.Enabled)
+    {
+        <DropdownMenuPrimitive InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser" Open="@(programmaticOpen ?? Open ?? _context.IsOpen)" OpenChanged="@(OpenChanged.HasDelegate || OnOpen.HasDelegate || OnClose.HasDelegate ? EventCallback.Factory.Create<bool>(this, ReportBrowserOpen) : default)" InteractionRevision="@(InteractionRevision + localRevision)">
+            @ChildContent
+        </DropdownMenuPrimitive>
+    }
+    else { @ChildContent }
+</CascadingValue>
+
 </CascadingValue>
 
 @code {
+    private bool? programmaticOpen, lastOpen;
+    private long lastRevision;
+    private long localRevision;
+    private readonly BrowserMenuFamily family = new();
+    /// <summary>Overrides scoped and application interaction policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to issue an authoritative browser reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private InteractionMode EffectiveMode => InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus);
+    private readonly BrowserFloatingState mode = new();
+
     private readonly ContextMenuContext _context = new();
 
     /// <summary>
@@ -54,6 +76,9 @@
 
     protected override void OnInitialized()
     {
+        mode.Sync(EffectiveMode, null, false, 0);
+        family.Enabled = mode.Enabled;
+
         if (Open.HasValue && Open.Value)
         {
             _context.Open(0, 0);
@@ -64,6 +89,10 @@
 
     protected override void OnParametersSet()
     {
+        mode.Sync(EffectiveMode, null, false, 0);
+        family.ContextPosition = OnOpen.HasDelegate ? (x, y) => { _context.State.X = x; _context.State.Y = y; } : null;
+        if (lastOpen != Open || lastRevision != InteractionRevision) programmaticOpen = null;
+        lastOpen = Open; lastRevision = InteractionRevision;
         if (Open.HasValue && _context.IsOpen != Open.Value)
         {
             if (Open.Value)
@@ -83,8 +112,16 @@
         }
     }
 
+    private async Task ReportBrowserOpen(bool open)
+    {
+        await OpenChanged.InvokeAsync(open);
+        if (open) await OnOpen.InvokeAsync((_context.X, _context.Y));
+        else await OnClose.InvokeAsync();
+    }
+
     private async void HandleContextStateChanged()
     {
+        if (family.Enabled) { StateHasChanged(); return; }
         if (OpenChanged.HasDelegate)
         {
             await OpenChanged.InvokeAsync(_context.IsOpen);
@@ -101,7 +138,11 @@
     }
 
     /// <summary>Opens the context menu at the specified viewport coordinates without requiring a parameter round-trip.</summary>
-    public void OpenAt(double x, double y) => _context.Open(x, y);
+    public void OpenAt(double x, double y)
+    {
+        if (family.Enabled) { programmaticOpen = true; _context.State.X = x; _context.State.Y = y; localRevision++; StateHasChanged(); }
+        else _context.Open(x, y);
+    }
 
     public void Dispose()
     {

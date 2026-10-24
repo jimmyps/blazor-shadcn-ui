@@ -1,0 +1,25 @@
+<InteractionModeProvider Mode="InteractionMode.Browser">
+    <Input Placeholder="Review layer ready" />
+    <button @onclick="() => reviewDialogOpen = true">Review escape dialog</button>
+    <Dialog @bind-Open="reviewDialogOpen"><DialogContent><DialogTitle>Review escape layers</DialogTitle><DialogDescription>Escape dismisses the closest open layer first.</DialogDescription>
+        <Popover InteractionMode="InteractionMode.Browser"><PopoverTrigger>Review escape popover</PopoverTrigger><PopoverContent><button>Review popover child</button><Popover InteractionMode="InteractionMode.Browser"><PopoverTrigger>Review inner popover</PopoverTrigger><PopoverContent><button>Review inner child</button></PopoverContent></Popover></PopoverContent></Popover>
+    </DialogContent></Dialog>
+    <Popover><PopoverTrigger>Review tag popover</PopoverTrigger><PopoverContent>
+        <TagInput InteractionMode="@(LegacyTags ? InteractionMode.Blazor : InteractionMode.Browser)" @bind-Tags="nestedTags" Suggestions="tagChoices" InteractionRevision="tagRevision" Placeholder="Review nested tags" />
+    </PopoverContent></Popover>
+    <button data-testid="review-tag-reset" @onclick="ResetTags">Reset nested tags</button>
+    <p data-testid="review-tags">@string.Join(",", nestedTags ?? [])</p>
+    <RangeSlider @bind-MinValue="low" @bind-MaxValue="high" AriaLabel="Review range" />
+    <div dir="rtl"><RangeSlider Orientation="SliderOrientation.Vertical" @bind-MinValue="verticalLow" @bind-MaxValue="verticalHigh" AriaLabel="Review vertical range" /></div>
+    <button data-testid="review-alive" @onclick="() => count++">Alive @count</button>
+</InteractionModeProvider>
+@code {
+    [Parameter] public bool LegacyTags { get; set; }
+    private long tagRevision;
+    private void ResetTags() { nestedTags=["Development"]; tagRevision++; }
+    private bool reviewDialogOpen;
+    private int count;
+    private double low=20, high=80, verticalLow=20, verticalHigh=80;
+    private IReadOnlyList<string>? nestedTags=[];
+    private readonly string[] tagChoices=["Design", "Development"];
+}

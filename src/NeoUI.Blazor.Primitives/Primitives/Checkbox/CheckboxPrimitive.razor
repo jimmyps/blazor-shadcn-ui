@@ -1,18 +1,22 @@
 @namespace NeoUI.Blazor.Primitives
 
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="checkbox" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues"
+    Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { required = Required })">
 <button
     id="@Id"
     type="button"
+    data-neo-field-item="@(BrowserInteraction ? "checked" : null)"
+    name="@(!BrowserInteraction ? Name : null)" required="@(!BrowserInteraction && Required)"
     role="checkbox"
-    aria-checked="@AriaCheckedValue"
+    aria-checked="@(BrowserInteraction ? null : AriaCheckedValue)"
     aria-disabled="@Disabled.ToString().ToLower()"
     aria-label="@AriaLabel"
-    data-state="@DataState"
+    data-state="@(BrowserInteraction ? null : DataState)"
     disabled="@Disabled"
     tabindex="@(Disabled ? -1 : 0)"
-    @onclick="HandleClick"
-    @onkeydown="HandleKeyDown"
-    @onkeydown:preventDefault="shouldPreventDefault"
+    @onclick="@(BrowserInteraction ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
     @attributes="AdditionalAttributes">
     @ChildContent
 </button>
+@if (BrowserInteraction && !string.IsNullOrEmpty(Name)) { <input type="hidden" name="@Name" data-neo-field-hidden /> }
+</BrowserStateHost>

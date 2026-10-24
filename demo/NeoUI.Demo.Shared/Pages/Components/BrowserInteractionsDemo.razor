@@ -1,0 +1,564 @@
+@page "/components/browser-interactions"
+@implements IAsyncDisposable
+@using Microsoft.AspNetCore.Components.Forms
+@using System.ComponentModel.DataAnnotations
+@inject IJSRuntime JS
+
+<PageTitle>Interaction Mode - NeoUI</PageTitle>
+<link rel="stylesheet" href="_content/NeoUI.Demo.Shared/css/browser-interactions.css" />
+
+<div class="space-y-8 max-w-4xl" data-browser-interactions-demo @ref="pageRoot">
+    <DemoPageHeader Title="Interaction Mode"
+                    Description="New in v4.5.0 for both Components and Primitives: keep floating UI and typed input responsive with browser-local interactions and asynchronous application callbacks.">
+        <div class="flex flex-wrap gap-2 text-xs text-muted-foreground">
+            <span class="rounded-md border px-2 py-1">v4.5.0</span>
+            <span class="rounded-md border px-2 py-1">Opt-in mode</span>
+            <span class="rounded-md border px-2 py-1">Keyboard accessible</span>
+        </div>
+    </DemoPageHeader>
+    <section class="grid gap-4 sm:grid-cols-3 rounded-lg border bg-card text-card-foreground p-4 [&>div]:space-y-1" aria-label="Live demo activity">
+        <div><span class="block text-xs font-medium text-muted-foreground">LOCAL UI EVENTS</span><strong class="block text-2xl font-semibold" data-local-events></strong><span class="block text-xs text-muted-foreground">Observed directly in this browser</span></div>
+        <div><span class="block text-xs font-medium text-muted-foreground">LAST REVEAL</span><strong class="block text-2xl font-semibold" data-reveal-time></strong><span class="block text-xs text-muted-foreground">Input → positioned floating layer</span></div>
+        <div><span class="block text-xs font-medium text-muted-foreground">APPLICATION CALLBACKS</span><strong class="block text-2xl font-semibold" data-testid="callback-count">@callbackCount</strong><span class="block text-xs text-muted-foreground">@pendingCallbacks pending · @parentRenders parent renders</span></div>
+    </section>
+
+    <DemoSection Title="Dropdown menus" Description="Compare browser-local opening, focus, submenus, and dismissal with the default Blazor interaction mode. On Interactive Server, the default path includes a server round trip.">
+        <DemoBlock>
+        <div class="grid gap-6 lg:grid-cols-2">
+            <article class="space-y-4 min-w-0">
+                <div class="flex flex-wrap items-center justify-between gap-2"><span class="rounded-md border px-2 py-1 text-xs font-medium bg-primary text-primary-foreground">BROWSER MODE</span><span class="text-xs text-muted-foreground">Click → browser → visible</span></div>
+                <h3 class="font-semibold">Ready when you are.</h3><p>Opening, focus, submenus, and dismissal stay local. An application action still reaches C#.</p>
+                <DropdownMenu InteractionMode="InteractionMode.Browser">
+                    <DropdownMenuTrigger AsChild><Button data-testid="browser-menu" >Explore browser menu <LucideIcon Name="chevron-down" Size="16" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-64">
+                        <DropdownMenuLabel>Workspace actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="RunBrowserAction">Save draft <span class="ml-auto pl-3 text-xs text-muted-foreground">async callback</span></DropdownMenuItem>
+                        <DropdownMenuItem><a href="#selection-lab">Go to selection lab</a></DropdownMenuItem>
+                        <DropdownMenuSub>
+                            <DropdownMenuSubTrigger>Move to workspace</DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem OnClick="MoveToProduct">Product</DropdownMenuItem>
+                                <DropdownMenuItem OnClick="MoveToDesign">Design</DropdownMenuItem>
+                                <DropdownMenuItem Disabled>Archived workspace</DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem Disabled>Delete workspace (disabled)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <p class="text-sm text-muted-foreground min-h-5" data-testid="browser-action">@browserAction</p>
+            </article>
+            <article class="space-y-4 min-w-0">
+                <div class="flex flex-wrap items-center justify-between gap-2"><span class="rounded-md border px-2 py-1 text-xs font-medium">STANDARD BLAZOR</span><span class="text-xs text-muted-foreground">Click → server → render</span></div>
+                <h3 class="font-semibold">The familiar server path.</h3><p>The default mode processes interactions through the active Blazor renderer, including a server round trip here.</p>
+                <DropdownMenu>
+                    <DropdownMenuTrigger AsChild><Button Variant="ButtonVariant.Outline" data-testid="standard-menu">Explore standard menu <LucideIcon Name="chevron-down" Size="16" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-64">
+                        <DropdownMenuLabel>Workspace actions</DropdownMenuLabel><DropdownMenuSeparator />
+                        <DropdownMenuItem OnClick="RunStandardAction">Save draft</DropdownMenuItem>
+                        <DropdownMenuItem>Browse workspace</DropdownMenuItem>
+                        <DropdownMenuSub><DropdownMenuSubTrigger>Move to workspace</DropdownMenuSubTrigger><DropdownMenuSubContent><DropdownMenuItem>Product</DropdownMenuItem><DropdownMenuItem>Design</DropdownMenuItem></DropdownMenuSubContent></DropdownMenuSub>
+                        <DropdownMenuSeparator /><DropdownMenuItem Disabled>Delete workspace (disabled)</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <p class="text-sm text-muted-foreground min-h-5" data-testid="standard-action">@standardAction</p>
+            </article>
+        </div>
+        <div class="flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground mt-6 [&>kbd]:rounded [&>kbd]:border [&>kbd]:px-1"><kbd>↑</kbd><kbd>↓</kbd> navigate <span>·</span><kbd>→</kbd> submenu <span>·</span><kbd>Esc</kbd> dismiss <span>·</span> type to find an item</div>
+        </DemoBlock>
+    </DemoSection>
+
+    <div id="selection-lab" class="scroll-mt-24">
+    <DemoSection Title="Select with asynchronous commits" Description="Change the workspace while a callback is pending. Selection updates immediately; older responses cannot replace your latest choice.">
+        <DemoBlock Code="@sampleCode">
+        <div class="grid gap-6 lg:grid-cols-2">
+            <article class="space-y-4 min-w-0">
+                <label class="block text-sm font-medium">Active workspace</label>
+                <Select TValue="string" InteractionMode="InteractionMode.Browser" Value="@selectedWorkspace" ValueChanged="CommitWorkspace" Disabled="@selectDisabled" InteractionRevision="@selectionRevision" Class="w-full" >
+                    <SelectTrigger data-testid="workspace-select"><SelectValue Placeholder="Choose a workspace" /></SelectTrigger>
+                    <SelectContent>
+                        @foreach (var workspace in workspaces)
+                        {
+                            <SelectItem @key="workspace" TValue="string" Value="@workspace" Text="@workspace" Disabled="@(workspace == "Archived")" />
+                        }
+                    </SelectContent>
+                </Select>
+                <div class="flex flex-wrap items-center justify-between gap-2 rounded-md border bg-muted/50 p-3 text-sm"><span>Last accepted by server</span><strong data-testid="accepted-workspace">@selectedWorkspace</strong></div>
+                <div class="flex flex-wrap gap-2">
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="ResetSelection" Disabled="@(pendingCallbacks > 0)" data-testid="reset-selection">Reset selection</Button>
+                    <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="AddWorkspace" Disabled="@(workspaces.Contains("Research"))" data-testid="add-workspace">Add “Research”</Button>
+                </div>
+                <label class="flex items-center gap-2 text-sm"><input type="checkbox" @bind="selectDisabled" data-testid="disable-select" /> Disable the select through Razor</label>
+            </article>
+            <aside class="space-y-4 min-w-0">
+                <h3 class="font-semibold">Application behavior</h3>
+                <label class="flex justify-between gap-2 text-sm" for="callback-delay">Callback delay <output>@callbackDelay ms</output></label>
+                <input id="callback-delay" data-testid="callback-delay" class="w-full accent-primary" type="range" min="0" max="3000" step="250" @bind="callbackDelay" />
+                <div class="flex justify-between text-xs text-muted-foreground"><span>Immediate</span><span>3 seconds</span></div>
+                <label class="flex items-center gap-2 text-sm"><input type="checkbox" @bind="rejectSelection" data-testid="reject-selection" /> Server rejects selection changes</label>
+                <p class="text-sm text-muted-foreground">Rejection restores the accepted value after the callback. This delay simulates application work, not network latency.</p>
+                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="RenderParent" data-testid="render-parent">Render parent (@parentRenders)</Button>
+                <p class="text-sm text-muted-foreground">Open the select, then trigger a parent render. Its browser state stays intact.</p>
+            </aside>
+        </div>
+        </DemoBlock>
+    </DemoSection>
+    </div>
+
+    <DemoSection Title="Checkbox and radio menus" Description="Filter feedback stays local while application callbacks run. Use the delay and rejection settings above to distinguish pending choices from accepted values.">
+        <DemoBlock Code="@filterCode">
+            <div class="space-y-4">
+                <DropdownMenu InteractionMode="InteractionMode.Browser" InteractionRevision="@filterRevision">
+                    <DropdownMenuTrigger AsChild><Button Variant="ButtonVariant.Outline" data-testid="demo-filters">Inbox filters <LucideIcon Name="chevron-down" Size="16" /></Button></DropdownMenuTrigger>
+                    <DropdownMenuContent Class="w-64">
+                        <DropdownMenuLabel>Filters (keep open)</DropdownMenuLabel>
+                        <DropdownMenuCheckboxItem Checked="@unreadOnly" CheckedChanged="CommitUnread">Unread only</DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Checked="@mentionsOnly" CheckedChanged="CommitMentions">Mentions only</DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem Disabled>Assigned team (unavailable)</DropdownMenuCheckboxItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                        <DropdownMenuRadioGroup TValue="string" Value="@notificationLevel" ValueChanged="CommitNotifications">
+                            <DropdownMenuRadioItem TValue="string" Value="@("all")" CloseOnSelect="false">All notifications</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem TValue="string" Value="@("important")" CloseOnSelect="false">Important only</DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                <p class="text-sm text-muted-foreground" data-testid="demo-accepted-filters">Accepted: unread @unreadOnly, mentions @mentionsOnly, notifications @notificationLevel.</p>
+                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="ResetFilters">Reset filters</Button>
+                <p class="text-sm text-muted-foreground">A visible checkmark is optimistic feedback. Pending items expose data-neo-pending; the accepted summary changes only after the callback.</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <section id="menu-families">
+        <DemoSection Title="Menu families and pill navigation" Description="Menubar, ContextMenu, NavigationMenu and SplitButton share the browser interaction policy. Try delayed callbacks while switching and dismissing menus.">
+            <DemoBlock><BrowserMenuFamilies /></DemoBlock>
+        </DemoSection>
+    </section>
+
+    <div id="composed-controls" class="scroll-mt-24">
+    <DemoSection Title="Date, time, and composed controls" Description="One scoped policy keeps floating layers, item highlighting, and keyboard focus local. Application values, search callbacks, and newly rendered content still use Blazor.">
+        <DemoBlock Code="@composedCode">
+            <InteractionModeProvider Mode="InteractionMode.Browser" @key="composedRevision">
+                <div class="grid gap-6 sm:grid-cols-2">
+                    <article class="space-y-3 min-w-0" data-testid="demo-date-picker">
+                        <h3 class="font-semibold">Date picker</h3>
+                        <p class="text-sm text-muted-foreground">Open the calendar and navigate its visible days locally; choosing a date updates the bound value through Blazor.</p>
+                        <DatePicker @bind-SelectedDate="appointmentDate" AriaLabel="Appointment date" Placeholder="Choose a date" Class="w-full" />
+                        <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-date-value">@(appointmentDate?.ToString("yyyy-MM-dd") ?? "None")</span></p>
+                        <a href="/components/date-picker" class="text-sm underline underline-offset-4">DatePicker examples</a>
+                    </article>
+                    <article class="space-y-3 min-w-0" data-testid="demo-time-picker">
+                        <h3 class="font-semibold">Time picker</h3>
+                        <p class="text-sm text-muted-foreground">Open locally, then use the existing time fields and Apply action to commit a time.</p>
+                        <TimePicker @bind-SelectedTime="appointmentTime" MinuteStep="15" Placeholder="Choose a time" Class="w-full" />
+                        <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-time-value">@(appointmentTime?.ToString("HH:mm") ?? "None")</span></p>
+                        <a href="/components/time-picker" class="text-sm underline underline-offset-4">TimePicker examples</a>
+                    </article>
+                    <article class="space-y-3 min-w-0" data-testid="demo-combobox">
+                        <h3 class="font-semibold">Combobox</h3>
+                        <p class="text-sm text-muted-foreground">Hover highlighting and keyboard navigation stay local. Searching and committing a workspace still use Blazor.</p>
+                        <Combobox TItem="string" SearchInterval="250" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Value="assignedWorkspace" Placeholder="Assign a workspace" SearchPlaceholder="Search workspaces" Class="w-full" />
+                        <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-combo-value">@(assignedWorkspace ?? "None")</span></p>
+                        <a href="/components/combobox" class="text-sm underline underline-offset-4">Combobox examples</a>
+                    </article>
+                    <article class="space-y-3 min-w-0" data-testid="demo-multiselect">
+                        <h3 class="font-semibold">Multi-select</h3>
+                        <p class="text-sm text-muted-foreground">Hover, keyboard navigation, and dismissal stay local. Keep the list open while Blazor updates the selected teams.</p>
+                        <MultiSelect TItem="string" SearchInterval="250" Items="@composedWorkspaces" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" @bind-Values="notifiedWorkspaces" Placeholder="Notify workspaces" SearchPlaceholder="Search notification workspaces" Class="w-full" />
+                        <p class="text-sm text-muted-foreground">Selected: <span class="font-medium text-foreground" data-testid="demo-multi-value">@(notifiedWorkspaces?.Any() == true ? string.Join(", ", notifiedWorkspaces) : "None")</span></p>
+                        <a href="/components/multi-select" class="text-sm underline underline-offset-4">MultiSelect examples</a>
+                    </article>
+                </div>
+            </InteractionModeProvider>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+                <Button Variant="ButtonVariant.Outline" Size="ButtonSize.Small" OnClick="ResetComposed" data-testid="demo-composed-reset">Reset values</Button>
+                <p class="text-sm text-muted-foreground">These examples inherit Browser mode without setting it on each control.</p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+    </div>
+
+    <BrowserCommandDemo />
+
+    <div id="input-drafts" class="scroll-mt-24">
+    <DemoSection Title="Type freely while the server works" Description="The browser owns the draft and caret. These callbacks deliberately wait 700 ms; old responses cannot overwrite newer typing. Use an explicit revision to reset a draft.">
+        <DemoBlock Code="@inputCode">
+            <div class="grid gap-6 sm:grid-cols-2">
+                <article class="space-y-3 min-w-0">
+                    <Label For="demo-draft-input">Update on input</Label>
+                    <Input Id="demo-draft-input" InteractionMode="InteractionMode.Browser" Value="@acceptedDraft" AcceptedValueAccessor="@(() => acceptedDraft)" ValueChanged="CommitDraft" ValueRevision="@draftRevision" UpdateOn="InputUpdateMode.Input" Placeholder="Keep typing during the delay" data-testid="demo-browser-input" />
+                    <p class="text-sm text-muted-foreground">Accepted: <span class="font-medium text-foreground" data-testid="demo-input-accepted">@acceptedDraft</span></p>
+                </article>
+                <article class="space-y-3 min-w-0">
+                    <Label For="demo-change-draft">Update on change</Label>
+                    <Input Id="demo-change-draft" InteractionMode="InteractionMode.Browser" Value="@acceptedChangeDraft" AcceptedValueAccessor="@(() => acceptedChangeDraft)" ValueChanged="CommitChangeDraft" ValueRevision="@draftRevision" UpdateOn="InputUpdateMode.Change" Placeholder="Type, then leave this field" data-testid="demo-change-input" />
+                    <p class="text-sm text-muted-foreground">Accepted: <span class="font-medium text-foreground" data-testid="demo-change-accepted">@acceptedChangeDraft</span></p>
+                </article>
+            </div>
+            <div class="mt-4 flex flex-wrap items-center gap-3">
+                <Button Variant="ButtonVariant.Outline" OnClick="ResetDrafts" data-testid="demo-input-reset">Reset drafts</Button>
+                <Button Variant="ButtonVariant.Outline" OnClick="RenderParent" data-testid="demo-input-render">Render parent</Button>
+                <label class="flex items-center gap-2 text-sm"><input type="checkbox" @bind="rejectDraft" data-testid="demo-input-reject" />Reject edits</label>
+            </div>
+            <p class="mt-3 text-sm text-muted-foreground">Local text is a draft until accepted. Rejection restores the accepted value after the latest callback. An interrupted request can have an uncertain outcome.</p>
+        </DemoBlock>
+    </DemoSection>
+    </div>
+
+    <div id="form-submission" class="scroll-mt-24">
+    <DemoSection Title="Save the latest draft" Description="Type quickly and save immediately. BrowserEditForm keeps existing EditForm handlers and validators, flushes pending drafts before validation, and holds the snapshot through Save.">
+        <DemoBlock Code="@formCode">
+            <Dialog @bind-Open="editorOpen">
+                <DialogTrigger AsChild><Button data-testid="demo-open-input-form">Edit profile in a dialog</Button></DialogTrigger>
+                <DialogContent>
+                    <DialogHeader><DialogTitle>Save the latest browser draft</DialogTitle><DialogDescription>Name callbacks wait 600 ms. The note has a 1.2-second debounce; Save flushes both before validating.</DialogDescription></DialogHeader>
+                    <InteractionModeProvider Mode="InteractionMode.Browser">
+                    <BrowserEditForm novalidate @ref="profileForm" Model="@profileDraft" OnValidSubmit="SaveProfileDraft" OnInvalidSubmit="ProfileInvalid" OnFlushFailed="ProfileFlushFailed" FormName="browser-interaction-profile" data-testid="demo-safe-form">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-sm text-destructive" />
+                        <div class="space-y-4 py-4">
+                            <div class="space-y-2"><Label For="demo-profile-name">Name (at least 4 characters)</Label><Input Id="demo-profile-name" Value="@profileDraft.Name" ValueChanged="CommitProfileName" ValueExpression="@(() => profileDraft.Name)" ValueRevision="@profileRevision" UpdateOn="InputUpdateMode.Input" Placeholder="Type a profile name" /></div>
+                            <div class="space-y-2"><Label For="demo-profile-note">Note</Label><Input Id="demo-profile-note" @bind-Value="profileDraft.Note" ValueRevision="@profileRevision" UpdateOn="InputUpdateMode.Input" DebounceDelay="1200" Placeholder="Type a note and save immediately" /></div>
+                            <p class="text-sm text-muted-foreground" role="status" data-testid="demo-form-feedback">@profileFeedback</p>
+                        </div>
+                        <DialogFooter>
+                            <Button Type="ButtonType.Submit" Disabled="@(profileForm?.IsSubmitting == true)" aria-busy="@((profileForm?.IsSubmitting == true).ToString().ToLowerInvariant())" data-testid="demo-form-save">
+                                @if (profileForm?.IsSubmitting == true)
+                                {
+                                    <LucideIcon Name="loader-circle" Size="16" Class="animate-spin" aria-hidden="true" />
+                                    <span>Saving…</span>
+                                }
+                                else { <span>Save profile</span> }
+                            </Button>
+                        </DialogFooter>
+                    </BrowserEditForm>
+                    </InteractionModeProvider>
+                </DialogContent>
+            </Dialog>
+            <Button Variant="ButtonVariant.Outline" OnClick="ResetProfileDraft" Class="ml-2">Reset profile</Button>
+            <p class="mt-3 text-sm text-muted-foreground">Saved: <span class="font-medium text-foreground" data-testid="demo-profile-saved">@savedProfile</span></p>
+            <p class="mt-2 text-sm text-muted-foreground">Rejected or corrected values, incomplete composition, resets and uncertain delivery stop submission. Review the field and submit again.</p>
+        </DemoBlock>
+    </DemoSection>
+    </div>
+
+    <DemoSection Title="Enable actions before blur" Description="Change mode notifies only on empty ↔ non-empty transitions while typing. Further non-empty typing stays local until blur/change or an explicit Save flush.">
+        <DemoBlock Code="@boundaryCode">
+            <div class="space-y-3 max-w-md">
+                <Label For="demo-boundary-input">Type to enable Continue; clear to disable it</Label>
+                <Input Id="demo-boundary-input" InteractionMode="InteractionMode.Browser" Value="@boundaryValue" ValueChanged="BoundaryChanged" UpdateOn="InputUpdateMode.Change" data-testid="demo-boundary-input" />
+                <Button Disabled="@string.IsNullOrEmpty(boundaryValue)" data-testid="demo-boundary-action">Continue</Button>
+                <p class="text-sm text-muted-foreground">Callbacks: <span data-testid="demo-boundary-calls">@boundaryCalls</span> · accepted value: <span data-testid="demo-boundary-value">@(boundaryValue ?? "(empty)")</span></p>
+            </div>
+        </DemoBlock>
+    </DemoSection>
+
+    <InteractionModeProvider Mode="InteractionMode.Browser">
+        <DemoSection Title="Multiline and grouped drafts" Description="Textarea and InputGroup share Input's browser draft, IME, reset and form synchronization protocol. Save immediately after typing to include the latest values.">
+            <DemoBlock>
+                <BrowserEditForm Model="@expandedDraft" OnValidSubmit="SaveExpandedDraft">
+                    <div class="space-y-4">
+                        <Textarea @bind-Value="expandedDraft.Notes" UpdateOn="InputUpdateMode.Input" DebounceDelay="250" Placeholder="Project notes" />
+                        <InputGroup><InputGroupInput @bind-Value="expandedDraft.Title" Placeholder="Draft title" /></InputGroup>
+                        <InputGroup><InputGroupTextarea @bind-Value="expandedDraft.Summary" Placeholder="Draft summary" /></InputGroup>
+                        <Button Type="ButtonType.Submit">Save multiline draft</Button>
+                        <p class="text-sm text-muted-foreground" role="status">@expandedSaved</p>
+                    </div>
+                </BrowserEditForm>
+            </DemoBlock>
+        </DemoSection>
+        <DemoSection Title="Hover and disclosure" Description="HoverCard and Tooltip timers, Accordion expansion and Collapsible state stay in the browser. Their mounted content remains live Blazor content.">
+            <DemoBlock>
+                <div class="space-y-6">
+                    <div class="flex gap-4">
+                        <HoverCard><HoverCardTrigger AsChild><Button Variant="ButtonVariant.Outline">Workspace details</Button></HoverCardTrigger><HoverCardContent><p class="text-sm">This content stays mounted. Hover or focus to reveal it; Escape dismisses locally.</p></HoverCardContent></HoverCard>
+                        <Tooltip><TooltipTrigger AsChild><Button Variant="ButtonVariant.Outline">Helpful hint</Button></TooltipTrigger><TooltipContent>Browser timers and dismissal</TooltipContent></Tooltip>
+                    </div>
+                    <Accordion Collapsible>
+                        <AccordionItem Value="local"><AccordionTrigger>What responds locally?</AccordionTrigger><AccordionContent>Expansion, keyboard navigation, focus and ARIA state update without waiting for a circuit.</AccordionContent></AccordionItem>
+                        <AccordionItem Value="server"><AccordionTrigger>What still runs on the server?</AccordionTrigger><AccordionContent>Application callbacks and the business logic of components inside each panel.</AccordionContent></AccordionItem>
+                    </Accordion>
+                    <Collapsible><CollapsibleTrigger AsChild><Button Variant="ButtonVariant.Outline">Show adoption note</Button></CollapsibleTrigger><CollapsibleContent><p class="py-3 text-sm text-muted-foreground">Hidden content remains mounted and can still load data or hold subscriptions.</p></CollapsibleContent></Collapsible>
+                </div>
+            </DemoBlock>
+        </DemoSection>
+        <DemoSection Title="Instant tabs for mounted content" Description="Evaluate each tab set before inheriting Browser mode. Use an explicit Blazor override for lazy loading, expensive grids/charts/editors, or content whose mount lifecycle should run only when selected.">
+            <DemoBlock Code="@tabsPolicyCode">
+                <Tabs DefaultValue="overview">
+                    <TabsList><TabsTrigger Value="overview">Overview</TabsTrigger><TabsTrigger Value="activity">Activity</TabsTrigger><TabsTrigger Value="disabled" Disabled>Unavailable</TabsTrigger></TabsList>
+                    <TabsContent Value="overview"><p class="py-4">Small panels switch locally and retain their state.</p></TabsContent>
+                    <TabsContent Value="activity"><p class="py-4">Inactive panels stay mounted. Hidden does not mean lazy or free to initialize.</p></TabsContent>
+                </Tabs>
+            </DemoBlock>
+        </DemoSection>
+    </InteractionModeProvider>
+
+    <DemoSection Title="Data controls and editor drafts" Description="Formatted inputs, tags, OTP, date/time segments, toggles and sliders share local editing with versioned acceptance. Save synchronizes their latest values before validation; invalid or uncertain drafts stop submission.">
+        <DemoBlock><BrowserInputFamilies /></DemoBlock>
+    </DemoSection>
+
+    <DemoSection Title="Adopt a policy with exceptions" Description="Explicit component setting → nearest scoped override → application family setting → application global default → library Blazor default.">
+        <DemoBlock Code="@policyCode">
+            <InteractionModeProvider Mode="InteractionMode.Browser">
+                <div class="space-y-3" data-testid="browser-theme-picker">
+                    <h3 class="font-semibold">Live Blazor content inside a browser popover</h3>
+                    <p class="text-sm text-muted-foreground">This theme picker inherits Browser mode. Its buttons still execute the existing Blazor theme handlers.</p>
+                    <ThemeSwitcher ShowStyles />
+                </div>
+            </InteractionModeProvider>
+        </DemoBlock>
+        <p class="text-sm text-muted-foreground">Family defaults let floating shells and menus use Browser while inputs and selection controls keep Blazor behavior. Selection includes Select, Combobox, MultiSelect and picker shells, including composed search UI; Inputs includes standalone Command, text fields, structured fields, checkboxes, toggles and sliders. Internal search follows its selection control’s resolved mode. Scoped overrides apply to all families unless their optional Family parameter narrows the scope. The date/time pickers, Combobox, and MultiSelect above inherit their explicit Browser scope. Their floating shells and transient focus become local; search, value commits, and new calendar content remain Blazor interactions. Large lists and repeated row menus may be better kept in Blazor mode with mount-on-demand content.</p>
+    </DemoSection>
+
+    <DemoSection Title="Popover and browser events" Description="Open a floating layer and watch its events without adding server callbacks.">
+    <DemoBlock>
+    <div class="grid gap-6 lg:grid-cols-2">
+        <article class="space-y-4 min-w-0">
+            <span class="text-xs font-medium text-muted-foreground">03 / FLOAT WITHOUT WAITING</span><h3 class="font-semibold">Small layer. Local behavior.</h3>
+            <p>This popover opens, positions, takes focus, and dismisses in the browser. These native controls need no application callback.</p>
+            <Popover InteractionMode="InteractionMode.Browser">
+                <PopoverTrigger AsChild><Button Variant="ButtonVariant.Outline" data-testid="browser-popover"><LucideIcon Name="sliders-horizontal" Size="16" /> Display options</Button></PopoverTrigger>
+                <PopoverContent Class="w-72">
+                    <div class="grid gap-3 text-sm [&_label]:flex [&_label]:items-center [&_label]:gap-2 [&_small]:text-muted-foreground"><h3 class="font-semibold">Display options</h3><p>Preferences for this local preview.</p>
+                        <label><input type="checkbox" checked /> Show workspace avatars</label>
+                        <label><input type="checkbox" /> Compact row spacing</label>
+                        <label><input type="checkbox" checked /> Show activity indicators</label>
+                        <small>Click outside or press Escape to close.</small>
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </article>
+        <article class="space-y-4 min-w-0">
+            <div class="flex flex-wrap items-center justify-between gap-2"><div><span class="text-xs font-medium text-muted-foreground">LIVE IN YOUR BROWSER</span><h3 class="font-semibold">Local event stream</h3></div><span class="size-2 rounded-full bg-primary" aria-label="Live"></span></div>
+            <p class="text-sm text-muted-foreground" data-empty-log>Open a browser-mode component to see its events.</p>
+            <ol class="space-y-2 text-xs text-muted-foreground [&>li]:grid [&>li]:grid-cols-[3rem_1fr_auto] [&>li]:gap-2 [&>li]:border-b [&>li]:pb-2 [&_span]:truncate" data-event-log aria-label="Recent browser events"></ol>
+        </article>
+    </div>
+    </DemoBlock>
+    </DemoSection>
+
+    <p class="text-sm text-muted-foreground">Browser mode supports action/link menus, checkbox and radio items, submenus, popovers, and selects. Local feedback does not confirm server acceptance; circuit interruptions can leave requests uncertain.</p>
+    <DemoPageNav />
+</div>
+
+@code {
+    private sealed class ExpandedDraft { public string? Notes { get; set; } public string? Title { get; set; } public string? Summary { get; set; } }
+    private readonly ExpandedDraft expandedDraft = new();
+    private string expandedSaved = "No draft saved yet.";
+    private void SaveExpandedDraft() => expandedSaved = $"Saved: {expandedDraft.Title} | {expandedDraft.Notes} | {expandedDraft.Summary}";
+    private const string tabsPolicyCode = """
+        <Tabs InteractionMode="InteractionMode.Browser" DefaultValue="overview">
+            @* Small, mounted panels switch locally. *@
+        </Tabs>
+        <Tabs InteractionMode="InteractionMode.Blazor">
+            @* Explicit exception for heavy or intentionally lazy content. *@
+        </Tabs>
+        """;
+
+    private sealed class ProfileDraft {
+        [Required, MinLength(4)] public string? Name { get; set; }
+        [Required] public string? Note { get; set; }
+    }
+    private BrowserEditForm? profileForm;
+    private readonly ProfileDraft profileDraft = new();
+    private bool editorOpen;
+    private long profileRevision;
+    private const string ProfileFormHint = "Type freely, then save. Validation uses the synchronized model.";
+    private string profileFeedback = ProfileFormHint;
+    private string savedProfile = "None";
+    private string? boundaryValue;
+    private int boundaryCalls;
+    private void BoundaryChanged(string? value) { boundaryValue = value; boundaryCalls++; }
+    private void ResetProfileDraft() { profileDraft.Name = profileDraft.Note = null; profileRevision++; profileFeedback = "Draft reset."; }
+    private async Task CommitProfileName(string? value) { var revision = profileRevision; await Task.Delay(600); if (revision == profileRevision) profileDraft.Name = value; }
+    private async Task SaveProfileDraft(EditContext _) { profileFeedback = "Saving…"; var snapshot = $"{profileDraft.Name} · {profileDraft.Note}"; await Task.Delay(500); savedProfile = snapshot; profileFeedback = ProfileFormHint; editorOpen = false; }
+    private void ProfileInvalid(EditContext _) => profileFeedback = "Review the validation errors before saving.";
+    private void ProfileFlushFailed(InputFlushResult result) => profileFeedback = $"Not saved: {result.Status}. Review the current field value and try again.";
+    private const string formCode = """
+        @* With a global Browser default, an existing EditForm only changes its tag. *@
+        <BrowserEditForm Model="@model" OnValidSubmit="SaveAsync" novalidate
+                         OnFlushFailed="ShowSyncFeedback">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <Input @bind-Value="model.Name" UpdateOn="InputUpdateMode.Input" />
+            <Button Type="ButtonType.Submit">Save</Button>
+        </BrowserEditForm>
+        // ConfigureNeoUIInteractions(options => options.DefaultMode = InteractionMode.Browser)
+        // Or use InteractionModeProvider around the form, as this demo does.
+        // Existing OnSubmit handlers still own validation; valid/invalid handlers keep automatic validation.
+        // Flush → acknowledge → validate → save. Inputs stay locked through Save.
+        // Existing EditForm: use BrowserInputScope.SubmitAsync from OnSubmit.
+        """;
+    private const string boundaryCode = """
+        <Input InteractionMode="InteractionMode.Browser"
+               @bind-Value="name" UpdateOn="InputUpdateMode.Change" />
+        <Button Disabled="@string.IsNullOrEmpty(name)">Continue</Button>
+        // While focused: empty/non-empty transitions only.
+        // Final text is delivered on blur/change or an explicit form flush.
+        """;
+
+    private string? acceptedDraft = "Hello", acceptedChangeDraft = "Hello";
+    private long draftRevision;
+    private bool rejectDraft;
+    private async Task CommitDraft(string? value) { var revision = draftRevision; var reject = rejectDraft; await Task.Delay(700); if (revision == draftRevision && !reject) acceptedDraft = value; }
+    private async Task CommitChangeDraft(string? value) { var revision = draftRevision; var reject = rejectDraft; await Task.Delay(700); if (revision == draftRevision && !reject) acceptedChangeDraft = value; }
+    private void ResetDrafts() { acceptedDraft = acceptedChangeDraft = "Hello"; draftRevision++; }
+    private const string inputCode = """
+        <Input InteractionMode="InteractionMode.Browser"
+               Value="@acceptedText" ValueChanged="AcceptTextAsync"
+               AcceptedValueAccessor="@(() => acceptedText)"
+               ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" />
+        // Await application work, then assign acceptedText to accept/normalize.
+        // Increment revision with acceptedText to explicitly replace/reset the draft.
+        """;
+
+    private ElementReference pageRoot;
+    private IJSObjectReference? module, controller;
+    private readonly List<string> workspaces = ["Design", "Product", "Engineering", "Growth", "Archived"];
+    private string? selectedWorkspace = "Design";
+    private string browserAction = "Try Save draft to run an application callback.";
+    private string standardAction = "Existing behavior is still the default.";
+    private int callbackDelay = 1500, callbackCount, pendingCallbacks, parentRenders;
+    private long selectionRevision;
+    private bool selectDisabled, rejectSelection;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        module = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Demo.Shared/Pages/Components/BrowserInteractionsDemo.razor.js");
+        controller = await module.InvokeAsync<IJSObjectReference>("initialize", pageRoot);
+    }
+
+    private async Task CommitWorkspace(string? proposed)
+    {
+        var shouldReject = rejectSelection;
+        await ApplicationWork();
+        if (!shouldReject && workspaces.Contains(proposed ?? "") && proposed != "Archived") selectedWorkspace = proposed;
+    }
+    private async Task ApplicationWork()
+    {
+        var delay = callbackDelay;
+        callbackCount++;
+        pendingCallbacks++;
+        StateHasChanged();
+        try { await Task.Delay(delay); }
+        finally { pendingCallbacks--; }
+    }
+    private async Task RunBrowserAction() { browserAction = "Saving draft… the menu has already closed."; await ApplicationWork(); browserAction = "Draft saved. The UI never waited for this callback."; }
+    private async Task RunStandardAction() { standardAction = "Saving draft…"; await ApplicationWork(); standardAction = "Draft saved through the standard path."; }
+    private async Task MoveToProduct() { await ApplicationWork(); browserAction = "Draft moved to Product."; }
+    private async Task MoveToDesign() { await ApplicationWork(); browserAction = "Draft moved to Design."; }
+    private void ResetSelection() { selectedWorkspace = "Design"; selectionRevision++; }
+    private void AddWorkspace() { if (!workspaces.Contains("Research")) workspaces.Add("Research"); }
+    private void RenderParent() => parentRenders++;
+
+    private bool unreadOnly, mentionsOnly;
+    private string? notificationLevel = "all";
+    private long filterRevision;
+    private async Task CommitFilter(Action accept)
+    {
+        var revision = filterRevision;
+        var reject = rejectSelection;
+        await ApplicationWork();
+        if (!reject && filterRevision == revision) accept();
+    }
+    private Task CommitUnread(bool value) => CommitFilter(() => unreadOnly = value);
+    private Task CommitMentions(bool value) => CommitFilter(() => mentionsOnly = value);
+    private Task CommitNotifications(string? value) => CommitFilter(() => notificationLevel = value);
+    private void ResetFilters() { unreadOnly = mentionsOnly = false; notificationLevel = "all"; filterRevision++; }
+
+    private DateOnly? appointmentDate;
+    private TimeOnly? appointmentTime;
+    private string? assignedWorkspace;
+    private IEnumerable<string>? notifiedWorkspaces = [];
+    private long composedRevision;
+    private readonly string[] composedWorkspaces = ["Design", "Product", "Engineering", "Support"];
+    private void ResetComposed()
+    {
+        appointmentDate = null;
+        appointmentTime = null;
+        assignedWorkspace = null;
+        notifiedWorkspaces = [];
+        // Recreate this example scope to clear each control's in-progress draft too.
+        composedRevision++;
+    }
+    private const string composedCode = """
+        <InteractionModeProvider Mode="InteractionMode.Browser" @key="revision">
+            <DatePicker @bind-SelectedDate="date" />
+            <TimePicker @bind-SelectedTime="time" MinuteStep="15" />
+            <Combobox TItem="string" SearchInterval="250" Items="@workspaces"
+                      ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
+                      @bind-Value="workspace" />
+            <MultiSelect TItem="string" SearchInterval="250" Items="@workspaces"
+                         ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
+                         @bind-Values="teams" />
+        </InteractionModeProvider>
+        // Opening, dismissal, hover, and mounted-item navigation are local.
+        // Search callbacks, value commits, and new content still use Blazor.
+        // Reset the bound values and increment revision to clear draft UI as well.
+        """;
+
+    private const string policyCode = """
+        // Program.cs: adopt UI families while preserving existing form behavior.
+        builder.Services.ConfigureNeoUIInteractions(options =>
+        {
+            options.DefaultMode = InteractionMode.Blazor;
+            options.Floating = InteractionMode.Browser;
+            options.Menus = InteractionMode.Browser;
+            options.Disclosures = InteractionMode.Browser;
+            options.Inputs = InteractionMode.Blazor;
+            options.Selection = InteractionMode.Blazor;
+        });
+        // Nullable family settings inherit DefaultMode when omitted.
+        // Or set DefaultMode = Browser and keep Inputs/Selection = Blazor.
+
+        // A scope overrides the application; an explicit setting overrides the scope.
+        <InteractionModeProvider Mode="InteractionMode.Browser">
+            <ThemeSwitcher ShowStyles />
+            <Select TValue="string" InteractionMode="InteractionMode.Blazor">
+                <!-- Large list: retain a targeted exception. -->
+                <SelectContent ForceMount="false">...</SelectContent>
+            </Select>
+        </InteractionModeProvider>
+        """;
+    private const string filterCode = """
+        <DropdownMenu InteractionMode="InteractionMode.Browser"
+                      InteractionRevision="@revision">
+            <DropdownMenuTrigger AsChild><Button>Filters</Button></DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuCheckboxItem Checked="@unread"
+                                          CheckedChanged="CommitUnread"
+                                          CloseOnSelect="false">Unread only</DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+        // CommitUnread can await work, then assign unread to accept; leave it unchanged to reject.
+        // Increment revision to apply a reset and invalidate stale browser acknowledgements.
+        """;
+
+    private const string sampleCode = """
+        <Select TValue="string"
+                InteractionMode="InteractionMode.Browser"
+                @bind-Value="workspace">
+            <SelectTrigger><SelectValue Placeholder="Workspace" /></SelectTrigger>
+            <SelectContent>
+                <SelectItem Value="@("design")" Text="Design" />
+                <SelectItem Value="@("product")" Text="Product" />
+            </SelectContent>
+        </Select>
+        """;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (controller != null)
+        {
+            try { await controller.InvokeVoidAsync("dispose"); await controller.DisposeAsync(); }
+            catch (JSDisconnectedException) { }
+        }
+        if (module != null)
+        {
+            try { await module.DisposeAsync(); } catch (JSDisconnectedException) { }
+        }
+    }
+}

@@ -2,7 +2,7 @@
 @typeparam TValue
 
 @* Styled MenubarRadioGroup - wrapper for radio items *@
-<MenubarRadioGroupPrimitive TValue="TValue"
+<MenubarRadioGroupPrimitive InteractionRevision="@InteractionRevision" TValue="TValue"
                                                 Value="@Value"
                                                 ValueChanged="@ValueChanged"
                                                 OnValueChange="@OnValueChange"
@@ -11,6 +11,8 @@
 </MenubarRadioGroupPrimitive>
 
 @code {
+    /// <summary>Increment to reset the browser-owned selection.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
     /// <summary>
     /// The content to render inside the radio group.
     /// Typically contains MenubarRadioItem components.

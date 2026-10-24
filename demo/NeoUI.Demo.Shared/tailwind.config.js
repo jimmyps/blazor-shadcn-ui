@@ -8,6 +8,7 @@ module.exports = {
     '../NeoUI.Demo.Wasm/**/*.{razor,html,cs}',
     '../../src/NeoUI.Blazor/**/*.{razor,html,cs}',
     '../../src/NeoUI.Blazor.Primitives/**/*.{razor,html,cs}',
+    '../../src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/browser-tags.js',
     '../../src/NeoUI.Icons.Lucide/**/*.{razor,html,cs}',
     '../../src/NeoUI.Icons.Heroicons/**/*.{razor,html,cs}',
     '../../src/NeoUI.Icons.Feather/**/*.{razor,html,cs}',

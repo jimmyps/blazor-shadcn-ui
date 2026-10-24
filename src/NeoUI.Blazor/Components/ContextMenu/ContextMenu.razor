@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* ContextMenu - styled context menu wrapper *@
-<ContextMenuRootPrimitive @ref="_primitive"
+<ContextMenuRootPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" @ref="_primitive"
                  Open="@Open"
                  OpenChanged="OpenChanged"
                  OnOpen="OnOpen"
@@ -11,6 +11,11 @@
 </ContextMenuRootPrimitive>
 
 @code {
+    /// <summary>Overrides scoped and application interaction policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to authoritatively reset browser interaction state.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// The child content to render.
     /// </summary>

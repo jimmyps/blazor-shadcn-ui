@@ -6,15 +6,16 @@
     id="@Id"
     type="button"
     role="radio"
-    aria-checked="@IsChecked.ToString().ToLower()"
+    aria-checked="@(Context?.BrowserInteraction == true ? null : IsChecked.ToString().ToLower())"
+    data-neo-field-item="@(Context?.BrowserInteraction == true ? System.Text.Json.JsonSerializer.Serialize(Value) : null)"
     aria-disabled="@IsDisabled.ToString().ToLower()"
     aria-label="@AriaLabel"
-    data-state="@DataState"
+    data-state="@(Context?.BrowserInteraction == true ? null : DataState)"
     disabled="@IsDisabled"
     tabindex="@(IsDisabled ? -1 : (IsChecked ? 0 : -1))"
-    @onclick="HandleClick"
-    @onkeydown="HandleKeyDown"
-    @onkeydown:preventDefault="shouldPreventDefault"
+    @onclick="@(Context?.BrowserInteraction == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+    @onkeydown="@(Context?.BrowserInteraction == true ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
+    @onkeydown:preventDefault="@(Context?.BrowserInteraction != true && shouldPreventDefault)"
     @attributes="AdditionalAttributes">
     @ChildContent
 </button>

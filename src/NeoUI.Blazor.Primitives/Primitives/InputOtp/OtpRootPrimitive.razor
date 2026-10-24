@@ -2,6 +2,7 @@
 @implements IDisposable
 
 @* OtpRoot primitive component - headless, unstyled OTP input behavior *@
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="otp" IsField Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" AcceptedValues="@AcceptedBrowserValues" Revision="@InteractionRevision" Disabled="@Disabled" Changed="ChangeBrowser" FieldOptions="@(new { length = Length, pattern = Pattern, required = Required })">
 <CascadingValue Value="this">
     <CascadingValue Value="@_context" IsFixed="false">
         <div role="group"
@@ -12,6 +13,8 @@
         </div>
     </CascadingValue>
 </CascadingValue>
+
+</BrowserStateHost>
 
 @code {
     private OtpContext _context = null!;
@@ -99,7 +102,7 @@
     protected override void OnInitialized()
     {
         // Initialize context with the specified length
-        _context = new OtpContext(Length);
+        _context = new OtpContext(Length) { BrowserInteraction = BrowserInteraction };
 
         // Initialize controllable state
         // A component is controlled if it has a ValueChanged callback (for @bind-Value)
@@ -128,6 +131,7 @@
 
     protected override void OnParametersSet()
     {
+        _context.BrowserInteraction = BrowserInteraction;
         // Update controlled value if it changed
         if (_state.IsControlled && Value != null && Value != _state.ControlledValue)
         {
@@ -150,6 +154,7 @@
 
     private async void HandleContextStateChanged()
     {
+        if (BrowserInteraction) return;
         var newValue = _context.Value;
 
         if (_state.Value != newValue)

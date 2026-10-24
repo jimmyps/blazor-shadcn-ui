@@ -12,17 +12,17 @@ else
 {
     <button type="button"
             id="@ItemContext.TriggerId"
-            @onclick="HandleClick"
-            @onmouseenter="HandleMouseEnter"
-            @onmouseleave="HandleMouseLeave"
-            @onkeydown="HandleKeyDown"
+            @onclick="@(Context.BrowserEnabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+            @onmouseenter="@(Context.BrowserEnabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+            @onmouseleave="@(Context.BrowserEnabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
+            @onkeydown="@(Context.BrowserEnabled ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
             @onkeydown:preventDefault="@_shouldPreventDefault"
             @attributes="AdditionalAttributes"
             role="menuitem"
             aria-haspopup="true"
-            aria-expanded="@IsActive.ToString().ToLowerInvariant()"
+            aria-expanded="@(Context.BrowserEnabled ? null : IsActive.ToString().ToLowerInvariant())"
             aria-controls="@ItemContext.ContentId"
-            data-state="@(IsActive ? "open" : "closed")">
+            data-state="@(Context.BrowserEnabled ? null : IsActive ? "open" : "closed")">
         @ChildContent
     </button>
 }
@@ -56,6 +56,7 @@ else
     private TriggerContext TriggerContext => new()
     {
         TriggerId = ItemContext.TriggerId,
+        BrowserOwned = Context.BrowserEnabled,
         IsOpen = IsActive,
         Toggle = HandleClick,
         OnMouseEnter = HandleMouseEnter,

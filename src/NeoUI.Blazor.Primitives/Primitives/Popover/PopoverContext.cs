@@ -32,6 +32,11 @@ public class PopoverState
 /// </summary>
 public class PopoverContext : PrimitiveContextWithEvents<PopoverState>
 {
+    internal BrowserFloatingState Browser { get; } = new();
+
+    /// <summary>Effective interaction mode for controls composed inside this popover.</summary>
+    public InteractionMode InteractionMode => Browser.Mode;
+
     /// <summary>
     /// Initializes a new instance of the PopoverContext.
     /// </summary>

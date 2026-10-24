@@ -2,6 +2,13 @@
 @implements IMenubarItem
 @implements IDisposable
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuSubTriggerPrimitive Disabled="@Disabled" @attributes="AdditionalAttributes">@ChildContent</DropdownMenuSubTriggerPrimitive>
+}
+else
+{
+
 @* MenubarSubTriggerPrimitive - triggers opening of a submenu *@
 <div @ref="_triggerRef"
      role="menuitem"
@@ -18,7 +25,11 @@
     @ChildContent
 </div>
 
+
+}
+
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private MenubarContext? MenuContext { get; set; }
 
@@ -57,6 +68,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (SubContext == null)
         {
             throw new InvalidOperationException(
@@ -86,6 +98,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (Family?.Enabled == true) return;
         // Always update the trigger element reference
         SubContext.TriggerElement = _triggerRef;
     }
@@ -209,6 +222,7 @@
 
     public void Dispose()
     {
+        if (Family?.Enabled == true) return;
         _hoverCts?.Cancel();
         _hoverCts?.Dispose();
         // Unregister this item when disposed

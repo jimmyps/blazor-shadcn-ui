@@ -462,8 +462,9 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        ConfigureBrowserMode();
         
-        if (ShowValidationError)
+        if (ShowValidationError && !BrowserInteraction)
         {
             _validationBehavior = new InputValidationBehavior(
                 owner: this,
@@ -481,6 +482,7 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        ConfigureBrowserMode();
 
         if (_validationBehavior != null)
         {
@@ -515,6 +517,7 @@ public partial class Textarea : ComponentBase, IAsyncDisposable
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         await base.OnAfterRenderAsync(firstRender);
         if (firstRender)
         {

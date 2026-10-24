@@ -4,15 +4,17 @@
 
 @* DropdownMenuSubTriggerPrimitive - triggers opening of a submenu *@
 <div @ref="_triggerRef"
+     id="@(MenuContext?.Browser.Enabled == true ? SubContext.BrowserTriggerId : null)"
+     aria-controls="@(MenuContext?.Browser.Enabled == true ? SubContext.BrowserContentId : null)"
      role="menuitem"
      tabindex="-1"
      aria-haspopup="menu"
-     aria-expanded="@SubContext.IsOpen.ToString().ToLower()"
+     aria-expanded="@(MenuContext?.Browser.Enabled == true ? null : SubContext.IsOpen.ToString().ToLower())"
      aria-disabled="@Disabled.ToString().ToLower()"
-     @onclick="HandleClick"
-     @onmouseenter="HandleMouseEnter"
-     @onmouseleave="HandleMouseLeave"
-     data-state="@(SubContext.IsOpen ? "open" : "closed")"
+     @onclick="@(MenuContext?.Browser.Enabled == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+     @onmouseenter="@(MenuContext?.Browser.Enabled == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+     @onmouseleave="@(MenuContext?.Browser.Enabled == true ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
+     data-state="@(MenuContext?.Browser.Enabled == true ? null : (SubContext.IsOpen ? "open" : "closed"))"
      data-disabled="@(Disabled ? "true" : null)"
      @attributes="AdditionalAttributes">
     @ChildContent

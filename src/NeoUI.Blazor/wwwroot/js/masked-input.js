@@ -12,7 +12,7 @@ const instances = new Map();
  * @param {object} dotNetHelper - .NET object reference for callbacks
  * @param {string} updateOn - When to update: 'input' or 'change'
  */
-export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, updateOn = 'change') {
+export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, updateOn = 'change', options = {}) {
     const element = document.getElementById(elementId);
     if (!element) return;
 
@@ -44,6 +44,8 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     let lastValue = element.value;
     let lastCursorPos = 0;
     let lastRawValue = ''; // Track last notified raw value
+    let disposed = false, composing = false, handlingInput = false, dispatching = false, editSnapshot, focusTimer, clickTimer;
+    const editable = event => !disposed && !element.disabled && !element.readOnly && !composing && !event?.isComposing;
     const updateOnInput = updateOn.toLowerCase() === 'input';
     const updateOnChange = updateOn.toLowerCase() === 'change';
 
@@ -86,7 +88,8 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
                 }
             } else {
                 // No more raw characters, fill with mask char
-                result += maskChar;
+                if (options.showMask !== false) result += maskChar;
+                else break;
             }
         }
 
@@ -97,7 +100,7 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     function getEditableCountBefore(idx, value) {
         let count = 0;
         for (let i = 0; i < idx && i < positions.length; i++) {
-            if (positions[i].isEditable && value[i] !== maskChar) {
+            if (positions[i].isEditable && value[i] && value[i] !== maskChar && positions[i].pattern.test(value[i])) {
                 count++;
             }
         }
@@ -144,6 +147,11 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     // ============ EVENT HANDLERS ============
 
     function handleKeyDown(e) {
+        if (!editable(e)) {
+            if ((element.readOnly || element.disabled) && ['Backspace','Delete'].includes(e.key)) e.preventDefault();
+            return;
+        }
+        clearTimeout(focusTimer); clearTimeout(clickTimer);
         lastCursorPos = element.selectionStart;
         
         // Handle special keys
@@ -222,27 +230,76 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
         }
     }
 
+    // The existing engine also serves Browser mode. Its adapter changes only
+    // notification ownership; native edits without keydown (IME/mobile/autofill)
+    // supply selection snapshots instead of guessing from a key event.
+    function rawInput(value) {
+        const literals = positions.filter(position => !position.isEditable);
+        if (literals.length && value.length > literals.at(-1).index + 1 && literals.every(position => value[position.index] === position.literal)) return getRawValue(value);
+        return [...value].filter(char => char !== maskChar && positions.some(position => position.isEditable && position.pattern.test(char))).join('');
+    }
+
+    function handleBeforeInput(e) {
+        if (!options.browserOwned || !editable(e)) return;
+        clearTimeout(focusTimer); clearTimeout(clickTimer);
+        editSnapshot = { value: element.value, start: element.selectionStart, end: element.selectionEnd };
+        if (e.inputType === 'deleteContentBackward' || e.inputType === 'deleteContentForward') {
+            // Virtual keyboards do not reliably emit keydown. Apply this edit
+            // here as WebKit cannot retarget native deletion across a literal.
+            e.preventDefault();
+            editSnapshot = undefined;
+            if (e.inputType === 'deleteContentBackward') handleBackspace(); else handleDelete();
+        }
+    }
+
     function handleInput(e) {
-        const newValue = element.value;
-        const cursorPos = element.selectionStart;
+        if (dispatching || !editable(e)) return;
+        clearTimeout(focusTimer); clearTimeout(clickTimer);
+        if (!options.browserOwned) {
+            const newValue = element.value;
+            const cursorPos = element.selectionStart;
 
-        // Use getRawValue to extract only editable characters at their correct mask
-        // positions. This avoids including literal digit characters in the mask
-        // (e.g. the '1' in '+1 (000) 000-0000') which caused double-output bugs.
-        const allChars = getRawValue(newValue);
+            // Use getRawValue to extract only editable characters at their correct mask
+            // positions. This avoids including literal digit characters in the mask
+            // (e.g. the '1' in '+1 (000) 000-0000') which caused double-output bugs.
+            const allChars = getRawValue(newValue);
 
-        // Calculate raw cursor position
-        // How many editable chars were before cursor in old value
-        const oldRawPos = getEditableCountBefore(lastCursorPos, lastValue);
-        
-        // Estimate new raw position based on what was typed
-        const charsTyped = newValue.length - lastValue.length;
-        const newRawPos = Math.max(0, oldRawPos + Math.max(0, charsTyped));
+            // Calculate raw cursor position
+            // How many editable chars were before cursor in old value
+            const oldRawPos = getEditableCountBefore(lastCursorPos, lastValue);
 
-        updateValue(allChars, newRawPos);
+            // Estimate new raw position based on what was typed
+            const charsTyped = newValue.length - lastValue.length;
+            const newRawPos = Math.max(0, oldRawPos + Math.max(0, charsTyped));
+
+            updateValue(allChars, newRawPos);
+            return;
+        }
+        handlingInput = true;
+        try {
+            const snapshot = editSnapshot;
+            editSnapshot = undefined;
+            if (snapshot && e.inputType?.startsWith('insert')) {
+                const before = getRawValue(snapshot.value);
+                const start = getEditableCountBefore(snapshot.start, snapshot.value);
+                const end = getEditableCountBefore(snapshot.end, snapshot.value);
+                const inserted = e.data ?? element.value.slice(snapshot.start, element.value.length - (snapshot.value.length - snapshot.end));
+                const raw = rawInput(inserted);
+                updateValue(before.slice(0, start) + raw + before.slice(end), start + raw.length);
+            } else {
+                const value = element.value;
+                const raw = rawInput(value);
+                const literals = positions.filter(position => !position.isEditable);
+                const formatted = literals.length && literals.every(position => value[position.index] === position.literal);
+                const cursor = formatted ? getEditableCountBefore(element.selectionStart, value) : rawInput(value.slice(0, element.selectionStart)).length;
+                updateValue(raw, cursor);
+            }
+        } finally { handlingInput = false; }
     }
 
     function handlePaste(e) {
+        if (!editable(e)) return;
+        clearTimeout(focusTimer); clearTimeout(clickTimer);
         e.preventDefault();
         
         const pastedText = (e.clipboardData || window.clipboardData)?.getData('text') || '';
@@ -252,26 +309,24 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
         const currentRaw = getRawValue(element.value);
         const rawCursorPos = getEditableCountBefore(cursorPos, element.value);
         
-        // Filter pasted text to only valid characters
-        let validChars = '';
-        for (const char of pastedText) {
-            for (const pos of positions) {
-                if (pos.isEditable && pos.pattern.test(char)) {
-                    validChars += char;
-                    break;
-                }
-            }
-        }
-
-        // Insert at cursor position
-        const newRaw = currentRaw.slice(0, rawCursorPos) + validChars + currentRaw.slice(rawCursorPos);
+        // Reuse the same parser for raw and fully formatted paste, including
+        // literal digits in phone/prefix masks. A selection is replaced once.
+        const validChars = rawInput(pastedText);
+        const rawEnd = getEditableCountBefore(element.selectionEnd, element.value);
+        const newRaw = currentRaw.slice(0, rawCursorPos) + validChars + currentRaw.slice(rawEnd);
         
         updateValue(newRaw, rawCursorPos + validChars.length);
     }
 
     function handleFocus(e) {
-        // Delay to let browser set initial cursor
-        setTimeout(() => {
+        if (!editable(e)) return;
+        // Do not overwrite a selection made by autofill, paste or the caller
+        // after focus but before this deferred positioning task runs.
+        const focusedValue = element.value, start = element.selectionStart, end = element.selectionEnd;
+        clearTimeout(focusTimer);
+        focusTimer = setTimeout(() => {
+            if (!editable() || document.activeElement !== element || element.value !== focusedValue ||
+                element.selectionStart !== start || element.selectionEnd !== end) return;
             // If field is empty (no real characters entered), show mask template
             if (!element.value || getRawValue(element.value) === '') {
                 element.value = applyMask('');
@@ -279,13 +334,17 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
             }
             const firstEmpty = getFirstEmptyPos(element.value);
             setCursor(firstEmpty);
+            options.onFormat?.();
         }, 0);
     }
 
     function handleClick(e) {
         // Ensure cursor is at an editable position
-        setTimeout(() => {
+        clearTimeout(clickTimer);
+        clickTimer = setTimeout(() => {
+            if (!editable() || document.activeElement !== element) return;
             const pos = element.selectionStart;
+            if (pos !== element.selectionEnd) return;
             if (pos < positions.length && !positions[pos]?.isEditable) {
                 const nearestPos = getNearestEditablePos(pos, true);
                 setCursor(nearestPos);
@@ -298,7 +357,7 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     function updateValue(rawValue, rawCursorPos, notifyBlazor = true) {
         // Limit raw value to max editable positions
         const maxRaw = positions.filter(p => p.isEditable).length;
-        rawValue = rawValue.slice(0, maxRaw);
+        if (!options.browserOwned) rawValue = rawValue.slice(0, maxRaw);
         
         // Apply mask
         const masked = applyMask(rawValue);
@@ -306,10 +365,20 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
         // Update element
         element.value = masked;
         lastValue = masked;
+        rawValue = getRawValue(masked);
 
         // Calculate and set cursor position
         const cursorPos = getCursorPosForRawPos(Math.min(rawCursorPos, rawValue.length));
         setCursor(cursorPos);
+
+        if (options.browserOwned) {
+            if (notifyBlazor && !handlingInput) {
+                dispatching = true;
+                try { element.dispatchEvent(new Event('input', { bubbles: true })); }
+                finally { dispatching = false; }
+            }
+            return;
+        }
 
         // Notify Blazor based on UpdateOn setting
         if (notifyBlazor && rawValue !== lastRawValue) {
@@ -346,8 +415,11 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
             lastValue = '';
         }
 
+        options.onFormat?.();
+
         // If UpdateOn is Change, notify Blazor on blur
-        if (updateOnChange) {
+        clearTimeout(focusTimer); clearTimeout(clickTimer);
+        if (!options.browserOwned && updateOnChange) {
             if (currentRaw !== lastRawValue) {
                 lastRawValue = currentRaw;
                 dotNetHelper.invokeMethodAsync('OnValueChanged', currentRaw);
@@ -358,17 +430,27 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
     // ============ ATTACH LISTENERS ============
 
     element.addEventListener('keydown', handleKeyDown);
-    element.addEventListener('input', handleInput);
+    element.addEventListener('input', handleInput, Boolean(options.browserOwned));
+    const startComposition = () => { composing = true; editSnapshot = undefined; };
+    const endComposition = event => { composing = false; handleInput(event); };
+    if (options.browserOwned) {
+        element.addEventListener('beforeinput', handleBeforeInput, true);
+        element.addEventListener('compositionstart', startComposition, true);
+        element.addEventListener('compositionend', endComposition, true);
+    }
     element.addEventListener('paste', handlePaste);
     element.addEventListener('focus', handleFocus);
     element.addEventListener('click', handleClick);
     element.addEventListener('blur', handleBlur);
 
     // Store for cleanup
-    instances.set(elementId, {
+    const instance = {
         element,
-        handlers: { handleKeyDown, handleInput, handlePaste, handleFocus, handleClick, handleBlur }
-    });
+        handlers: { handleKeyDown, handleInput, handlePaste, handleFocus, handleClick, handleBlur },
+        browserOwned: Boolean(options.browserOwned),
+        cleanup() { disposed = true; clearTimeout(focusTimer); clearTimeout(clickTimer); element.removeEventListener('beforeinput', handleBeforeInput, true); element.removeEventListener('compositionstart', startComposition, true); element.removeEventListener('compositionend', endComposition, true); }
+    };
+    instances.set(elementId, instance);
 
     // Initialize with current value
     if (element.value) {
@@ -377,6 +459,11 @@ export function initializeMaskedInput(elementId, mask, maskChar, dotNetHelper, u
         element.value = applyMask(raw);
         lastValue = element.value;
     }
+    return {
+        rawValue: getRawValue,
+        reconcile() { editSnapshot = undefined; lastValue = element.value; lastCursorPos = element.selectionStart ?? 0; lastRawValue = getRawValue(element.value); },
+        dispose() { if (instances.get(elementId) === instance) disposeMaskedInput(elementId); }
+    };
 }
 
 export function disposeMaskedInput(elementId) {
@@ -384,7 +471,8 @@ export function disposeMaskedInput(elementId) {
     if (instance) {
         const { element, handlers } = instance;
         element.removeEventListener('keydown', handlers.handleKeyDown);
-        element.removeEventListener('input', handlers.handleInput);
+        element.removeEventListener('input', handlers.handleInput, instance.browserOwned);
+        instance.cleanup();
         element.removeEventListener('paste', handlers.handlePaste);
         element.removeEventListener('focus', handlers.handleFocus);
         element.removeEventListener('click', handlers.handleClick);

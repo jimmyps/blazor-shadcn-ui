@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* Styled Tooltip component - thin wrapper around Tooltip primitive *@
-<TooltipPrimitive Open="@Open"
+<TooltipPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Open="@Open"
                                           OpenChanged="@OpenChanged"
                                           DefaultOpen="@DefaultOpen"
                                           DelayDuration="@DelayDuration"
@@ -11,6 +11,11 @@
 </TooltipPrimitive>
 
 @code {
+    /// <summary>Omitted settings inherit the scoped or application policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply a controlled open command after reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// The child content to render within the tooltip.
     /// Typically includes TooltipTrigger and TooltipContent.

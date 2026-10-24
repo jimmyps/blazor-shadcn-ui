@@ -1,0 +1,135 @@
+@namespace NeoUI.Blazor.Primitives
+@using System.Text.Json
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+@if (Enabled)
+{
+    <div id="@(IsField ? fieldId : null)" @ref="root" data-neo-state-host="@Configuration" data-neo-input-scope="@(IsField ? InputScopeId : null)" data-neo-browser-field="@(IsField ? string.Empty : null)" style="display:contents">@ChildContent</div>
+}
+else
+{
+    @ChildContent
+}
+
+@code {
+    /// <summary>Resolved interaction policy; changing after initialization requires recreation.</summary>
+    [Parameter] public bool Enabled { get; set; }
+    /// <summary>State controller behavior.</summary>
+    [Parameter] public string Kind { get; set; } = "accordion";
+    /// <summary>Controlled or initial values.</summary>
+    [Parameter] public string[] Values { get; set; } = [];
+    /// <summary>Increment to reapply controlled values after reset.</summary>
+    [Parameter] public long Revision { get; set; }
+    /// <summary>Whether multiple values can be active.</summary>
+    [Parameter] public bool Multiple { get; set; }
+    /// <summary>Whether an active value can be cleared.</summary>
+    [Parameter] public bool Collapsible { get; set; } = true;
+    /// <summary>Disables local interaction.</summary>
+    [Parameter] public bool Disabled { get; set; }
+    /// <summary>Keyboard orientation.</summary>
+    [Parameter] public string Orientation { get; set; } = "horizontal";
+    /// <summary>Tabs activate on arrow navigation when true.</summary>
+    [Parameter] public bool Automatic { get; set; } = true;
+    /// <summary>Optional application callback; UI mechanics do not wait for it.</summary>
+    [Parameter] public EventCallback<string[]> Changed { get; set; }
+    /// <summary>Content whose state attributes are owned by the browser.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    /// <summary>Enables form-aware data value acceptance instead of UI observations.</summary>
+    [Parameter] public bool IsField { get; set; }
+    /// <summary>Reads canonical data values after the application callback.</summary>
+    [Parameter] public Func<string[]>? AcceptedValues { get; set; }
+    /// <summary>Additional browser field configuration (numeric limits, etc.).</summary>
+    [Parameter] public object? FieldOptions { get; set; }
+    [CascadingParameter(Name = "NeoUIInputScopeId")] private string? InputScopeId { get; set; }
+    /// <summary>Optional application search, independent of value acceptance.</summary>
+    [Parameter] public Func<string,Task<string[]>>? Search { get; set; }
+    /// <summary>Application observation of a rejected client-side value.</summary>
+    [Parameter] public EventCallback<string> Rejected { get; set; }
+    [JSInvokable] public async Task<object> SearchAsync(string query, long eventVersion)
+    {
+        if (disposed || eventVersion != version || Search == null) return new { ignored = true, values = Array.Empty<string>() };
+        var result = await Search(query);
+        return new { ignored = disposed || eventVersion != version, values = result };
+    }
+    [JSInvokable] public Task RejectAsync(string value, long eventVersion) => disposed || eventVersion != version ? Task.CompletedTask : Rejected.InvokeAsync(value);
+    private readonly string fieldId = $"neo-field-{Guid.NewGuid():N}";
+    private ElementReference root;
+    private IJSObjectReference? module, controller;
+    private DotNetObjectReference<BrowserStateHost>? bridge;
+    private readonly SemaphoreSlim gate = new(1,1);
+    private bool disposed, initialized, parametersObserved;
+    private int reporting;
+    private bool? enabled;
+    private long revision, version, sequence;
+    private string previous = "";
+    private string[] command = [];
+    private readonly HashSet<string> echoes = [];
+    private string Key(string[] values) => JsonSerializer.Serialize(IsField ? values : values.OrderBy(value => value, StringComparer.Ordinal).ToArray());
+    private string Configuration => JsonSerializer.Serialize(new {
+        field = IsField, fieldOptions = FieldOptions, server = !OperatingSystem.IsBrowser(), kind = Kind, values = command, version, multiple = Multiple, collapsible = Collapsible,
+        disabled = Disabled, orientation = Orientation, automatic = Automatic, notify = Changed.HasDelegate
+    });
+    protected override void OnParametersSet()
+    {
+        if (enabled.HasValue && enabled != Enabled) throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the component with @key.");
+        enabled = Enabled;
+        if (!Enabled) return;
+        parametersObserved = true;
+        var next = Key(Values);
+        var echo = echoes.Remove(next);
+        if (revision != Revision || (reporting == 0 && next == previous && !echo)) echoes.Clear();
+        if (!initialized || revision != Revision || (reporting == 0 && next != previous && !echo)) { command = [.. Values]; version++; if (!echo) echoes.Clear(); }
+        previous = next; revision = Revision; initialized = true;
+    }
+    /// <summary>Receives versioned application observations after local state changes.</summary>
+    [JSInvokable] public async Task<object> ChangeAsync(string[] values, long eventSequence, long eventVersion)
+    {
+        if (disposed || Disabled || eventVersion != version || eventSequence <= sequence)
+            return new { sequence = eventSequence, version = eventVersion, ignored = true };
+        // Retire prior observations once the owner has rendered. If no parameter pass
+        // occurred, retain tokens for genuinely delayed binding render batches.
+        if (parametersObserved) echoes.Clear();
+        parametersObserved = false;
+        sequence = eventSequence;
+        echoes.Add(Key(values)); reporting++;
+        try { await Changed.InvokeAsync(values); }
+        finally { reporting--; }
+        return new { sequence = eventSequence, version = eventVersion, ignored = disposed || eventVersion != version, values = AcceptedValues?.Invoke() ?? values };
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!Enabled || controller != null) return;
+        await gate.WaitAsync();
+        try {
+            if (disposed || controller != null) return;
+            module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor.Primitives/js/primitives/browser-state.js");
+            if (disposed) return;
+            bridge ??= DotNetObjectReference.Create(this);
+            controller = await module.InvokeAsync<IJSObjectReference>("initialize",root,bridge);
+            if (disposed && controller != null) { await controller.InvokeVoidAsync("dispose"); await controller.DisposeAsync(); controller = null; }
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException) { }
+        catch (ObjectDisposedException) when (disposed) { }
+        finally { gate.Release(); }
+    }
+    /// <summary>Focuses the first enabled field/segment or trigger after controller initialization.</summary>
+    public async Task FocusAsync()
+    {
+        if (disposed || controller == null) return;
+        try { await controller.InvokeVoidAsync("focus"); }
+        catch (JSDisconnectedException) { }
+        catch (ObjectDisposedException) when (disposed) { }
+    }
+    public async ValueTask DisposeAsync()
+    {
+        disposed = true;
+        await gate.WaitAsync();
+        try {
+            if (controller != null) { await controller.InvokeVoidAsync("dispose"); await controller.DisposeAsync(); }
+            if (module != null) await module.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { bridge?.Dispose(); gate.Release(); }
+    }
+}

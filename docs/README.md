@@ -2,6 +2,15 @@
 
 This directory contains technical documentation, architectural decisions, implementation guides, and best practices for the NeoUI component library.
 
+## v4.5.0 release and Interaction Mode
+
+Components and Primitives both target **4.5.0** (unreleased); icon packages remain independent.
+
+- [Upgrading to v4.5.0](upgrading-to-4.5.md) — aligned packages, family defaults, safe forms and adoption limits
+- [Browser interaction guide](browser-interactions.md) — configuration, supported controls, acceptance and synchronization
+- [Expansion and validation](interaction-mode-sweep.md) — implemented scope and regression coverage
+- [Changelog](../CHANGELOG.md) — complete v4.5.0 changes
+
 ## 📱 Mobile Responsiveness
 
 **NEW:** Comprehensive mobile support documentation
@@ -49,6 +58,9 @@ The NeoUI library provides **production-ready mobile responsiveness** (80/100 ra
 ```
 docs/
 ├── README.md                           # This file
+├── upgrading-to-4.5.md                 # v4.5.0 package alignment and migration
+├── browser-interactions.md             # Interaction Mode configuration and adoption
+├── interaction-mode-sweep.md           # Expanded controls and validation
 ├── MOBILE_RESPONSIVE_ANALYSIS.md       # Mobile support analysis
 ├── MOBILE_BEST_PRACTICES.md            # Mobile development guide
 ├── MOBILE_CHECKLIST.md                 # Mobile testing checklist
@@ -81,6 +93,11 @@ docs/
 ## 📊 Documentation Index
 
 ### By Topic
+
+**Release and Interaction Mode:**
+- [Upgrading to v4.5.0](upgrading-to-4.5.md)
+- [Browser interaction guide](browser-interactions.md)
+- [Expansion and validation](interaction-mode-sweep.md)
 
 **Mobile Development:**
 - Mobile Responsive Analysis

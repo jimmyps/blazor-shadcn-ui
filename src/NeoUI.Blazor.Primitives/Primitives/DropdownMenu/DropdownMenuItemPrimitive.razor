@@ -9,14 +9,15 @@
        href="@(Disabled ? null : Href)"
        target="@Target"
        rel="@Rel"
+       data-neo-close-on-select="@CloseOnSelect.ToString().ToLower()"
        role="menuitem"
        tabindex="-1"
        aria-disabled="@Disabled.ToString().ToLower()"
        data-disabled="@(Disabled ? "true" : null)"
-       @onclick="HandleClick"
+       @onclick="@(Context.Browser.Enabled && !OnClick.HasDelegate ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
        @onclick:preventDefault="@(Disabled)"
-       @onmouseenter="HandleMouseEnter"
-       @onmouseleave="HandleMouseLeave"
+       @onmouseenter="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+       @onmouseleave="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
        @attributes="MergedAttributes">
         @ChildContent
     </a>
@@ -24,13 +25,14 @@
 else
 {
     <div @ref="_itemRef"
+         data-neo-close-on-select="@CloseOnSelect.ToString().ToLower()"
          role="menuitem"
          tabindex="-1"
          aria-disabled="@Disabled.ToString().ToLower()"
          data-disabled="@(Disabled ? "true" : null)"
-         @onclick="HandleClick"
-         @onmouseenter="HandleMouseEnter"
-         @onmouseleave="HandleMouseLeave"
+         @onclick="@(Context.Browser.Enabled && !OnClick.HasDelegate ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+         @onmouseenter="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+         @onmouseleave="@(Context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
          @attributes="MergedAttributes">
         @ChildContent
     </div>

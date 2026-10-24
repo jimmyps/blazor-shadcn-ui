@@ -12,6 +12,30 @@ NeoUI uses a **monorepo with independent package versioning**. Each of the five 
 - **NeoUI.Icons.Heroicons** - Heroicons library
 - **NeoUI.Icons.Feather** - Feather icon library
 
+## v4.5.0 release coordination (unreleased)
+
+This release targets **4.5.0 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**.
+The tag prefixes and independent versioning infrastructure are unchanged; this release
+coordinates the two UI packages because Components requires Primitives 4.5.0.
+Icon packages keep their own versions and are not part of this version alignment.
+
+After the approved changes are merged and CI is green, publish Primitives first and wait
+for its package to become available before publishing Components:
+
+```bash
+./scripts/release-primitives.sh 4.5.0
+./scripts/release-components.sh 4.5.0
+```
+
+These use `primitives/v4.5.0` and `components/v4.5.0`. Verify that each tag identifies the
+intended approved source commit; creating/pushing tags starts publication. Documentation
+updates and the PR alone do not publish packages. Development builds remain tag-derived
+prereleases until those release tags exist.
+
+See the [v4.5.0 upgrade guide](docs/upgrading-to-4.5.md),
+[interaction adoption guide](docs/browser-interactions.md) and [changelog](CHANGELOG.md)
+for staged family defaults, form synchronization, compatibility changes and support limits.
+
 ## Quick Start
 
 To release a package, simply run the appropriate script:

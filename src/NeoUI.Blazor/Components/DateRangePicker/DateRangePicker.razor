@@ -1,9 +1,10 @@
+@inject Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 @inject ILocalizer Localizer
 @* DateRangePicker - Date range selection with two dates *@
 
-<Popover @bind-Open="_isOpen">
+<Popover InteractionRevision="@InteractionRevision" InteractionMode="@InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Selection)" @bind-Open="_isOpen">
     <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
         @if (ShowIcon)
         {
@@ -57,7 +58,7 @@
                         <div class="text-sm font-medium px-3">
                             @(EndDateLabel ?? "To")
                         </div>
-                        <Calendar @ref="_secondCalendar" @bind-SelectedDate="_endDate"
+                        <Calendar CloseOnSelect="@(!ShowButtons && _startDate.HasValue)" @ref="_secondCalendar" @bind-SelectedDate="_endDate"
                                   InitialMonth="@_secondCalendarMonth"
                                   MinDate="@(_startDate ?? MinDate)"
                                   MaxDate="@MaxDate"
@@ -89,7 +90,7 @@
                                     @onclick="ClearSelection">
                                 @Localizer["DateRangePicker.Clear"]
                             </Button>
-                            <Button Variant="ButtonVariant.Default" 
+                            <Button data-neo-close="true" Variant="ButtonVariant.Default"
                                     Size="ButtonSize.Small" 
                                     Disabled="@(!_startDate.HasValue || !_endDate.HasValue)"
                                     @onclick="ApplySelection">
@@ -598,3 +599,11 @@
     }
 }
 
+
+@code {
+    /// <summary>Overrides scoped and application Selection policy for the floating shell.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
+}

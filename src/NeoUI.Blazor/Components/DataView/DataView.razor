@@ -60,7 +60,7 @@
                 @* Search — full width on a phone, fixed from sm up. *@
                 @if (HasSearch)
                 {
-                    <Input Value="@_searchValue"
+                    <Input Value="@_searchValue" AcceptedValueAccessor="@(() => _searchValue)"
                            ValueChanged="@((string v) => { _searchValue = v; HandleSearchInput(new ChangeEventArgs { Value = v }); })"
                            Placeholder="@Localizer["DataView.SearchPlaceholder"]"
                            Class="h-8 flex-1 sm:w-48 sm:flex-none text-sm" />

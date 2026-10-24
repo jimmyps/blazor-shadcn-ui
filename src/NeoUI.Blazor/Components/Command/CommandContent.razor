@@ -1,10 +1,15 @@
 @namespace NeoUI.Blazor
-@implements IDisposable
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @inject ILocalizer Localizer
 
 @* Command - self-contained searchable/filterable list component *@
 <CascadingValue Value="_context" IsFixed="false">
-    <div class="@CssClass"
+    <div @ref="browserRoot" data-neo-client-list="@(_context.BrowserInteraction ? "command" : null)"
+         data-neo-list-disabled="@Disabled.ToString().ToLowerInvariant()"
+         data-neo-close-on-select="@CloseOnSelect.ToString().ToLowerInvariant()"
+         class="@CssClass"
          role="group"
          aria-label="@Localizer["Command.MenuAriaLabel"]"
          @attributes="AdditionalAttributes">
@@ -14,6 +19,33 @@
 
 @code {
     private CommandContext _context = new();
+    private ElementReference browserRoot;
+    private IJSObjectReference? browserModule, browserController;
+    private readonly SemaphoreSlim browserGate = new(1, 1);
+    private bool browserDisposed;
+    private bool? browserMode;
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    [CascadingParameter] private PopoverContext? PopoverContext { get; set; }
+    /// <summary>Local hover/navigation for mounted items. Omitted values inherit the enclosing popover or interaction policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Change to reapply SearchQuery, including a reset to the same value.</summary>
+    [Parameter] public long SearchRevision { get; set; }
+    private long _lastSearchRevision;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_context.BrowserInteraction || browserController != null) return;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserDisposed || browserController != null) return;
+            browserModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/browser-list.js");
+            browserController = await browserModule.InvokeAsync<IJSObjectReference>("initialize", browserRoot);
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { browserGate.Release(); }
+    }
+
     private string _searchQuery = string.Empty;
 
     /// <summary>
@@ -97,15 +129,22 @@
 
     protected override void OnInitialized()
     {
+        _context.BrowserInteraction = ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, PopoverContext);
         _context.OnValueChange = OnValueChange;
         _context.FilterFunction = FilterFunction;
         _context.CloseOnSelect = CloseOnSelect;
         _context.Disabled = Disabled;
         _context.OnStateChanged += HandleContextStateChanged;
+        _context.BrowserSearchChanged = HandleBrowserSearchChanged;
     }
 
     protected override void OnParametersSet()
     {
+        if (_lastSearchRevision != SearchRevision) { _lastSearchRevision = SearchRevision; _context.InputRevision++; }
+        var mode = ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, PopoverContext);
+        if (browserMode.HasValue && browserMode != mode) throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate the component with @key.");
+        browserMode = mode;
+        _context.BrowserInteraction = ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, PopoverContext);
         _context.OnValueChange = OnValueChange;
         _context.FilterFunction = FilterFunction;
         _context.CloseOnSelect = CloseOnSelect;
@@ -116,6 +155,19 @@
         {
             _context.SetSearchQuery(_searchQuery);
         }
+    }
+
+    private async Task HandleBrowserSearchChanged(string query)
+    {
+        var revision = _context.InputRevision;
+        _searchQuery = query;
+        _context.SetSearchQuery(query);
+        if (SearchQueryChanged.HasDelegate) await SearchQueryChanged.InvokeAsync(query);
+        if (revision != _context.InputRevision) return;
+        // Delayed controlled parameter echoes must not turn into draft reset commands.
+        _searchQuery = query;
+        _context.SetSearchQuery(query);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async void HandleContextStateChanged()
@@ -132,8 +184,17 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
         _context.OnStateChanged -= HandleContextStateChanged;
+        browserDisposed = true;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserController != null) { await browserController.InvokeVoidAsync("dispose"); await browserController.DisposeAsync(); }
+            if (browserModule != null) await browserModule.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { browserGate.Release(); }
     }
 }

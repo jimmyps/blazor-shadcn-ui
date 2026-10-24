@@ -4,6 +4,15 @@
 
 @* MenubarContentPrimitive - uses FloatingPortal for positioning infrastructure *@
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuContentPrimitive Side="@Side" Align="@Align" Offset="@Offset" ZIndex="@ZIndex" Loop="@Loop"
+        CloseOnEscape="@CloseOnEscape" CloseOnClickOutside="@CloseOnClickOutside" @attributes="AdditionalAttributes">
+        <CascadingValue Value="Family" IsFixed="true">@ChildContent</CascadingValue>
+    </DropdownMenuContentPrimitive>
+}
+else
+{
 <FloatingPortal PortalId="@MenuContext.ContentId"
                 IsOpen="@MenuContext.IsOpen"
                 AnchorElement="@MenuContext.TriggerElement"
@@ -31,7 +40,9 @@
     </CascadingValue>
 </FloatingPortal>
 
+}
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private MenubarContext Context { get; set; } = null!;
 
@@ -111,6 +122,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (Context == null)
         {
             throw new InvalidOperationException(
@@ -267,6 +279,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        if (Family?.Enabled == true) return;
         await CleanupAsync();
 
         if (_clickOutsideModule != null)

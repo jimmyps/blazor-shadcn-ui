@@ -1,6 +1,12 @@
 @namespace NeoUI.Blazor.Primitives
 
 @* MenubarTriggerPrimitive - opens the associated menu when clicked *@
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuTriggerPrimitive Disabled="@Disabled" role="menuitem" @attributes="AdditionalAttributes">@ChildContent</DropdownMenuTriggerPrimitive>
+}
+else
+{
 <button type="button"
         id="@MenuContext.TriggerId"
         @ref="@_triggerRef"
@@ -20,7 +26,9 @@
     @ChildContent
 </button>
 
+}
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private MenubarContext Context { get; set; } = null!;
 
@@ -72,6 +80,7 @@
 
     protected override void OnAfterRender(bool firstRender)
     {
+        if (Family?.Enabled == true) return;
         // Always update the trigger element reference so keyboard navigation can position correctly
         MenuContext.TriggerElement = _triggerRef;
     }

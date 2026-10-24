@@ -1,3 +1,5 @@
+const { attachTagSuggestions } = await import(new URL('_content/NeoUI.Blazor.Primitives/js/primitives/tag-suggestions.js', document.baseURI).href);
+
 /**
  * Tag Input JavaScript interop module for NeoUI.
  * Handles trigger key preventDefault, paste event reading, and container click-to-focus.
@@ -61,7 +63,9 @@ export function initialize(containerEl, inputEl, dotNetRef, instanceId, config) 
   inputEl.addEventListener('paste', handlePaste);
   containerEl.addEventListener('click', handleContainerClick);
 
-  instances.set(instanceId, { handleKeyDown, handlePaste, handleContainerClick, inputEl, containerEl });
+  const detachSuggestions=attachTagSuggestions(containerEl.ownerDocument,()=>containerEl.ownerDocument.getElementById(config.contentId),item=>{dotNetRef.invokeMethodAsync('JsSelectSuggestion',item.dataset.neoTagSuggestion).catch(()=>{});});
+
+  instances.set(instanceId, { detachSuggestions, handleKeyDown, handlePaste, handleContainerClick, inputEl, containerEl });
 }
 
 /** Focuses the input element programmatically. */
@@ -74,6 +78,7 @@ export function focusInput(instanceId) {
 export function dispose(instanceId) {
   const stored = instances.get(instanceId);
   if (!stored) return;
+  stored.detachSuggestions();
   stored.inputEl.removeEventListener('keydown', stored.handleKeyDown, true);
   stored.inputEl.removeEventListener('paste', stored.handlePaste);
   stored.containerEl.removeEventListener('click', stored.handleContainerClick);

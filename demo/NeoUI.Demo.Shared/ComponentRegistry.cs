@@ -40,11 +40,14 @@ public static class ComponentCategories
     /// <summary>Mobile-first components for app bars, bottom nav, and mobile-specific UX patterns.</summary>
     public static readonly ComponentCategoryInfo Mobile         = new("mobile",           "Mobile");
 
+    /// <summary>Browser-local interaction examples and asynchronous application callbacks.</summary>
+    public static readonly ComponentCategoryInfo BrowserInteractions = new("browser-interactions", "Interaction Mode");
+
     /// <summary>All categories in intended display order.</summary>
     public static IReadOnlyList<ComponentCategoryInfo> All { get; } =
     [
         InputsForms, AdvancedInputs, DataDisplay, Navigation,
-        Overlays, Feedback, Layout, Charts, Animation, Mobile,
+        Overlays, Feedback, Layout, Charts, Animation, Mobile, BrowserInteractions,
     ];
 }
 
@@ -321,6 +324,7 @@ public static class ComponentRegistry
             new("drawer",           "Drawer",           "Slide-out panel with gesture controls and backdrop",                            "panel-bottom",          C, OV),
             new("dropdown-menu",    "Dropdown Menu",    "Context menus with items, separators, and shortcuts",                           "panel-top-open",        C, OV),
             new("hover-card",       "Hover Card",       "Rich preview cards on hover with delay control",                               "square-mouse-pointer",  C, OV),
+            new("browser-interactions", "Interaction Mode", "Compare Blazor and browser-local interaction modes for DropdownMenu, Menubar, ContextMenu, NavigationMenu, pill navigation, SplitButton, selects, popovers, date/time pickers, Combobox, MultiSelect, CommandInput spotlight search, browser-owned Input/Textarea/InputGroup drafts, NumericInput/CurrencyInput/MaskedInput, TagInput, InputOtp, DateInput/TimeInput segments, Slider/RangeSlider, Checkbox/Switch/RadioGroup/Toggle, MarkdownEditor, HoverCard/Tooltip, Accordion/Collapsible/Tabs, BrowserEditForm compatibility, BrowserInputForm validation and safe dialog submission with live Blazor content.", "zap", ComponentTier.Component, ComponentCategories.BrowserInteractions),
             new("popover",          "Popover",          "Floating panels for additional content and actions",                            "message-square",        C, OV),
             new("sheet",            "Sheet",            "Side panels that slide in from viewport edges",                                  "panel-right",           C, OV),
             new("tooltip",          "Tooltip",          "Brief informational popups on hover or focus",                                   "message-circle",        C, OV),

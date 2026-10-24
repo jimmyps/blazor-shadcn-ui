@@ -164,6 +164,14 @@
         LoggerMessage.Define<string>(LogLevel.Warning, new EventId(4, "MissingPositioningParameters"),
             "FloatingPortal '{PortalId}' - Neither AnchorElement nor X/Y coordinates provided.");
 
+    /// <summary>Optional browser-owned interaction behavior. Requires persistent content.</summary>
+    [Parameter] public BrowserFloatingOptions? BrowserOptions { get; set; }
+
+    /// <summary>Optional .NET bridge for committed actions and subscribed notifications.</summary>
+    [Parameter] public object? BrowserEvents { get; set; }
+
+    private IJSObjectReference? browserModule;
+    private IJSObjectReference? browserController;
     private IAsyncDisposable? _positioningCleanup;
     private bool _isMounted = false;
     private bool _isPositioned = false;
@@ -207,9 +215,11 @@
         // Uses RefreshPortal (not RegisterPortal) to avoid replacing the RenderFragment
         // delegate, which would break ElementReference stability. The existing delegate
         // captures 'this', so PortalHost reads current ChildContent automatically.
-        // Note: PortalHost ignores refresh calls during its own render cycle, preventing
-        // infinite loops when FloatingPortal is nested inside another portal.
-        if (_isMounted && !string.IsNullOrEmpty(PortalId))
+        // The category host supplies a render context to its descendants. Its current
+        // render already carries these parameters; requesting another refresh here
+        // would loop when a FloatingPortal is nested inside another portal.
+        if (_isMounted && !string.IsNullOrEmpty(PortalId) &&
+            HostRenderContext is not { Category: PortalCategory.Overlay, IsRendering: true })
         {
             PortalService.RefreshPortal(PortalId);
         }
@@ -217,6 +227,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserOptions != null)
+        {
+            await HandleBrowserLifecycleAsync();
+            return;
+        }
         if (ForceMount)
         {
             await HandleForceMountLifecycleAsync();
@@ -225,6 +240,63 @@
         {
             await HandleStandardLifecycleAsync();
         }
+    }
+
+    private readonly SemaphoreSlim browserGate = new(1, 1);
+    private bool browserDisposed;
+
+    private object BrowserPosition => new
+    {
+        placement = Align == PopoverAlign.Center ? Side.ToValue() : $"{Side.ToValue()}-{Align.ToValue()}",
+        offset = Offset, matchReferenceWidth = MatchAnchorWidth,
+        strategy = Strategy.ToValue(), flip = true, shift = true
+    };
+
+    private static readonly System.Text.Json.JsonSerializerOptions BrowserJsonOptions =
+        new(System.Text.Json.JsonSerializerDefaults.Web);
+
+    // Commands travel with the rendered content, including buffered render batches
+    // resumed after reconnect. They must not depend on a separate interop delivery.
+    private string? BrowserConfiguration => BrowserOptions == null ? null :
+        System.Text.Json.JsonSerializer.Serialize(new { options = BrowserOptions, position = BrowserPosition }, BrowserJsonOptions);
+
+    private bool BrowserLifetimeEnded(object? events)
+        => browserDisposed || BrowserFloatingEvents.IsReferenceDisposed(events);
+
+    private async Task HandleBrowserLifecycleAsync()
+    {
+        // The owner can dispose its bridge before this child portal's DisposeAsync runs.
+        // Keep the bridge used by this attempt stable across each asynchronous boundary.
+        var events = BrowserEvents;
+        if (browserController != null || BrowserLifetimeEnded(events)) return;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserController != null || BrowserLifetimeEnded(events)) return;
+            if (!_isMounted)
+            {
+                await MountPortalAsync();
+                if (BrowserLifetimeEnded(events)) return;
+            }
+            browserModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import",
+                "./_content/NeoUI.Blazor.Primitives/js/primitives/browser-floating.js");
+            if (BrowserLifetimeEnded(events)) return;
+            browserController = await browserModule.InvokeAsync<IJSObjectReference>("initialize",
+                _portalContentRef, BrowserOptions, BrowserPosition, events);
+            if (BrowserLifetimeEnded(events))
+            {
+                // Initialization may already have reached JS when removal occurs. Clean
+                // up its late result here; DisposeAsync owns the remaining module handle.
+                var controller = browserController;
+                browserController = null;
+                try { await controller.InvokeVoidAsync("dispose"); }
+                finally { await controller.DisposeAsync(); }
+            }
+        }
+        catch (JSDisconnectedException) { /* The existing browser controller remains usable locally. */ }
+        catch (ObjectDisposedException) when (BrowserLifetimeEnded(events))
+        { /* Removal can race interop serialization/completion after the lifetime check. */ }
+        finally { browserGate.Release(); }
     }
 
     /// <summary>
@@ -436,13 +508,21 @@
         // Only reset to false on full unmount (MountPortalAsync or CleanupAsync).
     }
 
+    [CascadingParameter] private NeoUI.Blazor.Primitives.Services.PortalRenderContext? HostRenderContext { get; set; }
+
+    [CascadingParameter(Name = "NeoUIInputScopeId")] private string? InputScopeId { get; set; }
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+
     private RenderFragment RenderPortalContent() => __builder =>
     {
         <div @ref="_portalContentRef"
              @attributes="GetAttributesWithoutStyle()"
              data-portal-content="true"
+             data-neo-browser-config="@BrowserConfiguration"
              style="@GetMergedStyle()">
-            @ChildContent
+            <CascadingValue Value="@InteractionPolicy" IsFixed="true">
+                <CascadingValue Name="NeoUIInputScopeId" Value="InputScopeId" IsFixed="true">@ChildContent</CascadingValue>
+            </CascadingValue>
         </div>
     };
 
@@ -559,6 +639,9 @@
     /// </summary>
     private string GetInitialStyle()
     {
+        if (BrowserOptions != null)
+            return $"position: fixed; z-index: {ZIndex}; top: -9999px; left: -9999px; visibility: hidden; opacity: 0; pointer-events: none;";
+
         if (!_isPositioned)
         {
             // Use position: fixed with off-screen coordinates to prevent:
@@ -654,9 +737,24 @@
 
     public async ValueTask DisposeAsync()
     {
-        // Unsubscribe from portal ready events
-        PortalService.OnPortalRendered -= HandlePortalRendered;
+        browserDisposed = true;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserController != null)
+            {
+                try { await browserController.InvokeVoidAsync("dispose"); await browserController.DisposeAsync(); }
+                catch (JSDisconnectedException) { }
+            }
+            if (browserModule != null)
+            {
+                try { await browserModule.DisposeAsync(); } catch (JSDisconnectedException) { }
+            }
+            // Unsubscribe from portal ready events
+            PortalService.OnPortalRendered -= HandlePortalRendered;
 
-        await CleanupAsync();
+            await CleanupAsync();
+        }
+        finally { browserGate.Release(); }
     }
 }

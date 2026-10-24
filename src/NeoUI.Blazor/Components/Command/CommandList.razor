@@ -5,7 +5,8 @@
 
 <div id="@Context?.ListId"
      @ref="_scrollRef"
-     @onscroll="HandleScroll"
+     @onscroll="@(Context?.BrowserInteraction != true && OnLoadMore.HasDelegate ? EventCallback.Factory.Create(this, HandleScroll) : default)"
+     data-neo-load-enabled="@((CanLoadMore && !IsLoading && (AllowLoadMoreDuringSearch || string.IsNullOrEmpty(Context?.SearchQuery))).ToString().ToLowerInvariant())"
      class="@CssClass"
      role="listbox"
      aria-label="@Localizer["Command.ListAriaLabel"]">
@@ -26,6 +27,21 @@
 
 @code {
     private ElementReference _scrollRef;
+    private IJSObjectReference? browserModule, browserScroll;
+    private DotNetObjectReference<CommandList>? browserReference;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Context?.BrowserInteraction != true || !OnLoadMore.HasDelegate || browserScroll != null) return;
+        browserModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/browser-list.js");
+        browserReference ??= DotNetObjectReference.Create(this);
+        browserScroll = await browserModule.InvokeAsync<IJSObjectReference>("observeLoadMore", _scrollRef, browserReference);
+    }
+
+    /// <summary>Runs a page-load callback after the browser reaches the loading threshold.</summary>
+    [JSInvokable]
+    public Task LoadBrowserItems() => HandleScroll();
+
     private IJSObjectReference? _jsModule;
     private bool _loadMorePending;
 
@@ -121,6 +137,8 @@
             return;
         }
 
+        if (Context?.BrowserInteraction == true) { await LoadPageAsync(); return; }
+
         _jsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/element-utils.js");
 
@@ -131,15 +149,7 @@
             {
                 // Scroll events keep arriving while the consumer's async handler runs, before it has
                 // a chance to flip IsLoading. Latch locally so one gesture yields one page fetch.
-                _loadMorePending = true;
-                try
-                {
-                    await OnLoadMore.InvokeAsync();
-                }
-                finally
-                {
-                    _loadMorePending = false;
-                }
+                await LoadPageAsync();
             }
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException)
@@ -148,8 +158,22 @@
         }
     }
 
+    private async Task LoadPageAsync()
+    {
+        _loadMorePending = true;
+        try { await OnLoadMore.InvokeAsync(); }
+        finally { _loadMorePending = false; }
+    }
+
     public async ValueTask DisposeAsync()
     {
+        try
+        {
+            if (browserScroll != null) { await browserScroll.InvokeVoidAsync("dispose"); await browserScroll.DisposeAsync(); }
+            if (browserModule != null) await browserModule.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        browserReference?.Dispose();
         if (_jsModule != null)
         {
             try

@@ -1,0 +1,168 @@
+<MenuFamilyCases />
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> Defaults
+
+<section data-testid="policy-cases">
+    <p data-testid="application-mode">@Defaults.Value.DefaultMode</p>
+    <Popover><PopoverTrigger><span data-testid="app-default">Application default</span></PopoverTrigger><PopoverContent>App default body</PopoverContent></Popover>
+    <Popover InteractionMode="InteractionMode.Blazor"><PopoverTrigger><span data-testid="explicit-blazor">Explicit Blazor</span></PopoverTrigger><PopoverContent>Explicit Blazor body</PopoverContent></Popover>
+    <Select TValue="string"><SelectTrigger><span data-testid="app-select">Application select</span></SelectTrigger><SelectContent><SelectItem TValue="string" Value="@("one")" Text="One" /></SelectContent></Select>
+    <DropdownMenu><DropdownMenuTrigger><span data-testid="app-menu">Application menu</span></DropdownMenuTrigger><DropdownMenuContent><DropdownMenuItem>App menu item</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+    <InteractionModeProvider Mode="InteractionMode.Browser">
+        <Select TValue="string" InteractionMode="InteractionMode.Blazor"><SelectTrigger><span data-testid="explicit-select-blazor">Explicit select</span></SelectTrigger><SelectContent><SelectItem TValue="string" Value="@("one")" Text="One" /></SelectContent></Select>
+        <DropdownMenu InteractionMode="InteractionMode.Blazor"><DropdownMenuTrigger><span data-testid="explicit-menu-blazor">Explicit menu</span></DropdownMenuTrigger><DropdownMenuContent><DropdownMenuItem>Explicit menu item</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+    </InteractionModeProvider>
+    <InteractionModeProvider Mode="InteractionMode.Blazor">
+        <Popover><PopoverTrigger><span data-testid="scope-blazor">Scoped Blazor</span></PopoverTrigger><PopoverContent>Scope body</PopoverContent></Popover>
+        <Popover InteractionMode="InteractionMode.Browser"><PopoverTrigger><span data-testid="explicit-browser">Explicit Browser</span></PopoverTrigger><PopoverContent>Explicit Browser body</PopoverContent></Popover>
+        <InteractionModeProvider Mode="InteractionMode.Browser">
+            <Popover><PopoverTrigger><span data-testid="nested-browser">Nested Browser</span></PopoverTrigger><PopoverContent PortalId="policy-parent">
+                Nested scope body
+                <DropdownMenu><DropdownMenuTrigger><span data-testid="portal-scope">Nested portal scope</span></DropdownMenuTrigger><DropdownMenuContent ParentPortalId="policy-parent"><DropdownMenuItem>Nested scope child</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+            </PopoverContent></Popover>
+        </InteractionModeProvider>
+    </InteractionModeProvider>
+</section>
+<section>
+    <DropdownMenu InteractionMode="InteractionMode.Browser" InteractionRevision="@menuRevision">
+        <DropdownMenuTrigger AsChild><Button data-testid="filter-menu">Inbox filters</Button></DropdownMenuTrigger>
+        <DropdownMenuContent>
+            <DropdownMenuCheckboxItem Checked="@unread" CheckedChanged="SetUnread">Unread only</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem Checked="@mentions" CheckedChanged="SetMentions">Mentions only</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem Disabled Checked>Disabled filter</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem CloseOnSelect>Close after checking</DropdownMenuCheckboxItem>
+            <DropdownMenuRadioGroup TValue="string" Value="@notification" ValueChanged="SetNotification">
+                <DropdownMenuRadioItem TValue="string" Value="@("all")" CloseOnSelect="false">All notifications</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem TValue="string" Value="@("important")" CloseOnSelect="false">Important notifications</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem TValue="string" Value="@("none")">No notifications</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem TValue="string" Value="@("disabled")" Disabled>Disabled notification</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+            <DropdownMenuSub><DropdownMenuSubTrigger>More filters</DropdownMenuSubTrigger><DropdownMenuSubContent>
+                <DropdownMenuCheckboxItem Checked="@assigned" CheckedChanged="SetAssigned">Assigned to me</DropdownMenuCheckboxItem>
+            </DropdownMenuSubContent></DropdownMenuSub>
+        </DropdownMenuContent>
+    </DropdownMenu>
+    <p data-testid="accepted-filters">@unread.ToString().ToLowerInvariant(),@mentions.ToString().ToLowerInvariant(),@notification,@assigned.ToString().ToLowerInvariant()</p>
+    <p data-testid="menu-commits">@menuCommits</p>
+    <label><input type="checkbox" @bind="menuReject" data-testid="menu-reject" /> Reject filter changes</label>
+    <label><input type="checkbox" @bind="menuSlow" data-testid="menu-slow" /> Delay filter changes</label>
+    <button data-testid="menu-reset" @onclick="ResetFilters">Reset filters</button>
+    <p data-testid="menu-reset-pending">@resetPending.ToString().ToLowerInvariant()</p>
+    <button data-testid="menu-reset-delayed" @onclick="ResetFiltersDelayed">Reset while disconnected</button>
+</section>
+<InteractionModeProvider Mode="InteractionMode.Browser">
+    <section data-testid="composed-combo">
+        <Combobox TItem="string" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" @bind-Value="combo" Placeholder="Choose city" SearchPlaceholder="Search cities" />
+        <p data-testid="combo-value">@combo</p>
+    </section>
+    <section data-testid="composed-multi">
+        <MultiSelect @ref="multiRef" TItem="string" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" @bind-Values="multi" Placeholder="Choose cities" SearchPlaceholder="Search selected cities" />
+        <p data-testid="multi-value">@string.Join(",", multi)</p>
+    </section>
+    <section data-testid="composed-date">
+        <DatePicker SelectedDate="@date" SelectedDateChanged="CommitDate" AriaLabel="Choose date" />
+        <p data-testid="date-value">@date?.ToString("yyyy-MM-dd")</p>
+    </section>
+    <section data-testid="composed-time">
+        <TimePicker SelectedTime="@time" SelectedTimeChanged="CommitTime" MinuteStep="15" />
+        <p data-testid="time-value">@(time?.ToString("HH:mm") ?? "None")</p>
+    </section>
+    <section data-testid="composed-exceptions">
+        <Combobox TItem="string" InteractionMode="InteractionMode.Blazor" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" Placeholder="Legacy city" />
+        <MultiSelect TItem="string" InteractionMode="InteractionMode.Blazor" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" Placeholder="Legacy cities" />
+        <DatePicker InteractionMode="InteractionMode.Blazor" AriaLabel="Legacy date" />
+    </section>
+</InteractionModeProvider>
+<button data-testid="composed-reset" @onclick="ResetComposed">Reset composed</button>
+<button data-testid="multi-close" @onclick="CloseMulti">Close multiselect externally</button>
+
+<section data-testid="local-command">
+    <CommandContent InteractionMode="InteractionMode.Browser" CloseOnSelect="false">
+        <CommandInput Placeholder="Search local commands" />
+        <CommandList>
+            <CommandItem Value="alpha" OnSelect="CommitLocalCommand">Alpha</CommandItem>
+            <CommandItem Value="disabled" Disabled>Disabled command</CommandItem>
+            <CommandItem Value="beta" OnSelect="CommitLocalCommand">Beta</CommandItem>
+        </CommandList>
+    </CommandContent>
+    <p data-testid="local-command-commits">@localCommandCommits</p>
+</section>
+<section data-testid="local-virtual-command">
+    <CommandContent InteractionMode="InteractionMode.Browser" CloseOnSelect="false">
+        <CommandInput Placeholder="Search virtual commands" />
+        <CommandList>
+            <CommandVirtualizedGroup TItem="string" Items="@localVirtualItems" ItemValue="@(item => item)">
+                <ItemTemplate Context="item">@item</ItemTemplate>
+            </CommandVirtualizedGroup>
+        </CommandList>
+    </CommandContent>
+</section>
+<Button data-testid="plain-button">Plain action</Button>
+<LinkButton Href="#" data-testid="plain-link">Plain link</LinkButton>
+
+<section data-testid="slow-search-combo"><Combobox TItem="string" InteractionMode="InteractionMode.Browser" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" @bind-Value="slowComboValue" SearchQueryChanged="SlowSearch" Placeholder="Slow search city" SearchPlaceholder="Slow combo query" /></section>
+<section data-testid="slow-search-multi"><MultiSelect TItem="string" InteractionMode="InteractionMode.Browser" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" @bind-Values="slowMultiValue" SearchQueryChanged="SlowSearch" Placeholder="Slow search cities" SearchPlaceholder="Slow multi query" /></section>
+<p data-testid="slow-search-last">@slowSearchLast</p><p data-testid="slow-search-values">@slowComboValue|@string.Join(",", slowMultiValue)</p>
+<section data-testid="input-cases">
+    <Input InteractionMode="InteractionMode.Browser" Value="@inputValue" ValueChanged="CommitInput" ValueRevision="@inputRevision" UpdateOn="InputUpdateMode.Input" Placeholder="Browser draft" />
+    <Input InteractionMode="InteractionMode.Browser" Value="@changeValue" ValueChanged="CommitChange" ValueRevision="@inputRevision" UpdateOn="InputUpdateMode.Change" Placeholder="Change draft" />
+    <Input InteractionMode="InteractionMode.Browser" Value="@debouncedValue" ValueChanged="CommitDebounced" ValueRevision="@inputRevision" UpdateOn="InputUpdateMode.Input" DebounceDelay="150" Placeholder="Debounced draft" />
+    <p data-testid="input-accepted">@inputValue</p><p data-testid="change-accepted">@changeValue</p><p data-testid="debounced-accepted">@debouncedValue</p>
+    <p data-testid="input-calls">@inputCalls</p><p data-testid="input-renders">@inputRenders</p>
+    <button data-testid="input-render" @onclick="() => inputRenders++">Render parent</button>
+    <button data-testid="input-reset" @onclick="ResetInputs">Reset draft</button>
+    <label><input type="checkbox" @bind="inputReject" data-testid="input-reject" />Reject input</label>
+    <label><input type="checkbox" @bind="inputNormalize" data-testid="input-normalize" />Normalize input</label>
+</section>
+
+<FormCases />
+
+@code {
+    private string? slowComboValue;
+    private IEnumerable<string> slowMultiValue = [];
+    private string slowSearchLast = "";
+    private async Task SlowSearch(string query) { await Task.Delay(600); slowSearchLast = query; }
+    private string? inputValue = "seed", changeValue = "seed", debouncedValue = "seed";
+    private long inputRevision;
+    private int inputCalls, inputRenders;
+    private bool inputReject, inputNormalize;
+    private async Task CommitInput(string? value) {
+        var version = inputRevision; var reject = inputReject; var normalize = inputNormalize;
+        inputCalls++; await Task.Delay(700);
+        if (version == inputRevision && !reject) inputValue = normalize ? value?.ToUpperInvariant() : value;
+    }
+    private async Task CommitChange(string? value) { var version = inputRevision; await Task.Delay(400); if (version == inputRevision) changeValue = value; }
+    private async Task CommitDebounced(string? value) { var version = inputRevision; await Task.Delay(400); if (version == inputRevision) debouncedValue = value; }
+    private void ResetInputs() { inputValue = changeValue = debouncedValue = "seed"; inputRevision++; }
+
+    private int localCommandCommits;
+    private readonly List<string> localVirtualItems = Enumerable.Range(0, 100).Select(index => $"Virtual {index:D3}").ToList();
+    private async Task CommitLocalCommand() { await Task.Delay(250); localCommandCommits++; }
+
+    private bool unread, mentions, assigned, menuReject, menuSlow, resetPending;
+    private int menuCommits;
+    private long menuRevision;
+    private string? notification = "all", combo;
+    private IEnumerable<string> multi = [];
+    private MultiSelect<string>? multiRef;
+    private DateOnly? date = new(2026, 10, 21);
+    private TimeOnly? time;
+    private async Task CommitDate(DateOnly? value) { if (menuSlow) await Task.Delay(700); date = value; }
+    private async Task CommitTime(TimeOnly? value) { if (menuSlow) await Task.Delay(700); time = value; }
+    private readonly string[] choices = ["Amsterdam", "Bangkok", "Cairo"];
+    private async Task ApplyFilter(Action apply)
+    {
+        var revision = menuRevision;
+        var reject = menuReject;
+        menuCommits++;
+        if (menuSlow) await Task.Delay(700);
+        if (!reject && revision == menuRevision) apply();
+    }
+    private Task SetUnread(bool value) => ApplyFilter(() => unread = value);
+    private Task SetMentions(bool value) => ApplyFilter(() => mentions = value);
+    private Task SetAssigned(bool value) => ApplyFilter(() => assigned = value);
+    private Task SetNotification(string? value) => ApplyFilter(() => notification = value);
+    private async Task ResetFiltersDelayed() { resetPending = true; await Task.Delay(1000); ResetFilters(); resetPending = false; }
+    private void ResetFilters() { unread = mentions = assigned = false; notification = "all"; menuRevision++; }
+    private void ResetComposed() { combo = null; multi = []; date = null; }
+    private async Task CloseMulti() { if (multiRef != null) await multiRef.CloseAsync(); }
+}

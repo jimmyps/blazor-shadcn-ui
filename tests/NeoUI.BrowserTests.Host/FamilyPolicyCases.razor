@@ -1,0 +1,51 @@
+<section data-testid="family-policy">
+    <Input Placeholder="Policy input" />
+    <Textarea Placeholder="Policy textarea" />
+    <CommandContent><CommandInput Placeholder="Policy command" /><CommandList><CommandItem Value="one">Policy command item</CommandItem></CommandList></CommandContent>
+    <Checkbox AriaLabel="Policy checkbox" />
+    <Popover>
+        <PopoverTrigger>Policy popover</PopoverTrigger>
+        <PopoverContent><Input Placeholder="Policy nested input" /></PopoverContent>
+    </Popover>
+    <DropdownMenu>
+        <DropdownMenuTrigger>Policy menu</DropdownMenuTrigger>
+        <DropdownMenuContent><DropdownMenuItem>Policy action</DropdownMenuItem></DropdownMenuContent>
+    </DropdownMenu>
+    <Select TValue="string">
+        <SelectTrigger><SelectValue Placeholder="Policy select" /></SelectTrigger>
+        <SelectContent><SelectItem TValue="string" Value='@("one")'>Policy option</SelectItem></SelectContent>
+    </Select>
+    <Combobox TItem="string" Items="items" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" Placeholder="Policy combobox" SearchPlaceholder="Policy combo search" />
+    <MultiSelect TItem="string" Items="items" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" Placeholder="Policy multi" SearchPlaceholder="Policy multi search" />
+    <div data-testid="policy-date"><DatePicker /></div>
+    <div data-testid="policy-time"><TimePicker /></div>
+    <div data-testid="policy-range"><DateRangePicker /></div>
+    <Accordion Type="AccordionType.Single"><AccordionItem Value="one"><AccordionTrigger>Policy accordion</AccordionTrigger><AccordionContent>Policy panel</AccordionContent></AccordionItem></Accordion>
+    <Input Placeholder="Explicit legacy input" InteractionMode="InteractionMode.Blazor" />
+    <Popover InteractionMode="InteractionMode.Blazor"><PopoverTrigger>Explicit legacy popover</PopoverTrigger><PopoverContent>Legacy content</PopoverContent></Popover>
+    <InteractionModeProvider Mode="InteractionMode.Browser">
+        <Input Placeholder="Scoped browser input" />
+        <Popover InteractionMode="InteractionMode.Blazor"><PopoverTrigger>Legacy composed shell</PopoverTrigger><PopoverContent><Input Placeholder="Legacy composed input" /><CommandContent><CommandInput Placeholder="Legacy composed command" /><CommandList><CommandItem Value="legacy">Legacy item</CommandItem></CommandList></CommandContent></PopoverContent></Popover>
+        <Input Placeholder="Scoped explicit legacy input" InteractionMode="InteractionMode.Blazor" />
+        <Combobox TItem="string" Items="items" ValueSelector="@(item => item)" DisplaySelector="@(item => item)" Placeholder="Scoped combo" SearchPlaceholder="Scoped search" />
+    </InteractionModeProvider>
+    <InteractionModeProvider Mode="InteractionMode.Blazor">
+        <Input Placeholder="Scoped legacy input" />
+        <Popover><PopoverTrigger>Scoped legacy popover</PopoverTrigger><PopoverContent>Scoped legacy content</PopoverContent></Popover>
+        <Popover InteractionMode="InteractionMode.Browser"><PopoverTrigger>Scoped explicit browser popover</PopoverTrigger><PopoverContent>Scoped browser content</PopoverContent></Popover>
+    </InteractionModeProvider>
+    <InteractionModeProvider Mode="InteractionMode.Browser" Family="InteractionFamily.Menus">
+        <Input Placeholder="Menu scoped input" />
+        <DropdownMenu><DropdownMenuTrigger>Menu scoped trigger</DropdownMenuTrigger><DropdownMenuContent><DropdownMenuItem>Scoped action</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+    </InteractionModeProvider>
+    <InteractionModeProvider Mode="InteractionMode.Blazor">
+        <InteractionModeProvider Mode="InteractionMode.Browser" Family="InteractionFamily.Menus">
+            <Input Placeholder="Nested menu scoped input" />
+        </InteractionModeProvider>
+    </InteractionModeProvider>
+    <InteractionModeProvider Mode="InteractionMode.Browser" Family="InteractionFamily.Inputs">
+        <Popover InteractionMode="InteractionMode.Blazor"><PopoverTrigger>Input scoped shell</PopoverTrigger><PopoverContent><Input Placeholder="Input scoped nested field" /></PopoverContent></Popover>
+    </InteractionModeProvider>
+    <button data-testid="policy-alive" @onclick="() => count++">Alive @count</button>
+</section>
+@code { private readonly string[] items = ["One", "Two"]; private int count; }

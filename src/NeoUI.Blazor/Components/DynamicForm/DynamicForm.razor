@@ -141,6 +141,7 @@
 
         <DynamicFieldRenderer Field="@field"
                               Value="@GetFieldValue(field)"
+                              AcceptedValueAccessor="@(() => GetFieldValue(field))"
                               Errors="@GetFieldErrors(field.Name)"
                               Disabled="@(Disabled || field.Disabled)"
                               OnChange="@onChange" />

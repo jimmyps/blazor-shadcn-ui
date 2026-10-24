@@ -8,20 +8,21 @@
        autocomplete="one-time-code"
        id="@Context.GetSlotId(Index)"
        maxlength="@(Index == 0 ? Context.Length : 1)"
-       value="@DisplayValue"
+       value="@(Context.BrowserInteraction ? null : DisplayValue)"
+       data-neo-otp-slot="@(Context.BrowserInteraction ? Index : (int?)null)"
        disabled="@Context.IsDisabled"
        aria-invalid="@(Context.IsInvalid ? "true" : null)"
        class="text-center"
-       @oninput="HandleInput"
-       @onkeydown="HandleKeyDown"
-       @onfocus="HandleFocus"
-       @onblur="HandleBlur"
-       @onpaste="HandlePaste"
+       @oninput="@(Context.BrowserInteraction ? default(EventCallback<ChangeEventArgs>) : EventCallback.Factory.Create<ChangeEventArgs>(this, HandleInput))"
+       @onkeydown="@(Context.BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
+       @onfocus="@(Context.BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleFocus))"
+       @onblur="@(Context.BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleBlur))"
+       @onpaste="@(Context.BrowserInteraction ? default(EventCallback<ClipboardEventArgs>) : EventCallback.Factory.Create<ClipboardEventArgs>(this, HandlePaste))"
        @attributes="AdditionalAttributes"
        aria-label="@AriaLabel"
        data-slot="@Index"
-       data-active="@IsActive.ToString().ToLower()"
-       data-filled="@IsFilled.ToString().ToLower()" />
+       data-active="@(Context.BrowserInteraction ? null : IsActive.ToString().ToLower())"
+       data-filled="@(Context.BrowserInteraction ? null : IsFilled.ToString().ToLower())" />
 
 @code {
     [CascadingParameter]

@@ -2,19 +2,22 @@
 @implements IDisposable
 
 @* TabsContent primitive - content panel for a tab *@
-@if (_isActive || ForceMount)
+@if (Context.BrowserInteraction || _isActive || ForceMount)
 {
     <div id="@_contentId"
          role="tabpanel"
+         data-neo-state-panel="@(Context.BrowserInteraction ? Value : null)"
          aria-labelledby="@_triggerId"
          tabindex="0"
-         hidden="@(!_isActive)"
+         hidden="@(Context.BrowserInteraction ? !InitialBrowserOpen : !_isActive)"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
 }
 
 @code {
+    private bool? initialBrowserOpen;
+    private bool InitialBrowserOpen { get { initialBrowserOpen ??= _isActive; return initialBrowserOpen.Value; } }
     private string _contentId => Context.GetContentId(Value);
     private string _triggerId => Context.GetTriggerId(Value);
     private bool _isActive => Context.IsTabActive(Value);

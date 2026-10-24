@@ -8,10 +8,10 @@
     @ref="_linkRef"
     @attributes="AdditionalAttributes"
     @onclick="HandleClick"
-    @onmouseenter="HandleMouseEnter"
-    @onmouseleave="HandleMouseLeave"
-    @onfocus="HandleFocus"
-    @onblur="HandleBlur">
+    @onmouseenter="@(TriggerContext?.OnMouseEnter == null ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
+    @onmouseleave="@(TriggerContext?.OnMouseLeave == null ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
+    @onfocus="@(TriggerContext?.OnFocus == null ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleFocus))"
+    @onblur="@(TriggerContext?.OnBlur == null ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, HandleBlur))">
     @if (Icon != null && IconPosition == IconPosition.Start)
     {
         <span class="me-2">@Icon</span>

@@ -72,6 +72,7 @@ public interface IVirtualizedGroupHandler
 /// </summary>
 public class CommandContext
 {
+    internal bool BrowserInteraction { get; set; }
     private readonly List<CommandItemMetadata> _items = new();
     private readonly List<IVirtualizedGroupHandler> _virtualizedGroups = new();
     private string _searchQuery = string.Empty;
@@ -245,6 +246,9 @@ public class CommandContext
     /// Updates the search query and notifies subscribers.
     /// </summary>
     /// <param name="query">The new search query.</param>
+    internal Func<string, Task>? BrowserSearchChanged { get; set; }
+    internal long InputRevision { get; set; }
+
     public void SetSearchQuery(string query)
     {
         if (_searchQuery != query)

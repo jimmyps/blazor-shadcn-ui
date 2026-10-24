@@ -59,6 +59,8 @@ public enum TabsActivationMode
 /// </summary>
 public class TabsContext : PrimitiveContextWithEvents<TabsState>
 {
+    internal bool BrowserInteraction { get; set; }
+
     /// <summary>
     /// Initializes a new instance of the TabsContext.
     /// </summary>

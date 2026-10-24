@@ -1,5 +1,14 @@
 # DatePicker Component
 
+## Interaction Mode in v4.5.0
+
+Components and Primitives both target **4.5.0** (unreleased). This control follows the
+`Selection` interaction family, with scoped and explicit overrides. Browser mode keeps supported
+local interaction state responsive while application callbacks and Razor content remain live.
+The default remains Blazor; local feedback does not confirm server acceptance.
+See the [adoption guide](../../../../docs/browser-interactions.md) and
+[v4.5.0 upgrade guide](../../../../docs/upgrading-to-4.5.md) for limits and migration.
+
 Date selection components with Calendar in Popover pattern.
 
 ## Components
@@ -189,8 +198,8 @@ Date selection components with Calendar in Popover pattern.
 ## See Also
 
 - [Calendar Component](../Calendar/README.md) - The underlying calendar used by DatePicker
-- [Popover Component](../Popover/README.md) - The popover container
-- [Button Component](../Button/README.md) - The trigger button
+- [Popover examples](../../../../demo/NeoUI.Demo.Shared/Pages/Components/PopoverDemo.razor) - The popover container
+- [Button examples](../../../../demo/NeoUI.Demo.Shared/Pages/Components/ButtonDemo.razor) - The trigger button
 
 ---
 

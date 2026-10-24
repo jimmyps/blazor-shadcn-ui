@@ -1,5 +1,17 @@
 @namespace NeoUI.Blazor
 
+@if (BrowserInteraction)
+{
+    <BrowserFormattedInput @ref="browserInput" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
+        Id="@EffectiveId" Name="@(EffectiveName ?? string.Empty)" Class="@CssClass" Value="@CurrentDisplayValue"
+        AcceptDraft="@AcceptBrowserDraft" EquivalentValue="@EquivalentBrowserValue" Format="@BrowserFormat" ValueRevision="@ValueRevision"
+        UpdateOn="@UpdateOn" DebounceDelay="@DebounceDelay" Placeholder="@EffectivePlaceholder" Disabled="@Disabled" Readonly="@Readonly"
+        Required="@Required" InputMode="@InputMode" Autofocus="@Autofocus"
+        AriaLabel="@AriaLabel" AriaDescribedBy="@AriaDescribedBy" AriaInvalid="@EffectiveAriaInvalid"
+        AdditionalAttributes="@AdditionalAttributes"  />
+}
+else
+{
 <input
     id="@EffectiveId"
     name="@EffectiveName"
@@ -19,3 +31,5 @@
     @onkeydown="HandleKeyDown"
     @onpaste="HandlePaste" />
 
+
+}

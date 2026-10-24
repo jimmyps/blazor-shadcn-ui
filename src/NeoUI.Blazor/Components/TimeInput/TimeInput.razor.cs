@@ -135,6 +135,7 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         if (firstRender && !_jsInitialized)
         {
             try
@@ -378,6 +379,7 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
     /// <summary>Programmatically focuses the first editable segment of the time input.</summary>
     public async Task FocusAsync()
     {
+        if (BrowserInteraction) { if (browserHost != null) await browserHost.FocusAsync(); return; }
         if (_jsModule is null) return;
         await _jsModule.InvokeVoidAsync("focusFirstSegment", _containerRef);
     }
@@ -552,7 +554,7 @@ public partial class TimeInput : ComponentBase, IAsyncDisposable
     private string GetSegmentClass(TimeSegment seg) => ClassNames.cn(
         "tabular-nums select-none cursor-default rounded-sm px-0.5 caret-transparent",
         "focus:outline-none focus:bg-primary focus:text-primary-foreground",
-        seg.Value is null ? "text-muted-foreground" : "",
+        BrowserInteraction ? "data-[empty=true]:text-muted-foreground" : seg.Value is null ? "text-muted-foreground" : "",
         "min-w-[2ch] text-center"
     );
 

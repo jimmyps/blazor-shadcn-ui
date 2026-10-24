@@ -34,6 +34,43 @@ NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor appli
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
+## ✨ What's New in v4.5.0
+
+**Release target: 4.5.0 for both `NeoUI.Blazor` and `NeoUI.Blazor.Primitives` (unreleased).**
+This feature upgrade adds opt-in browser ownership of supported interaction states and input
+drafts while Razor content stays live. Application callbacks remain asynchronous; local
+feedback does not confirm a successful server update. The library default remains Blazor.
+
+- **Responsive UI:** floating shells, menu families, composed selections, hover cards,
+  tooltips, disclosures and mounted tabs can respond without waiting for a server round trip.
+- **Editable drafts:** supported text, formatted and structured fields preserve newer browser
+  edits through delayed acknowledgements, rejection, resets and unrelated parent renders.
+- **Safe forms:** opt into draft synchronization before validation with `BrowserEditForm`,
+  retaining normal EditForm validators and submit handlers, with duplicate-submit protection.
+- **Staged adoption:** independent `Floating`, `Menus`, `Selection`, `Inputs` and `Disclosures`
+  defaults, plus scoped and explicit component exceptions.
+
+```csharp
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Extensions;
+
+builder.Services.ConfigureNeoUIInteractions(options =>
+{
+    options.DefaultMode = InteractionMode.Blazor;
+    options.Floating = InteractionMode.Browser;
+    options.Menus = InteractionMode.Browser;
+    // Preserve legacy form fields and selection controls during staged adoption.
+    options.Inputs = InteractionMode.Blazor;
+    options.Selection = InteractionMode.Blazor;
+});
+```
+
+Components requires Primitives **4.5.0**. Icon packages keep their independent versions.
+Review heavy/lazy tab content and floating DOM costs before opting those controls in.
+See the [upgrade guide](docs/upgrading-to-4.5.md),
+[interaction/adoption guide](docs/browser-interactions.md),
+[changelog](CHANGELOG.md), and [Interaction Mode demo](https://demos.neoui.io/components/browser-interactions).
+
 ## ✨ What's New in v4
 
 ### 🎨 Theme v2 — The Most Sophisticated Blazor Theming System
@@ -663,7 +700,8 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Version**: 4.0.0
+- **Release Target**: 4.5.0 for Components and Primitives (unreleased)
+- **Icon Versions**: Independently versioned
 - **Target Framework**: .NET 10
 - **Package IDs**: 
   - `NeoUI.Blazor`

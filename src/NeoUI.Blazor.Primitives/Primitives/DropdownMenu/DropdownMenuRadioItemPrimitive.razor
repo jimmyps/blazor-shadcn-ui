@@ -5,11 +5,16 @@
 
 @* DropdownMenuRadioItemPrimitive - a radio item within a radio group *@
 <div @ref="_itemRef"
+     data-neo-check-key="@(MenuContext.Browser.Enabled ? RadioGroupContext?.BrowserSelection.Id : null)"
+     data-neo-check-value="@browserValue"
+     data-neo-check-accepted="@(MenuContext.Browser.Enabled ? RadioGroupContext?.BrowserSelection.Value : null)"
+     data-neo-check-version="@(MenuContext.Browser.Enabled ? RadioGroupContext?.BrowserSelection.Version : null)"
+     data-neo-close-on-select="@CloseOnSelect.ToString().ToLowerInvariant()"
      role="menuitemradio"
      tabindex="-1"
      aria-checked="@IsSelected.ToString().ToLower()"
      aria-disabled="@Disabled.ToString().ToLower()"
-     @onclick="HandleClick"
+     @onclick="@(MenuContext.Browser.Enabled ? default : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
      data-state="@(IsSelected ? "checked" : "unchecked")"
      data-disabled="@(Disabled ? "true" : null)"
      @attributes="AdditionalAttributes">
@@ -62,6 +67,11 @@
     private bool IsSelected => RadioGroupContext != null &&
                                EqualityComparer<TValue?>.Default.Equals(RadioGroupContext.Value, Value);
 
+    private readonly string browserValue = $"menu-radio-{Guid.NewGuid():N}";
+    protected override void OnParametersSet()
+    {
+        if (MenuContext.Browser.Enabled && RadioGroupContext != null) RadioGroupContext.BrowserItems[browserValue] = (Value, Disabled);
+    }
     protected override void OnInitialized()
     {
         if (MenuContext == null)
@@ -118,6 +128,7 @@
 
     public void Dispose()
     {
+        RadioGroupContext?.BrowserItems.Remove(browserValue);
         ContentContext?.UnregisterMenuItem(this);
     }
 }

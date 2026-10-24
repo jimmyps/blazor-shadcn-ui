@@ -1,7 +1,11 @@
 @namespace NeoUI.Blazor.Primitives
+<BrowserStateHost Enabled="@BrowserInteraction" Kind="collapsible" Values="@(BrowserInteraction ? BrowserValues : Array.Empty<string>())" Revision="@InteractionRevision" Changed="@BrowserChanged" Disabled="@Disabled">
+
 
 <CascadingValue Value="@context" IsFixed="true">
     <div @attributes="AdditionalAttributes">
         @ChildContent
     </div>
 </CascadingValue>
+
+</BrowserStateHost>

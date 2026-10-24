@@ -1,0 +1,59 @@
+@using System.Globalization
+<InteractionModeProvider Mode="@Mode">
+<section data-testid="preservation">
+    <MaskedInput @bind-Value="mask" Mask="000-000" Placeholder="Preserved mask" ValueRevision="@revision" />
+    <MaskedInput @bind-Value="prefix" Mask="12000" Placeholder="Literal digit mask" ValueRevision="@revision" />
+    <MaskedInput @bind-Value="phone" Mask="+1 (000) 000-0000" Placeholder="Phone mask" ValueRevision="@revision" />
+    <MaskedInput @bind-Value="compact" Mask="AA-000" ShowMask="false" Placeholder="Compact mask" ValueRevision="@revision" />
+    <MaskedInput @bind-Value="custom" Mask="AAA-000" MaskChar="@('·')" Placeholder="Custom mask" ValueRevision="@revision" />
+    <MaskedInput Value="123456" Mask="000-000" Readonly Placeholder="Readonly mask" />
+    <button data-testid="preserve-reset" @onclick="Reset">Reset editors</button>
+    <p data-testid="mask-model">@(mask ?? "empty")</p>
+    <BrowserEditForm Model="@money" OnValidSubmit="Save">
+        <CurrencyInput TValue="decimal?" @bind-Value="money.Usd" Currency="USD" Culture="en-US" Placeholder="Precise USD" ValueRevision="@revision" />
+        <CurrencyInput TValue="decimal?" @bind-Value="money.Eur" Currency="EUR" Culture="de-DE" Placeholder="Precise EUR" ValueRevision="@revision" />
+        <CurrencyInput TValue="decimal?" @bind-Value="money.Jpy" Currency="JPY" Culture="ja-JP" Placeholder="Precise JPY" ValueRevision="@revision" />
+        <CurrencyInput TValue="decimal?" @bind-Value="money.Kwd" Currency="KWD" Culture="en-US" Placeholder="Precise KWD" ValueRevision="@revision" />
+        <CurrencyInput TValue="decimal?" @bind-Value="money.Plain" Currency="USD" ShowCurrencySymbol="false" Placeholder="Precise plain" ValueRevision="@revision" />
+        <CurrencyInput TValue="decimal?" Value="@money.Delayed" ValueChanged="CommitMoney" AcceptedValueAccessor="@(() => money.Delayed)" Currency="USD" Placeholder="Delayed currency" UpdateOn="InputUpdateMode.Input" ValueRevision="@revision" />
+        <button type="submit" data-testid="preserve-save">Save exact money</button>
+    </BrowserEditForm>
+    <p data-testid="money-model">@Snapshot()</p><p data-testid="money-saved">@saved</p>
+    <TagInput @bind-Tags="tags" Suggestions="@suggestions" Placeholder="Preserved tags" />
+    <button data-testid="after-tags">After tags</button>
+    <p data-testid="preserve-tags-model">@string.Join(",", tags ?? [])</p>
+    <MultiSelect TItem="string" Items="@suggestions" @bind-Values="selectedTags" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" Placeholder="Preserved multi" />
+    <p data-testid="preserve-multi-model">@string.Join(",", selectedTags ?? [])</p>
+    <MarkdownEditor @bind-Value="markdown" ValueRevision="@revision" Placeholder="Preserved markdown" />
+    <NavigationMenu @bind-Value="navigation">
+        <NavigationMenuList>
+            <NavigationMenuItem Value="products"><NavigationMenuTrigger>Preserved products</NavigationMenuTrigger><NavigationMenuContent><button>Preserved product action</button></NavigationMenuContent></NavigationMenuItem>
+            <NavigationMenuItem Value="resources"><NavigationMenuTrigger>Preserved resources</NavigationMenuTrigger><NavigationMenuContent><button>Preserved resource action</button></NavigationMenuContent></NavigationMenuItem>
+        </NavigationMenuList>
+        <NavigationMenuViewport />
+    </NavigationMenu>
+</section>
+</InteractionModeProvider>
+@code {
+    [Parameter] public InteractionMode Mode { get; set; }
+    private string? mask, phone, compact, custom, markdown, navigation;
+    private string? prefix = "345";
+    private long revision;
+    private IReadOnlyList<string>? tags;
+    private IEnumerable<string>? selectedTags;
+    private readonly string[] suggestions = ["Design", "Development", "Research"];
+    private readonly Money money = new();
+    private string saved = "None";
+    private sealed class Money {
+        public decimal? Usd { get; set; } = 12.34567m;
+        public decimal? Eur { get; set; } = 98.76543m;
+        public decimal? Jpy { get; set; } = 123.456m;
+        public decimal? Kwd { get; set; } = 1.234567m;
+        public decimal? Plain { get; set; } = 6.78901m;
+        public decimal? Delayed { get; set; } = 3.45678m;
+    }
+    private string Snapshot() => string.Join("|", new[] { money.Usd, money.Eur, money.Jpy, money.Kwd, money.Plain, money.Delayed }.Select(value => value?.ToString(CultureInfo.InvariantCulture)));
+    private void Save() => saved = Snapshot();
+    private async Task CommitMoney(decimal? value) { var generation = revision; await Task.Delay(250); if (generation == revision) money.Delayed = value; }
+    private void Reset() { mask = phone = compact = custom = null; prefix = "678"; markdown = "Reset markdown"; money.Usd = 54.32109m; revision++; }
+}

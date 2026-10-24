@@ -50,10 +50,15 @@ else if (!string.IsNullOrEmpty(Href))
 else
 {
     <button type="button"
+            id="@itemId"
+            data-neo-pill-item="@(BrowserOwned ? itemId : null)"
+            data-neo-pill-active-class="@(BrowserOwned ? ActiveClass ?? ActiveClasses : null)"
+            data-neo-pill-inactive-class="@(BrowserOwned ? InactiveClass ?? InactiveClasses : null)"
+            data-neo-pill-accepted="@(BrowserOwned ? IsActive.ToString().ToLowerInvariant() : null)"
             class="@GetButtonClasses()"
             title="@NativeTitle"
             aria-label="@Label"
-            data-active="@(IsActive ? "true" : "false")"
+            data-active="@(BrowserOwned ? null : IsActive ? "true" : "false")"
             @onclick="OnClick"
             @attributes="AdditionalAttributes">
         @ChildContent
@@ -61,6 +66,10 @@ else
 }
 
 @code {
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private bool BrowserOwned => InteractionPolicy?.GetMode(InteractionFamily.Menus) == InteractionMode.Browser;
+    private readonly string itemId = $"pill-item-{Guid.NewGuid():N}";
+
     /// <summary>The icon to display. Typically a <see cref="LucideIcon"/>.</summary>
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -147,7 +156,8 @@ else
 
     private string GetButtonClasses() => ClassNames.cn(
         BaseClasses,
-        IsActive ? (ActiveClass ?? ActiveClasses) : (InactiveClass ?? InactiveClasses),
+        BrowserOwned ? null : IsActive ? (ActiveClass ?? ActiveClasses) : null,
+        BrowserOwned ? null : !IsActive ? (InactiveClass ?? InactiveClasses) : null,
         Class
     );
 

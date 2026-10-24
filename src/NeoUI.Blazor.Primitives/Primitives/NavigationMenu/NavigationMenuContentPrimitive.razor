@@ -2,18 +2,19 @@
 @implements IDisposable
 
 @* NavigationMenuContentPrimitive - dropdown content panel *@
-@if (ForceMount || IsActive || IsClosing)
+@if (Context.BrowserEnabled || ForceMount || IsActive || IsClosing)
 {
     <div id="@ItemContext.ContentId"
-         @onmouseleave="HandleMouseLeave"
-         @onmouseenter="HandleMouseEnter"
+         data-neo-navigation-panel="@(Context.BrowserEnabled ? ItemContext.Value : null)"
+         @onmouseleave="@(Context.BrowserEnabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseLeave))"
+         @onmouseenter="@(Context.BrowserEnabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
          @attributes="AdditionalAttributes"
          role="menu"
          aria-labelledby="@ItemContext.TriggerId"
-         data-state="@GetDataState()"
-         data-motion="@GetDataMotion()"
-         data-activated="@IsActivated.ToString().ToLower()"
-         style="@GetStyle()">
+         data-state="@(Context.BrowserEnabled ? null : GetDataState())"
+         data-motion="@(Context.BrowserEnabled ? null : GetDataMotion())"
+         data-activated="@(Context.BrowserEnabled ? null : IsActivated.ToString().ToLower())"
+         style="@(Context.BrowserEnabled ? "display:none" : GetStyle())">
         @ChildContent
     </div>
 }
@@ -68,6 +69,7 @@
 
     protected override void OnParametersSet()
     {
+        if (Context.BrowserEnabled) return;
         var currentActive = IsActive;
 
         // Detect closing state

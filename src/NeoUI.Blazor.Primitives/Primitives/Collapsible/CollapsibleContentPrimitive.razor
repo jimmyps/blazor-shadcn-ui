@@ -3,10 +3,16 @@
 @* CollapsibleContent primitive - collapsible content region *@
 @if (_shouldRender)
 {
-    <div role="region"
-         data-state="@(Context?.Open ?? false ? "open" : "closed")"
-         aria-hidden="@(!(Context?.Open ?? false))"
+    <div role="region" id="@(Context?.BrowserInteraction == true ? Context.ContentId : null)"
+         data-neo-state-panel="@(Context?.BrowserInteraction == true ? "open" : null)" hidden="@(Context?.BrowserInteraction == true && !InitialBrowserOpen)"
+         data-state="@((Context?.BrowserInteraction == true ? InitialBrowserOpen : Context?.Open == true) ? "open" : "closed")"
+         aria-hidden="@(Context?.BrowserInteraction == true ? null : (!(Context?.Open ?? false)).ToString().ToLowerInvariant())"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
+}
+
+@code {
+    private bool? initialBrowserOpen;
+    private bool InitialBrowserOpen { get { initialBrowserOpen ??= Context?.Open == true; return initialBrowserOpen.Value; } }
 }

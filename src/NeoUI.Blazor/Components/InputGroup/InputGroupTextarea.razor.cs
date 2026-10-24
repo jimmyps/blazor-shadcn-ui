@@ -35,6 +35,8 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class InputGroupTextarea : ComponentBase, IAsyncDisposable
 {
+    protected override void OnParametersSet() => ConfigureBrowserMode();
+
     private ElementReference textareaReference;
 
     /// <summary>
@@ -202,6 +204,7 @@ public partial class InputGroupTextarea : ComponentBase, IAsyncDisposable
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         if (!firstRender)
             return;
 

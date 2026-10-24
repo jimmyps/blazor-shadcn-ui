@@ -1,6 +1,13 @@
 @namespace NeoUI.Blazor.Primitives
 @typeparam TValue
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuRadioGroupPrimitive TValue="TValue" Value="@Value" ValueChanged="@ValueChanged" OnValueChange="@OnValueChange" InteractionRevision="@(Family.Revision + InteractionRevision)" @attributes="AdditionalAttributes">@ChildContent</DropdownMenuRadioGroupPrimitive>
+}
+else
+{
+
 @* MenubarRadioGroupPrimitive - a group of radio items where only one can be selected *@
 <CascadingValue Value="@_context" IsFixed="false">
     <div role="group" @attributes="AdditionalAttributes">
@@ -8,7 +15,13 @@
     </div>
 </CascadingValue>
 
+
+}
+
 @code {
+    /// <summary>Increment to reset browser selection, including an unchanged value.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     private readonly MenubarRadioGroupContext<TValue> _context = new();
 
     [CascadingParameter]
@@ -47,6 +60,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (MenuContext == null)
         {
             throw new InvalidOperationException(
@@ -59,6 +73,7 @@
 
     protected override void OnParametersSet()
     {
+        if (Family?.Enabled == true) return;
         _context.Value = Value;
     }
 

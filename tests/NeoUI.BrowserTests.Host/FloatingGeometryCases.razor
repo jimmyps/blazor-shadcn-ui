@@ -1,0 +1,19 @@
+<InteractionModeProvider Mode="@Mode">
+    <section data-testid="geometry-case">
+        <Select TValue="string" @bind-Value="value">
+            <SelectTrigger data-testid="geometry-select" style="@($"width: {width.ToString(System.Globalization.CultureInfo.InvariantCulture)}px")"><SelectValue Placeholder="Geometry select" /></SelectTrigger>
+            <SelectContent ForceMount="@Persistent"><SelectItem TValue="string" Value='@("one")' Text="One">One</SelectItem><SelectItem TValue="string" Value='@("two")' Text="Two">Two</SelectItem></SelectContent>
+        </Select>
+        <div style="@($"width: {width.ToString(System.Globalization.CultureInfo.InvariantCulture)}px")"><Popover><PopoverTrigger data-testid="geometry-popover" class="w-full">Geometry popover</PopoverTrigger><PopoverContent ForceMount="@Persistent" MatchTriggerWidth="true" OnContentReady="@(() => ready++)"><button data-testid="geometry-child">Short</button></PopoverContent></Popover></div>
+        <span data-testid="geometry-ready">@ready</span>
+        <button data-testid="geometry-render" @onclick="() => renders++">Render @renders</button>
+        <button data-testid="geometry-resize" @onclick="() => width = width == 320 ? 440.333 : 320">Resize</button>
+    </section>
+</InteractionModeProvider>
+@code {
+    [Parameter] public InteractionMode Mode { get; set; }
+    [Parameter] public bool Persistent { get; set; } = true;
+    private double width = 320;
+    private int renders, ready;
+    private string? value;
+}

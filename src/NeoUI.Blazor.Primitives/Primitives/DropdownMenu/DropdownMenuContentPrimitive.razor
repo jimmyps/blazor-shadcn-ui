@@ -10,11 +10,11 @@
     Maintains DropdownMenuPrimitive-specific behavior: click-outside, keyboard navigation, focus management.
 *@
 
-<FloatingPortal IsOpen="@Context.IsOpen"
+<FloatingPortal BrowserOptions="@GetBrowserOptions()" BrowserEvents="@browserEvents?.Reference" IsOpen="@Context.IsOpen"
                 AnchorElement="@Context.State.TriggerElement"
                 PortalId="@_portalId"
                 ParentPortalId="@ParentPortalId"
-                ForceMount="@ForceMount"
+                ForceMount="@(Context?.Browser.Enabled == true || ForceMount)"
                 Side="@Side"
                 Align="@Align"
                 Offset="@Offset"
@@ -26,6 +26,20 @@
 </FloatingPortal>
 
 @code {
+    [CascadingParameter] private BrowserMenuFamily? BrowserFamily { get; set; }
+    /// <summary>Specialized browser shell behavior for menu-family primitives.</summary>
+    [Parameter] public string BrowserKind { get; set; } = "menu";
+    /// <summary>Programmatic context-menu viewport coordinates.</summary>
+    [Parameter] public double BrowserX { get; set; }
+    /// <summary>Programmatic context-menu viewport coordinates.</summary>
+    [Parameter] public double BrowserY { get; set; }
+    /// <summary>Lock body scrolling while a browser context menu is open.</summary>
+    [Parameter] public bool BrowserLockScroll { get; set; }
+    /// <summary>Optional browser context-menu backdrop classes.</summary>
+    [Parameter] public string? BrowserOverlayClass { get; set; }
+    /// <summary>Context-menu viewport padding.</summary>
+    [Parameter] public int BrowserViewportPadding { get; set; } = 8;
+
     private static readonly Action<ILogger, string, Exception?> LogTriggerWidthMatchFailed =
         LoggerMessage.Define<string>(LogLevel.Warning, new EventId(1, "TriggerWidthMatchFailed"),
             "Failed to set up trigger width matching: {ErrorMessage}");
@@ -49,7 +63,7 @@
     /// <summary>
     /// Optional parent portal id. When set, this dropdown's content is appended to the
     /// parent's portal scope (via <c>AppendToPortal</c>) instead of registering as an
-    /// independent root portal — the mechanism submenus use. Set this when the dropdown
+    /// independent root portal â€” the mechanism submenus use. Set this when the dropdown
     /// is nested inside another overlay (e.g. a Popover) to avoid two independent portals
     /// in the same category re-triggering each other's re-render. Default null.
     /// </summary>
@@ -105,7 +119,7 @@
 
     /// <summary>
     /// Whether to keep the portal mounted in the DOM when the dropdown is closed.
-    /// When <c>true</c>, JS toggles visibility instead of unmounting — JS handlers stay warm
+    /// When <c>true</c>, JS toggles visibility instead of unmounting â€” JS handlers stay warm
     /// across open/close cycles and CSS exit animations work correctly.
     /// Default is <c>True</c>; the Components-layer <see cref="DropdownMenuContentPrimitive"/> sets this to <c>true</c>.
     /// </summary>
@@ -154,6 +168,21 @@
     // Track menu items for keyboard navigation
     private List<IDropdownMenuItem> _menuItems = new();
 
+    private BrowserFloatingEvents? browserEvents;
+    private BrowserFloatingOptions? GetBrowserOptions()
+    {
+        if (Context?.Browser.Enabled != true) return null;
+        return new BrowserFloatingOptions
+        {
+            TriggerId = Context.TriggerId, ContentId = Context.ContentId,
+            Kind = BrowserKind, X = BrowserX, Y = BrowserY, LockScroll = BrowserLockScroll, OverlayClass = BrowserOverlayClass, ViewportPadding = BrowserViewportPadding, Open = Context.Browser.Open, OpenVersion = Context.Browser.OpenVersion,
+            NotifyOpen = Context.Browser.OpenChanged != null, NotifyContext = BrowserFamily?.ContextPosition != null,
+            CloseOnEscape = CloseOnEscape, CloseOnClickOutside = CloseOnClickOutside,
+            NotifyEscape = OnEscapeKeyDown.HasDelegate, NotifyOutside = OnClickOutside.HasDelegate,
+            Loop = Loop, Rtl = Context.BrowserRtl
+        };
+    }
+
     protected override void OnInitialized()
     {
         if (Context == null)
@@ -165,6 +194,23 @@
 
         _portalId = $"dropdown-portal-{Context.ContentId}";
 
+        if (Context.Browser.Enabled)
+        {
+            browserEvents = new BrowserFloatingEvents
+            {
+                ContextPosition = BrowserFamily?.ContextPosition,
+                CommitMenu = (key, value) => Context.BrowserSelections.TryGetValue(key, out var selection)
+                    ? selection.CommitAsync(value) : Task.FromResult<string?>(null),
+                Notify = async (name, open) =>
+                {
+                    if (name == "open") await Context.Browser.ReportOpenAsync(open);
+                    if (name == "escape") await OnEscapeKeyDown.InvokeAsync(new KeyboardEventArgs { Key = "Escape" });
+                    if (name == "outside") await OnClickOutside.InvokeAsync();
+                },
+
+            };
+        }
+
         // Subscribe to context changes
         Context.OnStateChanged += HandleContextStateChanged;
     }
@@ -175,7 +221,7 @@
              id="@Context.ContentId"
              role="menu"
              tabindex="-1"
-             data-state="@(Context.IsOpen ? "open" : "closed")"
+             data-state="@(Context.Browser.Enabled ? null : (Context.IsOpen ? "open" : "closed"))"
              data-autofocus
              @attributes="GetAttributesWithoutStyle()">
             <CascadingValue Value="Context" IsFixed="false">
@@ -188,6 +234,7 @@
 
     private async Task HandleFloatingReady()
     {
+        if (Context?.Browser.Enabled == true) return;
         // Set up click-outside detection
         if (CloseOnClickOutside)
         {
@@ -392,6 +439,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        browserEvents?.Dispose();
         // Set disposed flag first to prevent JSInvokable callbacks during cleanup
         _disposed = true;
 
@@ -399,17 +447,17 @@
 
         if (_clickOutsideModule != null)
         {
-            await _clickOutsideModule.DisposeAsync();
+            try { await _clickOutsideModule.DisposeAsync(); } catch (JSDisconnectedException) { }
         }
 
         if (_menuKeyboardModule != null)
         {
-            await _menuKeyboardModule.DisposeAsync();
+            try { await _menuKeyboardModule.DisposeAsync(); } catch (JSDisconnectedException) { }
         }
 
         if (_matchWidthModule != null)
         {
-            await _matchWidthModule.DisposeAsync();
+            try { await _matchWidthModule.DisposeAsync(); } catch (JSDisconnectedException) { }
         }
 
         _dotNetRef?.Dispose();

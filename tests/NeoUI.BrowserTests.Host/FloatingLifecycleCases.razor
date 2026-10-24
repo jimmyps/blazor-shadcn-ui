@@ -1,0 +1,42 @@
+<section>
+    <p data-testid="lifecycle-ready">@ready.ToString().ToLowerInvariant()</p>
+    <p data-testid="lifecycle-current-kind">@kind</p>
+    <label>Control <select @bind="kind" data-testid="lifecycle-kind"><option>dropdown</option><option>popover</option><option>select</option><option>submenu</option></select></label>
+    <button data-testid="lifecycle-mount" @onclick="Mount">Mount control</button>
+    <button data-testid="lifecycle-remove" @onclick="Remove">Remove control</button>
+    <button data-testid="lifecycle-independent" @onclick="() => count++">Independent button</button>
+    <p data-testid="lifecycle-count">@count</p><p data-testid="lifecycle-mounted">@mounted.ToString().ToLowerInvariant()</p>
+    <p data-testid="lifecycle-actions">@actions</p>
+    @if (mounted)
+    {
+        @switch (kind)
+        {
+            case "popover":
+                <Popover @key="generation"><PopoverTrigger><span data-testid="lifecycle-trigger">Lifecycle popover</span></PopoverTrigger><PopoverContent><button data-testid="lifecycle-action" @onclick="() => actions++">Live popover action</button></PopoverContent></Popover>
+                break;
+            case "select":
+                <Select TValue="string" @key="generation" Value="@selected" ValueChanged="SelectItem"><SelectTrigger data-testid="lifecycle-trigger"><SelectValue Placeholder="Lifecycle select" /></SelectTrigger><SelectContent><SelectItem Value="@("one")" Text="Lifecycle option" /></SelectContent></Select>
+                break;
+            default:
+                <DropdownMenu @key="generation"><DropdownMenuTrigger><span data-testid="lifecycle-trigger">Lifecycle menu</span></DropdownMenuTrigger><DropdownMenuContent>
+                    <DropdownMenuItem OnClick="() => actions++">Lifecycle action</DropdownMenuItem>
+                    @if (kind == "submenu")
+                    {
+                        <DropdownMenuSub><DropdownMenuSubTrigger>Lifecycle submenu</DropdownMenuSubTrigger><DropdownMenuSubContent><DropdownMenuItem OnClick="() => actions++">Nested lifecycle action</DropdownMenuItem></DropdownMenuSubContent></DropdownMenuSub>
+                    }
+                </DropdownMenuContent></DropdownMenu>
+                break;
+        }
+    }
+</section>
+@code {
+    private string kind = "dropdown";
+    private bool ready;
+    protected override void OnAfterRender(bool firstRender) { if (firstRender) { ready = true; StateHasChanged(); } }
+    private bool mounted;
+    private int generation, count, actions;
+    private string? selected;
+    private void Mount() { generation++; mounted = true; }
+    private void Remove() => mounted = false;
+    private void SelectItem(string? value) { selected = value; actions++; }
+}

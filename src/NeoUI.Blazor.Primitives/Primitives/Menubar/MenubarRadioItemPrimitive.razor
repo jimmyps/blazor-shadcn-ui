@@ -3,6 +3,13 @@
 @implements IMenubarItem
 @implements IDisposable
 
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuRadioItemPrimitive TValue="TValue" Value="@Value" Disabled="@Disabled" CloseOnSelect="@CloseOnSelect" @attributes="AdditionalAttributes">@ChildContent</DropdownMenuRadioItemPrimitive>
+}
+else
+{
+
 @* MenubarRadioItemPrimitive - a radio item within a radio group *@
 <div @ref="_itemRef"
      role="menuitemradio"
@@ -16,7 +23,11 @@
     @ChildContent
 </div>
 
+
+}
+
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
     [CascadingParameter]
     private MenubarContext MenuContext { get; set; } = null!;
 
@@ -64,6 +75,7 @@
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (MenuContext == null)
         {
             throw new InvalidOperationException(
@@ -118,6 +130,7 @@
 
     public void Dispose()
     {
+        if (Family?.Enabled == true) return;
         ContentContext?.UnregisterMenuItem(this);
     }
 }

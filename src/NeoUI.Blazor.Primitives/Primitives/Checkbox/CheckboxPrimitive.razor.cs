@@ -56,7 +56,6 @@ namespace NeoUI.Blazor.Primitives;
 /// </example>
 public partial class CheckboxPrimitive : ComponentBase
 {
-    private bool shouldPreventDefault = false;
 
     /// <summary>
     /// Gets or sets whether the checkbox is checked.
@@ -187,27 +186,8 @@ public partial class CheckboxPrimitive : ComponentBase
         }
     }
 
-    /// <summary>
-    /// Handles keyboard events for accessibility.
-    /// </summary>
-    /// <param name="args">The keyboard event arguments.</param>
-    /// <remarks>
-    /// Supports Space key to toggle the checkbox state.
-    /// Prevents default behavior to avoid page scrolling.
-    /// </remarks>
-    private async Task HandleKeyDown(KeyboardEventArgs args)
-    {
-        if (!Disabled && args.Key == " ")
-        {
-            shouldPreventDefault = true;
-            await ToggleChecked();
-        }
-        else
-        {
-            shouldPreventDefault = false;
-        }
-    }
-
+    // The native button synthesizes one click for Space; Enter is blocked locally. A second keydown
+    // toggle races that click, particularly when Server delivery is delayed.
     /// <summary>
     /// Toggles the checked state and notifies listeners.
     /// </summary>

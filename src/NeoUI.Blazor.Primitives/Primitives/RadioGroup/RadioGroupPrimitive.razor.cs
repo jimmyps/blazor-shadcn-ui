@@ -225,6 +225,7 @@ public partial class RadioGroupPrimitive<TValue> : ComponentBase
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
+        context.BrowserInteraction = BrowserInteraction;
         base.OnParametersSet();
 
         // Update context with current state

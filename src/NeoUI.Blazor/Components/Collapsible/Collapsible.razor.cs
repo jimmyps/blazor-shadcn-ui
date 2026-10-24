@@ -78,6 +78,11 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Collapsible : ComponentBase
 {
+    /// <summary>Omitted settings inherit the scoped or application interaction mode.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply a controlled UI state after reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     private bool _isOpen;
     private bool _isInitialized;
 

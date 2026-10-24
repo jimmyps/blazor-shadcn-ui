@@ -1,8 +1,9 @@
+@inject Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor
 @using NeoUI.Icons.Lucide
 @inherits TimePickerBase
 
-<Popover @bind-Open="_isOpen">
+<Popover InteractionRevision="@InteractionRevision" InteractionMode="@InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Selection)" @bind-Open="_isOpen">
 <PopoverTrigger Class="@GetButtonClass()" @attributes="@GetTriggerAttributes()">
     @if (ShowIcon)
     {
@@ -72,10 +73,10 @@
             }
         </div>
         <div class="mt-4 flex justify-end gap-2">
-            <Button Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isOpen = false)">
+            <Button data-neo-close="true" Variant="ButtonVariant.Ghost" Size="ButtonSize.Small" @onclick="@(() => _isOpen = false)">
                 Cancel
             </Button>
-            <Button Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyTime">
+            <Button data-neo-close="true" Variant="ButtonVariant.Default" Size="ButtonSize.Small" @onclick="ApplyTime">
                 Apply
             </Button>
         </div>
@@ -90,4 +91,12 @@
             <div>@message</div>
         }
     </div>
+}
+
+@code {
+    /// <summary>Overrides scoped and application Selection interaction policy.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
 }

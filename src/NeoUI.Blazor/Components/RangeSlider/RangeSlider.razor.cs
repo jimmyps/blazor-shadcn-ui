@@ -625,6 +625,7 @@ public partial class RangeSlider : ComponentBase, IAsyncDisposable
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         if (firstRender)
         {
             try

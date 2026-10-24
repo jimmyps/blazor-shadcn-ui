@@ -39,6 +39,14 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class Combobox<TItem> : ComponentBase
 {
+    [Inject] private Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults { get; set; } = default!;
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
+    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, family: NeoUI.Blazor.Primitives.InteractionFamily.Selection);
+    /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state, including unchanged reset values.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// Gets or sets the collection of items to display in the combobox.
     /// </summary>
@@ -245,8 +253,10 @@ public partial class Combobox<TItem> : ComponentBase
     /// <summary>
     /// Validates required parameters.
     /// </summary>
+    private long _searchRevision, _externalSearchRevision;
     protected override void OnParametersSet()
     {
+        if (_externalSearchRevision != InteractionRevision) { _externalSearchRevision = InteractionRevision; _searchRevision++; }
         base.OnParametersSet();
 
         if (ValueSelector == null)
@@ -296,6 +306,7 @@ public partial class Combobox<TItem> : ComponentBase
         {
             // Small delay to let browser finish processing DOM changes
             await Task.Delay(50);
+            if (!_isOpen) return;
             await _commandInputRef.FocusAsync();
         }
         catch
@@ -332,8 +343,7 @@ public partial class Combobox<TItem> : ComponentBase
         Value = newValue;
         await ValueChanged.InvokeAsync(newValue);
 
-        if (ClearSearchOnSelect)
-            _commandSearchQuery = string.Empty;
+        if (ClearSearchOnSelect) { _commandSearchQuery = string.Empty; _searchRevision++; }
 
         // Close the popover after selection
         _isOpen = false;

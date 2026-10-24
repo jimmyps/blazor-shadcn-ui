@@ -2,6 +2,258 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-10-22 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
+
+> **Targeting: `v4.5.0` for both Components and Primitives (unreleased)**
+> **Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`.** Major feature upgrade with aligned package versions.
+> **Opt-in — the library default remains `InteractionMode.Blazor`.** Existing applications retain Blazor interaction ownership; review the API/HTML compatibility notes below.
+
+---
+
+### 🛠️ Correctness and compatibility review
+
+- Checkbox keyboard guarding uses one delegated document listener and one shared void module import per circuit/app, rather than per-checkbox imports, module references or disposal. Checkbox retains its original public lifetime API. TagInput logs JavaScript module-load failures and keeps the circuit usable; cross-package interaction imports consistently resolve against the application base URI.
+
+- TagInput resolves its shared suggestion adapter against the application base URI, preserving apps hosted beneath a sub-path. Checkbox uses Space-only keyboard activation in both modes; a local key guard blocks native Enter activation without adding a second Space toggle.
+- Compatibility: MultiSelect option check markers are presentation-only spans in both modes, replacing nested checkbox roles; update CSS/tests targeting the former checkbox DOM. Default-mode MaskedInput now honors `ShowMask=false` during typing instead of always filling the template.
+
+- DataTable column visibility now uses the checkbox change callback for keyboard, label and pointer activation in both interaction modes. Checkbox buttons rely on native Space clicks (with Enter blocked locally), avoiding a second server keydown toggle. Browser TagInput preserves unchanged badge/remove-button nodes across acknowledgements and parent renders, including duplicate values; suggestion selection in both modes commits on completed clicks/taps so cancelled touch scrolling cannot add a tag.
+
+- Floating portals preserve Floating UI’s matched-width constraints when Blazor rewrites the wrapper style, preventing a visible one-frame width collapse in default-mode Select/Popover opening and parent renders. The ResizeObserver frame boundary and immediate scroll updates remain intact; frame-level tests cover both modes, mounting policies, reopen, resize and closed-state renders.
+
+- The Interaction Mode demo handles MultiSelect’s existing null empty-selection value when rendering the selected-workspaces label. Deselecting the last item, rapid toggles and Clear no longer terminate the Server circuit; mobile gallery coverage includes those paths.
+
+- MultiSelect checkbox markers are presentation-only children of their option rows, so tapping the square updates selection, the visible checkmark and trigger badges together instead of starting an independent Browser field. TagInput highlights suggestions in place, retaining touch/mouse targets through activation, and legacy suggestions use pointer activation so Safari taps do not depend on synthesized mouse events; touch regressions verify visible badges and accepted values in both modes.
+
+- Specialized editor preservation: Browser MaskedInput reuses the existing JavaScript mask engine instead of a second formatter. Literal-digit prefixes, configured mask characters/templates, focus/caret behavior, selected and formatted paste, IME/mobile deletion and readonly editing retain one owner. The legacy path also honors `ShowMask=false`; empty masks retain native text editing.
+- CurrencyInput preserves full-precision editing values independently of rounded display text, including untouched focus/blur, never-focused form submission, delayed acceptance and explicit edits to a rounded value. Current formatting metadata travels with canonical acknowledgements; real bounds/rejection adjustments still require review.
+- Restored TagInput container focus and keyboard-blur suggestion dismissal. NavigationMenu again drives its existing Tailwind entry/directional/exit motion, with immediate inert/ARIA changes and cancellation-safe presence. Markdown history is captured at the edit so queued layout frames cannot erase redo or resurrect reset history; composition completion records one final state.
+- Added a shared Server/WASM preservation fixture and mandatory cross-mode regression suite, with an additional WebKit/WASM pass for the editor and motion cases.
+
+- Browser checkbox checkmarks and indeterminate indicators use the actual `hidden` attribute for SVG and HTML elements, keeping visible feedback aligned with ARIA state. MaskedInput keeps the caret at the next editable slot instead of skipping unfilled slots before a separator; typing, deletion and resets have focused browser coverage.
+
+- Blazor-mode shared hosts skip Browser serialization and browser-only value/options evaluation. Default RadioGroup supports cyclic/non-serializable TValue again; a regression executable verifies default rendering with JSON reflection disabled.
+- Ordinary Input loads the Browser draft/format/Markdown modules dynamically only when opted in. Initialization and disposal retain log-and-continue handling for unexpected interop failures; disposal still ignores normal disconnected/cancelled lifetimes.
+- Partial DateInput/TimeInput drafts cannot flush successfully, including direct field synchronization and `novalidate` forms. Invalid numeric drafts report native validity and `OnFlushFailed`; ordinary native constraints continue suppressing EditForm callbacks, while EditContext validation retains its existing handler semantics.
+- MultiSelect badge removal/Clear All reach their application handlers without toggling the Browser popover. Shared fields and tag search/rejection honor the same connection signal. Work known to be unsent can flush after reconnect without another edit; uncertain in-flight business callbacks are not automatically replayed.
+- Rejected/coalesced UI observations retire unmatched binding echoes. InteractionModeProvider keys its subtree when its resolved scope changes, recreating controllers; flush pending drafts first because remounting resets local component state.
+- Browser Collapsible and Accordion preserve CSS expand/collapse animations. Closed panels become inert and aria-hidden immediately, then receive hidden after their own finite exit motion; rapid reopening cannot be hidden by an old completion. No-motion styles close immediately, and Tabs retain their existing panel switching behavior.
+- Initially open Browser disclosures and the active tab remain visible during prerender. Browser Tabs still mount inactive panels; retain explicit Blazor exceptions for heavy/lazy content.
+- Cancelled RangeSlider pointer gestures restore their starting preview without committing, with touch-action suppression. Calendar avoids post-selection focus after disposal and preserves the default-mode omission of unfocused `data-focused` attributes.
+- Floating positioning defers only observed element resizes out of ResizeObserver delivery; scroll/ancestor updates retain their immediate path in both modes.
+- ColorPicker, TimePicker and DateRangePicker expose `InteractionRevision` consistently for their shell commands.
+- Nested floating portals suppress redundant refresh notifications while their own category host is already rendering; structural registration and later application updates still render normally. This prevents a TagInput inside persistent popover content from creating a render feedback loop. Same-batch dialog/nested-popover updates and late descendant-only updates have regression coverage in default, explicit Blazor and Browser modes. The guide documents `data-neo-floating-owner` for other portaled content, including explicit Blazor Selects inside Browser popovers. Styled SelectContent forwards additional attributes to its listbox (or BottomSheet scroll container), so ownership markers no longer require dropping down to primitives. Logical ownership supplements physical containment, preserving item selection when a nested Browser Select also has an ownership marker.
+- Browser popovers consume Escape on focused triggers before enclosing dialogs; portaled TagInput suggestions retain their anchor's logical containment for outside-click dismissal. Horizontal Browser RangeSlider pointer, fill and arrow behavior follows RTL direction while vertical stepping remains unchanged.
+- Pending Input initialization has a per-element lifetime token, preventing disposal during a module import from attaching a late controller to a still-connected element. The shared connection module resolves once from the application base URL, including path-prefixed hosting and asset aliases.
+- Documented visible OnFlushFailed recovery for TimedOut/Uncertain: reconcile pending application work, reload authoritative values, and increment ValueRevision (InteractionRevision for structured/primitive fields) before asking the user to review and submit again.
+- CI now runs deterministic/default-mode compatibility checks, full Server suites for both defaults, family policies, WASM and actual-gallery/WebKit coverage. Logs are retained as workflow artifacts.
+
+### Compatibility and API adoption notes
+
+- Checkbox/Switch `Name` and `Required` are now typed parameters; use those parameters when binding dynamically. Blazor mode preserves explicit legacy attributes; Browser mode uses Name for hidden field values and Required for validation.
+- CommandContent now implements `IAsyncDisposable`; manual lifetime code should await `DisposeAsync`. Razor/Blazor manages it normally.
+- Dropdown triggers now use native `disabled`, affecting focus, CSS and native event behavior as expected for disabled controls.
+- A global Browser policy can expose previously unsupported trigger compositions: triggers with application `OnClick`/custom click handling require an explicit Blazor exception or moving the action into content. These combinations currently fail clearly during initialization.
+- Interaction policy uses `IOptions<InteractionOptions>`. Register NeoUI services in test renderers too (`AddNeoUIPrimitives`, and `AddNeoUIComponents` for styled controls); minimal custom/bUnit service collections may need updating.
+- Selection controls resolve at their root and explicitly forward the result to internal floating/search controls. A provider inside portaled content affects descendants, not the ancestor shell. Inputs family settings deliberately separate ordinary inputs from their enclosing Popover; an explicitly Blazor shell does not override `Inputs = Browser`. See the adoption guide for exceptions and legacy fallback precedence.
+- The existing DateInput/TimeInput `C` shortcut is available in both modes and replaces segments with the current date/time; it is now documented alongside segment navigation/deletion.
+
+### ✨ Feature — floating UI responds without a server round trip
+
+In Blazor Server, opening a menu or moving through its items previously waited for the circuit.
+`InteractionMode.Browser` gives the browser ownership of opening, positioning, focus, keyboard navigation,
+ARIA state and dismissal. Application callbacks run asynchronously; local UI feedback does not wait for them.
+
+**Portal contents remain live Blazor components.** A Browser-mode Popover can contain server-rendered
+controls, event handlers and changing Razor content; the browser owns its floating shell, not its business logic.
+
+| Controls | Browser-owned behavior |
+| --- | --- |
+| DropdownMenu, Menubar and ContextMenu | Opening, dismissal, item focus/hover, typeahead, keyboard navigation and nested submenus; Menubar sibling switching; ContextMenu pointer positioning, keyboard gestures, programmatic opening, optional backdrop and scroll locking |
+| Checkbox and radio menu items | Immediate checked feedback, independent ordered commit queues, stay-open selection, disabled-item handling, rejection and controlled resets |
+| Select and Popover | Floating shell, focus, positioning and dismissal; Select also provides local navigation/typeahead and optimistic selection feedback |
+| NavigationMenu | Mounted panels, hover delays, switching, focus, ARIA, indicators/viewports and native-link dismissal, including nested portaled content |
+| DatePicker, DateRangePicker, TimePicker, Combobox and MultiSelect | Inherited floating policy; local dismissal and applicable mounted-item hover/focus/navigation; Calendar mounted-day navigation and Command/virtualized Command navigation |
+| HoverCard and Tooltip | Local pointer/focus timers, persistence across trigger/content, Escape dismissal and tooltip descriptions; action callbacks remain live |
+| Accordion, Collapsible and Tabs | Mounted panels, local expansion/activation, disabled skipping, keyboard navigation, ARIA and revisioned resets; Tabs support manual/automatic and horizontal/vertical navigation |
+| SplitButton and SidebarPillNav compositions | Resolved interaction policy for dropdown/menu content, local split-button open styling and optimistic pill-button active feedback |
+
+Menubar and ContextMenu reuse the DropdownMenu selection/controller protocol **at the primitive layer**.
+Keyboard and ARIA behavior, disabled items, nested focus and local mechanics continue working when outgoing
+circuit traffic is blocked. Date/time commits and newly rendered content still use .NET.
+
+Browser Tabs keep inactive content mounted. Review tab sets containing lazy data loads,
+large grids/charts/editors or substantial lifecycle/subscription work before enabling this policy.
+Use `<Tabs InteractionMode="InteractionMode.Blazor">` as a targeted exception; hidden is not lazy.
+The Interaction Mode gallery includes multiline/grouped draft, hover, disclosure and Tabs examples.
+
+### ✨ Feature — shared browser field acceptance and expanded input families
+
+- NumericInput, CurrencyInput and MaskedInput preserve editable drafts separately from typed values. Final blur/form commits apply bounds and formatting; partial or unrepresentable values stop submission. Formatting the same value succeeds without a second Save; changed values require review through ValueAdjusted. Masked onchange uses raw empty/non-empty boundaries, and WebKit deletion across literals stays local.
+- Checkbox, Switch, RadioGroup, Toggle, ToggleGroup, Slider and RangeSlider provide local state/preview with asynchronous canonical acceptance, rejection and revisioned resets. The shared primitive field host joins the existing form synchronization barrier, including portaled content.
+- InputOtp supports local typing, paste, navigation and disabled handling. DateInput/TimeInput support local segmented editing, ARIA updates and the existing FocusAsync API; picker selection/Apply/Cancel dismiss locally, and partial entries cannot submit an older model.
+- TagInput adds local static search, suggestions, hover, tokenization, paste and removal. Application search/validation remain asynchronous; stale results are discarded, Save captures a pending tag, and custom Razor TagTemplate compositions retain an explicit Blazor exception.
+- MarkdownEditor reuses the textarea draft/form adapter for local typing, formatting shortcuts/toolbars, list continuation and undo/redo. Explicit resets clear document history; undo/redo notifications preserve redo history, and preview HTML still uses server rendering and sanitization.
+- RichTextEditor was audited rather than converted. Its existing Quill callback suppression does not solve stale parent echoes or guarantee selection/undo preservation. Full rich-editor synchronization and modal families remain outside this sweep.
+
+- Input initialization failures retain the existing log-only error policy, keeping independent controls and the circuit usable; Browser forms still refuse unsynchronized drafts.
+
+### ✨ Feature — application defaults with explicit exceptions
+
+Optional nullable `Floating`, `Menus`, `Selection`, `Inputs` and `Disclosures` defaults allow staged adoption. Precedence is explicit component → scoped override → application family setting → application global fallback → Blazor. Selection controls forward their resolved mode to their composed shell/search UI, so Floating alone cannot opt legacy selection fields into Browser behavior. TimePicker, DateRangePicker and ColorPicker expose shell-level overrides.
+
+Configure the global fallback:
+
+```csharp
+using NeoUI.Blazor.Primitives;
+using NeoUI.Blazor.Primitives.Extensions;
+
+builder.Services.ConfigureNeoUIInteractions(options =>
+    options.DefaultMode = InteractionMode.Browser);
+```
+
+Resolution is **explicit component setting → nearest applicable scoped `InteractionModeProvider` → application family setting → application global fallback → library default**.
+An omitted parameter differs from an explicit `InteractionMode.Blazor`, so individual controls can opt out
+of a Browser application default. Composed controls inherit the policy and expose explicit overrides.
+
+```razor
+<InteractionModeProvider Mode="InteractionMode.Browser">
+    <Combobox TItem="string" Items="@workspaces" SearchInterval="250"
+              ValueSelector="@(item => item)" DisplaySelector="@(item => item)"
+              @bind-Value="workspace" />
+    <Select TValue="string" InteractionMode="InteractionMode.Blazor">
+        @* An explicit exception inside this Browser scope. *@
+    </Select>
+</InteractionModeProvider>
+```
+
+Leave a family setting null to inherit `DefaultMode`. Optional provider `Family` scopes one family; other controls inherit outer policies. Pill navigation uses a menu-only scope so embedded fields keep their input policy.
+Mode is fixed after initialization; recreate a component with `@key` to change its mode.
+
+### ✨ Feature — browser-owned Input drafts and ordered search acknowledgements
+
+Browser-mode `Input`, `Textarea`, `InputGroupInput` and `InputGroupTextarea` share the draft and form-flush protocol.
+Their shared initialization checks lifetime across module import, so removal during initialization cannot pass a disposed callback bridge to JavaScript.
+Textarea also preserves its initial value in server-rendered HTML before hydration.
+
+Browser-mode `Input` owns the current value, caret and selection while .NET processes edits asynchronously.
+An acknowledgement for `Pro` cannot overwrite a newer `Product` draft. The protocol covers delayed/rapid
+edits, rejection/normalization, IME composition, debounce, blur/change, uncertain delivery and explicit resets.
+Command/Combobox/MultiSelect search fields retain typed spaces while results are pending;
+Space selection shortcuts apply to list/root targets rather than editable search inputs.
+The gallery spotlight has coverage for delayed searches, caret edits and repeated clearing.
+MultiSelect search now reads its canonical query when acknowledging an edit, independently
+of cascading renders. Browser Input uses binding expressions or an explicit
+`AcceptedValueAccessor` for canonical acknowledgement; internal Command/DataView/DynamicForm
+compositions supply their context/model accessors. Rejection, normalization and reset
+checks remain in place.
+The Interaction Mode gallery also includes an inline CommandInput example with grouped
+commands, a 300 ms debounce, delayed search feedback, keyboard selection and reset.
+CommandInput now acknowledges the accepted context query directly, independently of
+queued cascading renders. Delayed Server render completion can no longer acknowledge
+an older child Input value and roll back the spotlight draft; revision changes still
+prevent a completed search from replacing a reset.
+
+- `ValueRevision` replaces/reset drafts and invalidates queued and in-flight acknowledgements, even when an old acknowledgement never settles.
+- CommandInput, Combobox and MultiSelect searches use the same draft protocol. Search callbacks are awaited; stale rendered results cannot be selected while the latest query is pending.
+- `Input.DebounceDelay` and Combobox/CommandInput `SearchInterval` retain a default of **0 ms**. MultiSelect adds Browser-mode `SearchInterval`, also defaulting to 0. Debouncing waits for a typing pause; it does not cancel application work already running.
+- In Browser **onchange** mode, typing sends callbacks only when crossing **empty ↔ non-empty**. Further edits in the same emptiness state send no additional typing callbacks. Blur/change or an explicit flush synchronizes the final value. Empty means length zero, and composition reports the transition after completion.
+
+This allows a server-bound action button to enable after the first character and disable after the last
+Backspace, without requiring blur. A valid stale acknowledgement updates the accepted baseline without
+repainting the newer draft, so rapid typing followed by repeated Backspace still delivers the empty transition.
+
+### ✨ Feature — flush the latest draft before validation and Save
+
+`BrowserInputForm` supplies a scoped Browser default and a submission barrier for supported inputs:
+
+```razor
+<BrowserInputForm @ref="form" Model="@model" OnValidSubmit="SaveAsync"
+                  OnFlushFailed="ShowSynchronizationFeedback">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <Input @bind-Value="model.Name" UpdateOn="InputUpdateMode.Input" />
+    <Button Type="ButtonType.Submit" Disabled="@(form?.IsSubmitting == true)">Save</Button>
+</BrowserInputForm>
+```
+
+Click, Enter, `requestSubmit()` and programmatic submission capture and lock the current supported drafts,
+bypass debounce, await matching acknowledgements, then run native constraints and EditContext validation
+before calling Save. Locks remain through awaited persistence; duplicate submissions are ignored.
+`IsSubmitting` supports disabled/loading feedback throughout synchronization and saving.
+
+Rejected/adjusted drafts, resets, composition, uninitialized inputs, changes, timeout or uncertain delivery
+prevent persistence. Corrections remain available for review and a subsequent submission. Native validation
+runs after synchronization so stale custom-validity messages cannot block sending a corrected draft.
+
+`BrowserInputScope.SubmitAsync` supports existing EditForm `OnSubmit` flows with `novalidate`;
+standalone `Input.FlushAsync` and scope `FlushAsync` support custom submission paths.
+The barrier synchronizes supported Input drafts, not other controls' optimistic selection queues or arbitrary editors.
+
+### ✨ Feature — EditForm-compatible adoption without changing submit handlers
+
+`BrowserEditForm` is a thin wrapper around the standard EditForm for existing applications:
+change the form tag and optionally add `OnFlushFailed`; retain its `Model`/`EditContext`,
+validators, form content and existing submit handlers. It inherits global/scoped interaction
+policy rather than imposing Browser mode on its inputs.
+
+Draft synchronization happens before validation. `OnValidSubmit`/`OnInvalidSubmit` retain
+automatic EditContext validation; `OnSubmit` retains caller-owned validation without an
+extra implicit validation pass. Synchronization failures run neither validation nor submit
+handlers. Native constraints run after synchronization, with `novalidate` and submitter
+`formnovalidate` preserved. A native validation failure suppresses submission as on EditForm.
+Browser and .NET guards block duplicate submits through the awaited handler; `IsSubmitting`,
+`aria-busy` and `SubmitAsync()` support existing feedback/programmatic flows. Explicit
+EditContexts and Model-generated contexts remain stable through parent/busy-state renders.
+The lower-level scope also gains a caller-owned submit overload without automatic validation.
+
+EditForm has no public asynchronous pre-validation hook, so retaining the literal EditForm
+tag requires the documented scope/OnSubmit integration. The wrapper keeps that migration to
+a tag change and uses public framework APIs. Interactive rendering is required.
+
+### 🐛 Fix — reconnect reconciliation, touch switching and local UI states
+
+- Floating resize/scroll updates are coalesced onto animation frames, avoiding ResizeObserver delivery-loop errors when Razor reapplies persistent portal styles, including Browser TagInput in WebKit.
+- Browser ToggleGroup acknowledgements treat a canonical null binding as an authoritative empty selection, including multiple selection, instead of falling back to an older parameter.
+- Empty Browser DateInput/TimeInput fields remain keyboard reachable without a picker. Segmented editing preserves minute-step alignment, unset-segment arrow behavior, the C shortcut for today/current time, and AM/PM input rules.
+- Blazor NavigationMenu hover/close timer observations marshal application callbacks onto the renderer dispatcher. Disposing the root cancels its context timers; delayed notifications no longer terminate a Server process with a dispatcher error.
+
+- FloatingPortal checks both portal and owning event-bridge lifetimes before initialization and after each await. Removing a dropdown, popover, Select or submenu during delayed portal rendering/module import no longer passes a disposed DotNetObjectReference to interop and terminates the Server circuit. A controller returned after removal is disposed; ObjectDisposedException is suppressed only after one of those lifetimes has ended. Unrelated errors still propagate.
+- Floating controllers observe rendered configuration after a retained-circuit reconnect. Checked-state resets and close commands reconcile without replaying business callbacks, including resets to the same accepted value.
+- Browser-input completion has deadlines; known disconnected Server transports are not invoked. Rendered scope state releases locks after reconnect. WebAssembly local callbacks continue working offline.
+- Explicit MultiSelect close reaches the browser even when its open observation has not reached the server.
+- Menubar coordinates sibling clicks before floating controllers; a menu opened by mouse hover stays open when clicked. Touch-generated pointerover/out events do not run mouse-hover transitions, preventing iPhone sibling taps from immediately closing the new menu.
+- Shared item hover/focus and dismissal run locally where supported, including composed/virtualized lists. NavigationMenu defers link dismissal and focus-leave checks to preserve native/router activation.
+- Late positioning cannot reopen dismissed layers; parent rerenders preserve browser state, and removed DOM/controllers clean up their listeners. Pill feedback survives unrelated renders and stale binding echoes.
+
+### 📖 Demo, adoption guidance and validation
+
+The gallery adds **Interaction Mode** immediately after Components, registered in the component index,
+search and spotlight. Examples cover menu families and pill/split compositions, checkbox/radio filters,
+delayed/rejected commits, policy overrides, theme-picker Popover content, composed date/time/search controls,
+input drafts and transition-only callbacks, and a dialog that flushes before Save. The dialog shows disabled
+inline progress while synchronizing/saving and closes on success. Combobox and MultiSelect examples and
+their displayed code use **250 ms** search intervals.
+
+The [adoption guide](docs/browser-interactions.md) documents APIs, resets, form validation, reconnect
+uncertainty and mounting costs. Regression fixtures cover Interactive Server, an application Browser default
+and WebAssembly, with delayed/rejected/rapid updates, stale acknowledgements, controlled resets, blocked
+circuit traffic, retained-circuit reconnect, IME, validation and offline WebAssembly submission. Menu tests
+include Edge and WebKit touch coverage; the public gallery is checked at desktop/mobile viewports.
+
+**Adoption limits:** browser feedback is not confirmation of server acceptance. Browser floating content
+stays mounted, increasing initial DOM/render cost for large lists or menus repeated across rows. New months,
+virtualized content, data loading and business callbacks still use .NET; await search-result assignment or
+guard application requests against stale writes. Uncertain business callbacks are not automatically replayed.
+BottomSheet Select remains a Blazor exception. Textarea, masked inputs and specialised editors retain their
+existing value behavior. Pill route links retain router ownership; mounted desktop sidebar reveal can run
+locally, while mobile sidebar expansion still uses the server-controlled Sheet.
+
+**Packaging:** Components and Primitives both target `4.5.0`. Components requires Primitives `4.5.0`; publish Primitives first. Existing tag prefixes remain `primitives/v4.5.0` and `components/v4.5.0`. Icon packages retain their independent versions. See [Upgrading to v4.5.0](docs/upgrading-to-4.5.md).
+MinVer retains tag-derived release versions, with minimum minor ranges set for these development builds.
+
+---
+
 ## 2026-8-24 — CloseAsync Runs Wholly On The Dispatcher
 
 > **Targeting: `v4.1.38`**

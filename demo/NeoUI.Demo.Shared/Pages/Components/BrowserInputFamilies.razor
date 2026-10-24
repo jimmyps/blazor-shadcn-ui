@@ -1,0 +1,51 @@
+@using Microsoft.AspNetCore.Components.Forms
+
+<InteractionModeProvider Mode="InteractionMode.Browser">
+    <BrowserEditForm @ref="form" Model="@draft" OnValidSubmit="Save" OnFlushFailed="FlushFailed">
+        <div class="space-y-6">
+            <div class="grid gap-5 sm:grid-cols-2">
+                <div class="space-y-2"><Label>Quantity</Label><NumericInput TValue="decimal?" @bind-Value="draft.Quantity" Min="0" Max="1000" UpdateOn="InputUpdateMode.Input" Placeholder="Try a partial number" /><p class="text-xs text-muted-foreground">Partial text stays editable. Bounds apply on final commit.</p></div>
+                <div class="space-y-2"><Label>Price in EUR</Label><CurrencyInput TValue="decimal?" @bind-Value="draft.Price" Currency="EUR" Culture="de-DE" UpdateOn="InputUpdateMode.Input" Placeholder="12,34" /></div>
+                <div class="space-y-2"><Label>Reference</Label><MaskedInput @bind-Value="draft.Reference" Mask="000-000" Placeholder="123-456" UpdateOn="InputUpdateMode.Input" /></div>
+                <div class="space-y-2"><Label>Tags</Label><TagInput @bind-Tags="draft.Tags" Suggestions="@suggestions" Placeholder="Type a tag or paste a list" Clearable /><p class="text-xs text-muted-foreground">Enter/comma add tags. Save also captures a pending tag draft.</p></div>
+                <div class="space-y-2"><Label>Date segments</Label><DateInput @bind-Value="draft.Date" Culture="@(System.Globalization.CultureInfo.GetCultureInfo("en-GB"))" /></div>
+                <div class="space-y-2"><Label>Time segments</Label><TimeInput @bind-Value="draft.Time" Use12Hour="false" /></div>
+                <div class="space-y-2"><Label>Verification code</Label><InputOtp Length="4" @bind-Value="draft.Code"><InputOtpGroup><InputOtpSlot Index="0" /><InputOtpSlot Index="1" /><InputOtpSlot Index="2" /><InputOtpSlot Index="3" /></InputOtpGroup></InputOtp></div>
+                <div class="space-y-3"><Label>Preferences</Label><div class="flex flex-wrap items-center gap-4"><label class="flex items-center gap-2 text-sm"><Checkbox @bind-Checked="draft.Notifications" /> Notifications</label><label class="flex items-center gap-2 text-sm"><Switch @bind-Checked="draft.Preview" /> Preview</label><Toggle @bind-Pressed="draft.Pinned">Pinned</Toggle></div><ToggleGroup @bind-Value="draft.Density"><ToggleGroupItem Value="compact">Compact</ToggleGroupItem><ToggleGroupItem Value="comfortable">Comfortable</ToggleGroupItem></ToggleGroup></div>
+                <div class="space-y-3"><Label>Digest frequency</Label><RadioGroup TValue="string" @bind-Value="draft.Digest" AriaLabel="Digest frequency"><label class="flex items-center gap-2 text-sm"><RadioGroupItem TValue="string" Value='@("daily")' AriaLabel="Daily digest" /> Daily</label><label class="flex items-center gap-2 text-sm"><RadioGroupItem TValue="string" Value='@("weekly")' AriaLabel="Weekly digest" /> Weekly</label></RadioGroup></div>
+                <div class="space-y-3"><Label>Volume</Label><Slider @bind-Value="draft.Volume" /></div>
+                <div class="space-y-3"><Label>Allowed range</Label><RangeSlider @bind-MinValue="draft.Low" @bind-MaxValue="draft.High" /></div>
+                <div class="space-y-3 sm:col-span-2"><Label>Editor draft</Label><MarkdownEditor @bind-Value="draft.Markdown" Placeholder="Type, select text, then try Ctrl+B or Ctrl+I" DebounceDelay="250" /></div>
+            </div>
+            <div class="flex items-center gap-3"><Button Type="ButtonType.Submit" Disabled="@saving">@if (saving) { <LucideIcon Name="loader-circle" Size="16" Class="animate-spin" /> } Save controls</Button><p role="status" class="text-sm text-muted-foreground">@status</p></div>
+        </div>
+    </BrowserEditForm>
+</InteractionModeProvider>
+
+@code {
+    private BrowserEditForm? form;
+    private readonly Draft draft = new();
+    private bool saving;
+    private string status = "Save waits for accepted values before running application work.";
+    private readonly string[] suggestions = ["Design", "Engineering", "Product", "Research"];
+    private sealed class Draft {
+        public decimal? Quantity { get; set; } = 3;
+        public decimal? Price { get; set; } = 12.34m;
+        public string? Reference { get; set; }
+        public IReadOnlyList<string>? Tags { get; set; }
+        public DateOnly? Date { get; set; } = new DateOnly(2026,10,22);
+        public TimeOnly? Time { get; set; } = new TimeOnly(13,45);
+        public string? Code { get; set; }
+        public bool Notifications { get; set; }
+        public bool Preview { get; set; }
+        public bool Pinned { get; set; }
+        public string? Density { get; set; } = "comfortable";
+        public string? Digest { get; set; } = "daily";
+        public double Volume { get; set; } = 30;
+        public double Low { get; set; } = 20;
+        public double High { get; set; } = 80;
+        public string? Markdown { get; set; }
+    }
+    private async Task Save() { saving = true; try { await Task.Delay(700); status = $"Saved quantity {draft.Quantity}, {draft.Tags?.Count ?? 0} tags and the latest editor draft."; } finally { saving = false; } }
+    private void FlushFailed(InputFlushResult result) => status = $"Draft synchronization: {result.Status}. Review the field and try Save again.";
+}

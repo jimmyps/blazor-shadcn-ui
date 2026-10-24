@@ -15,7 +15,7 @@
 
 <TooltipProvider>
     <CascadingValue Value="@Context" IsFixed="false">
-        <div class="@($"flex w-full {HeightClass}")">
+        <div data-neo-sidebar-provider class="@($"flex w-full {HeightClass}")">
             @ChildContent
         </div>
     </CascadingValue>

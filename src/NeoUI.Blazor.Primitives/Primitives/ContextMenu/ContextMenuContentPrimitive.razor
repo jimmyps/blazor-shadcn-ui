@@ -8,6 +8,17 @@
 *@
 
 @* Both overlay and FloatingPortal are conditionally rendered (ForceMount=false). *@
+@if (Family?.Enabled == true)
+{
+    <DropdownMenuContentPrimitive BrowserKind="contextmenu" BrowserX="@Context.X" BrowserY="@Context.Y"
+        BrowserLockScroll="@LockScroll" BrowserOverlayClass="@OverlayClass" BrowserViewportPadding="@ViewportPadding"
+        Strategy="PositioningStrategy.Fixed" ZIndex="@ZIndex" Loop="@Loop"
+        CloseOnEscape="@CloseOnEscape" CloseOnClickOutside="@CloseOnClickOutside" @attributes="AdditionalAttributes">
+        <CascadingValue Value="Family" IsFixed="true">@ChildContent</CascadingValue>
+    </DropdownMenuContentPrimitive>
+}
+else
+{
 @if (Context.IsOpen)
 {
     <div class="@OverlayClass"
@@ -30,7 +41,9 @@
     </FloatingPortal>
 }
 
+}
 @code {
+    [CascadingParameter] private BrowserMenuFamily? Family { get; set; }
 [CascadingParameter]
 private ContextMenuContext Context { get; set; } = null!;
 
@@ -105,6 +118,7 @@ private readonly List<IContextMenuItem> _menuItems = new();
 
     protected override void OnInitialized()
     {
+        if (Family?.Enabled == true) return;
         if (Context == null)
         {
             throw new InvalidOperationException(
@@ -387,6 +401,7 @@ private readonly List<IContextMenuItem> _menuItems = new();
 
     public async ValueTask DisposeAsync()
     {
+        if (Family?.Enabled == true) return;
         Context.OnStateChanged -= HandleContextStateChanged;
         await CleanupAsync();
     }

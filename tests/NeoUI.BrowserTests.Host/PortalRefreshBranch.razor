@@ -1,0 +1,12 @@
+<Popover InteractionMode="Mode" Open="true"><PopoverTrigger>Refresh parent trigger</PopoverTrigger>
+    <PopoverContent CloseOnClickOutside="false" CloseOnEscape="false">
+        <p data-testid="refresh-parent">Parent @Revision</p>
+        <PortalRefreshLeaf @ref="leaf" Revision="Revision" Mode="Mode" />
+    </PopoverContent>
+</Popover>
+@code {
+    private PortalRefreshLeaf? leaf;
+    public void UpdateLate(int value) => leaf!.UpdateLate(value);
+    [Parameter] public int Revision { get; set; }
+    [Parameter] public InteractionMode? Mode { get; set; }
+}

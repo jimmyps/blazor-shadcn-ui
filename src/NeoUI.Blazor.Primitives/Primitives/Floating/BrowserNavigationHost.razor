@@ -1,0 +1,66 @@
+@namespace NeoUI.Blazor.Primitives
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+@using System.Text.Json
+
+<div @ref="element" role="@(Kind == "menubar" ? "menubar" : null)" data-neo-navigation="@Kind"
+     data-neo-navigation-config="@Configuration" @attributes="AdditionalAttributes">@ChildContent</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string Kind { get; set; } = "menubar";
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public long Revision { get; set; }
+    [Parameter] public bool Loop { get; set; } = true;
+    [Parameter] public bool Vertical { get; set; }
+    [Parameter] public int Delay { get; set; } = 200;
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private ElementReference element;
+    private IJSObjectReference? module, controller;
+    private DotNetObjectReference<BrowserNavigationHost>? reference;
+    private bool initialized, reporting, disposed;
+    private readonly SemaphoreSlim gate = new(1,1);
+    private long revision, version;
+    private string? parameterValue, command;
+    private readonly HashSet<string> echoes = [];
+    private string Configuration => JsonSerializer.Serialize(new { value = command, version, loop = Loop, vertical = Vertical, delay = Delay, notify = ValueChanged.HasDelegate });
+    protected override void OnParametersSet()
+    {
+        var echo = Value != null && echoes.Remove(Value);
+        if (!initialized || revision != Revision || (!reporting && Value != parameterValue && !echo))
+        { command = Value; version++; }
+        initialized = true; revision = Revision; parameterValue = Value;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (disposed || controller != null) return;
+        await gate.WaitAsync();
+        try
+        {
+            if (disposed || controller != null) return;
+            module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor.Primitives/js/primitives/browser-navigation.js");
+            if (disposed) return;
+            reference ??= DotNetObjectReference.Create(this);
+            controller = await module.InvokeAsync<IJSObjectReference>("initialize", element, reference);
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException) { }
+        catch (ObjectDisposedException) when (disposed) { }
+        finally { gate.Release(); }
+    }
+    [JSInvokable] public async Task NotifyValueAsync(string value)
+    {
+        if (disposed) return;
+        echoes.Add(value); reporting = true;
+        try { await ValueChanged.InvokeAsync(value); }
+        finally { reporting = false; }
+    }
+    public async ValueTask DisposeAsync()
+    {
+        disposed = true;
+        await gate.WaitAsync();
+        try { if (controller != null) { await controller.InvokeVoidAsync("dispose"); await controller.DisposeAsync(); } if (module != null) await module.DisposeAsync(); }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { reference?.Dispose(); gate.Release(); }
+    }
+}

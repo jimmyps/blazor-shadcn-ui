@@ -20,7 +20,10 @@
     <Input @ref="@_inputRef"
            Id="@InputId"
            Type="InputType.Text"
+           InteractionMode="@(Context?.BrowserInteraction == true ? NeoUI.Blazor.Primitives.InteractionMode.Browser : NeoUI.Blazor.Primitives.InteractionMode.Blazor)"
+           ValueRevision="@(Context?.InputRevision ?? 0)"
            Value="@Context?.SearchQuery"
+           AcceptedValueAccessor="@(() => Context?.SearchQuery)"
            ValueChanged="HandleValueChanged"
            UpdateOn="InputUpdateMode.Input"
            DebounceDelay="SearchInterval"
@@ -97,6 +100,7 @@
     private Dictionary<string, object> InputAttributes => new()
     {
         { "role", "combobox" },
+        { "data-neo-autofocus", "true" },
         { "aria-autocomplete", "list" },
         { "aria-expanded", "true" },
         { "aria-controls", Context?.ListId ?? "" }
@@ -159,7 +163,7 @@
                 // Initialize command input keyboard navigation
                 // JavaScript will intercept arrow keys and call HandleNavigationKey
                 // Pass AutoFocus so JS can handle focusing the input
-                await _inputModule.InvokeVoidAsync(
+                if (Context?.BrowserInteraction != true) await _inputModule.InvokeVoidAsync(
                     "initializeCommandInput",
                     InputId,
                     _dotNetRef,
@@ -188,10 +192,20 @@
         }
     }
 
-    private void HandleValueChanged(string? value)
+    private async Task HandleValueChanged(string? value)
     {
-        // Update CommandContext with new search query
-        Context?.SetSearchQuery(value ?? string.Empty);
+        var context = Context;
+        if (context?.BrowserInteraction == true && context.BrowserSearchChanged != null)
+        {
+            var revision = context.InputRevision;
+            await context.BrowserSearchChanged(value ?? string.Empty);
+            // The context already owns the accepted query. Its cascading render
+            // may still be queued (e.g. unacknowledged Server render batches), so
+            // synchronize the child's acknowledgement without waiting for that render.
+            if (ReferenceEquals(Context, context) && revision == context.InputRevision)
+                _inputRef?.AcceptBrowserValue(context.SearchQuery, revision);
+        }
+        else context?.SetSearchQuery(value ?? string.Empty);
     }
 
     /// <summary>

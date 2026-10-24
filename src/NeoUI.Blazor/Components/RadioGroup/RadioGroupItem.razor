@@ -10,19 +10,19 @@
     class="@CssClass">
     @if (Variant == RadioGroupItemVariant.Check)
     {
-        @if (IsChecked)
+        @if (Context?.BrowserInteraction == true || IsChecked)
         {
-            <LucideIcon Name="check" Size="16" Class="h-4 w-4" />
+            <span hidden="@(Context?.BrowserInteraction == true)" data-neo-field-indicator="checked"><LucideIcon Name="check" Size="16" Class="h-4 w-4" /></span>
         }
     }
     else
     {
-        <span class="@CircleIndicatorClass"></span>
+        <span hidden="@(Context?.BrowserInteraction == true)" data-neo-field-indicator="checked" class="@CircleIndicatorClass"></span>
     }
 </RadioGroupItemPrimitive>
 
 @* Hidden native radio input for form submission *@
-@if (Context != null && !string.IsNullOrEmpty(Context.Name))
+@if (Context != null && !Context.BrowserInteraction && !string.IsNullOrEmpty(Context.Name))
 {
     <input type="radio" 
            name="@Context.Name" 

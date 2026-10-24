@@ -1,0 +1,26 @@
+@namespace NeoUI.Blazor
+@inherits Input
+
+<textarea @ref="_elementReference" id="@EffectiveId" name="@EffectiveName"
+          class="@CssClass"
+          data-neo-input-config="@BrowserInputConfiguration" data-neo-input-scope="@InputScope?.Id"
+          placeholder="@Placeholder" disabled="@Disabled" required="@Required" readonly="@Readonly"
+          autocomplete="@Autocomplete" maxlength="@MaxLength" minlength="@MinLength"
+          rows="@Rows" cols="@Cols" wrap="@Wrap" inputmode="@InputMode" autofocus="@Autofocus"
+          spellcheck="@((Spellcheck ?? false).ToString().ToLowerInvariant())"
+          aria-label="@AriaLabel" aria-describedby="@AriaDescribedBy"
+          aria-invalid="@(EffectiveAriaInvalid?.ToString().ToLowerInvariant())"
+          @attributes="AdditionalAttributes">@RenderedValue</textarea>
+
+@code {
+    /// <summary>Optional built-in browser editor behavior.</summary>
+    [Parameter] public object? Format { get; set; }
+    protected override object? BrowserFormat => Format;
+    /// <summary>Visible text rows.</summary>
+    [Parameter] public int? Rows { get; set; }
+    /// <summary>Visible text columns.</summary>
+    [Parameter] public int? Cols { get; set; }
+    /// <summary>Native wrapping policy.</summary>
+    [Parameter] public string? Wrap { get; set; }
+    protected override string CssClass => Class ?? string.Empty;
+}

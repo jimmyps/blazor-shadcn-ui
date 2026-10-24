@@ -12,13 +12,13 @@
     Maintains SelectPrimitive-specific behavior: keyboard navigation, item focus, ARIA attributes.
 *@
 
-<FloatingPortal IsOpen="@(_context?.IsOpen == true)"
+<FloatingPortal BrowserOptions="@GetBrowserOptions()" BrowserEvents="@browserEvents?.Reference" IsOpen="@(_context?.IsOpen == true)"
                 AnchorElement="@_context?.State.TriggerElement"
                 PortalId="@_portalId"
                 Side="@Side"
                 Align="@Align"
                 Offset="@Offset"
-                ForceMount="@ForceMount"
+                ForceMount="@(_context?.Browser.Enabled == true || ForceMount)"
                 MatchAnchorWidth="@MatchTriggerWidth"
                 Strategy="PositioningStrategy.Fixed"
                 OnReady="@HandleFloatingReady">
@@ -90,6 +90,20 @@
     [Parameter]
     public bool MatchTriggerWidth { get; set; } = true;
 
+    private BrowserFloatingEvents? browserEvents;
+    private BrowserFloatingOptions? GetBrowserOptions()
+    {
+        if (_context?.Browser.Enabled != true) return null;
+        return new BrowserFloatingOptions
+        {
+            TriggerId = _context.TriggerId, ContentId = _context.ContentId,
+            Kind = "select", Open = _context.Browser.Open, OpenVersion = _context.Browser.OpenVersion,
+            NotifyOpen = _context.Browser.OpenChanged != null,
+            ValueVersion = _context.Browser.ValueVersion, SelectedItemId = _context.BrowserSelectedId,
+            ValueId = _context.ValueId
+        };
+    }
+
     protected override void OnInitialized()
     {
         if (_context == null)
@@ -101,13 +115,26 @@
 
         _portalId = $"select-portal-{_context.ContentId}";
 
+        if (_context.Browser.Enabled)
+        {
+            browserEvents = new BrowserFloatingEvents
+            {
+                Notify = async (name, open) =>
+                {
+                    if (name == "open") await _context.Browser.ReportOpenAsync(open);
+
+                },
+                Commit = itemId => _context.CommitBrowserSelection?.Invoke(itemId) ?? Task.FromResult<string?>(null)
+            };
+        }
+
         // Subscribe to context state changes for cleanup
         _context.OnStateChanged += HandleContextStateChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && _jsModule == null)
+        if (_context?.Browser.Enabled != true && firstRender && _jsModule == null)
         {
             _jsModule = await JS.InvokeAsync<IJSObjectReference>(
                 "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/select.js");
@@ -126,10 +153,10 @@
             contentBuilder.AddAttribute(1, "id", _context!.ContentId);
             contentBuilder.AddAttribute(2, "role", "listbox");
             contentBuilder.AddAttribute(3, "aria-labelledby", _context.TriggerId);
-            contentBuilder.AddAttribute(4, "aria-activedescendant", GetActiveDescendantId());
+            contentBuilder.AddAttribute(4, "aria-activedescendant", _context.Browser.Enabled ? null : GetActiveDescendantId());
             contentBuilder.AddAttribute(5, "data-select-content", "true");
             // CRITICAL: data-state must reflect actual open state for CSS animations
-            contentBuilder.AddAttribute(6, "data-state", _context.IsOpen ? "open" : "closed");
+            contentBuilder.AddAttribute(6, "data-state", _context.Browser.Enabled ? null : (_context.IsOpen ? "open" : "closed"));
             contentBuilder.AddAttribute(7, "data-side", GetDataSide());
             contentBuilder.AddAttribute(8, "tabindex", "-1");
             contentBuilder.AddMultipleAttributes(9, AdditionalAttributes);
@@ -141,6 +168,7 @@
 
     private async Task HandleFloatingReady()
     {
+        if (_context?.Browser.Enabled == true) return;
         if (_context == null || _jsModule == null) return;
 
         // CRITICAL: Scroll to selected item and set visual focus
@@ -205,6 +233,11 @@
 
     private async void HandleContextStateChanged()
     {
+        if (_context?.Browser.Enabled == true)
+        {
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
         // When context closes, clean up ONLY if not using ForceMount
         // With ForceMount, handlers stay active and cleanup only on component disposal
         if (_context?.IsOpen == false && _isKeyboardSetup && !ForceMount)
@@ -304,6 +337,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        browserEvents?.Dispose();
         if (_context != null)
         {
             _context.OnStateChanged -= HandleContextStateChanged;

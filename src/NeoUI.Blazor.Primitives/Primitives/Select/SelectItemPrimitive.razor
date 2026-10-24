@@ -7,13 +7,15 @@
 {
     <div id="@ItemId"
          role="option"
-         aria-selected="@IsSelected.ToString().ToLower()"
-         data-state="@(IsSelected ? "checked" : "unchecked")"
-         data-focused="@(IsFocused ? "true" : null)"
+         aria-disabled="@Disabled.ToString().ToLowerInvariant()"
+         aria-selected="@(_context.Browser.Enabled ? null : IsSelected.ToString().ToLower())"
+         data-neo-text="@TextValue"
+         data-state="@(_context.Browser.Enabled ? null : (IsSelected ? "checked" : "unchecked"))"
+         data-focused="@(!_context.Browser.Enabled && IsFocused ? "true" : null)"
          data-disabled="@(Disabled ? "true" : null)"
-         @onclick="HandleClick"
+         @onclick="@(_context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
          @onclick:stopPropagation="true"
-         @onmouseenter="HandleMouseEnter"
+         @onmouseenter="@(_context.Browser.Enabled ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleMouseEnter))"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
@@ -24,6 +26,23 @@
     private SelectContext<TValue>? _context { get; set; }
 
     private int _itemIndex = -1;
+    private readonly string browserItemId = $"neo-option-{Guid.NewGuid():N}";
+
+    protected override void OnParametersSet()
+    {
+        if (_context?.Browser.Enabled == true)
+        {
+            var item = (Value, Disabled, TextValue ?? Value?.ToString());
+            if (!_context.BrowserItems.TryGetValue(browserItemId, out var previous) || !previous.Equals(item))
+            {
+                var missingSelection = _context.BrowserSelectedId == null;
+                _context.BrowserItems[browserItemId] = item;
+                if (missingSelection && _context.BrowserSelectedId != null) _context.Browser.ValueVersion++;
+                _context.RefreshBrowserValue();
+            }
+        }
+    }
+
 
     /// <summary>
     /// The value this item represents.
@@ -55,7 +74,7 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string ItemId => _context != null ? $"{_context.ContentId}-item-{_itemIndex}" : "";
+    private string ItemId => _context?.Browser.Enabled == true ? browserItemId : _context != null ? $"{_context.ContentId}-item-{_itemIndex}" : "";
 
     private bool IsSelected
     {
@@ -74,7 +93,7 @@
 
     protected override void OnInitialized()
     {
-        if (_context == null) return;
+        if (_context == null || _context.Browser.Enabled) return;
 
         // Get display text - either from TextValue parameter or fallback to Value string
         var displayText = TextValue ?? Value?.ToString();
@@ -116,6 +135,7 @@
     {
         if (_context != null)
         {
+            _context.BrowserItems.Remove(browserItemId);
             _context.OnStateChanged -= HandleStateChanged;
         }
         // Note: We don't unregister the item here as it could mess up indices

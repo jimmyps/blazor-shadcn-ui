@@ -1,3 +1,4 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @typeparam TValue
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
@@ -89,8 +90,50 @@
     [Parameter]
     public Func<TValue, string>? DisplayTextSelector { get; set; }
 
+    /// <summary>Uses browser-local floating interactions when set to Browser. Default is Blazor.</summary>
+    [Parameter]
+    public InteractionMode? InteractionMode { get; set; }
+
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private InteractionMode EffectiveInteractionMode => InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Selection);
+
+    /// <summary>Increment to reapply Open and Value, including an unchanged value after a reset.</summary>
+    [Parameter]
+    public long InteractionRevision { get; set; }
+
+    private bool browserCommitPending;
+    private bool browserValueInitialized;
+    private TValue? browserParameterValue;
+    private long browserAppliedRevision;
+
+    private async Task<string?> CommitBrowserSelectionAsync(string itemId)
+    {
+        if (Disabled || !_context.BrowserItems.TryGetValue(itemId, out var item) || item.Disabled)
+            return _context.BrowserSelectedId;
+
+        browserCommitPending = true;
+        try
+        {
+            _context.State.Value = item.Value;
+            _context.State.DisplayText = item.Text;
+            await _state.SetValueAsync(item.Value);
+            await OnValueChange.InvokeAsync(item.Value);
+            // A controlled parent can accept, transform, or reject the proposed value.
+            var accepted = ValueChanged.HasDelegate ? Value : item.Value;
+            _context.State.Value = accepted;
+            _context.State.DisplayText = _context.BrowserItems.Values.FirstOrDefault(i => EqualityComparer<TValue?>.Default.Equals(i.Value, accepted)).Text ?? GetDisplayText(accepted);
+            _context.RefreshBrowserValue();
+            return _context.BrowserSelectedId;
+        }
+        finally { browserCommitPending = false; }
+    }
+
     protected override void OnInitialized()
     {
+        _context.Browser.Sync(EffectiveInteractionMode, Open, DefaultOpen, InteractionRevision);
+
+        _context.CommitBrowserSelection = CommitBrowserSelectionAsync;
+
         // Initialize controllable state for value
         _state = new UseControllableState<TValue?>(DefaultValue)
         {
@@ -125,6 +168,27 @@
 
     protected override void OnParametersSet()
     {
+        _context.Browser.OpenChanged = OpenChanged.HasDelegate ? async open => await OpenChanged.InvokeAsync(open) : null;
+        _context.Browser.Sync(EffectiveInteractionMode, Open, DefaultOpen, InteractionRevision);
+        if (_context.Browser.Enabled)
+        {
+            _context.State.Disabled = Disabled;
+            if (!browserValueInitialized || browserAppliedRevision != InteractionRevision || !EqualityComparer<TValue?>.Default.Equals(browserParameterValue, Value))
+            {
+                var explicitReset = browserAppliedRevision != InteractionRevision;
+                browserParameterValue = Value;
+                browserAppliedRevision = InteractionRevision;
+                browserValueInitialized = true;
+                if (!browserCommitPending || explicitReset)
+                {
+                    _context.State.Value = ValueChanged.HasDelegate ? Value : DefaultValue;
+                    _context.SyncDisplayTextFromItems(_context.State.Value);
+                    _context.Browser.ValueVersion++;
+                }
+            }
+            return;
+        }
+
         // Update disabled state
         if (_context.Disabled != Disabled)
         {
@@ -160,6 +224,7 @@
 
     private void HandleContextStateChanged()
     {
+        if (_context.Browser.Enabled) return;
         // Register/unregister with dropdown manager when open state changes
         if (DropdownManager != null)
         {

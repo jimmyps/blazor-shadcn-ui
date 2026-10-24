@@ -17,6 +17,11 @@ public partial class DynamicFieldRenderer : ComponentBase
     [Parameter]
     public object? Value { get; set; }
 
+    /// <summary>Reads the canonical field value before a cascading render arrives.</summary>
+    [Parameter] public Func<object?>? AcceptedValueAccessor { get; set; }
+    private object? CurrentFieldValue => AcceptedValueAccessor != null ? AcceptedValueAccessor() : Value;
+    private string? AcceptedStringValue() => (AcceptedValueAccessor != null ? AcceptedValueAccessor() : Value)?.ToString();
+
     /// <summary>Gets or sets the validation errors for this field.</summary>
     [Parameter]
     public IReadOnlyList<string> Errors { get; set; } = [];
@@ -57,74 +62,74 @@ public partial class DynamicFieldRenderer : ComponentBase
     // ── Typed value helpers ──────────────────────────────────────────
 
     private string StringValue =>
-        Value?.ToString() ?? string.Empty;
+        CurrentFieldValue?.ToString() ?? string.Empty;
 
     private bool BoolValue =>
-        Value is bool b ? b : bool.TryParse(Value?.ToString(), out var bv) && bv;
+        CurrentFieldValue is bool b ? b : bool.TryParse(CurrentFieldValue?.ToString(), out var bv) && bv;
 
     private double SliderValue =>
-        Value is double d ? d : double.TryParse(Value?.ToString(), out var dv) ? dv : 0;
+        CurrentFieldValue is double d ? d : double.TryParse(CurrentFieldValue?.ToString(), out var dv) ? dv : 0;
 
     private double RatingValue =>
-        Value is double d ? d : double.TryParse(Value?.ToString(), out var dv) ? dv : 0;
+        CurrentFieldValue is double d ? d : double.TryParse(CurrentFieldValue?.ToString(), out var dv) ? dv : 0;
 
     private IReadOnlyList<string>? TagsValue =>
-        Value is IReadOnlyList<string> tags   ? tags :
-        Value is IEnumerable<string>   items  ? [.. items] :
+        CurrentFieldValue is IReadOnlyList<string> tags   ? tags :
+        CurrentFieldValue is IEnumerable<string>   items  ? [.. items] :
         null;
 
     private IReadOnlyList<string> CheckboxGroupValues =>
-        Value is IReadOnlyList<string> list  ? list :
-        Value is IEnumerable<string>   items ? [.. items] :
+        CurrentFieldValue is IReadOnlyList<string> list  ? list :
+        CurrentFieldValue is IEnumerable<string>   items ? [.. items] :
         [];
 
     private IEnumerable<string>? MultiSelectValues =>
-        Value is IEnumerable<string> items ? items : null;
+        CurrentFieldValue is IEnumerable<string> items ? items : null;
 
     private DateOnly? DateValue =>
-        Value is DateOnly d  ? d :
-        Value is DateTime dt ? DateOnly.FromDateTime(dt) :
+        CurrentFieldValue is DateOnly d  ? d :
+        CurrentFieldValue is DateTime dt ? DateOnly.FromDateTime(dt) :
         null;
 
     private DateOnly? StartDateValue =>
-        Value is DateRangeValue drv ? drv.Start : null;
+        CurrentFieldValue is DateRangeValue drv ? drv.Start : null;
 
     private DateOnly? EndDateValue =>
-        Value is DateRangeValue drv ? drv.End : null;
+        CurrentFieldValue is DateRangeValue drv ? drv.End : null;
 
     private TimeOnly? TimeValue =>
-        Value is TimeOnly t  ? t :
-        Value is DateTime dt ? TimeOnly.FromDateTime(dt) :
+        CurrentFieldValue is TimeOnly t  ? t :
+        CurrentFieldValue is DateTime dt ? TimeOnly.FromDateTime(dt) :
         null;
 
     // DateTime field — date part
     private DateOnly? DateTimeDate =>
-        Value is DateTime dt ? DateOnly.FromDateTime(dt) : null;
+        CurrentFieldValue is DateTime dt ? DateOnly.FromDateTime(dt) : null;
 
     // DateTime field — time part
     private TimeOnly? DateTimeTime =>
-        Value is DateTime dt ? TimeOnly.FromDateTime(dt) : null;
+        CurrentFieldValue is DateTime dt ? TimeOnly.FromDateTime(dt) : null;
 
     private double? NumericDoubleValue =>
-        Value is double  d  ? d :
-        Value is decimal dc ? (double)dc :
-        Value is int     i  ? (double)i :
-        double.TryParse(Value?.ToString(), out var dv) ? dv : null;
+        CurrentFieldValue is double  d  ? d :
+        CurrentFieldValue is decimal dc ? (double)dc :
+        CurrentFieldValue is int     i  ? (double)i :
+        double.TryParse(CurrentFieldValue?.ToString(), out var dv) ? dv : null;
 
     private decimal? DecimalValue =>
-        Value is decimal dc ? dc :
-        Value is double  d  ? (decimal)d :
-        Value is int     i  ? (decimal)i :
-        decimal.TryParse(Value?.ToString(), out var v) ? v : null;
+        CurrentFieldValue is decimal dc ? dc :
+        CurrentFieldValue is double  d  ? (decimal)d :
+        CurrentFieldValue is int     i  ? (decimal)i :
+        decimal.TryParse(CurrentFieldValue?.ToString(), out var v) ? v : null;
 
     private double RangeMinValue =>
-        Value is SliderRangeValue r ? r.Min : 0;
+        CurrentFieldValue is SliderRangeValue r ? r.Min : 0;
 
     private double RangeMaxValue =>
-        Value is SliderRangeValue r ? r.Max : 100;
+        CurrentFieldValue is SliderRangeValue r ? r.Max : 100;
 
     private List<IBrowserFile>? FilesValue =>
-        Value is List<IBrowserFile> files ? files : null;
+        CurrentFieldValue is List<IBrowserFile> files ? files : null;
 
     private InputType HtmlInputType => Field.Type switch
     {

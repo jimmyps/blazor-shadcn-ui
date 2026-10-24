@@ -7,6 +7,13 @@ namespace NeoUI.Blazor.Primitives.Extensions;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>Configures application interaction defaults; explicit and cascading settings take precedence.</summary>
+    public static IServiceCollection ConfigureNeoUIInteractions(this IServiceCollection services, Action<InteractionOptions> configure)
+    {
+        services.Configure(configure);
+        return services;
+    }
+
     /// <summary>
     /// Adds all NeoUI.Blazor.Primitives primitive services to the service collection.
     /// </summary>
@@ -14,6 +21,9 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddNeoUIPrimitives(this IServiceCollection services)
     {
+        services.AddOptions<InteractionOptions>();
+        services.AddScoped<CheckboxKeyboardService>();
+
         // Register PortalService as scoped for user isolation in Blazor Server
         // Each user session gets its own portal registry
         services.AddScoped<IPortalService, PortalService>();

@@ -5,7 +5,7 @@
 *@
 
 <div class="@Class" @attributes="AdditionalAttributes">
-    <TabsPrimitive Value="@Value"
+    <TabsPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" Value="@Value"
                                    ValueChanged="@ValueChanged"
                                    DefaultValue="@DefaultValue"
                                    OnValueChange="@OnValueChange"
@@ -16,6 +16,11 @@
 </div>
 
 @code {
+    /// <summary>Omitted settings inherit the scoped or application interaction mode.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply a controlled UI state after reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// The child content to render within the tabs.
     /// Should include TabsList and TabsContent components.

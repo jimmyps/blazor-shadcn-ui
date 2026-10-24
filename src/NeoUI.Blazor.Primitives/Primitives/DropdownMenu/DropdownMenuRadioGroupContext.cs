@@ -6,6 +6,8 @@ namespace NeoUI.Blazor.Primitives;
 /// <typeparam name="TValue">The type of the value associated with radio items.</typeparam>
 public class DropdownMenuRadioGroupContext<TValue>
 {
+    internal BrowserMenuSelection BrowserSelection { get; } = new();
+    internal Dictionary<string, (TValue? Value, bool Disabled)> BrowserItems { get; } = new();
     /// <summary>
     /// Gets or sets the currently selected value in the radio group.
     /// </summary>

@@ -5,6 +5,16 @@ let floatingUI = null;
 let stylesInjected = false;
 let floatingZIndex = 60; // to be consistent with ZIndexLevels.Popover
 
+// Floating UI owns matched-width constraints. A Razor wrapper style update can
+// otherwise remove them between positioning and the next ResizeObserver frame.
+const matchedWidths = new WeakMap();
+function applyMatchedWidth(floating, width) {
+  if (width === undefined) return;
+  for (const property of ['width', 'minWidth', 'maxWidth']) {
+    if (floating.style[property] !== width) floating.style[property] = width;
+  }
+}
+
 /**
  * Injects required CSS for positioning primitives.
  * This ensures the library works without requiring manual CSS imports.
@@ -145,7 +155,7 @@ export async function computePosition(reference, floating, options = {}) {
   injectRequiredStyles();
 
   // Validate elements before proceeding
-  if (!isElementReady(reference)) {
+  if (!isElementReady(reference?.contextElement ?? reference)) {
     throw new Error('Reference element is not ready or not in DOM');
   }
   if (!isElementReady(floating)) {
@@ -187,11 +197,10 @@ export async function computePosition(reference, floating, options = {}) {
     if (matchReferenceWidth) {
       middleware.push(lib.size({
         apply({ rects, elements }) {
-          Object.assign(elements.floating.style, {
-            width: `${rects.reference.width}px`,
-            minWidth: `${rects.reference.width}px`,
-            maxWidth: `${rects.reference.width}px`
-          });
+          const width = `${rects.reference.width}px`;
+          applyMatchedWidth(elements.floating, width);
+          // Cache CSSOM's canonical serialization (fractional pixels may be rounded).
+          matchedWidths.set(elements.floating, elements.floating.style.width);
         }
       }));
     }
@@ -397,6 +406,28 @@ export function applyPosition(floating, position, makeVisible = false) {
   }
 }
 
+// ResizeObserver delivery must not contain layout writes. Scroll, ancestor resize
+// and layout-shift updates retain their immediate callback path in both modes.
+function observePosition(lib, reference, floating, update, options) {
+  let frame = null, disposed = false;
+  const cleanup = lib.autoUpdate(reference, floating, () => { if (!disposed) void update(); }, { elementResize: false });
+  const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
+    if (disposed || frame !== null) return;
+    frame = requestAnimationFrame(() => { frame = null; if (!disposed) void update(); });
+  }) : null;
+  // Restore only the last computed constraints, without a layout read or a new
+  // position calculation. Mutation delivery runs before paint and is outside
+  // ResizeObserver delivery; equality checks make these writes idempotent.
+  const styles = options.matchReferenceWidth ? new MutationObserver(() => {
+    if (!disposed && floating.isConnected) applyMatchedWidth(floating, matchedWidths.get(floating));
+  }) : null;
+  styles?.observe(floating, { attributes: true, attributeFilter: ['style'] });
+  const anchor = reference?.nodeType === 1 ? reference : reference?.contextElement;
+  if (anchor) observer?.observe(anchor);
+  observer?.observe(floating);
+  return () => { disposed = true; observer?.disconnect(); styles?.disconnect(); if (frame !== null) cancelAnimationFrame(frame); cleanup(); };
+}
+
 /**
  * Sets up auto-update for dynamic positioning.
  * @param {HTMLElement} reference - Reference element
@@ -417,7 +448,7 @@ export async function autoUpdate(reference, floating, options = {}) {
     await update();
 
     // Set up auto-update - this returns a cleanup function
-    const cleanupFunc = lib.autoUpdate(reference, floating, update);
+    const cleanupFunc = observePosition(lib, reference, floating, update, options);
 
     // Store cleanup function in registry with unique ID
     const id = cleanupIdCounter++;
@@ -482,7 +513,7 @@ export async function showFloating(floating, reference = null, options = null) {
         applyPosition(floating, pos, false);
       };
 
-      const cleanupFunc = lib.autoUpdate(reference, floating, update);
+      const cleanupFunc = observePosition(lib, reference, floating, update, options);
       const cleanupId = cleanupIdCounter++;
       cleanupRegistry.set(cleanupId, cleanupFunc);
       floating._autoUpdateCleanupId = cleanupId;

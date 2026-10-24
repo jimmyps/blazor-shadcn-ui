@@ -1,11 +1,21 @@
 @namespace NeoUI.Blazor
 @using System.Globalization
 @inject ILocalizer Localizer
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 @* Calendar - accessible month/day grid for date selection *@
 <div @ref="_calendarRef" @attributes="GetAttributes()" role="application" aria-label="@Localizer["Calendar.AriaLabel"]" tabindex="0" 
-     @onkeydown="HandleKeyDown" @onkeydown:preventDefault="@_shouldPreventDefault"
-     @onfocus="OnFocus" @onblur="OnBlur" @onfocusin="OnFocusIn">
+     data-neo-calendar="@(BrowserInteraction ? "true" : null)"
+     data-neo-calendar-focus="@_focusedDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+     data-neo-calendar-month="@_displayedMonth.ToString("yyyy-MM", CultureInfo.InvariantCulture)"
+     data-neo-min-date="@MinDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+     data-neo-max-date="@MaxDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+     data-neo-autofocus="true"
+     @onkeydown="@(BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))" @onkeydown:preventDefault="@(!BrowserInteraction && _shouldPreventDefault)"
+     @onfocus="@(BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, OnFocus))"
+     @onblur="@(BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, OnBlur))"
+     @onfocusin="@(BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, OnFocusIn))">
     @* Header with navigation *@
     <div class="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
         <div class="space-y-4">
@@ -24,14 +34,14 @@
                 {
                     <div class="flex items-center gap-1">
                         <select @bind="SelectedMonth" class="@GetDropdownClass()" aria-label="@Localizer["Calendar.SelectMonth"]"
-                                @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
+                                @onfocus="@(BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, () => _isDropdownFocused = true))" @onblur="@(BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, () => _isDropdownFocused = false))">
                             @foreach (var month in GetMonths())
                             {
                                 <option value="@month.Value">@month.Name</option>
                             }
                         </select>
                         <select @bind="SelectedYear" class="@GetDropdownClass()" aria-label="@Localizer["Calendar.SelectYear"]"
-                                @onfocus="() => _isDropdownFocused = true" @onblur="() => _isDropdownFocused = false">
+                                @onfocus="@(BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, () => _isDropdownFocused = true))" @onblur="@(BrowserInteraction ? default(EventCallback<FocusEventArgs>) : EventCallback.Factory.Create<FocusEventArgs>(this, () => _isDropdownFocused = false))">
                             @foreach (var year in GetYears())
                             {
                                 <option value="@year">@year</option>
@@ -78,11 +88,14 @@
                                     @if (day.HasValue)
                                     {
                                         <button type="button"
+                                                id="@($"{browserCalendarId}-{day.Value:yyyy-MM-dd}")"
+                                                data-neo-close="@(BrowserInteraction && CloseOnSelect ? "true" : null)"
+                                                data-neo-calendar-day="@day.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
                                                 tabindex="-1"
-                                                @onclick="@(() => { SelectDate(day.Value); _calendarRef.FocusAsync(); })"
+                                                @onclick="@(async () => { await SelectDate(day.Value); if (!BrowserInteraction && !browserDisposed) { try { await _calendarRef.FocusAsync(); } catch (Exception ex) when (browserDisposed || ex is JSDisconnectedException) { } } })"
                                                 disabled="@(!IsDateEnabled(day.Value))"
                                                 class="@GetDayClass(day.Value)"
-                                                data-focused="@IsFocused(day.Value)"
+                                                data-focused="@(BrowserInteraction ? (bool?)null : IsFocused(day.Value))"
                                                 aria-label="@day.Value.ToString("D", Culture)"
                                                 aria-selected="@IsSelected(day.Value)">
                                             @day.Value.Day
@@ -103,6 +116,43 @@
 </div>
 
 @code {
+    [CascadingParameter] private PopoverContext? PopoverContext { get; set; }
+    private bool BrowserInteraction => PopoverContext?.InteractionMode == InteractionMode.Browser;
+    private readonly string browserCalendarId = "calendar-" + Guid.NewGuid().ToString("N");
+    private IJSObjectReference? browserModule, browserController;
+    private readonly SemaphoreSlim browserGate = new(1, 1);
+    private bool browserDisposed;
+    private DotNetObjectReference<Calendar>? browserReference;
+
+    /// <summary>Requests newly rendered calendar content when local focus leaves the mounted month.</summary>
+    [JSInvokable]
+    public Task NavigateBrowserMonth(string isoDate) => InvokeAsync(() =>
+    {
+        if (!BrowserInteraction || !DateOnly.TryParseExact(isoDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)) return;
+        _focusedDate = date;
+        ClampFocusedDateToRange();
+        _displayedMonth = new DateOnly(_focusedDate.Year, _focusedDate.Month, 1);
+        _ = NotifyMonthChanged();
+        StateHasChanged();
+    });
+
+    public async ValueTask DisposeAsync()
+    {
+        browserDisposed = true;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserController != null) { await browserController.InvokeVoidAsync("dispose"); await browserController.DisposeAsync(); }
+            if (browserModule != null) await browserModule.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { browserGate.Release(); }
+        browserReference?.Dispose();
+    }
+
+    /// <summary>Dismisses the enclosing browser popover immediately when a date is chosen.</summary>
+    [Parameter] public bool CloseOnSelect { get; set; }
+
     private DateOnly _displayedMonth;
     private DateOnly _focusedDate;
     private DateOnly? _previousSelectedDate;
@@ -293,6 +343,20 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction)
+        {
+            await browserGate.WaitAsync();
+            try
+            {
+                if (browserDisposed || browserController != null) return;
+                browserModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/browser-calendar.js");
+                browserReference ??= DotNetObjectReference.Create(this);
+                browserController = await browserModule.InvokeAsync<IJSObjectReference>("initialize", _calendarRef, browserReference);
+            }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+            finally { browserGate.Release(); }
+            return;
+        }
         // Refocus the calendar container after month changes due to keyboard navigation
         // This is needed because @key="_displayedMonth" on tbody recreates the DOM,
         // which causes the browser to lose focus on the calendar container
@@ -639,7 +703,8 @@
         }
 
         // Add focus ring for keyboard navigation
-        if (IsFocused(date) && !IsSelected(date) && !isRangeStart && !isRangeEnd)
+        if (BrowserInteraction) classes.Add("data-[focused=true]:ring-2 data-[focused=true]:ring-ring/50 data-[focused=true]:ring-offset-2");
+        if (!BrowserInteraction && IsFocused(date) && !IsSelected(date) && !isRangeStart && !isRangeEnd)
         {
             classes.Add("ring-2 ring-ring/50 ring-offset-2");
         }

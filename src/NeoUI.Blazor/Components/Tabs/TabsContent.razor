@@ -20,6 +20,9 @@
 
     /// <summary>
     /// Whether to force mount the content even when inactive.
+    /// Mounted hidden panels still initialize, load data and retain subscriptions.
+    /// Evaluate lazy loading and heavy grids/charts/editors before retaining tab panels;
+    /// keep these tab sets in Blazor mode when adopting browser-local switching.
     /// </summary>
     [Parameter]
     public bool ForceMount { get; set; } = false;

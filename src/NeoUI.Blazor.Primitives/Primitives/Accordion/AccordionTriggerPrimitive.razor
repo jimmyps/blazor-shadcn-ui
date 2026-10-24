@@ -4,13 +4,14 @@
 <h3 id="@Item.HeaderId">
     <button id="@Item.TriggerId"
             type="button"
+            data-neo-state-value="@(Item.Context.BrowserInteraction ? Item.Value : null)"
             class="@Class"
-            aria-expanded="@_ariaExpanded"
+            aria-expanded="@(Item.Context.BrowserInteraction ? null : _ariaExpanded)"
             aria-controls="@Item.ContentId"
-            data-state="@(Item.IsOpen ? "open" : "closed")"
+            data-state="@(Item.Context.BrowserInteraction ? null : (Item.IsOpen ? "open" : "closed"))"
             disabled="@Item.Disabled"
-            @onclick="HandleClick"
-            @onkeydown="HandleKeyDown"
+            @onclick="@(Item.Context.BrowserInteraction ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
+            @onkeydown="@(Item.Context.BrowserInteraction ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, HandleKeyDown))"
             @attributes="AdditionalAttributes">
         @ChildContent
     </button>

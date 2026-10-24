@@ -1,0 +1,151 @@
+name: Interaction regressions
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  server:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [Blazor, Browser]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser dependencies
+        working-directory: tests/browser
+        run: |
+          npm ci
+          npx playwright install msedge
+      - name: Deterministic and default-mode compatibility checks
+        run: |
+          dotnet run --project tests/NeoUI.InteractionStateTests -p:CI=true
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          dotnet run --project tests/NeoUI.CompatibilityTests -p:CI=true
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Build Server fixture
+        run: dotnet build tests/NeoUI.BrowserTests.Host -p:CI=true -m:1
+      - name: Run full Server suite and family policies
+        shell: pwsh
+        run: |
+          $env:ASPNETCORE_ENVIRONMENT='Development'
+          $env:NEOUI_EXPECT_DEFAULT='${{ matrix.mode }}'
+          $env:NEOUI_TEST_URL='http://localhost:5198'
+          $serverArgs=@('run','--project','tests/NeoUI.BrowserTests.Host','--no-build','--no-launch-profile','--','--urls','http://localhost:5198')
+          if ('${{ matrix.mode }}' -eq 'Browser') { $serverArgs+='--BrowserDefault=true' }
+          $hostProcess=Start-Process dotnet -ArgumentList $serverArgs -WindowStyle Hidden -PassThru -RedirectStandardOutput server.log -RedirectStandardError server.error.log
+          function Wait-Host($url) {
+            for($i=0;$i -lt 60;$i++){try{if((Invoke-WebRequest $url -TimeoutSec 2).StatusCode -eq 200){return}}catch{};Start-Sleep -Seconds 1}
+            throw "Host did not start: $url"
+          }
+          try {
+            Wait-Host $env:NEOUI_TEST_URL
+            Push-Location tests/browser
+            npm test 2>&1 | Tee-Object ../../server-tests.log
+            $result=$LASTEXITCODE
+            Pop-Location
+            if($result){exit $result}
+            $subArgs=@('run','--project','tests/NeoUI.BrowserTests.Host','--no-build','--no-launch-profile','--','--urls','http://localhost:5197','--TestPathBase=/subapp')
+            if ('${{ matrix.mode }}' -eq 'Browser') { $subArgs+='--BrowserDefault=true' }
+            $subHost=Start-Process dotnet -ArgumentList $subArgs -WindowStyle Hidden -PassThru -RedirectStandardOutput subpath.log -RedirectStandardError subpath.error.log
+            try {
+              Wait-Host 'http://localhost:5197/subapp/'
+              $env:NEOUI_TEST_URL='http://localhost:5197/subapp'
+              Push-Location tests/browser
+              node --test --test-concurrency=1 ownership.spec.mjs 2>&1 | Tee-Object ../../subpath-tests.log
+              $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
+            } finally { taskkill /PID $subHost.Id /T /F }
+            foreach($policy in @('conservative','reverse')) {
+              $port=if($policy -eq 'conservative'){5201}else{5202}
+              $fixture=Start-Process dotnet -ArgumentList @('run','--project','tests/NeoUI.BrowserTests.Host','--no-build','--no-launch-profile','--','--urls',"http://localhost:$port","--FamilyPolicy=$policy") -WindowStyle Hidden -PassThru -RedirectStandardOutput "family-$policy.log" -RedirectStandardError "family-$policy.error.log"
+              try {
+                Wait-Host "http://localhost:$port"
+                $env:NEOUI_TEST_URL="http://localhost:$port"; $env:NEOUI_FAMILY_POLICY=$policy
+                Push-Location tests/browser
+                node --test family-policy.spec.mjs 2>&1 | Tee-Object "../../family-$policy-tests.log"
+                $result=$LASTEXITCODE
+                Pop-Location
+                if($result){exit $result}
+              } finally { taskkill /PID $fixture.Id /T /F }
+            }
+          } finally { taskkill /PID $hostProcess.Id /T /F }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: server-${{ matrix.mode }}-logs
+          path: '*.log'
+  wasm-and-gallery:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser dependencies
+        working-directory: tests/browser
+        run: |
+          npm ci
+          npx playwright install msedge webkit
+      - name: Build fixtures and gallery
+        run: |
+          dotnet build tests/NeoUI.BrowserTests.Wasm -p:CI=true -m:1
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          dotnet build demo/NeoUI.Demo.Server -p:CI=true -m:1
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Run WASM, WebKit and real-gallery checks
+        run: |
+          $env:ASPNETCORE_ENVIRONMENT='Development'
+          function Wait-Host($url) {
+            for($i=0;$i -lt 60;$i++){try{if((Invoke-WebRequest $url -TimeoutSec 2).StatusCode -eq 200){return}}catch{};Start-Sleep -Seconds 1}
+            throw "Host did not start: $url"
+          }
+          $wasm=Start-Process dotnet -ArgumentList @('run','--project','tests/NeoUI.BrowserTests.Wasm','--no-build','--no-launch-profile','--','--urls','http://localhost:5199') -WindowStyle Hidden -PassThru -RedirectStandardOutput wasm.log -RedirectStandardError wasm.error.log
+          try {
+            Wait-Host 'http://localhost:5199'
+            $env:NEOUI_TEST_URL='http://localhost:5199';$env:NEOUI_TEST_RENDERER='wasm'
+            Push-Location tests/browser
+            node --test --test-concurrency=1 p1-sweep.spec.mjs fields.spec.mjs formatted.spec.mjs special.spec.mjs tags.spec.mjs markdown.spec.mjs modes.spec.mjs reviewer.spec.mjs preservation.spec.mjs geometry.spec.mjs ownership.spec.mjs 2>&1 | Tee-Object ../../wasm-tests.log
+            $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
+            $env:NEOUI_BROWSER_ENGINE='webkit'
+            try {
+              Push-Location tests/browser
+              node --test --test-concurrency=1 --test-name-pattern='animates expansion and collapse|checkbox indicators visibly|masked typing keeps' p1-sweep.spec.mjs modes.spec.mjs 2>&1 | Tee-Object ../../disclosure-webkit-tests.log
+              $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
+              Push-Location tests/browser
+              node --test --test-concurrency=1 preservation.spec.mjs geometry.spec.mjs ownership.spec.mjs 2>&1 | Tee-Object ../../preservation-webkit-tests.log
+              $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
+            } finally { Remove-Item Env:NEOUI_BROWSER_ENGINE }
+          } finally { taskkill /PID $wasm.Id /T /F }
+          Remove-Item Env:NEOUI_TEST_RENDERER
+          $demo=Start-Process dotnet -ArgumentList @('run','--project','demo/NeoUI.Demo.Server','--no-build','--no-launch-profile','--','--urls','http://localhost:5184','--BrowserDefault=true') -WindowStyle Hidden -PassThru -RedirectStandardOutput demo.log -RedirectStandardError demo.error.log
+          try {
+            Wait-Host 'http://localhost:5184'
+            $env:NEOUI_DEMO_URL='http://localhost:5184/components/browser-interactions';$env:NEOUI_EXPECT_DEFAULT='Browser'
+            Push-Location tests/browser
+            npm run test:demo 2>&1 | Tee-Object ../../gallery-tests.log
+            $result=$LASTEXITCODE
+            if(!$result){$env:NEOUI_BROWSER_ENGINE='webkit';node --test --test-name-pattern='iPhone|mobile|menu' demo.spec.mjs 2>&1 | Tee-Object ../../webkit-tests.log;$result=$LASTEXITCODE}
+            Pop-Location;if($result){exit $result}
+          } finally { taskkill /PID $demo.Id /T /F }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wasm-gallery-logs
+          path: '*.log'

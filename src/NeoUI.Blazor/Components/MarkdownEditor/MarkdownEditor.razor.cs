@@ -141,6 +141,7 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
     /// <returns>A task representing the asynchronous operation.</returns>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) return;
         if (firstRender)
         {
             try
@@ -369,8 +370,13 @@ public partial class MarkdownEditor : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles tab change.
     /// </summary>
-    private void HandleTabChange(string? tab)
+    private async Task HandleTabChange(string? tab)
     {
+        if (BrowserInteraction && tab == "preview")
+        {
+            var result = await FlushAsync();
+            if (!result.Success) return;
+        }
         if (tab != null)
         {
             _activeTab = tab;

@@ -11,7 +11,7 @@
     @* BottomSheet: delegate to Drawer for consistent slide-up behaviour *@
     <Drawer Open="@(Context?.IsOpen == true)" OpenChanged="@HandleOpenChangedAsync" Direction="DrawerDirection.Bottom">
         <DrawerContent ShowHandle="true">
-            <div @ref="_scrollRef" @onscroll="HandleScroll" class="px-1 pb-4">
+            <div @ref="_scrollRef" @onscroll="HandleScroll" class="px-1 pb-4" @attributes="AdditionalAttributes">
                 @ChildContent
                 @if (IsLoading)
                 {
@@ -31,9 +31,10 @@
 }
 else
 {
-    <SelectContentPrimitive TValue="TValue"
+    <SelectContentPrimitive TValue="TValue" ForceMount="@ForceMount"
                             MatchTriggerWidth="@(!(Class?.Contains("w-max") ?? false))"
-                            class="@OuterCssClass">
+                            class="@OuterCssClass"
+                            @attributes="AdditionalAttributes">
         <div @ref="_scrollRef" @onscroll="HandleScroll" class="@InnerCssClass">
             <CascadingValue Name="StyleVariant" Value="_styleVariant" IsFixed="false">
                @ChildContent
@@ -56,6 +57,17 @@ else
 }
 
 @code {
+    /// <summary>Keep closed content mounted in Blazor mode. Browser mode always keeps it mounted.</summary>
+    [Parameter] public bool ForceMount { get; set; } = true;
+
+    /// <summary>
+    /// Attributes applied to the portaled listbox, or the scroll container in BottomSheet
+    /// presentation. Use data-neo-floating-owner to declare a nested portal's logical anchor.
+    /// </summary>
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
+
+
     private ElementReference _scrollRef;
     private IJSObjectReference? _jsModule;
     private bool _prevIsOpen = false;
@@ -158,6 +170,8 @@ else
 
     protected override void OnParametersSet()
     {
+        if (Context?.IsBrowserInteraction == true && Presentation == SelectPresentation.BottomSheet)
+            throw new InvalidOperationException("Select BottomSheet presentation requires InteractionMode.Blazor. Use an explicit exception to the Browser policy.");
         var isOpen = Context?.IsOpen == true;
         if (Presentation == SelectPresentation.BottomSheet && isOpen && !_prevIsOpen)
         {

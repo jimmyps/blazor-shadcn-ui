@@ -4,6 +4,7 @@
 
 /* Configure source paths for scanning Razor files */
 @source "../../Components";
+@source "../../../NeoUI.Blazor.Primitives/wwwroot/js/primitives/browser-tags.js";
 
 /* grid-auto-fill-{spacing|[length]} utility
    Defined here with @utility (Tailwind v4 API) because matchUtilities

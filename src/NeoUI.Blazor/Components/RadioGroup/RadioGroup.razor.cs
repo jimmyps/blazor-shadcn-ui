@@ -172,8 +172,9 @@ public partial class RadioGroup<TValue> : ComponentBase
     /// </summary>
     private async Task HandleValueChanged(TValue value)
     {
-        Value = value;
+        if (!BrowserInteraction || !ValueChanged.HasDelegate) Value = value;
         await ValueChanged.InvokeAsync(value);
+        if (BrowserInteraction) Value = AcceptedBrowserValue();
 
         // Notify EditContext of field change for validation
         if (editContext != null && ValueExpression != null && fieldIdentifier.FieldName != null)

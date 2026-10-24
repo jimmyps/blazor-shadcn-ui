@@ -1,14 +1,13 @@
 @namespace NeoUI.Blazor
 @* Styled MenubarCheckboxItem - wrapper with shadcn Tailwind classes *@
-<MenubarCheckboxItemPrimitive class="@CssClass"
+<MenubarCheckboxItemPrimitive InteractionRevision="@InteractionRevision" class="@CssClass"
                                                   Disabled="@Disabled"
                                                   Checked="@Checked"
                                                   CheckedChanged="@CheckedChanged"
                                                   OnCheckedChange="@OnCheckedChange"
                                                   CloseOnSelect="@CloseOnSelect">
     <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-        @if (Checked)
-        {
+        <span data-neo-selection-indicator style="@(Checked ? null : "display:none")">
             <svg xmlns="http://www.w3.org/2000/svg"
                  width="16"
                  height="16"
@@ -21,12 +20,14 @@
                  class="h-4 w-4">
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-        }
+        </span>
     </span>
     <span>@ChildContent</span>
 </MenubarCheckboxItemPrimitive>
 
 @code {
+    /// <summary>Increment to reset the browser-owned selection.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
     [CascadingParameter(Name = "StyleVariant")]
     private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 

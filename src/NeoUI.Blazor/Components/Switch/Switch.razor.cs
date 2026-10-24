@@ -220,7 +220,7 @@ public partial class Switch : ComponentBase
             _ => "h-6 w-11"
         },
         // Checked state styling
-        Checked ? "bg-primary" : "bg-input",
+        BrowserInteraction ? "data-[state=checked]:bg-primary data-[state=unchecked]:bg-input" : Checked ? "bg-primary" : "bg-input",
         // StyleVariant overrides (common + size-specific)
         _styleVariant.GetClasses("Switch.Root"),
         _styleVariant.GetClasses($"Switch.Root.{SizeName}"),
@@ -277,8 +277,10 @@ public partial class Switch : ComponentBase
     /// </summary>
     private async Task HandleCheckedChanged(bool value)
     {
-        Checked = value;
-        await CheckedChanged.InvokeAsync(Checked);
+        if (!BrowserInteraction || !CheckedChanged.HasDelegate) Checked = value;
+        var revision = InteractionRevision;
+        await CheckedChanged.InvokeAsync(value);
+        if (BrowserInteraction && revision == InteractionRevision) Checked = AcceptedBrowserValue();
 
         // Notify EditContext of field change for validation
         if (_editContext != null && CheckedExpression != null && _fieldIdentifier.FieldName != null)

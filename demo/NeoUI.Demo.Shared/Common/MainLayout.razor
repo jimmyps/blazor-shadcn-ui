@@ -57,6 +57,12 @@
                                     <span>Components</span>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton Href="components/browser-interactions" Tooltip="Interaction Mode">
+                                    <LucideIcon Name="zap" Size="18" />
+                                    <span>Interaction Mode</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
                         </SidebarMenu>
                     </SidebarGroup>
 
@@ -103,7 +109,7 @@
                                     </SidebarMenuButton>
                                     <CollapsibleContent>
                                         <SidebarMenuSub>
-                                            @foreach (var entry in ComponentRegistry.Components.Where(e => !e.IsSubPage).OrderBy(e => e.Title))
+                                            @foreach (var entry in ComponentRegistry.Components.Where(e => !e.IsSubPage && e.Category != ComponentCategories.BrowserInteractions).OrderBy(e => e.Title))
                                             {
                                                 <SidebarMenuSubItem>
                                                     <SidebarMenuSubButton Href="@entry.Route" Match="@(entry.ExactNavMatch? NavLinkMatch.All: NavLinkMatch.Prefix)">

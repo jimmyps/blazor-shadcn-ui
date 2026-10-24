@@ -6,7 +6,7 @@
 @* NavigationMenuLinkPrimitive - a link within a navigation menu *@
 <a @attributes="GetAttributes()"
    role="menuitem"
-   @onclick="HandleClick"
+   @onclick="@(Context?.BrowserEnabled == true && !OnClick.HasDelegate ? default(EventCallback<MouseEventArgs>) : EventCallback.Factory.Create<MouseEventArgs>(this, HandleClick))"
    data-active="@IsActiveLink.ToString().ToLowerInvariant()">
     @ChildContent
 </a>
@@ -103,7 +103,7 @@
     private async Task HandleClick()
     {
         // Close the menu when a link is clicked
-        Context?.ClearActiveItem();
+        if (Context?.BrowserEnabled != true) Context?.ClearActiveItem();
         
         if (OnClick.HasDelegate)
         {

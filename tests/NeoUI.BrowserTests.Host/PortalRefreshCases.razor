@@ -1,0 +1,40 @@
+@implements IDisposable
+@implements IHandleEvent
+@inject IPortalService Portals
+<button @onclick="OpenDialog">Open refresh dialog</button>
+<Dialog @bind-Open="opened"><DialogContent><DialogTitle>Portal refresh ordering</DialogTitle><DialogDescription>Simultaneous updates must reach every portaled fragment.</DialogDescription>
+    <p data-testid="refresh-dialog">Dialog @revision</p>
+    <button data-testid="refresh-all" @onclick="UpdateAll">Update all content</button>
+    <button data-testid="refresh-late" @onclick="UpdateLate">Update after overlay fragments</button>
+    <button data-testid="refresh-late-only" @onclick="() => UpdateLate(false)">Update descendant without parent render</button>
+    <PortalRefreshBranch @ref="branch" Revision="revision" Mode="Mode" />
+</DialogContent></Dialog>
+@code {
+    [Parameter] public InteractionMode? Mode { get; set; }
+    private bool opened;
+    private int revision;
+    private PortalRefreshBranch? branch;
+    private readonly string tailId = Guid.NewGuid().ToString();
+    private bool armed;
+    // Keep the late-only probe from getting an automatic parent render that could
+    // accidentally rescue a missed refresh. Other actions explicitly render the parent.
+    Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg) => callback.InvokeAsync(arg);
+    private void OpenDialog() { opened = true; StateHasChanged(); }
+    private void UpdateAll() { revision++; StateHasChanged(); }
+    private void UpdateLate() => UpdateLate(true);
+    private void UpdateLate(bool renderParent)
+    {
+        revision++;
+        armed = true;
+        // Register last: this fragment runs after the existing overlay entries have
+        // drawn their captured values, but before the host's OnAfterRender clears its guard.
+        Portals.RegisterPortal(tailId, PortalCategory.Overlay, builder =>
+        {
+            if (!armed) return;
+            armed = false;
+            branch!.UpdateLate(revision);
+        });
+        if (renderParent) StateHasChanged();
+    }
+    public void Dispose() => Portals.UnregisterPortal(tailId);
+}

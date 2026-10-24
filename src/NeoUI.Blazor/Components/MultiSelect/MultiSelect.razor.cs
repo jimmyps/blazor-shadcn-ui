@@ -14,6 +14,17 @@ namespace NeoUI.Blazor;
 /// <typeparam name="TItem">The type of items in the multiselect list.</typeparam>
 public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
 {
+    [Inject] private Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults { get; set; } = default!;
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
+    private bool BrowserInteraction => ComposedInteraction.IsBrowser(InteractionMode, InteractionPolicy, InteractionDefaults.Value, family: NeoUI.Blazor.Primitives.InteractionFamily.Selection);
+    private IJSObjectReference? browserListModule, browserListController, browserScroll;
+    private readonly SemaphoreSlim browserGate = new(1, 1);
+    private bool browserDisposed;
+    /// <summary>Floating shell mode. Omitted values inherit scoped/application defaults.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled floating state, including unchanged reset values.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// Gets or sets the JavaScript runtime for interop operations.
     /// </summary>
@@ -207,6 +218,14 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     public EventCallback<string> SearchQueryChanged { get; set; }
 
     /// <summary>
+    /// Gets or sets the browser-mode debounce interval in milliseconds before applying search.
+    /// Defaults to 0 (no debounce). Typing remains immediate in the browser.
+    /// </summary>
+    [Parameter]
+    public int SearchInterval { get; set; }
+
+
+    /// <summary>
     /// Gets or sets the callback invoked when the user scrolls near the bottom of the dropdown list.
     /// Use this to load additional items for infinite scroll scenarios.
     /// </summary>
@@ -285,6 +304,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// Tracks the current search query for filtering.
     /// </summary>
     private string _searchQuery = string.Empty;
+    private long _searchRevision, _floatingRevision, _externalRevision, _lastFloatingRevision;
 
     /// <summary>
     /// Gets a unique identifier for this multiselect instance.
@@ -359,6 +379,13 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
+        if (_externalRevision != InteractionRevision)
+        {
+            _externalRevision = InteractionRevision;
+            _floatingRevision++;
+            _searchRevision++;
+            _searchQuery = string.Empty;
+        }
 
         if (ValueSelector == null)
         {
@@ -392,6 +419,24 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction)
+        {
+            await browserGate.WaitAsync();
+            try
+            {
+                if (browserDisposed) return;
+                browserListModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/browser-list.js");
+                browserListController ??= await browserListModule.InvokeAsync<IJSObjectReference>("initializeById", $"{Id}-search");
+                if (OnLoadMore.HasDelegate && browserScroll == null)
+                {
+                    _dotNetRef ??= DotNetObjectReference.Create(this);
+                    browserScroll = await browserListModule.InvokeAsync<IJSObjectReference>("observeLoadMore", _listboxScrollRef, _dotNetRef);
+                }
+            }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+            finally { browserGate.Release(); }
+            return;
+        }
         // Setup JS when popover opens
         if (_isOpen && !_jsSetupDone)
         {
@@ -473,6 +518,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     {
         _isOpen = false;
         _searchQuery = string.Empty;
+        _searchRevision++;
 
         // Notify consumer so they can reload the default dataset for the next open
         if (SearchQueryChanged.HasDelegate)
@@ -501,8 +547,14 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         // Reading _isOpen belongs inside for the same reason.
         await InvokeAsync(async () =>
         {
-            if (!_isOpen) return;
-            await Close();
+            if (!_isOpen && !BrowserInteraction) return;
+            if (BrowserInteraction) _floatingRevision++;
+            // Render the close command before awaiting application search work. The browser
+            // may be open even when its observation has not yet reached the server mirror.
+            var closeTask = Close();
+            _focusDone = false;
+            StateHasChanged();
+            await closeTask;
 
             // Close() bypasses HandleOpenChanged — the Popover is in controlled mode, so setting _isOpen
             // ourselves raises no OpenChanged — and that is the only other place this is cleared. Left set,
@@ -542,6 +594,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         {
             // Small delay to let browser finish processing DOM changes
             await Task.Delay(50);
+            if (!_isOpen) return;
             await _searchInputRef.FocusAsync();
         }
         catch
@@ -553,9 +606,9 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
     /// <summary>
     /// Handles search input changes.
     /// </summary>
-    private async Task HandleSearchInput(ChangeEventArgs args)
+    private async Task HandleSearchInput(string? value)
     {
-        _searchQuery = args.Value?.ToString() ?? string.Empty;
+        _searchQuery = value ?? string.Empty;
         if (SearchQueryChanged.HasDelegate)
         {
             await SearchQueryChanged.InvokeAsync(_searchQuery);
@@ -788,6 +841,8 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             return;
         }
 
+        if (BrowserInteraction) { await LoadBrowserPageAsync(); return; }
+
         _elementUtilsModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/NeoUI.Blazor.Primitives/js/primitives/element-utils.js");
 
@@ -798,15 +853,7 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
             {
                 // Scroll events keep arriving while the consumer's async handler runs, before it has
                 // a chance to flip IsLoading. Latch locally so one gesture yields one page fetch.
-                _loadMorePending = true;
-                try
-                {
-                    await OnLoadMore.InvokeAsync();
-                }
-                finally
-                {
-                    _loadMorePending = false;
-                }
+                await LoadBrowserPageAsync();
             }
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException)
@@ -815,10 +862,31 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         }
     }
 
+    /// <summary>Runs a page-load callback after a local scroll threshold is reached.</summary>
+    [JSInvokable]
+    public Task LoadBrowserItems() => HandleListboxScrollAsync();
+
+    private async Task LoadBrowserPageAsync()
+    {
+        _loadMorePending = true;
+        try { await OnLoadMore.InvokeAsync(); }
+        finally { _loadMorePending = false; }
+    }
+
     /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);
+        browserDisposed = true;
+        await browserGate.WaitAsync();
+        try
+        {
+            if (browserScroll != null) { await browserScroll.InvokeVoidAsync("dispose"); await browserScroll.DisposeAsync(); }
+            if (browserListController != null) { await browserListController.InvokeVoidAsync("dispose"); await browserListController.DisposeAsync(); }
+            if (browserListModule != null) await browserListModule.DisposeAsync();
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { browserGate.Release(); }
         await CleanupJsAsync();
 
         if (_multiSelectModule != null)
@@ -851,12 +919,15 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         _dotNetRef = null;
     }
 
+    private long _lastInteractionRevision;
+    private NeoUI.Blazor.Primitives.InteractionMode? _lastInteractionMode;
+
     /// <summary>
-    /// Determines whether the component should re-render based on tracked state changes.
-    /// This optimization reduces unnecessary render cycles.
+    /// Determines whether tracked state or interaction commands require another render.
     /// </summary>
     protected override bool ShouldRender()
     {
+        var interactionChanged = _lastFloatingRevision != _floatingRevision || _lastInteractionRevision != InteractionRevision || _lastInteractionMode != InteractionMode;
         var itemsChanged = !ReferenceEquals(_lastItems, Items);
         var valuesChanged = !ReferenceEquals(_lastValues, Values);
         var openChanged = _lastIsOpen != _isOpen;
@@ -864,8 +935,11 @@ public partial class MultiSelect<TItem> : ComponentBase, IAsyncDisposable
         var disabledChanged = _lastDisabled != Disabled;
         var loadingChanged = _lastIsLoading != IsLoading;
 
-        if (itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged || loadingChanged)
+        if (interactionChanged || itemsChanged || valuesChanged || openChanged || searchChanged || disabledChanged || loadingChanged)
         {
+            _lastFloatingRevision = _floatingRevision;
+            _lastInteractionRevision = InteractionRevision;
+            _lastInteractionMode = InteractionMode;
             _lastItems = Items;
             _lastValues = Values;
             _lastIsOpen = _isOpen;

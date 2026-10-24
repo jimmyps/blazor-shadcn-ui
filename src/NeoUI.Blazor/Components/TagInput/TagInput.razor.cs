@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -24,6 +25,8 @@ namespace NeoUI.Blazor;
 /// </example>
 public partial class TagInput : ComponentBase, IAsyncDisposable
 {
+    [Inject] private ILogger<TagInput> Logger { get; set; } = default!;
+
     // ── State ──────────────────────────────────────────────────────────
     private List<string> _currentTags = new();
     private string _inputText = string.Empty;
@@ -159,6 +162,7 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
 
     protected override void OnParametersSet()
     {
+        if (BrowserInteraction && TagTemplate != null) throw new InvalidOperationException("Browser TagInput cannot construct a Razor TagTemplate locally. Use InteractionMode.Blazor for custom tag templates.");
         if (!ReferenceEquals(_lastTags, Tags))
         {
             _currentTags = Tags?.ToList() ?? new List<string>();
@@ -169,26 +173,33 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (BrowserInteraction) { if (!browserMounted) { browserMounted = true; StateHasChanged(); } return; }
         if (!firstRender) return;
         try
         {
-            _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+            var module = await JSRuntime.InvokeAsync<IJSObjectReference>(
                 "import", "./_content/NeoUI.Blazor/js/tag-input.js");
+            if (_disposed) { await module.DisposeAsync(); return; }
+            _jsModule = module;
             _dotNetRef = DotNetObjectReference.Create(this);
             await _jsModule.InvokeVoidAsync("initialize",
                 _containerRef, _inputRef, _dotNetRef, _instanceId,
-                new { triggers = (int)AddTrigger });
-            _jsInitialized = true;
+                new { triggers = (int)AddTrigger, contentId = _contentId });
+            if (!_disposed) _jsInitialized = true;
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException or InvalidOperationException)
         {
-            // Expected during prerendering or circuit disconnect
-            _ = ex;
+            // Expected during prerendering or circuit disconnect.
+        }
+        catch (JSException ex)
+        {
+            Logger.LogWarning(ex, "Failed to initialize TagInput JavaScript; the circuit remains available.");
         }
     }
 
     protected override bool ShouldRender()
     {
+        if (BrowserInteraction) return true;
         var changed =
             _lastInputText != _inputText ||
             _lastSuggestionsOpen != _suggestionsOpen ||
@@ -380,6 +391,13 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
         catch (OperationCanceledException) { }
     }
 
+    [JSInvokable]
+    public async Task JsSelectSuggestion(string suggestion)
+    {
+        if (_disposed || Disabled || !_suggestionsOpen || !_filteredSuggestions.Contains(suggestion)) return;
+        await SelectSuggestion(suggestion);
+    }
+
     private async Task SelectSuggestion(string suggestion)
     {
         _blurCts?.Cancel();
@@ -427,14 +445,12 @@ public partial class TagInput : ComponentBase, IAsyncDisposable
         _blurCts?.Cancel();
         _blurCts?.Dispose();
 
-        if (_jsModule is not null && _jsInitialized)
+        if (_jsModule is not null)
         {
-            try
-            {
-                await _jsModule.InvokeVoidAsync("dispose", _instanceId);
-                await _jsModule.DisposeAsync();
-            }
-            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException or InvalidOperationException) { _ = ex; }
+            try { await _jsModule.InvokeVoidAsync("dispose", _instanceId); }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException or InvalidOperationException or JSException) { }
+            try { await _jsModule.DisposeAsync(); }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException or InvalidOperationException or JSException) { }
             _jsModule = null;
         }
         _dotNetRef?.Dispose();

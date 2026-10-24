@@ -54,7 +54,7 @@ public partial class ToggleGroupItem : ComponentBase
         "hover:bg-muted hover:text-muted-foreground",
         "h-10",
         ParentGroup?.Scrollable == true ? "shrink-0" : null,
-        IsSelected ? "bg-accent text-accent-foreground" : "bg-transparent",
+        ParentGroup?.BrowserInteraction == true ? "data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground data-[state=unchecked]:bg-transparent" : IsSelected ? "bg-accent text-accent-foreground" : "bg-transparent",
         _styleVariant.GetClasses("ToggleGroup.Item"),
         Class
     );

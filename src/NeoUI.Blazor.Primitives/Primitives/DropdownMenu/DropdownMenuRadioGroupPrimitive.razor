@@ -1,5 +1,6 @@
 @namespace NeoUI.Blazor.Primitives
 @typeparam TValue
+@implements IDisposable
 
 @* DropdownMenuRadioGroupPrimitive - a group of radio items where only one can be selected *@
 <CascadingValue Value="@_context" IsFixed="false">
@@ -53,13 +54,45 @@
                 "DropdownMenuRadioGroupPrimitive must be used within a DropdownMenuPrimitive component.");
         }
 
+        if (MenuContext.Browser.Enabled)
+        {
+            var selection = _context.BrowserSelection;
+            selection.Commit = async proposed =>
+            {
+                if (proposed == null || !_context.BrowserItems.TryGetValue(proposed, out var item) || item.Disabled) return selection.Value;
+                if (ValueChanged.HasDelegate) await ValueChanged.InvokeAsync(item.Value);
+                else Value = item.Value;
+                await OnValueChange.InvokeAsync(item.Value);
+                _context.Value = Value;
+                return GetBrowserValue();
+            };
+            MenuContext.BrowserSelections.Add(selection.Id, selection);
+        }
         _context.Value = Value;
         _context.SelectValue = HandleSelectValue;
     }
 
+    /// <summary>Increment to authoritatively reset the radio selection, even if unchanged.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    public void Dispose() => MenuContext?.BrowserSelections.Remove(_context.BrowserSelection.Id);
+
     protected override void OnParametersSet()
     {
+        if (MenuContext.Browser.Enabled) _context.BrowserSelection.Sync(GetBrowserValue(), MenuContext.Browser.ValueVersion, InteractionRevision);
         _context.Value = Value;
+    }
+
+    private string? GetBrowserValue() => _context.BrowserItems
+        .FirstOrDefault(item => EqualityComparer<TValue?>.Default.Equals(item.Value.Value, Value)).Key;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!MenuContext.Browser.Enabled) return;
+        // Items register after the group receives its parameters. Reconcile opaque IDs
+        // once their live typed values are known, including declarative item changes.
+        var before = _context.BrowserSelection.Version;
+        _context.BrowserSelection.Sync(GetBrowserValue(), MenuContext.Browser.ValueVersion, InteractionRevision);
+        if (before != _context.BrowserSelection.Version) StateHasChanged();
     }
 
     private async Task HandleSelectValue(TValue? value)

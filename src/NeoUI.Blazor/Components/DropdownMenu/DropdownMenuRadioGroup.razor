@@ -4,6 +4,7 @@
 @* Styled DropdownMenuRadioGroup - wrapper for radio items *@
 <DropdownMenuRadioGroupPrimitive TValue="TValue"
                                                          Value="@Value"
+                                                         InteractionRevision="@InteractionRevision"
                                                          ValueChanged="@ValueChanged"
                                                          OnValueChange="@OnValueChange"
                                                          class="@Class">
@@ -11,6 +12,8 @@
 </DropdownMenuRadioGroupPrimitive>
 
 @code {
+    /// <summary>Increment to reset the radio selection authoritatively.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
     /// <summary>
     /// The content to render inside the radio group.
     /// Typically contains DropdownMenuRadioItem components.

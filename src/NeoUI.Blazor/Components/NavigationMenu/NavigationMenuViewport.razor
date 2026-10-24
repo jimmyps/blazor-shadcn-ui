@@ -2,7 +2,7 @@
 
 @* NavigationMenuViewport - container for content panels *@
 <div class="@GetOuterClass()">
-    <div class="@GetInnerClass()" data-slot="navigation-menu-viewport">
+    <div class="@GetInnerClass()" data-slot="navigation-menu-viewport" @attributes="AdditionalAttributes">
         @ChildContent
     </div>
 </div>

@@ -1,17 +1,38 @@
+@inject Microsoft.Extensions.Options.IOptions<InteractionOptions> InteractionDefaults
 @namespace NeoUI.Blazor.Primitives
 @implements IDisposable
 
 @* MenubarRoot primitive component - headless, unstyled behavior only *@
+<CascadingValue Value="family" IsFixed="true">
 <CascadingValue Value="@_context" IsFixed="false">
+    @if (family.Enabled)
+    {
+        <BrowserNavigationHost id="@_context.MenubarId" Kind="menubar" Value="@((ActiveIndex ?? DefaultActiveIndex).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+            ValueChanged="@(ActiveIndexChanged.HasDelegate || OnActiveIndexChange.HasDelegate ? EventCallback.Factory.Create<string>(this, ReportBrowserIndex) : default)" Revision="@InteractionRevision" Loop="@Loop" @attributes="AdditionalAttributes">@ChildContent</BrowserNavigationHost>
+    }
+    else
+    {
     <div role="menubar"
          id="@_context.MenubarId"
          @onkeydown="HandleKeyDown"
          @attributes="AdditionalAttributes">
         @ChildContent
     </div>
+    }
+</CascadingValue>
+
 </CascadingValue>
 
 @code {
+    private readonly BrowserMenuFamily family = new();
+    /// <summary>Overrides scoped and application interaction policy.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to issue an authoritative browser reset.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    [CascadingParameter] private InteractionPolicy? InteractionPolicy { get; set; }
+    private InteractionMode EffectiveMode => InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, InteractionFamily.Menus);
+    private readonly BrowserFloatingState mode = new();
+
     private readonly MenubarContext _context = new();
     private UseControllableState<int> _state = null!;
 
@@ -66,6 +87,8 @@
 
     protected override void OnInitialized()
     {
+        mode.Sync(EffectiveMode, null, false, 0);
+        family.Enabled = mode.Enabled;
         // Initialize controllable state
         _state = new UseControllableState<int>(DefaultActiveIndex)
         {
@@ -83,12 +106,21 @@
 
     protected override void OnParametersSet()
     {
+        family.Revision = InteractionRevision;
+        mode.Sync(EffectiveMode, null, false, 0);
         // Update controlled value if it changed
         if (_state.IsControlled && ActiveIndex.HasValue)
         {
             _state.ControlledValue = ActiveIndex.Value;
             _context.State.ActiveIndex = ActiveIndex.Value;
         }
+    }
+
+    private async Task ReportBrowserIndex(string value)
+    {
+        if (!int.TryParse(value, out var index)) return;
+        await ActiveIndexChanged.InvokeAsync(index);
+        await OnActiveIndexChange.InvokeAsync(index);
     }
 
     private void HandleContextStateChanged()

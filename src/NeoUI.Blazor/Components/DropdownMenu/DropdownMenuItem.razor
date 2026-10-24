@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* Styled DropdownMenuItem - wrapper with shadcn Tailwind classes *@
-<DropdownMenuItemPrimitive class="@CssClass"
+<DropdownMenuItemPrimitive @attributes="AdditionalAttributes" class="@CssClass"
                                                          Disabled="@Disabled"
                                                          OnClick="@OnClick"
                                                          CloseOnSelect="@CloseOnSelect">
@@ -8,6 +8,8 @@
 </DropdownMenuItemPrimitive>
 
 @code {
+    /// <summary>Additional native item attributes, including browser action hooks.</summary>
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
     /// <summary>
     /// The content to display inside the menu item.
     /// </summary>

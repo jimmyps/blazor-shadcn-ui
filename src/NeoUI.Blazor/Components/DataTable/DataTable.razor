@@ -95,7 +95,7 @@
                                         {
                                             <DropdownMenu @bind-Open="_selectAllDropdownOpen">
                                                 <DropdownMenuTrigger Class="inline-flex items-center justify-center p-0 bg-transparent border-0 hover:bg-transparent focus:outline-none">
-                                                    <Checkbox Checked="@IsAllSelected()"
+                                                    <Checkbox AcceptedValueAccessor="IsAllSelected" Checked="@IsAllSelected()"
                                                               Indeterminate="@IsSomeSelected()"
                                                               AriaLabel="@Localizer["DataTable.SelectRowsAriaLabel"]"
                                                               Class="pointer-events-none" />
@@ -119,7 +119,7 @@
                                         }
                                         else
                                         {
-                                            <Checkbox Checked="@IsAllSelected()"
+                                            <Checkbox AcceptedValueAccessor="IsAllSelected" Checked="@IsAllSelected()"
                                                       CheckedChanged="@(async (bool isChecked) => await HandleSelectAllChanged(isChecked))"
                                                       Indeterminate="@IsSomeSelected()"
                                                       AriaLabel="@Localizer["DataTable.SelectAllRows"]" />
@@ -315,7 +315,7 @@
                            style="@GetSelectionColumnStyle()">
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
-                                  CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(item, chk))"
+                                  AcceptedValueAccessor="@(() => _tableState.Selection.IsSelected(item))" CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(item, chk))"
                                   AriaLabel="@Localizer["DataTable.SelectThisRow"]" />
                     </div>
                 </TableCell>
@@ -353,7 +353,7 @@
                            style="@GetSelectionColumnStyle()">
                     <div @onclick:stopPropagation="true">
                         <Checkbox Checked="@isSelected"
-                                  CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(treeRow.Item, chk))"
+                                  AcceptedValueAccessor="@(() => _tableState.Selection.IsSelected(treeRow.Item))" CheckedChanged="@(async (bool chk) => await HandleRowSelectionChanged(treeRow.Item, chk))"
                                   AriaLabel="@Localizer["DataTable.SelectThisRow"]" />
                     </div>
                 </TableCell>

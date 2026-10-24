@@ -1,6 +1,6 @@
 @namespace NeoUI.Blazor
 @* Styled InputOtp component - wrapper around OtpRoot primitive *@
-<OtpRootPrimitive class="@CssClass"
+<OtpRootPrimitive InteractionMode="@InteractionMode" InteractionRevision="@InteractionRevision" ValueExpression="@ValueExpression" AcceptedValueAccessor="@AcceptedValueAccessor" Required="@Required" class="@CssClass"
                                         Length="@Length"
                                         Value="@Value"
                                         ValueChanged="@ValueChanged"
@@ -15,6 +15,17 @@
 </OtpRootPrimitive>
 
 @code {
+    /// <summary>Overrides scoped and application interaction defaults.</summary>
+    [Parameter] public InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reset the browser draft.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+    /// <summary>Bound field for acceptance and form validation.</summary>
+    [Parameter] public System.Linq.Expressions.Expression<Func<string?>>? ValueExpression { get; set; }
+    /// <summary>Canonical acceptance getter for manual callbacks.</summary>
+    [Parameter] public Func<string?>? AcceptedValueAccessor { get; set; }
+    /// <summary>Requires every slot before form submission.</summary>
+    [Parameter] public bool Required { get; set; }
+
     /// <summary>
     /// The child content to render within the OTP input.
     /// Typically includes InputOtpSlot components or InputOtpGroup with slots.
