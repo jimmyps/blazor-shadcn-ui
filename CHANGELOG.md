@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased — Mobile Tooltip and HoverCard activation
+## 2026-10-24 — v4.5.1 — Mobile Tooltip and HoverCard activation
+
+> **Targeting: `v4.5.1` for both Components and Primitives**
+> **Packaging:** Components requires Primitives `4.5.1`; publish Primitives first.
 
 - Restored Browser-mode tap activation for informational Tooltip triggers, including nonfocusable text/icons; a compatibility click no longer immediately dismisses the tooltip.
 - Added completed-tap support for plain HoverCard triggers such as summary pills, without relying on mobile focus or synthetic hover. Scroll/cancel gestures do not reveal content; native Tooltip action-button/link behavior and callbacks remain intact.

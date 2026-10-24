@@ -2,6 +2,13 @@
 
 Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.
 
+## v4.5.1 mobile interaction patch
+
+Components and Primitives align at **4.5.1**. Browser-mode informational Tooltips and plain
+HoverCard triggers support completed touch taps, including text/icon triggers that cannot
+receive focus. Action callbacks remain live; scrolling and cancelled touches do not reveal
+content. Late-rendered card content remains supported. The Blazor interaction default is unchanged.
+
 ## What's new in v4.5.0
 
 **Released: 4.5.0 on 2026-10-24, aligned with NeoUI.Blazor 4.5.0.**
@@ -460,7 +467,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.0 (Components and Primitives aligned)
+- **Current Release**: 4.5.1 (Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives

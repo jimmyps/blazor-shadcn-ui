@@ -12,6 +12,21 @@ NeoUI uses a **monorepo with independent package versioning**. Each of the five 
 - **NeoUI.Icons.Heroicons** - Heroicons library
 - **NeoUI.Icons.Feather** - Feather icon library
 
+## v4.5.1 patch coordination
+
+Publish **4.5.1 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**. Components 4.5.1
+requires Primitives 4.5.1 so installations receive the shared mobile hover-controller fix.
+Merge the approved patch with green CI, verify the source commit, publish Primitives and
+wait for public NuGet availability before publishing Components from that same source.
+
+```bash
+./scripts/release-primitives.sh 4.5.1
+./scripts/release-components.sh 4.5.1
+```
+
+The tag names are `primitives/v4.5.1` and `components/v4.5.1`. Icon packages retain their
+independent versions. See the [changelog](CHANGELOG.md) for the patch scope.
+
 ## v4.5.0 release coordination
 
 Released **4.5.0 for both NeoUI.Blazor.Primitives and NeoUI.Blazor** on 2026-10-24.
