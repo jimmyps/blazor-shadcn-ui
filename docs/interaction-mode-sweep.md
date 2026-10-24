@@ -167,6 +167,7 @@ JavaScript still requires explicit configuration and behavior parity checks.
 | P1 | CurrencyInput | Browser focus strips formatting from the rounded display rather than exposing the full-precision model. In the gallery, enter `12.34567`, blur, then focus and blur without editing. Default Blazor retains model `12.34567`; Browser focuses as `12.35` and changes the model to `12.35` on the untouched blur. Legacy `HandleFocus()` deliberately uses `G29`; the Browser format payload has no equivalent editing value. | Keep display text and exact editable text separately. Reuse the existing currency definition/culture/precision rules and never reconstruct the editing value from a rounded display. Recheck zero-/multi-decimal currencies, symbol placement, hidden symbols, bounds and unchanged focus/blur. |
 | P2 | TagInput | `tag-input.js` container click-to-focus is skipped without an equivalent in `browser-tags.js`. Live gallery probe: clicking the container does not focus the input. Its legacy delayed blur dismissal is also absent: Tab moves focus away while the suggestions remain visible and `aria-expanded=true`. | Reuse the existing event adapter where practical, with local callbacks. Restore container focus and blur dismissal, preserving pointer selection into portaled suggestions, IME, trigger flags, rejection and asynchronous search. |
 | P2 | NavigationMenu | The Browser controller replaces the C# motion state and sets inactive panels to `display:none`, but never supplies `data-motion`. Live gallery comparison: default mode opens with `data-motion=""` and computed animation `enter`; Browser has no motion attribute and computed animation `none`. The styled content's existing Tailwind entry and directional-switch classes depend on those attributes. | Restore the same motion attributes and exit-presence contract in the local controller. Keep the existing Tailwind classes and verify opening, closing, sibling switching, reversal and reduced motion. |
+| P2 | MarkdownEditor shared history | The existing script is reused, but its deferred input handler calls `saveState()` after an undo; `saveState()` truncates redo history before checking for a duplicate value. Deterministic probe: queue the typing/formatting animation-frame callbacks, apply bold, undo, deliver those callbacks, then redo. The value remains `draft` instead of `**draft**`. CI run 40046317448 independently failed the same redo assertion in the Browser Server job. | Keep the existing editor engine, but make history capture correspond to the edit that scheduled it; stale frame callbacks must not erase redo or a revision-reset history. Add deterministic fast formatting/undo/redo coverage rather than a timing sleep. |
 
 The currency and mask cases are wrong-value findings and should be resolved before
 broad adoption. A green existing regression matrix does not cover these newly
@@ -176,7 +177,8 @@ identified cases. The audit itself changes no runtime behavior.
 
 - **MarkdownEditor:** already follows the desired reuse pattern. Both modes use
   `markdown-editor.js`; Browser mode changes notification routing and adds local
-  toolbar/shortcut handling while retaining formatting, list continuation and undo.
+  toolbar/shortcut handling. Formatting and list continuation reuse the original
+  engine, but the history race above prevents a clean undo/redo correctness verdict.
   Preview rendering still needs accepted content and server work.
 - **DateInput/TimeInput:** the previous `date-time-input.js` is a scroll-prevention
   and focus helper, not the segment editor. Segment editing previously lived in C#;
@@ -272,8 +274,9 @@ Source/caller tracing covered the full inventory. Runtime comparisons used the
 rebuilt gallery at ports 5184 (Blazor default) and 5185 (Browser default), on
 Chromium. Confirmed observations: currency precision on a second untouched blur,
 mask digit-prefix/focus/separator behavior, TagInput keyboard blur/container focus,
-NavigationMenu motion attributes/animation, MultiSelect Space routing, and
-ColorPicker cold opening with circuit sends suppressed. The isolated mask probe
+NavigationMenu motion attributes/animation, MultiSelect Space routing,
+ColorPicker cold opening with circuit sends suppressed, and deterministic
+Markdown deferred-history redo loss. The isolated mask probe
 compared the two shipped formatting modules directly; it did not substitute a
 mock formatter. No production fixes or new cross-browser guarantees are implied
 by these audit probes, and the full regression matrix was not rerun for this
@@ -283,6 +286,15 @@ findings-only documentation change.
    reset, IME and mobile-edit guarantees with an adapter and cross-mode tests.
 2. Restore exact currency editing values and protect unchanged focus/blur from
    writes. Include culture/currency/bounds and immediate-save tests.
-3. Restore TagInput focus/blur behavior and NavigationMenu's Tailwind motion contract.
+3. Restore TagInput focus/blur behavior and NavigationMenu's Tailwind motion contract,
+   and fix deferred Markdown history capture without changing the editor engine.
 4. Record the remaining deliberate mode differences; do not advertise shell-only
    or out-of-scope widgets as fully adopted editors.
+
+
+CI status checked during this audit: runtime baseline `a2151714`, run
+[40046317448](https://github.com/jimmyps/blazor-shadcn-ui/actions/runs/40046317448),
+passed the Blazor Server and WASM/gallery jobs. The Browser Server job failed the
+Markdown redo assertion at `markdown.spec.mjs:31`. The later documentation commits
+contain no runtime fix for that failure. This reinforces the open-finding status;
+it must not be presented as a green final correctness review.

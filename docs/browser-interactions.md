@@ -754,8 +754,8 @@ The P1/P2 scope and consumer review for lazy/heavy tab panels are tracked in [th
 Textarea, InputGroupInput and InputGroupTextarea reuse Input's browser draft controller, including IME, debounce, emptiness boundaries, explicit ValueRevision resets and form flushing. NumericInput, CurrencyInput and MaskedInput use the same queue with typed canonical acceptance and a final blur/Save commit. Incomplete or unrepresentable numeric values remain editable but block Save; they cannot silently submit an older parsed value. Locale formatting that preserves the typed value does not require a second Save. Clamping, normalization or rejection that changes the value returns ValueAdjusted so the user can review it.
 
 The [JavaScript preservation audit](interaction-mode-sweep.md) identified outstanding
-parity regressions in MaskedInput and CurrencyInput, plus TagInput focus/blur and
-NavigationMenu motion. In particular, literal-digit mask prefixes can be rewritten
+parity regressions in MaskedInput and CurrencyInput, plus TagInput focus/blur,
+NavigationMenu motion and a Markdown redo/history race. In particular, literal-digit mask prefixes can be rewritten
 incorrectly, and refocusing an unchanged currency value can lose precision. Resolve
 these findings before broad Browser-mode adoption; the audit records reproductions,
 existing-script reuse boundaries and required regression coverage. These are open
