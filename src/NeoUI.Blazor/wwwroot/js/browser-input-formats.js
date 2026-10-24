@@ -34,7 +34,13 @@ export function attachFormat(element, getFormat) {
                 if (position < raw.length) { result += raw[position++]; if (position <= acceptedBefore) nextCaret = result.length; }
                 else if (format.showMask) result += format.maskChar ?? '_';
                 else break;
-            } else { result += char; if (position === acceptedBefore) nextCaret = result.length; }
+            } else {
+                // Skip only literals adjacent to the insertion point. Placeholder
+                // slots before a later separator must not pull the caret forward.
+                const adjacent = nextCaret === result.length;
+                result += char;
+                if (position === acceptedBefore && adjacent) nextCaret = result.length;
+            }
         }
         return {value:result,caret:nextCaret,count:raw.length};
     };

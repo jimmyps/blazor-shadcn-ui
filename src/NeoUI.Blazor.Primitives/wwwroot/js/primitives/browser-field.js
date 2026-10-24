@@ -38,7 +38,8 @@ export function initialize(root, bridge) {
             item.dataset.state = mixed ? 'indeterminate' : checked ? (config.kind === 'toggle' ? 'on' : 'checked') : (config.kind === 'toggle' ? 'off' : 'unchecked');
             if (radio) item.tabIndex = item === roving ? 0 : -1;
             for (const child of item.querySelectorAll('[data-neo-field-state]')) child.dataset.state = item.dataset.state;
-            for (const child of item.querySelectorAll('[data-neo-field-indicator]')) child.hidden = child.dataset.neoFieldIndicator !== (mixed ? 'mixed' : checked ? 'checked' : 'unchecked');
+            // SVGElement has no reflected hidden property; use the attribute for both SVG and HTML indicators.
+            for (const child of item.querySelectorAll('[data-neo-field-indicator]')) child.toggleAttribute('hidden', child.dataset.neoFieldIndicator !== (mixed ? 'mixed' : checked ? 'checked' : 'unchecked'));
         }
         for (const hidden of root.querySelectorAll('[data-neo-field-hidden]')) if (own(hidden)) hidden.value = config.kind === 'checkbox' || config.kind === 'switch' ? String(values.includes('checked')) : config.kind === 'radio' && values.length ? String(JSON.parse(values[0])) : values.join(',');
         const range = root.querySelector('[data-neo-field-range]');

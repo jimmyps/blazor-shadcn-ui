@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🛠️ Correctness and compatibility review
 
+- Browser checkbox checkmarks and indeterminate indicators use the actual `hidden` attribute for SVG and HTML elements, keeping visible feedback aligned with ARIA state. MaskedInput keeps the caret at the next editable slot instead of skipping unfilled slots before a separator; typing, deletion and resets have focused browser coverage.
+
 - Blazor-mode shared hosts skip Browser serialization and browser-only value/options evaluation. Default RadioGroup supports cyclic/non-serializable TValue again; a regression executable verifies default rendering with JSON reflection disabled.
 - Ordinary Input loads the Browser draft/format/Markdown modules dynamically only when opted in. Initialization and disposal retain log-and-continue handling for unexpected interop failures; disposal still ignores normal disconnected/cancelled lifetimes.
 - Partial DateInput/TimeInput drafts cannot flush successfully, including direct field synchronization and `novalidate` forms. Invalid numeric drafts report native validity and `OnFlushFailed`; ordinary native constraints continue suppressing EditForm callbacks, while EditContext validation retains its existing handler semantics.

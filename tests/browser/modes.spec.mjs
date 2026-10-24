@@ -19,6 +19,49 @@ async function open(mode,families=false){
 }
 async function attribute(locator,name,value){await locator.page().waitForFunction(({selector,name,value})=>document.querySelector(selector)?.getAttribute(name)===value,{selector:await locator.evaluate(el=>{el.dataset.matrixTarget='current';return '[data-matrix-target="current"]'}),name,value},{timeout:5000});await locator.evaluate(el=>delete el.dataset.matrixTarget);}
 for(const mode of ['Blazor','Browser']){
+ test(`${mode}: checkbox indicators visibly match checked, mixed, disabled and reset states`,async()=>{
+  const {page,errors}=await open(mode);try{
+   const indicators=async(control,state,expected)=>{
+    await attribute(control,'aria-checked',state);
+    assert.deepEqual(await control.locator('svg').evaluateAll(icons=>icons.filter(icon=>getComputedStyle(icon).display!=='none').map(icon=>icon.dataset.neoFieldIndicator)),expected);
+   };
+   const initial=page.getByTestId('sweep-checkbox-indicators');
+   if(mode==='Browser')await initial.locator('[data-neo-state-ready="true"]').nth(2).waitFor();
+   await indicators(initial.getByRole('checkbox',{name:'Initially checked indicator',exact:true}),'true',['checked']);
+   await indicators(initial.getByRole('checkbox',{name:'Initially mixed indicator',exact:true}),'mixed',['mixed']);
+   const disabled=initial.getByRole('checkbox',{name:'Disabled checked indicator',exact:true});
+   assert.equal(await disabled.isDisabled(),true);await indicators(disabled,'true',['checked']);
+   const check=page.getByRole('checkbox',{name:'Sweep checkbox',exact:true});
+   await indicators(check,'false',[]);
+   if(mode==='Browser')await page.evaluate(()=>{window.__nativeSend=WebSocket.prototype.send;WebSocket.prototype.send=function(){};});
+   await check.click();await indicators(check,'true',['checked']);
+   if(mode==='Browser')await check.press('Space');else await check.click();await indicators(check,'false',[]);
+   if(mode==='Browser')await page.evaluate(()=>WebSocket.prototype.send=window.__nativeSend);
+   await check.click();await indicators(check,'true',['checked']);
+   await page.getByTestId('sweep-fields-reset').click();await indicators(check,'false',[]);
+   assert.deepEqual(errors,[]);
+  }finally{await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await page.close();}
+ });
+ test(`${mode}: masked typing keeps the caret at the next editable slot`,async()=>{
+  const {page,errors}=await open(mode);try{
+   const input=page.getByPlaceholder('Sweep caret mask',{exact:true});
+   if(mode==='Browser')await input.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
+   else await input.locator('xpath=self::*[@data-matrix-listener-ready="true"]').waitFor();
+   await input.focus();await input.press('ControlOrMeta+A');await input.press('Backspace');
+   for(const [key,value,caret] of [['1','1__-___',1],['2','12_-___',2],['3','123-___',4],['4','123-4__',5],['5','123-45_',6],['6','123-456',7]]){
+    await input.press(key);assert.equal(await input.inputValue(),value);
+    assert.equal(await input.evaluate(el=>el.selectionStart),caret,`caret after ${key}`);
+   }
+   if(mode==='Browser'){
+    await input.evaluate(el=>el.setSelectionRange(4,4));await input.press('Backspace');
+    assert.equal(await input.inputValue(),'124-56_');assert.equal(await input.evaluate(el=>el.selectionStart),2);
+    await input.press('ControlOrMeta+A');await input.press('Backspace');await input.press('7');
+    assert.equal(await input.inputValue(),'7__-___');assert.equal(await input.evaluate(el=>el.selectionStart),1);
+   }
+   assert.deepEqual(errors,[]);
+  }finally{await page.close();}
+ });
+
  test(`${mode}: text adapters, formatted inputs, binding and reset preserve common behavior`,async()=>{
   const {browser,page,errors}=await open(mode);try{
    if(mode==='Blazor')assert.equal(await page.locator('[data-neo-state-host]').count(),0);

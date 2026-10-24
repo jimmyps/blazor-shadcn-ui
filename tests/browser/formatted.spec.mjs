@@ -34,6 +34,8 @@ test('formatted drafts preserve incomplete numbers, locale decimals and local ma
         await numeric.fill('-');await pause(100);assert.equal(await numeric.inputValue(),'-');
         await numeric.fill('1.');await pause(100);assert.equal(await numeric.inputValue(),'1.');
         await currency.fill('12,34');assert.equal(await currency.inputValue(),'12,34');
+        await masked.fill('');await masked.press('1');assert.equal(await masked.inputValue(),'1__-___');
+        assert.equal(await masked.evaluate(element=>element.selectionStart),1);
         await masked.fill('123456');assert.equal(await masked.inputValue(),'123-456');
         await masked.evaluate(element=>element.setSelectionRange(4,4));await masked.press('Backspace');
         assert.equal(await masked.inputValue(),'124-56_');

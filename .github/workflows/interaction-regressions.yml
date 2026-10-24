@@ -116,7 +116,7 @@ jobs:
             $env:NEOUI_BROWSER_ENGINE='webkit'
             try {
               Push-Location tests/browser
-              node --test --test-name-pattern='animates expansion and collapse' p1-sweep.spec.mjs 2>&1 | Tee-Object ../../disclosure-webkit-tests.log
+              node --test --test-concurrency=1 --test-name-pattern='animates expansion and collapse|checkbox indicators visibly|masked typing keeps' p1-sweep.spec.mjs modes.spec.mjs 2>&1 | Tee-Object ../../disclosure-webkit-tests.log
               $result=$LASTEXITCODE;Pop-Location;if($result){exit $result}
             } finally { Remove-Item Env:NEOUI_BROWSER_ENGINE }
           } finally { taskkill /PID $wasm.Id /T /F }
