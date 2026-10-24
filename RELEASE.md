@@ -12,6 +12,20 @@ NeoUI uses a **monorepo with independent package versioning**. Each of the five 
 - **NeoUI.Icons.Heroicons** - Heroicons library
 - **NeoUI.Icons.Feather** - Feather icon library
 
+## v4.5.2 patch coordination
+
+Publish **4.5.2 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**. Components 4.5.2
+requires Primitives 4.5.2 for the shared pointer-opening focus correction. Merge the
+approved patch with green CI, verify the source commit, publish Primitives and wait for
+public NuGet availability before publishing Components from that same source.
+
+```bash
+./scripts/release-primitives.sh 4.5.2
+./scripts/release-components.sh 4.5.2
+```
+
+Tags: `primitives/v4.5.2` and `components/v4.5.2`. Icon package versions are unchanged.
+
 ## v4.5.1 patch coordination
 
 Publish **4.5.1 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**. Components 4.5.1

@@ -34,6 +34,14 @@ NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor appli
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
+## v4.5.2 menu focus patch
+
+Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
+without adding a first-item highlight alongside the application's current-page selection.
+Keyboard/assistive entry and selected values remain intact. Dropdown, split/pill, menubar,
+context-menu and submenu pointer openings share the policy. Blazor behavior, Select focus
+and Popover autofocus are unchanged.
+
 ## v4.5.1 mobile interaction patch
 
 Components and Primitives align at **4.5.1**. Browser-mode informational Tooltips and plain
@@ -72,7 +80,7 @@ builder.Services.ConfigureNeoUIInteractions(options =>
 });
 ```
 
-Components requires Primitives **4.5.1**. Icon packages keep their independent versions.
+Components requires Primitives **4.5.2**. Icon packages keep their independent versions.
 Review heavy/lazy tab content and floating DOM costs before opting those controls in.
 See the [upgrade guide](docs/upgrading-to-4.5.md),
 [interaction/adoption guide](docs/browser-interactions.md),
@@ -707,7 +715,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.1 for Components and Primitives
+- **Current Release**: 4.5.2 for Components and Primitives
 - **Icon Versions**: Independently versioned
 - **Target Framework**: .NET 10
 - **Package IDs**: 

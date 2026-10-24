@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased — Menu pointer-opening focus
+## 2026-10-24 — v4.5.2 — Menu pointer-opening focus
+
+> **Targeting: `v4.5.2` for both Components and Primitives**
+> **Packaging:** Components requires Primitives `4.5.2`; publish Primitives first.
 
 - Browser menus now focus their container when opened by mouse or touch, matching the Blazor path. The first item no longer receives an unsolicited focus/SelectionIndicator highlight alongside an application's current-page selection. Dropdown, split-button, pill-menu, menubar, context-menu and submenu pointer openings share the policy.
 - Keyboard/assistive opening still focuses the first/last enabled item; arrows, typeahead and disabled-item skipping remain local. Reopening clears stale item-focus markers. Select's selected-option focus and Popover autofocus are retained.

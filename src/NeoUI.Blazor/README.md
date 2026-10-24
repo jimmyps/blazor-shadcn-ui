@@ -2,6 +2,14 @@
 
 Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
+## v4.5.2 menu focus patch
+
+Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
+without adding a first-item highlight alongside the application's current-page selection.
+Keyboard/assistive entry and selected values remain intact. Dropdown, split/pill, menubar,
+context-menu and submenu pointer openings share the policy. Blazor behavior, Select focus
+and Popover autofocus are unchanged.
+
 ## v4.5.1 mobile interaction patch
 
 Components and Primitives align at **4.5.1**. Browser-mode informational Tooltips and plain
@@ -34,7 +42,7 @@ builder.Services.ConfigureNeoUIInteractions(options =>
 ```
 
 `Disclosures` is another optional family default; review heavy/lazy Tabs before enabling it.
-Components requires Primitives 4.5.1; icon package versions remain independent.
+Components requires Primitives 4.5.2; icon package versions remain independent.
 See the [upgrade guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/upgrading-to-4.5.md),
 [adoption guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md)
 and [Interaction Mode demo](https://demos.neoui.io/components/browser-interactions).
@@ -501,7 +509,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.1 (Components and Primitives aligned)
+- **Current Release**: 4.5.2 (Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

@@ -13,7 +13,7 @@
     <Description>Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.</Description>
     <PackageTags>blazor;primitives;headless;ui;components;accessibility;radix;unstyled;wcag</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>v4.5.1: restores completed-touch activation for informational Tooltip and plain HoverCard triggers, preserves action clicks and rejects cancelled or scrolling gestures.</PackageReleaseNotes>
+    <PackageReleaseNotes>v4.5.2: pointer-opened menus focus their container rather than the first item; stale focus markers clear on reopen and keyboard/assistive first-last focus remains intact.</PackageReleaseNotes>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>
