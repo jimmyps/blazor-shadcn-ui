@@ -12,9 +12,13 @@ NeoUI uses a **monorepo with independent package versioning**. Each of the five 
 - **NeoUI.Icons.Heroicons** - Heroicons library
 - **NeoUI.Icons.Feather** - Feather icon library
 
-## v4.5.0 release coordination (unreleased)
+## v4.5.0 release coordination
 
-This release targets **4.5.0 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**.
+Released **4.5.0 for both NeoUI.Blazor.Primitives and NeoUI.Blazor** on 2026-10-24.
+Both tags identify merged commit `1f32a3e4fb238be12433fc62cadd1e98775b14d7`.
+The [Primitives publish run](https://github.com/jimmyps/blazor-shadcn-ui/actions/runs/40077402790)
+and [Components publish run](https://github.com/jimmyps/blazor-shadcn-ui/actions/runs/40077710818) succeeded.
+Primitives was verified available before Components publication.
 The tag prefixes and independent versioning infrastructure are unchanged; this release
 coordinates the two UI packages because Components requires Primitives 4.5.0.
 Icon packages keep their own versions and are not part of this version alignment.

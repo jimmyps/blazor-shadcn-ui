@@ -1,6 +1,6 @@
 # Browser interaction mode — v4.5.0
 
-**Release target: Components and Primitives 4.5.0 (unreleased).** See the
+**Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.
 
 `DropdownMenu`, `Popover`, `Select<TValue>`, `Input`, and the composed controls below accept an opt-in interaction mode:

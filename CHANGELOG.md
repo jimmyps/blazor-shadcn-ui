@@ -2,9 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-10-22 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
+## 2026-10-24 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
 
-> **Targeting: `v4.5.0` for both Components and Primitives (unreleased)**
+> **Released: `v4.5.0` for both Components and Primitives on 2026-10-24**
 > **Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`.** Major feature upgrade with aligned package versions.
 > **Opt-in — the library default remains `InteractionMode.Blazor`.** Existing applications retain Blazor interaction ownership; review the API/HTML compatibility notes below.
 

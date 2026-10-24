@@ -1,6 +1,6 @@
 # Interaction Mode expansion: P1 and P2 — v4.5.0
 
-**Release target: Components and Primitives 4.5.0 (unreleased).** See [Upgrading to v4.5.0](upgrading-to-4.5.md).
+**Released: Components and Primitives 4.5.0 on 2026-10-24.** See [Upgrading to v4.5.0](upgrading-to-4.5.md).
 
 This follow-up implements P1 before P2. P3 (modal Dialog/Sheet/AlertDialog and a complete rich-text editor conversion) is excluded. Existing application defaults and explicit Blazor exceptions remain the adoption policy.
 

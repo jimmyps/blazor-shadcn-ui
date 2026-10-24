@@ -4,7 +4,7 @@ Headless, unstyled Blazor primitive components with full accessibility support. 
 
 ## What's new in v4.5.0
 
-**Release target: 4.5.0 (unreleased), aligned with NeoUI.Blazor 4.5.0.**
+**Released: 4.5.0 on 2026-10-24, aligned with NeoUI.Blazor 4.5.0.**
 Shared primitive controllers now support opt-in browser-local floating/menu/disclosure
 interactions and supported field feedback, with versioned acceptance, reset, reconnect and
 initialization-lifetime handling. Floating contents remain live Blazor components; application
@@ -460,7 +460,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Release Target**: 4.5.0 (unreleased; Components and Primitives aligned)
+- **Current Release**: 4.5.0 (Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives
