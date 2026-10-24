@@ -110,7 +110,8 @@ export function initialize(root, bridge) {
                 if (item === trigger) {
                     const wasOpen = controller?.isOpen;
                     void controller?.open(focus, false);
-                    if (wasOpen && focus !== 'none') {
+                    if (wasOpen && focus === 'container') controller.focusContainer();
+                    else if (wasOpen && focus !== 'none') {
                         const items = [...controller.content.querySelectorAll('[role="menuitem"], [role="menuitemcheckbox"], [role="menuitemradio"]')]
                             .filter(element => !disabled(element) && !element.hidden);
                         controller.focus(focus === 'last' ? items.at(-1) : items[0]);
@@ -151,7 +152,7 @@ export function initialize(root, bridge) {
             if (trigger) {
                 event.preventDefault(); event.stopImmediatePropagation();
                 const next = value !== key(trigger) || hoverSwitchedTrigger === trigger ? key(trigger) : '-1';
-                set(next, 'first');
+                set(next, event.detail === 0 ? 'first' : 'container');
             }
             return;
         }

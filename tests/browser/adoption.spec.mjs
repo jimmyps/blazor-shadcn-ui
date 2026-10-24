@@ -153,6 +153,8 @@ test('controlled reset invalidates pending and queued menu acknowledgements', as
 
 test('checkbox/radio keyboard, disabled items, dismissal and submenu commits', async () => {
     await openFilters();
+    assert.equal(await filter('Unread only').evaluate(e => document.activeElement === e.closest('[role="menu"]')), true);
+    await page.keyboard.press('ArrowDown');
     assert.equal(await filter('Unread only').evaluate(e => document.activeElement === e), true);
     await page.keyboard.press('Space');
     await checked(filter('Unread only'), true);

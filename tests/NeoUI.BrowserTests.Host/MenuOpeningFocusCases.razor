@@ -1,0 +1,38 @@
+<InteractionModeProvider Mode="@Mode">
+<section data-testid="menu-opening-focus">
+    <DropdownMenu>
+        <DropdownMenuTrigger>Focus Dropdown</DropdownMenuTrigger>
+        <DropdownMenuContent>@DropdownItems("Dropdown")</DropdownMenuContent>
+    </DropdownMenu>
+    <DropdownMenu><DropdownMenuTrigger>Focus Nonloop</DropdownMenuTrigger><DropdownMenuContent Loop="false">@DropdownItems("Nonloop")</DropdownMenuContent></DropdownMenu>
+    <SplitButton DropdownAriaLabel="Focus Split pages"><ChildContent>Split primary</ChildContent><DropdownContent>
+        <SplitButtonItem>Split Inbox</SplitButtonItem><SplitButtonItem Disabled>Split disabled</SplitButtonItem><SplitButtonItem Class="bg-accent">Split Campaigns</SplitButtonItem>
+        <SelectionIndicator Hover="true" HoverTarget="[role=menuitem]" />
+    </DropdownContent></SplitButton>
+    <Menubar><MenubarMenu><MenubarTrigger>Focus Menubar</MenubarTrigger><MenubarContent>
+        <MenubarItem>Menubar Inbox</MenubarItem><MenubarItem Disabled>Menubar disabled</MenubarItem><MenubarItem Class="bg-accent">Menubar Campaigns</MenubarItem>
+        <SelectionIndicator Hover="true" HoverTarget="[role=menuitem]" />
+    </MenubarContent></MenubarMenu></Menubar>
+    <div style="position:relative;transform:translateZ(0);height:120px;margin:40px 0">
+    <SidebarProvider DefaultOpen="false" CookieKey="@((string?)null)" CollapsedMode="SidebarCollapsedMode.Pill" HeightClass="h-auto">
+        <Sidebar><SidebarContent>Focus sidebar</SidebarContent></Sidebar>
+        <SidebarPillNav>
+            <ChildContent><SidebarPillNavItem AsChild><DropdownMenu><DropdownMenuTrigger>Focus Pill</DropdownMenuTrigger><DropdownMenuContent>@DropdownItems("Pill")</DropdownMenuContent></DropdownMenu></SidebarPillNavItem></ChildContent>
+            <TrailingContent><SplitButton DropdownAriaLabel="Focus PillSplit pages"><ChildContent>Pill split primary</ChildContent><DropdownContent>
+                <SplitButtonItem>PillSplit Inbox</SplitButtonItem><SplitButtonItem Disabled>PillSplit disabled</SplitButtonItem><SplitButtonItem Class="bg-accent">PillSplit Campaigns</SplitButtonItem>
+                <SelectionIndicator Hover="true" HoverTarget="[role=menuitem]" />
+            </DropdownContent></SplitButton></TrailingContent>
+        </SidebarPillNav>
+    </SidebarProvider>
+    </div>
+
+</section>
+</InteractionModeProvider>
+@code {
+    [Parameter] public InteractionMode Mode { get; set; }
+    private RenderFragment DropdownItems(string name) => @<text>
+        <DropdownMenuItem>@name Inbox</DropdownMenuItem><DropdownMenuItem Disabled>@name disabled</DropdownMenuItem><DropdownMenuItem Class="bg-accent">@name Campaigns</DropdownMenuItem>
+        <DropdownMenuSub><DropdownMenuSubTrigger>@name More</DropdownMenuSubTrigger><DropdownMenuSubContent><DropdownMenuItem>@name Nested first</DropdownMenuItem><DropdownMenuItem>@name Nested last</DropdownMenuItem></DropdownMenuSubContent></DropdownMenuSub>
+        <SelectionIndicator Hover="true" HoverTarget="[role=menuitem]" />
+    </text>;
+}

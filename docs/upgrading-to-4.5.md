@@ -6,16 +6,16 @@ applications keep Blazor interaction behavior unless they opt in. .NET 10 remain
 
 ## Package alignment
 
-Use the 4.5.1 patch for mobile Tooltip/HoverCard activation fixes. Upgrade both packages together if your application references both:
+Use the 4.5.2 patch for neutral pointer-opened menu focus; it also includes the 4.5.1 mobile Tooltip/HoverCard fixes. Upgrade both packages together if your application references both:
 
 ```sh
-dotnet add package NeoUI.Blazor --version 4.5.1
-dotnet add package NeoUI.Blazor.Primitives --version 4.5.1
+dotnet add package NeoUI.Blazor --version 4.5.2
+dotnet add package NeoUI.Blazor.Primitives --version 4.5.2
 ```
 
 Components already brings Primitives as a dependency, so a direct Primitives reference is
-optional. Update any direct version pins or central package management entries to 4.5.1;
-Components 4.5.1 requires Primitives 4.5.1. Icon packages retain their independent version numbers.
+optional. Update any direct version pins or central package management entries to 4.5.2;
+Components 4.5.2 requires Primitives 4.5.2. Icon packages retain their independent version numbers.
 
 ## Adopt Browser mode by family
 
