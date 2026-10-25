@@ -17,7 +17,7 @@ public partial class Input
     /// <summary>Omitted values inherit the enclosing floating control, scoped or application interaction policy.</summary>
     [Parameter] public InteractionMode? InteractionMode { get; set; }
 
-    /// <summary>Change to replace the browser draft with Value, including unchanged resets. This invalidates queued edits.</summary>
+    /// <summary>Change to replace an edited browser draft with Value, including unchanged resets. Pristine inputs accept Value changes automatically. A revision invalidates queued edits and starts a new pristine window.</summary>
     [Parameter] public long ValueRevision { get; set; }
 
     /// <summary>Reads the canonical value after an awaited callback without depending on a child render. For manual compositions; standard binding uses ValueExpression.</summary>

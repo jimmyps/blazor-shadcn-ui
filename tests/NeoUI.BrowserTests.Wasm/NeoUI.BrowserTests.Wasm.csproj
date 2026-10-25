@@ -7,6 +7,7 @@
     <RootNamespace>NeoUI.BrowserTests.Host</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="../NeoUI.BrowserTests.Host/DelayedInputCases.razor" Link="DelayedInputCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/EditorPreservationCases.razor" Link="EditorPreservationCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/InteractionOwnershipCases.razor" Link="InteractionOwnershipCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/FloatingGeometryCases.razor" Link="FloatingGeometryCases.razor" />

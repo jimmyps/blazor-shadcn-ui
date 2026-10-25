@@ -27,3 +27,37 @@ test('the expanded gallery uses existing styles, flushes mixed controls and fits
         assert.deepEqual(errors,[]);
     }finally{await browser.close();}
 });
+
+test('delayed-binding gallery loads pristine values, preserves typed drafts and restarts safely',async()=>{
+    const browser=await chromium.launch({channel:'msedge',headless:true}),page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];
+    page.on('pageerror',error=>errors.push(String(error)));await page.addInitScript(floating);
+    const origin=new URL(url).origin;
+    if(origin.includes('.devtunnels.ms'))await page.route(origin+'/**',route=>route.continue({headers:{...route.request().headers(),'X-Tunnel-Skip-AntiPhishing-Page':'true'}}));
+    try{
+        await page.goto(url,{waitUntil:'domcontentloaded'});
+        const section=page.getByTestId('demo-delayed-binding'),name=page.getByTestId('demo-delayed-name'),draft=page.getByTestId('demo-delayed-draft'),budget=page.getByTestId('demo-delayed-budget');
+        await name.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
+        assert.equal(await name.inputValue(),'');
+        await page.getByTestId('demo-delayed-load').click();
+        await page.getByTestId('demo-delayed-status').filter({hasText:'Loading for'}).waitFor();
+        await draft.fill('My local segment');
+        await page.getByTestId('demo-delayed-status').filter({hasText:'Loaded.'}).waitFor();
+        assert.equal(await name.inputValue(),'Returning customers');
+        assert.equal(await draft.inputValue(),'My local segment');
+        assert.equal(await budget.inputValue(),'$1,234.57');
+        await budget.focus();assert.equal(await budget.inputValue(),'1234.5678');
+        assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+        await section.screenshot({path:process.env.TEMP+'/neoui-delayed-binding-mobile.png'});
+        await page.getByTestId('demo-delayed-restart').click();
+        await page.getByTestId('demo-delayed-status').filter({hasText:'Inputs are ready.'}).waitFor();
+        await name.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
+        assert.equal(await name.inputValue(),'');assert.equal(await draft.inputValue(),'');
+        // An obsolete load cannot populate a new example after Start again.
+        await page.getByTestId('demo-delayed-load').click();
+        await page.getByTestId('demo-delayed-status').filter({hasText:'Loading for'}).waitFor();
+        await page.getByTestId('demo-delayed-restart').click();
+        await page.getByTestId('demo-delayed-status').filter({hasText:'Inputs are ready.'}).waitFor();
+        await page.waitForTimeout(1700);assert.equal(await name.inputValue(),'');
+        assert.deepEqual(errors,[]);
+    }finally{await browser.close();}
+});

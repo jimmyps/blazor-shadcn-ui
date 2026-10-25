@@ -2,6 +2,15 @@
 
 Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
+## v4.5.3 delayed binding patch
+
+Components **4.5.3** accepts asynchronous `Value` updates while Browser inputs are pristine,
+without a loading guard or revision bump. Edited drafts remain protected from late loads
+and stale acknowledgements; `ValueRevision` still forces replacements and same-value resets.
+Text and formatted adapters share this behavior, including exact currency precision.
+The Interaction Mode demo includes delayed loading and typing during the delay.
+The default Blazor path is unchanged. Primitives remains **4.5.2**.
+
 ## v4.5.2 menu focus patch
 
 Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
@@ -509,7 +518,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.2 (Components and Primitives aligned)
+- **Current Release**: 4.5.3 (requires Primitives 4.5.2)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

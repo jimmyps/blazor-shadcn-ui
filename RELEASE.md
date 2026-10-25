@@ -12,6 +12,19 @@ NeoUI uses a **monorepo with independent package versioning**. Each of the five 
 - **NeoUI.Icons.Heroicons** - Heroicons library
 - **NeoUI.Icons.Feather** - Feather icon library
 
+## v4.5.3 Components patch
+
+Publish **NeoUI.Blazor 4.5.3** for pristine delayed input binding and its demo.
+Primitives remains **4.5.2**: this patch changes only the Components input adapter,
+and the existing package dependency is unchanged. Merge the approved patch with green
+CI, verify the merged main source, then publish Components from that commit:
+
+```bash
+./scripts/release-components.sh 4.5.3
+```
+
+Tag: `components/v4.5.3`. Do not create a Primitives or icon tag for this patch.
+
 ## v4.5.2 patch coordination
 
 Publish **4.5.2 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**. Components 4.5.2

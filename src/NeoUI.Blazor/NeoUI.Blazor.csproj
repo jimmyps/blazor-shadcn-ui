@@ -14,7 +14,7 @@
     <Description>Over 75+ pre-styled Blazor components built with shadcn/ui design and Tailwind CSS with full .NET 10 support. Beautiful defaults that you can customize to match your brand.</Description>
     <PackageTags>blazor;ui;components;shadcn;tailwind;styled;design-system</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>v4.5.2: aligns mouse/touch menu opening with Blazor container focus, avoids duplicate active-looking item highlights and preserves keyboard, assistive and selection behavior. Requires NeoUI.Blazor.Primitives 4.5.2.</PackageReleaseNotes>
+    <PackageReleaseNotes>v4.5.3: Browser text and formatted inputs accept delayed Value binding while pristine without callbacks or ValueRevision; edited drafts remain protected from stale renders and acknowledgements. Explicit replacements and same-value resets retain ValueRevision. Includes a delayed-loading demo; the Blazor path is unchanged. Requires NeoUI.Blazor.Primitives 4.5.2.</PackageReleaseNotes>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>

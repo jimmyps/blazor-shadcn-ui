@@ -12,6 +12,9 @@ export { setConnectionAvailable };
 export function initialize(element, bridge) {
     if (!element || controllers.has(element)) return;
     let config = JSON.parse(element.getAttribute('data-neo-input-config') || '{}');
+    // The fixed Razor value is the hydration baseline. A different live value
+    // belongs to a user who typed before the module finished loading.
+    let pristine = element.value === element.defaultValue;
     const formatting = attachFormat(element, () => config.format);
     let revision = config.revision ?? 0, sequence = 0, draft = element.value;
     let lastSubmitted = config.value ?? '', submittedSequence = 0, acceptedValue = config.value ?? '', composing = false, timer, running = false, disposed = false;
@@ -49,6 +52,7 @@ export function initialize(element, bridge) {
     };
     const observeDraft = () => {
         if (draft === element.value) return false;
+        pristine = false;
         draft = element.value; sequence++;
         if (element.hasAttribute('data-neo-input-invalid')) { element.removeAttribute('data-neo-input-invalid'); element.setCustomValidity(''); formatting.validate(); }
         element.removeAttribute('data-neo-input-uncertain');
@@ -130,19 +134,32 @@ export function initialize(element, bridge) {
         if (config.updateOn === 'change' && crossed && !composing) submit();
         else schedule();
     };
-    const input = () => { observeDraft(); notifyChangeBoundary(); };
-    const compositionStart = () => { composing = true; cancelTimer(); };
+    const input = () => { pristine = false; observeDraft(); notifyChangeBoundary(); };
+    const compositionStart = () => { pristine = false; composing = true; cancelTimer(); };
     const compositionEnd = () => { composing = false; observeDraft(); if (heldAck) { reconcile(heldAck); heldAck = undefined; } if (document.activeElement !== element) submit(true); else notifyChangeBoundary(); };
     const change = () => { observeDraft(); submit(true); };
+    const acceptParameterValue = () => {
+        write(config.value ?? ''); formatting.reconcile();
+        lastSubmitted = acceptedValue = draft; submittedSequence = sequence;
+        observedEmpty = formatting.isEmpty(draft);
+    };
     const observer = new MutationObserver(() => {
+        const previousValue = config.value ?? '';
         config = JSON.parse(element.getAttribute('data-neo-input-config') || '{}');
         if (lockDepth) element.readOnly = true;
-        if (config.revision === revision) return;
+        if (config.revision === revision) {
+            // Ordinary binding may initialize a field asynchronously. It can only
+            // replace a pristine field, never a pending or previously edited draft.
+            if (pristine && (config.value ?? '') !== previousValue) {
+                acceptParameterValue(); pending(false);
+            }
+            return;
+        }
         revision = config.revision;
         cancelTimer(); queue.length = 0; heldAck = undefined; generation++; running = false;
         if (element.hasAttribute('data-neo-input-invalid')) element.setCustomValidity('');
         element.removeAttribute('data-neo-input-invalid');
-        write(config.value ?? ''); formatting.reconcile(); lastFinalSequence = -1; lastSubmitted = acceptedValue = draft; submittedSequence = sequence; observedEmpty = formatting.isEmpty(draft);
+        pristine = true; acceptParameterValue(); lastFinalSequence = -1;
         element.removeAttribute('data-neo-input-uncertain');
         pending(false);
     });
@@ -154,8 +171,10 @@ export function initialize(element, bridge) {
     element.addEventListener('blur', change);
     element.addEventListener('compositionstart', compositionStart);
     element.addEventListener('compositionend', compositionEnd);
+    // Config may already contain a later Value when initialization was delayed.
+    if (pristine) acceptParameterValue();
     element.setAttribute('data-neo-input-ready', 'true');
-    if (draft !== acceptedValue) { sequence++; pending(true); notifyChangeBoundary(); }
+    if (!pristine && draft !== acceptedValue) { sequence++; pending(true); notifyChangeBoundary(); }
     controllers.set(element, {
         get composing() { return composing; },
         enableNativeValidation() {
