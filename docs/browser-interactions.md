@@ -184,6 +184,8 @@ value to acknowledge a correction. Field-change validation runs after the callba
 While an input is pristine, incoming `Value` changes synchronize its display automatically.
 For example, `<Input @bind-Value="model.Name" />` can mount with an empty name and display
 an asynchronously loaded name later, without a loading guard or `ValueRevision`.
+The Interaction Mode demo includes **Load values after the inputs appear**
+(`#delayed-input-binding`) to try both cases with text and currency inputs.
 Synchronization does not invoke `ValueChanged` or mark the field pending. This applies to
 Input, Textarea, InputGroup's text adapters, and the NumericInput, CurrencyInput and
 MaskedInput adapters; it is not a new synchronization policy for structured selection fields.

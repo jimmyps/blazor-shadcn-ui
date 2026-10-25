@@ -1,0 +1,78 @@
+<section id="delayed-input-binding" class="scroll-mt-24" data-testid="demo-delayed-binding">
+    <DemoSection Title="Load values after the inputs appear" Description="These inputs mount empty. Load an existing segment to populate untouched fields through ordinary binding, or type during the delay to keep your local draft.">
+        <DemoBlock Code="@exampleCode">
+            <InteractionModeProvider Mode="InteractionMode.Browser">
+                <div @key="generation" class="grid gap-6 sm:grid-cols-2">
+                    <div class="space-y-2 min-w-0">
+                        <Label For="demo-delayed-name">Segment name</Label>
+                        <Input Id="demo-delayed-name" @bind-Value="name" Placeholder="Leave this field untouched" data-testid="demo-delayed-name" />
+                        <p class="text-xs text-muted-foreground">An untouched input displays the name when loading finishes.</p>
+                    </div>
+                    <div class="space-y-2 min-w-0">
+                        <Label For="demo-delayed-draft">Try your own name</Label>
+                        <Input Id="demo-delayed-draft" @bind-Value="draft" Placeholder="Type here while loading" data-testid="demo-delayed-draft" />
+                        <p class="text-xs text-muted-foreground">Once you edit, the incoming name cannot overwrite your draft.</p>
+                    </div>
+                    <div class="space-y-2 min-w-0">
+                        <Label For="demo-delayed-budget">Budget in USD</Label>
+                        <CurrencyInput Id="demo-delayed-budget" TValue="decimal?" @bind-Value="budget" Currency="USD" Placeholder="Loaded with the segment" data-testid="demo-delayed-budget" />
+                        <p class="text-xs text-muted-foreground">Formatted inputs update too. Focus the loaded budget to see its full precision.</p>
+                    </div>
+                </div>
+            </InteractionModeProvider>
+            <div class="mt-4 flex flex-wrap items-center gap-3">
+                <Button OnClick="LoadAsync" Disabled="@(loading || loaded)" data-testid="demo-delayed-load">
+                    @if (loading) { <LucideIcon Name="loader-circle" Size="16" Class="animate-spin" /> }
+                    Load existing segment
+                </Button>
+                <Button Variant="ButtonVariant.Outline" OnClick="Restart" data-testid="demo-delayed-restart">Start again</Button>
+            </div>
+            <p role="status" class="mt-3 text-sm text-muted-foreground" data-testid="demo-delayed-status">@(loading ? "Loading for 1.5 seconds… try typing your own name now." : loaded ? "Loaded. Untouched fields display the incoming values; edited fields keep their drafts." : "Inputs are ready. Load a segment, then try again while typing during the delay.")</p>
+            <p class="mt-2 text-xs text-muted-foreground">Loading uses ordinary @@bind-Value, without a loading guard or revision bump. Start again creates fresh inputs. For an intentional replacement of an edited value, use ValueRevision. Applications should also guard their own model assignments when loading overlaps edits.</p>
+        </DemoBlock>
+    </DemoSection>
+</section>
+
+@code {
+    private string? name = "", draft = "";
+    private decimal? budget;
+    private long generation;
+    private bool loading, loaded;
+
+    private async Task LoadAsync()
+    {
+        var current = generation;
+        loading = true;
+        await Task.Delay(1500);
+        if (current != generation) return;
+        name = draft = "Returning customers";
+        budget = 1234.5678m;
+        loading = false;
+        loaded = true;
+    }
+
+    private void Restart()
+    {
+        generation++;
+        name = draft = ""; budget = null;
+        loading = loaded = false;
+    }
+
+    private const string exampleCode = """
+        <InteractionModeProvider Mode="InteractionMode.Browser">
+            <Input @bind-Value="name" />
+            <CurrencyInput TValue="decimal?" @bind-Value="budget" Currency="USD" />
+        </InteractionModeProvider>
+        <Button OnClick="LoadAsync">Load existing segment</Button>
+
+        private async Task LoadAsync()
+        {
+            var segment = await LoadSegmentAsync();
+            name = segment.Name;
+            budget = segment.Budget;
+        }
+        // Omit the provider when the application already defaults to Browser.
+        // Untouched fields accept incoming values; edited drafts stay local.
+        // Use ValueRevision for an intentional replacement of an edited draft.
+        """;
+}
