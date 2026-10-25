@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 2026-10-25 — v4.5.3 — Delayed Browser input binding
+
+> **Components: `v4.5.3`; Primitives remains `v4.5.2`.**
+> This patch changes the Components input adapter only. The Blazor interaction path is unchanged.
 
 - Browser Input and its text/formatted adapters now synchronize asynchronous `Value` initialization while pristine, without requiring a loading guard or `ValueRevision` and without invoking change callbacks. Inputs edited before loading or JavaScript initialization retain their drafts; accepted edits and stale acknowledgements cannot reopen the pristine window. Explicit revisions still replace edited values and perform same-value resets.
 - Added a styled Interaction Mode demo for delayed segment loading, edited-draft protection and currency precision, with restart and mobile gallery coverage.

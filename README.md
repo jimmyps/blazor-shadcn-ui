@@ -34,6 +34,15 @@ NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor appli
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
+## v4.5.3 delayed binding patch
+
+Components **4.5.3** accepts asynchronous `Value` updates while Browser inputs are pristine,
+without a loading guard or revision bump. Edited drafts remain protected from late loads
+and stale acknowledgements; `ValueRevision` still forces replacements and same-value resets.
+Text and formatted adapters share this behavior, including exact currency precision.
+The Interaction Mode demo includes delayed loading and typing during the delay.
+The default Blazor path is unchanged. Primitives remains **4.5.2**.
+
 ## v4.5.2 menu focus patch
 
 Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
@@ -715,7 +724,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.2 for Components and Primitives
+- **Current Release**: Components 4.5.3; Primitives 4.5.2
 - **Icon Versions**: Independently versioned
 - **Target Framework**: .NET 10
 - **Package IDs**: 
