@@ -48,7 +48,13 @@ export function attachNumericEditing(element, getFormat) {
         return false;
     };
     const input = event => {
-        if (!composing && !event.isComposing && !accept()) event.stopImmediatePropagation();
+        if (composing || event.isComposing) return;
+        // Deleting part of an exponent can temporarily leave an incomplete draft.
+        if (event.inputType?.startsWith('delete')) {
+            sync();
+            return;
+        }
+        if (!accept()) event.stopImmediatePropagation();
     };
     const compositionStart = () => { sync(); composing = true; };
     const compositionEnd = () => { composing = false; accept(); };

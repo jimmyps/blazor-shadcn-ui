@@ -134,9 +134,13 @@ test('a scope integrates with an existing EditForm and standalone Input.FlushAsy
     assert.equal(await text('form-saves'), '0');
 });
 
-for (const mode of ['Blazor', 'Browser']) {
-    test(`${mode}: standalone change-mode filters commit only on change or blur`, async () => {
-        const filter = page.getByPlaceholder(mode === 'Browser' ? 'Standalone filter' : 'Blazor standalone filter', { exact: true });
+for (const [mode, placeholder] of [
+    ['Blazor', 'Blazor standalone filter'],
+    ['Browser', 'Standalone filter'],
+    ['Browser', 'Form filter with override']
+]) {
+    test(`${mode}: ${placeholder} commits only on change or blur`, async () => {
+        const filter = page.getByPlaceholder(placeholder, { exact: true });
         await filter.locator(mode === 'Browser' ? 'xpath=self::*[@data-neo-input-ready="true"]' : 'xpath=self::*[@data-test-change-ready="true"]').waitFor();
         await filter.fill('a');
         await filter.fill('apple');

@@ -186,10 +186,20 @@ export async function initializeInput(elementId, updateOn = 'change', debounceDe
     }
 
     let numericEditing = null;
-    if (element.hasAttribute('data-neo-numeric-format')) {
+    if (element.hasAttribute('data-neo-currency-edit')) {
         const { attachNumericEditing } = await import('./numeric-edit.js');
         if (!current()) return;
-        numericEditing = attachNumericEditing(element, () => JSON.parse(element.dataset.neoNumericFormat ?? 'null'));
+        const data = element.dataset;
+        numericEditing = attachNumericEditing(element, () => ({
+            kind: 'currency',
+            symbol: data.neoCurrencySymbol,
+            cultureSymbol: data.neoCultureSymbol,
+            group: data.neoNumberGroup,
+            currencyGroup: data.neoCurrencyGroup,
+            decimal: data.neoNumberDecimal,
+            negativeSign: data.neoNegativeSign,
+            positiveSign: data.neoPositiveSign
+        }));
     }
 
     const state = {

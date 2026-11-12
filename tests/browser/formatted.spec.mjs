@@ -35,6 +35,9 @@ test('formatted drafts preserve incomplete numbers, locale decimals and local ma
         await numeric.fill('1.');await pause(100);assert.equal(await numeric.inputValue(),'1.');
         await numeric.press('q');assert.equal(await numeric.inputValue(),'1.');
         await page.keyboard.insertText('25');assert.equal(await numeric.inputValue(),'1.25');
+        await numeric.fill('1e5');await numeric.press('Home');await numeric.press('Delete');
+        assert.equal(await numeric.inputValue(),'e5');
+        await numeric.press('2');assert.equal(await numeric.inputValue(),'2e5');
         await currency.fill('12,34');assert.equal(await currency.inputValue(),'12,34');
         await page.keyboard.insertText('letters');assert.equal(await currency.inputValue(),'12,34');
         await currency.evaluate(element => {

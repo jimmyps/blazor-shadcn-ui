@@ -162,8 +162,9 @@ including while blurred. `UpdateOn=Input` sends versioned edit snapshots out of 
 `UpdateOn=Change` submits the final value on change/blur. Inside a cascaded `EditContext`,
 it also sends a snapshot when typing crosses between empty and non-empty. Standalone
 change-mode fields such as table filters submit on commit. Set `NotifyOnEmptinessChange`
-on `Input` to opt in outside an edit context (for example, in a dialog with no form),
-or set it to `false` to opt out inside a form. Further typing within the same state
+on `Input`, `Textarea`, `NumericInput`, `CurrencyInput`, `MaskedInput`, or the InputGroup
+text fields to opt in outside an edit context. Set it to `false` for a search or table
+filter inside an `EditForm` to wait for commit. Further typing within the same state
 sends **no callbacks**. For example, `"" → "a" → "ab" → "abc" → ""` sends `"a"` and `""`
 while focused; blur sends a final value only if it has changed. Empty means length zero;
 whitespace counts as non-empty. Composition sends a boundary only after it completes.

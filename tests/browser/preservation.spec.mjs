@@ -35,7 +35,10 @@ for(const mode of ['Blazor','Browser']){
   const {page,errors}=await open(mode);try{
    const input=page.getByPlaceholder('Precise EUR',{exact:true});
    await input.locator(mode==='Browser'?'xpath=self::*[@data-neo-input-ready="true"]':'xpath=self::*[@data-preservechange="true"]').waitFor();
-   await input.focus();await value(input,mode==='Browser'?'98,76543':'98.76543');
+   await input.focus();await value(input,'98,76543');
+   await input.press('End');await input.press('Backspace');assert.equal(await input.inputValue(),'98,7654');
+   await input.blur();await page.waitForFunction(()=>document.querySelector('[data-testid="money-model"]').textContent.split('|')[1]==='98.7654');
+   await input.focus();await value(input,'98,7654');
    await input.fill('-12,34');await input.press('x');assert.equal(await input.inputValue(),'-12,34');
    await input.blur();await page.waitForFunction(()=>document.querySelector('[data-testid="money-model"]').textContent.split('|')[1]==='-12.34');
   }finally{await close(page,errors);}
@@ -56,7 +59,7 @@ for(const mode of ['Blazor','Browser']){
  });
  test(`${mode}: currency focus and untouched blur preserve exact values across precision and culture settings`,async()=>{
   const {page,errors}=await open(mode);try{
-   for(const [name,raw] of [['Precise USD','12.34567'],['Precise EUR',mode==='Browser'?'98,76543':'98.76543'],['Precise JPY','123.456'],['Precise KWD','1.234567'],['Precise plain','6.78901']]){
+   for(const [name,raw] of [['Precise USD','12.34567'],['Precise EUR','98,76543'],['Precise JPY','123.456'],['Precise KWD','1.234567'],['Precise plain','6.78901']]){
     const input=page.getByPlaceholder(name,{exact:true});await input.locator(mode==='Browser'?'xpath=self::*[@data-neo-input-ready="true"]':'xpath=self::*[@data-preservechange="true"]').waitFor();const display=await input.inputValue();
     for(let count=0;count<2;count++){await input.focus();await value(input,raw);await input.blur();await value(input,display);}
    }

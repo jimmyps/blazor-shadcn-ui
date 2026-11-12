@@ -40,6 +40,7 @@
 <EditForm Model="@boundaryModel">
     <Input InteractionMode="InteractionMode.Browser" Value="@changeValue" ValueChanged="SetChange" UpdateOn="InputUpdateMode.Change" Placeholder="Boundary input" />
     <button type="button" disabled="@string.IsNullOrEmpty(changeValue)" data-testid="boundary-action">Continue</button>
+    <Textarea InteractionMode="InteractionMode.Browser" Value="@filter" ValueChanged="SetFilter" UpdateOn="InputUpdateMode.Change" NotifyOnEmptinessChange="false" Placeholder="Form filter with override" />
     <p data-testid="boundary-accepted">@changeValue</p><p data-testid="boundary-calls">@changeCalls</p>
 </EditForm>
 <section>
