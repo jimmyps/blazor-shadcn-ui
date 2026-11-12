@@ -15,6 +15,8 @@ public partial class CurrencyInput<TValue>
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to replace the browser draft, including same-value resets.</summary>
     [Parameter] public long ValueRevision { get; set; }
+    /// <summary>Send empty/non-empty transitions before blur in Browser change mode. Defaults to true inside a cascaded EditContext.</summary>
+    [Parameter] public bool? NotifyOnEmptinessChange { get; set; }
     /// <summary>Canonical value getter for manual asynchronous compositions; binding uses ValueExpression.</summary>
     [Parameter] public Func<TValue?>? AcceptedValueAccessor { get; set; }
     private bool? browserMode;
@@ -30,8 +32,27 @@ public partial class CurrencyInput<TValue>
     public Task<InputFlushResult> FlushAsync(int timeoutMilliseconds = 30000) => browserInput?.FlushAsync(timeoutMilliseconds)
         ?? Task.FromResult(new InputFlushResult { Status = BrowserInteraction ? InputFlushStatus.NotReady : InputFlushStatus.NotSupported });
     private bool browserDraftValid = true;
-    private object BrowserFormat => new { kind = "currency", editValue = GetEditingValue(GetCultureInfo()), symbol = CurrencyDefinition.Symbol,
-        group = GetCultureInfo().NumberFormat.NumberGroupSeparator, @decimal = GetCultureInfo().NumberFormat.NumberDecimalSeparator };
+    private object BrowserFormat
+    {
+        get
+        {
+            var culture = GetCultureInfo();
+            var format = culture.NumberFormat;
+            return new
+            {
+                kind = "currency",
+                editValue = GetEditingValue(culture),
+                symbol = CurrencyDefinition.Symbol,
+                cultureSymbol = format.CurrencySymbol,
+                group = format.NumberGroupSeparator,
+                currencyGroup = format.CurrencyGroupSeparator,
+                @decimal = format.NumberDecimalSeparator,
+                negativeSign = format.NegativeSign,
+                positiveSign = format.PositiveSign,
+                integer = BrowserNumericConversion.IsInteger<TValue>()
+            };
+        }
+    }
     private string? BrowserValue => CurrentValueAsString;
     private bool ParseBrowser(string? text, out TValue? value)
     {

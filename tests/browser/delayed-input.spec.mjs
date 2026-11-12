@@ -74,7 +74,7 @@ test('pristine values can advance repeatedly; editing, even back to the original
     const result = await page.evaluate(async () => {
         const module = await import('./_content/NeoUI.Blazor/js/browser-input.js');
         const input = document.createElement('input'); document.body.append(input);
-        let config = { value: '', revision: 0, updateOn: 'change' }, calls = [];
+        let config = { value: '', revision: 0, updateOn: 'change', notifyOnEmptinessChange: true }, calls = [];
         const update = async changes => { config = { ...config, ...changes }; input.dataset.neoInputConfig = JSON.stringify(config); await new Promise(r => setTimeout(r, 0)); };
         await update({});
         module.initialize(input, { invokeMethodAsync: async (method, value, sequence, revision) => { calls.push(value); return { value, sequence, revision }; } });

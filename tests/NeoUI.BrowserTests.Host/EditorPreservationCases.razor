@@ -9,6 +9,7 @@
     <MaskedInput Value="123456" Mask="000-000" Readonly Placeholder="Readonly mask" />
     <button data-testid="preserve-reset" @onclick="Reset">Reset editors</button>
     <p data-testid="mask-model">@(mask ?? "empty")</p>
+    <NumericInput TValue="decimal?" Placeholder="Preserved number" />
     <BrowserEditForm Model="@money" OnValidSubmit="Save">
         <CurrencyInput TValue="decimal?" @bind-Value="money.Usd" Currency="USD" Culture="en-US" Placeholder="Precise USD" ValueRevision="@revision" />
         <CurrencyInput TValue="decimal?" @bind-Value="money.Eur" Currency="EUR" Culture="de-DE" Placeholder="Precise EUR" ValueRevision="@revision" />

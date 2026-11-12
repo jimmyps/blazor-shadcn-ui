@@ -1,6 +1,6 @@
 # Browser interaction mode — v4.5.0
 
-**Current patch:** use Components 4.5.3 with Primitives 4.5.2 for pristine delayed input binding, neutral pointer-opened menu focus and the included mobile Tooltip/HoverCard fixes.
+**Current patch:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes.
 
 **Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.
@@ -159,8 +159,12 @@ Command/Combobox and MultiSelect search fields use it when their enclosing contr
 Browser mode. Razor renders a fixed initial `value`; subsequent render batches therefore
 cannot overwrite a live draft. Native typing, selection, caret, paste and IME stay local,
 including while blurred. `UpdateOn=Input` sends versioned edit snapshots out of band;
-`UpdateOn=Change` submits the final value on change/blur, and also sends a snapshot
-when typing crosses between empty and non-empty. Further typing within the same state
+`UpdateOn=Change` submits the final value on change/blur. Inside a cascaded `EditContext`,
+it also sends a snapshot when typing crosses between empty and non-empty. Standalone
+change-mode fields such as table filters submit on commit. Set `NotifyOnEmptinessChange`
+on `Input`, `Textarea`, `NumericInput`, `CurrencyInput`, `MaskedInput`, or the InputGroup
+text fields to opt in outside an edit context. Set it to `false` for a search or table
+filter inside an `EditForm` to wait for commit. Further typing within the same state
 sends **no callbacks**. For example, `"" → "a" → "ab" → "abc" → ""` sends `"a"` and `""`
 while focused; blur sends a final value only if it has changed. Empty means length zero;
 whitespace counts as non-empty. Composition sends a boundary only after it completes.

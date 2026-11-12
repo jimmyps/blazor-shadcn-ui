@@ -4,18 +4,28 @@
 `NeoUI.Blazor.Primitives` on 2026-10-24.** This is a substantial feature upgrade; existing
 applications keep Blazor interaction behavior unless they opt in. .NET 10 remains the target.
 
+## Migrating to Components 4.5.4
+
+Browser change-mode fields inside an `EditContext` report empty/non-empty transitions
+while typing. If a standalone field such as an input in a dialog without an `EditForm`
+uses these callbacks to enable an action, add `NotifyOnEmptinessChange="true"`.
+Set `NotifyOnEmptinessChange="false"` for a search or filter inside an `EditForm` so it
+commits on change or blur. Blazor `CurrencyInput` now rejects invalid text and uses the
+field's culture for the editable value as well as parsing. Blazor `NumericInput` uses
+native number editing.
+
 ## Package alignment
 
-Use Components 4.5.3 with Primitives 4.5.2 for delayed Browser input binding while pristine, neutral pointer-opened menu focus and the mobile Tooltip/HoverCard fixes. Upgrade both packages together if your application references both:
+Use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes. Upgrade both packages together if your application references both:
 
 ```sh
-dotnet add package NeoUI.Blazor --version 4.5.3
+dotnet add package NeoUI.Blazor --version 4.5.4
 dotnet add package NeoUI.Blazor.Primitives --version 4.5.2
 ```
 
 Components already brings Primitives as a dependency, so a direct Primitives reference is
-optional. Update any direct version pins or central package management entries to Components 4.5.3 and Primitives 4.5.2;
-Components 4.5.3 requires Primitives 4.5.2. Icon packages retain their independent version numbers.
+optional. Update any direct version pins or central package management entries to Components 4.5.4 and Primitives 4.5.2;
+Components 4.5.4 requires Primitives 4.5.2. Icon packages retain their independent version numbers.
 
 ## Adopt Browser mode by family
 

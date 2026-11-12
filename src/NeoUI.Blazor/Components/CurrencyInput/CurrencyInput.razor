@@ -5,7 +5,7 @@
 {
     <BrowserFormattedInput @ref="browserInput" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
         Id="@EffectiveId" Name="@(EffectiveName ?? string.Empty)" Class="@CssClass" Value="@BrowserValue"
-        DraftIsValid="@(() => browserDraftValid)" AcceptDraft="@AcceptBrowserDraft" EquivalentValue="@EquivalentBrowserValue" FormatAccessor="@(() => BrowserFormat)" ValueRevision="@ValueRevision"
+        DraftIsValid="@(() => browserDraftValid)" AcceptDraft="@AcceptBrowserDraft" EquivalentValue="@EquivalentBrowserValue" FormatAccessor="@(() => BrowserFormat)" ValueRevision="@ValueRevision" NotifyOnEmptinessChange="@NotifyOnEmptinessChange"
         UpdateOn="@UpdateOn" DebounceDelay="@DebounceDelay" Placeholder="@Placeholder" Disabled="@Disabled" Readonly="@Readonly"
         Required="@Required" InputMode="@("decimal")" Autofocus="@Autofocus"
         AriaLabel="@AriaLabel" AriaDescribedBy="@AriaDescribedBy" AriaInvalid="@EffectiveAriaInvalid"
@@ -13,12 +13,21 @@
 }
 else
 {
+var format = GetCultureInfo().NumberFormat;
 <input id="@EffectiveId"
 name="@EffectiveName"
 type="text"
 inputmode="decimal"
 class="@CssClass"
 value="@CurrentValueAsString"
+data-neo-currency-edit=""
+data-neo-currency-symbol="@CurrencyDefinition.Symbol"
+data-neo-culture-symbol="@format.CurrencySymbol"
+data-neo-number-group="@format.NumberGroupSeparator"
+data-neo-currency-group="@format.CurrencyGroupSeparator"
+data-neo-number-decimal="@format.NumberDecimalSeparator"
+data-neo-negative-sign="@format.NegativeSign"
+data-neo-positive-sign="@format.PositiveSign"
 placeholder="@Placeholder"
 disabled="@Disabled"
 required="@Required"

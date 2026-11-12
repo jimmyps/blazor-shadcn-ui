@@ -15,6 +15,8 @@ public partial class MaskedInput
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to replace the browser draft, including same-value resets.</summary>
     [Parameter] public long ValueRevision { get; set; }
+    /// <summary>Send empty/non-empty transitions before blur in Browser change mode. Defaults to true inside a cascaded EditContext.</summary>
+    [Parameter] public bool? NotifyOnEmptinessChange { get; set; }
     /// <summary>Canonical value getter for manual asynchronous compositions; binding uses ValueExpression.</summary>
     [Parameter] public Func<string?>? AcceptedValueAccessor { get; set; }
     private bool? browserMode;

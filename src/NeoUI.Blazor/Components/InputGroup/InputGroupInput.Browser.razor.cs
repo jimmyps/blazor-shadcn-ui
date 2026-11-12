@@ -14,6 +14,8 @@ public partial class InputGroupInput
     [Parameter] public InteractionMode? InteractionMode { get; set; }
     /// <summary>Increment to replace the current browser draft, including same-value resets.</summary>
     [Parameter] public long ValueRevision { get; set; }
+    /// <summary>Send empty/non-empty transitions before blur in Browser change mode. Defaults to true inside a cascaded EditContext.</summary>
+    [Parameter] public bool? NotifyOnEmptinessChange { get; set; }
     /// <summary>Reads canonical acceptance for manually wired callbacks without waiting for rendering.</summary>
     [Parameter] public Func<string?>? AcceptedValueAccessor { get; set; }
     private Dictionary<string, object> BrowserAttributes => new(AdditionalAttributes ?? new()) { ["data-slot"] = "input-group-control" };

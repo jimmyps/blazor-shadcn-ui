@@ -131,7 +131,7 @@ export function initialize(element, bridge) {
     const notifyChangeBoundary = () => {
         const empty = formatting.isEmpty(draft), crossed = empty !== observedEmpty;
         if (!composing) observedEmpty = empty;
-        if (config.updateOn === 'change' && crossed && !composing) submit();
+        if (config.updateOn === 'change' && config.notifyOnEmptinessChange && crossed && !composing) submit();
         else schedule();
     };
     const input = () => { pristine = false; observeDraft(); notifyChangeBoundary(); };
