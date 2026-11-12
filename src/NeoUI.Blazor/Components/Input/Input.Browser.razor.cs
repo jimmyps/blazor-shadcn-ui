@@ -20,6 +20,9 @@ public partial class Input
     /// <summary>Change to replace an edited browser draft with Value, including unchanged resets. Pristine inputs accept Value changes automatically. A revision invalidates queued edits and starts a new pristine window.</summary>
     [Parameter] public long ValueRevision { get; set; }
 
+    /// <summary>Send empty/non-empty transitions before blur in Browser change mode. Defaults to true inside a cascaded EditContext.</summary>
+    [Parameter] public bool? NotifyOnEmptinessChange { get; set; }
+
     /// <summary>Reads the canonical value after an awaited callback without depending on a child render. For manual compositions; standard binding uses ValueExpression.</summary>
     [Parameter] public Func<string?>? AcceptedValueAccessor { get; set; }
 
@@ -38,6 +41,7 @@ public partial class Input
         revision = ValueRevision,
         updateOn = UpdateOn.ToString().ToLowerInvariant(),
         debounce = Math.Max(0, DebounceDelay),
+        notifyOnEmptinessChange = NotifyOnEmptinessChange ?? (EditContext != null),
         @readonly = Readonly,
         format = BrowserFormat, commitOnBlur = CommitOnBlur,
         server = !OperatingSystem.IsBrowser()

@@ -24,6 +24,22 @@ async function value(input,text){await input.evaluate(el=>{for(const other of do
 async function paste(input,text){await input.evaluate((el,text)=>{const data=new DataTransfer();data.setData('text',text);el.dispatchEvent(new ClipboardEvent('paste',{bubbles:true,cancelable:true,clipboardData:data}));},text);}
 const initialMoney='12.34567|98.76543|123.456|1.234567|6.78901|3.45678';
 for(const mode of ['Blazor','Browser']){
+ test(`${mode}: numeric input rejects letters and accepts decimal digits`,async()=>{
+  const {page,errors}=await open(mode);try{
+   const input=page.getByPlaceholder('Preserved number',{exact:true});
+   if(mode==='Browser')await input.locator('xpath=self::*[@data-neo-input-ready="true"]').waitFor();
+   await input.fill('12.34');await input.press('q');assert.equal(await input.inputValue(),'12.34');
+  }finally{await close(page,errors);}
+ });
+ test(`${mode}: currency rejects letters while preserving localized editing`,async()=>{
+  const {page,errors}=await open(mode);try{
+   const input=page.getByPlaceholder('Precise EUR',{exact:true});
+   await input.locator(mode==='Browser'?'xpath=self::*[@data-neo-input-ready="true"]':'xpath=self::*[@data-preservechange="true"]').waitFor();
+   await input.focus();await value(input,mode==='Browser'?'98,76543':'98.76543');
+   await input.fill('-12,34');await input.press('x');assert.equal(await input.inputValue(),'-12,34');
+   await input.blur();await page.waitForFunction(()=>document.querySelector('[data-testid="money-model"]').textContent.split('|')[1]==='-12.34');
+  }finally{await close(page,errors);}
+ });
  test(`${mode}: existing mask engine preserves templates, literal digits, caret and selected paste`,async()=>{
   const {page,errors}=await open(mode);try{
    if(mode==='Browser')await block(page);
@@ -130,7 +146,7 @@ test('Browser: an omitted mask retains native text and emptiness boundaries',asy
  const {page,errors}=await open('Browser');try{
   await page.evaluate(async()=>{
    const module=await import(new URL('_content/NeoUI.Blazor/js/browser-input.js',document.baseURI).href);
-   const input=document.createElement('input');input.id='preserve-unmasked';input.dataset.neoInputConfig=JSON.stringify({value:'',revision:0,updateOn:'change',format:{kind:'mask',mask:'',showMask:true}});document.body.append(input);
+   const input=document.createElement('input');input.id='preserve-unmasked';input.dataset.neoInputConfig=JSON.stringify({value:'',revision:0,updateOn:'change',notifyOnEmptinessChange:true,format:{kind:'mask',mask:'',showMask:true}});document.body.append(input);
    window.__unmaskedCalls=[];module.initialize(input,{invokeMethodAsync:async(method,value,sequence,revision)=>{window.__unmaskedCalls.push(value);return {value,sequence,revision};}});
   });
   const input=page.locator('#preserve-unmasked');await input.fill('a');await page.waitForFunction(()=>window.__unmaskedCalls.length===1);

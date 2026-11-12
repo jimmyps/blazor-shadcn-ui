@@ -30,8 +30,27 @@ public partial class CurrencyInput<TValue>
     public Task<InputFlushResult> FlushAsync(int timeoutMilliseconds = 30000) => browserInput?.FlushAsync(timeoutMilliseconds)
         ?? Task.FromResult(new InputFlushResult { Status = BrowserInteraction ? InputFlushStatus.NotReady : InputFlushStatus.NotSupported });
     private bool browserDraftValid = true;
-    private object BrowserFormat => new { kind = "currency", editValue = GetEditingValue(GetCultureInfo()), symbol = CurrencyDefinition.Symbol,
-        group = GetCultureInfo().NumberFormat.NumberGroupSeparator, @decimal = GetCultureInfo().NumberFormat.NumberDecimalSeparator };
+    private object BrowserFormat
+    {
+        get
+        {
+            var culture = GetCultureInfo();
+            var format = culture.NumberFormat;
+            return new
+            {
+                kind = "currency",
+                editValue = GetEditingValue(culture),
+                symbol = CurrencyDefinition.Symbol,
+                cultureSymbol = format.CurrencySymbol,
+                group = format.NumberGroupSeparator,
+                currencyGroup = format.CurrencyGroupSeparator,
+                @decimal = format.NumberDecimalSeparator,
+                negativeSign = format.NegativeSign,
+                positiveSign = format.PositiveSign,
+                integer = BrowserNumericConversion.IsInteger<TValue>()
+            };
+        }
+    }
     private string? BrowserValue => CurrentValueAsString;
     private bool ParseBrowser(string? text, out TValue? value)
     {

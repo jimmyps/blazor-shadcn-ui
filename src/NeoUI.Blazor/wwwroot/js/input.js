@@ -185,6 +185,13 @@ export async function initializeInput(elementId, updateOn = 'change', debounceDe
         return;
     }
 
+    let numericEditing = null;
+    if (element.hasAttribute('data-neo-numeric-format')) {
+        const { attachNumericEditing } = await import('./numeric-edit.js');
+        if (!current()) return;
+        numericEditing = attachNumericEditing(element, () => JSON.parse(element.dataset.neoNumericFormat ?? 'null'));
+    }
+
     const state = {
         updateOn: updateOn.toLowerCase(),
         debounceDelay: debounceDelay,
@@ -194,12 +201,14 @@ export async function initializeInput(elementId, updateOn = 'change', debounceDe
         inputHandler: null,
         changeHandler: null,
         blurHandler: null,
+        numericEditing,
         lastSentValue: element.value  // tracks last value delivered to C#
     };
 
     // Attach input event listener ONLY if updateOn='input'
     if (state.updateOn === 'input' && dotNetRef) {
         state.inputHandler = (e) => {
+            if (state.numericEditing && e.isComposing) return;
             const value = e.target.value;
 
             // Skip if value hasn't changed since last C# call (e.g. backspace on empty field,
@@ -311,7 +320,10 @@ export function updateValue(elementId, value) {
     }
 
     // Keep lastSentValue in sync so the next input/blur comparison is accurate
-    if (state) state.lastSentValue = value || '';
+    if (state) {
+        state.lastSentValue = value || '';
+        state.numericEditing?.sync();
+    }
 }
 
 /**
@@ -327,6 +339,7 @@ export async function disposeInput(elementId) {
     inputState.delete(elementId);
     if (state?.browserElement) { inputInitializations.delete(state.browserElement); (await getBrowserInput()).dispose(state.browserElement); return; }
     if (!state) return;
+    state.numericEditing?.dispose();
 
     const element = document.getElementById(elementId);
     

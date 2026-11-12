@@ -250,7 +250,7 @@
         <DemoBlock Code="@boundaryCode">
             <div class="space-y-3 max-w-md">
                 <Label For="demo-boundary-input">Type to enable Continue; clear to disable it</Label>
-                <Input Id="demo-boundary-input" InteractionMode="InteractionMode.Browser" Value="@boundaryValue" ValueChanged="BoundaryChanged" UpdateOn="InputUpdateMode.Change" data-testid="demo-boundary-input" />
+                <Input Id="demo-boundary-input" InteractionMode="InteractionMode.Browser" Value="@boundaryValue" ValueChanged="BoundaryChanged" UpdateOn="InputUpdateMode.Change" NotifyOnEmptinessChange="true" data-testid="demo-boundary-input" />
                 <Button Disabled="@string.IsNullOrEmpty(boundaryValue)" data-testid="demo-boundary-action">Continue</Button>
                 <p class="text-sm text-muted-foreground">Callbacks: <span data-testid="demo-boundary-calls">@boundaryCalls</span> · accepted value: <span data-testid="demo-boundary-value">@(boundaryValue ?? "(empty)")</span></p>
             </div>
@@ -411,7 +411,7 @@
         """;
     private const string boundaryCode = """
         <Input InteractionMode="InteractionMode.Browser"
-               @bind-Value="name" UpdateOn="InputUpdateMode.Change" />
+               @bind-Value="name" UpdateOn="InputUpdateMode.Change" NotifyOnEmptinessChange="true" />
         <Button Disabled="@string.IsNullOrEmpty(name)">Continue</Button>
         // While focused: empty/non-empty transitions only.
         // Final text is delivered on blur/change or an explicit form flush.

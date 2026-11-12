@@ -11,6 +11,13 @@ beforeEach(async () => {
     page = await browser.newPage(); page.setDefaultTimeout(30000); errors = [];
     page.on('pageerror', e => { errors.push(String(e)); if (process.env.NEOUI_TRACE_ERRORS) console.error(e.stack); });
     await page.addInitScript(() => {
+        const addListener = EventTarget.prototype.addEventListener;
+        EventTarget.prototype.addEventListener = function (type, ...args) {
+            if (type === 'change' && this instanceof HTMLInputElement && this.placeholder === 'Blazor standalone filter') {
+                this.dataset.testChangeReady = 'true';
+            }
+            return addListener.call(this, type, ...args);
+        };
         const Socket = window.WebSocket; window.__testSockets = [];
         window.WebSocket = class extends Socket { constructor(...args) { super(...args); window.__testSockets.push(this); } };
     });
@@ -127,6 +134,26 @@ test('a scope integrates with an existing EditForm and standalone Input.FlushAsy
     assert.equal(await text('form-saves'), '0');
 });
 
+for (const mode of ['Blazor', 'Browser']) {
+    test(`${mode}: standalone change-mode filters commit only on change or blur`, async () => {
+        const filter = page.getByPlaceholder(mode === 'Browser' ? 'Standalone filter' : 'Blazor standalone filter', { exact: true });
+        await filter.locator(mode === 'Browser' ? 'xpath=self::*[@data-neo-input-ready="true"]' : 'xpath=self::*[@data-test-change-ready="true"]').waitFor();
+        await filter.fill('a');
+        await filter.fill('apple');
+        await pause(200);
+        assert.equal(await text('filter-calls'), '0');
+        await filter.blur();
+        await eventually(async () => assert.equal(await text('filter-accepted'), 'apple'));
+        assert.equal(await text('filter-calls'), '1');
+        await filter.fill('');
+        await pause(200);
+        assert.equal(await text('filter-calls'), '1');
+        await filter.blur();
+        await eventually(async () => assert.equal(await text('filter-calls'), '2'));
+        assert.equal(await text('filter-accepted'), '');
+    });
+}
+
 test('onchange typing sends only empty/non-empty transitions and the final blur value', async () => {
     const input = page.getByPlaceholder('Boundary input', { exact: true });
     const action = page.getByTestId('boundary-action');
@@ -147,7 +174,7 @@ test('browser onchange boundaries respect composition and never send intermediat
     const values = await page.evaluate(async () => {
         const module = await import('/_content/NeoUI.Blazor/js/browser-input.js');
         const input = document.createElement('input'); input.id = 'browser-boundary-test'; document.body.append(input);
-        input.dataset.neoInputConfig = JSON.stringify({ value: '', revision: 0, updateOn: 'change' });
+        input.dataset.neoInputConfig = JSON.stringify({ value: '', revision: 0, updateOn: 'change', notifyOnEmptinessChange: true });
         const calls = []; module.initialize(input, { invokeMethodAsync: async (_, value, sequence, revision) => { calls.push(value); return { value, sequence, revision }; } });
         for (const value of ['a', 'ab', 'abc', '', 'x', 'xy']) { input.value = value; input.dispatchEvent(new Event('input')); }
         input.dispatchEvent(new Event('change'));
@@ -181,7 +208,7 @@ test('rendered scope reconciliation releases a successful snapshot without an in
         const root = document.createElement('div'), input = document.createElement('input');
         root.dataset.neoInputBusy = 'true'; document.body.append(root, input);
         input.id = 'external-scope-field'; input.dataset.neoInputScope = 'lease-test';
-        input.dataset.neoInputConfig = JSON.stringify({ value: '', revision: 0, updateOn: 'change', readonly: false });
+        input.dataset.neoInputConfig = JSON.stringify({ value: '', revision: 0, updateOn: 'change', notifyOnEmptinessChange: true, readonly: false });
         const calls = [];
         module.initialize(input, { invokeMethodAsync: async (_, value, sequence, revision) => { calls.push(value); return { value, sequence, revision }; } });
         input.value = 'a'; input.dispatchEvent(new Event('input'));
@@ -286,7 +313,7 @@ test('stale nonempty acknowledgements still allow a backspace-to-empty change no
     const result = await page.evaluate(async () => {
         const module = await import('/_content/NeoUI.Blazor/js/browser-input.js');
         const input = document.createElement('input'); document.body.append(input);
-        input.dataset.neoInputConfig = JSON.stringify({ value: '', revision: 0, updateOn: 'change' });
+        input.dataset.neoInputConfig = JSON.stringify({ value: '', revision: 0, updateOn: 'change', notifyOnEmptinessChange: true });
         const calls = []; let release;
         module.initialize(input, { invokeMethodAsync: (_, value, sequence, revision) => {
             calls.push(value);

@@ -157,7 +157,9 @@
         <TimeInput Value="@(new TimeOnly(13,45))" Use12Hour="false" AriaLabel="Sweep time picker" />
     </section>
     <TimeInput @bind-Value="steppedTime" Use12Hour="false" MinuteStep="15" ShowPickerButton="false" AriaLabel="Stepped time" />
-    <MaskedInput Value="@boundaryMask" ValueChanged="ChangeBoundaryMask" AcceptedValueAccessor="@(() => boundaryMask)" Mask="000-000" AriaLabel="Sweep boundary mask" />
+    <Microsoft.AspNetCore.Components.Forms.EditForm Model="@maskFormModel">
+        <MaskedInput Value="@boundaryMask" ValueChanged="ChangeBoundaryMask" AcceptedValueAccessor="@(() => boundaryMask)" Mask="000-000" AriaLabel="Sweep boundary mask" />
+    </Microsoft.AspNetCore.Components.Forms.EditForm>
     <p data-testid="sweep-mask-boundaries">@maskBoundaries</p>
     <section data-testid="sweep-focus-api">
         <button type="button" data-testid="keyboard-date-entry">Before empty date</button>
@@ -183,6 +185,7 @@
     private string? rejectedChoice = "one";
     private DateInput? emptyDate;
     private TimeInput? emptyTime;
+    private readonly object maskFormModel = new();
     private string? boundaryMask;
     private int maskBoundaries;
     private void ChangeBoundaryMask(string? value) { boundaryMask = value; maskBoundaries++; }
