@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v4.5.4 (unreleased)
+## 2026-11-13 — v4.5.4 — Change-mode filters and numeric editing
 
 - Browser change-mode inputs report empty/non-empty transitions while typing when they inherit an `EditContext`. Standalone inputs commit on change or blur. Add `NotifyOnEmptinessChange="true"` to preserve early callbacks outside a form, or set it to `false` for a filter inside an `EditForm`.
 - Browser `NumericInput` and `CurrencyInput` in both modes reject invalid text edits. Blazor `NumericInput` uses native number editing. Blazor `CurrencyInput` now edits and parses using the same culture, preventing comma-decimal amounts from losing their decimal separator on commit.

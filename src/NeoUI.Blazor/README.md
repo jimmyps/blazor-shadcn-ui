@@ -518,7 +518,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.3 (requires Primitives 4.5.2)
+- **Current Release**: 4.5.4 (requires Primitives 4.5.2)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

@@ -1,6 +1,6 @@
 # Browser interaction mode — v4.5.0
 
-**Current patch:** use Components 4.5.3 with Primitives 4.5.2 for pristine delayed input binding, neutral pointer-opened menu focus and the included mobile Tooltip/HoverCard fixes.
+**Current patch:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes.
 
 **Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.

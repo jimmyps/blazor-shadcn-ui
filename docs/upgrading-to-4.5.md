@@ -16,16 +16,16 @@ native number editing.
 
 ## Package alignment
 
-Use Components 4.5.3 with Primitives 4.5.2 for delayed Browser input binding while pristine, neutral pointer-opened menu focus and the mobile Tooltip/HoverCard fixes. Upgrade both packages together if your application references both:
+Use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes. Upgrade both packages together if your application references both:
 
 ```sh
-dotnet add package NeoUI.Blazor --version 4.5.3
+dotnet add package NeoUI.Blazor --version 4.5.4
 dotnet add package NeoUI.Blazor.Primitives --version 4.5.2
 ```
 
 Components already brings Primitives as a dependency, so a direct Primitives reference is
-optional. Update any direct version pins or central package management entries to Components 4.5.3 and Primitives 4.5.2;
-Components 4.5.3 requires Primitives 4.5.2. Icon packages retain their independent version numbers.
+optional. Update any direct version pins or central package management entries to Components 4.5.4 and Primitives 4.5.2;
+Components 4.5.4 requires Primitives 4.5.2. Icon packages retain their independent version numbers.
 
 ## Adopt Browser mode by family
 

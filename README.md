@@ -724,7 +724,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Current Release**: Components 4.5.3; Primitives 4.5.2
+- **Current Release**: Components 4.5.4; Primitives 4.5.2
 - **Icon Versions**: Independently versioned
 - **Target Framework**: .NET 10
 - **Package IDs**: 
