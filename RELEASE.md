@@ -195,27 +195,22 @@ Before releasing a package:
 2. ✅ **Tests passing** - Run `dotnet build` and verify
 3. ✅ **README updated** - Document new features/changes
 4. ✅ **Version decided** - Choose appropriate semantic version
-5. ✅ **NUGET_API_KEY configured** - Required for first release
+5. ✅ **NuGet Trusted Publishing configured**
 
-## Setting Up NuGet API Key
+## NuGet Trusted Publishing
 
-### First-Time Setup (Repository Owner)
+The NuGet.org policy for package owner `jimmyps` trusts GitHub Actions in
+`jimmyps/blazor-shadcn-ui` with workflow file `nuget-publish.yml` and an empty
+Environment field. The publish job uses GitHub OIDC to obtain a temporary
+NuGet API key just before upload.
 
-1. **Get NuGet API key:**
-   - Go to https://www.nuget.org/account/apikeys
-   - Create a new API key with "Push" permissions
-   - Scope it to the NeoUI.* packages
+To recover an unpublished release whose tag already exists, run the workflow
+from `main` with its package and version. The workflow checks out the existing
+release tag and verifies it points to a commit on main.
 
-2. **Add to GitHub Secrets:**
-   - Go to repository Settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `NUGET_API_KEY`
-   - Value: (paste your NuGet API key)
-
-3. **Test the workflow:**
-   ```bash
-   ./scripts/release-primitives.sh 1.0.0-beta.1
-   ```
+```bash
+gh workflow run nuget-publish.yml --ref main -f package=components -f version=4.5.4
+```
 
 ## Monitoring Releases
 
@@ -284,7 +279,7 @@ Check:
 ### GitHub Actions failing
 
 Check:
-1. NUGET_API_KEY secret is configured
+1. The Trusted Publishing policy matches the repository, workflow filename and NuGet username
 2. Build succeeds locally: `dotnet build -c Release`
 3. Workflow logs for specific errors
 

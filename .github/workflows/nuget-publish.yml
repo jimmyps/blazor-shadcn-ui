@@ -21,60 +21,40 @@ on:
           - icons-heroicons
           - icons-feather
       version:
-        description: 'Version (e.g., 1.0.0-beta.4)'
+        description: 'Version of an existing release tag (e.g., 4.5.4)'
         required: true
         type: string
 
 jobs:
   publish:
+    if: github.event_name == 'push' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Full history for MinVer
-
-      - name: Fetch tags
-        run: git fetch --force --tags
-
-      - name: Debug git info
-        run: |
-          echo "Current commit: $(git rev-parse HEAD)"
-          echo "Current branch/tag: $(git describe --tags --always)"
-          echo "All tags on this commit:"
-          git tag --points-at HEAD
-          echo "Git status:"
-          git status
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
       - name: Determine package and version
         id: package-info
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          TAG_NAME: ${{ github.ref_name }}
+          REQUESTED_PACKAGE: ${{ inputs.package }}
+          REQUESTED_VERSION: ${{ inputs.version }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            # Manual workflow dispatch
-            PACKAGE="${{ inputs.package }}"
-            VERSION="${{ inputs.version }}"
-            echo "Manually triggered release"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            PACKAGE="$REQUESTED_PACKAGE"
+            VERSION="$REQUESTED_VERSION"
           else
-            # Tag push
-            TAG_NAME="${{ github.ref_name }}"
-            # Extract package name (e.g., "primitives" from "primitives/v1.0.0-beta.4")
-            PACKAGE=$(echo "$TAG_NAME" | cut -d'/' -f1)
-            # Extract version (e.g., "1.0.0-beta.4" from "primitives/v1.0.0-beta.4")
-            VERSION=$(echo "$TAG_NAME" | cut -d'/' -f2 | sed 's/^v//')
-            echo "Tag-triggered release"
+            PACKAGE="${TAG_NAME%%/*}"
+            VERSION="${TAG_NAME#*/v}"
           fi
 
-          echo "package=$PACKAGE" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+            echo "Invalid package version"
+            exit 1
+          fi
 
           # Determine project path and display name
           case $PACKAGE in
@@ -104,8 +84,35 @@ jobs:
               ;;
           esac
 
-          echo "📦 Package: $PACKAGE"
-          echo "🏷️  Version: $VERSION"
+          echo "package=$PACKAGE" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "release-ref=refs/tags/$PACKAGE/v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout tagged release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.package-info.outputs.release-ref }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify release source
+        env:
+          RELEASE_REF: ${{ steps.package-info.outputs.release-ref }}
+        run: |
+          source_commit=$(git rev-parse HEAD)
+          if [ "$source_commit" != "$(git rev-parse "${RELEASE_REF}^{commit}")" ]; then
+            echo "Checkout does not match the release tag"
+            exit 1
+          fi
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            git merge-base --is-ancestor "$source_commit" origin/main
+          fi
+          echo "Building $RELEASE_REF from $source_commit"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
 
       - name: Setup Node.js (for components package)
         if: steps.package-info.outputs.package == 'components'
@@ -177,8 +184,16 @@ jobs:
 
           echo "✅ Version verified successfully"
 
+      - name: Sign in to NuGet with Trusted Publishing
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1
+        id: nuget-login
+        with:
+          user: jimmyps
+
       - name: Push to NuGet
-        run: dotnet nuget push ./packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push ./packages/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Summary
         shell: bash
