@@ -581,7 +581,7 @@ public partial class CurrencyInput<TValue> : ComponentBase, IAsyncDisposable
     {
         _isFocused = true;
         
-        _editingValue = GetEditingValue(CultureInfo.InvariantCulture);
+        _editingValue = GetEditingValue(GetCultureInfo());
     }
 
     // Shared by legacy focus and Browser metadata. Display formatting can round;

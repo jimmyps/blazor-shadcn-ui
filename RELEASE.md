@@ -12,9 +12,55 @@ NeoUI uses a **monorepo with independent package versioning**. Each of the five 
 - **NeoUI.Icons.Heroicons** - Heroicons library
 - **NeoUI.Icons.Feather** - Feather icon library
 
-## v4.5.0 release coordination (unreleased)
+## v4.5.3 Components patch
 
-This release targets **4.5.0 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**.
+Publish **NeoUI.Blazor 4.5.3** for pristine delayed input binding and its demo.
+Primitives remains **4.5.2**: this patch changes only the Components input adapter,
+and the existing package dependency is unchanged. Merge the approved patch with green
+CI, verify the merged main source, then publish Components from that commit:
+
+```bash
+./scripts/release-components.sh 4.5.3
+```
+
+Tag: `components/v4.5.3`. Do not create a Primitives or icon tag for this patch.
+
+## v4.5.2 patch coordination
+
+Publish **4.5.2 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**. Components 4.5.2
+requires Primitives 4.5.2 for the shared pointer-opening focus correction. Merge the
+approved patch with green CI, verify the source commit, publish Primitives and wait for
+public NuGet availability before publishing Components from that same source.
+
+```bash
+./scripts/release-primitives.sh 4.5.2
+./scripts/release-components.sh 4.5.2
+```
+
+Tags: `primitives/v4.5.2` and `components/v4.5.2`. Icon package versions are unchanged.
+
+## v4.5.1 patch coordination
+
+Publish **4.5.1 for both NeoUI.Blazor.Primitives and NeoUI.Blazor**. Components 4.5.1
+requires Primitives 4.5.1 so installations receive the shared mobile hover-controller fix.
+Merge the approved patch with green CI, verify the source commit, publish Primitives and
+wait for public NuGet availability before publishing Components from that same source.
+
+```bash
+./scripts/release-primitives.sh 4.5.1
+./scripts/release-components.sh 4.5.1
+```
+
+The tag names are `primitives/v4.5.1` and `components/v4.5.1`. Icon packages retain their
+independent versions. See the [changelog](CHANGELOG.md) for the patch scope.
+
+## v4.5.0 release coordination
+
+Released **4.5.0 for both NeoUI.Blazor.Primitives and NeoUI.Blazor** on 2026-10-24.
+Both tags identify merged commit `1f32a3e4fb238be12433fc62cadd1e98775b14d7`.
+The [Primitives publish run](https://github.com/jimmyps/blazor-shadcn-ui/actions/runs/40077402790)
+and [Components publish run](https://github.com/jimmyps/blazor-shadcn-ui/actions/runs/40077710818) succeeded.
+Primitives was verified available before Components publication.
 The tag prefixes and independent versioning infrastructure are unchanged; this release
 coordinates the two UI packages because Components requires Primitives 4.5.0.
 Icon packages keep their own versions and are not part of this version alignment.
@@ -149,27 +195,22 @@ Before releasing a package:
 2. ✅ **Tests passing** - Run `dotnet build` and verify
 3. ✅ **README updated** - Document new features/changes
 4. ✅ **Version decided** - Choose appropriate semantic version
-5. ✅ **NUGET_API_KEY configured** - Required for first release
+5. ✅ **NuGet Trusted Publishing configured**
 
-## Setting Up NuGet API Key
+## NuGet Trusted Publishing
 
-### First-Time Setup (Repository Owner)
+The NuGet.org policy for package owner `jimmyps` trusts GitHub Actions in
+`jimmyps/blazor-shadcn-ui` with workflow file `nuget-publish.yml` and an empty
+Environment field. The publish job uses GitHub OIDC to obtain a temporary
+NuGet API key just before upload.
 
-1. **Get NuGet API key:**
-   - Go to https://www.nuget.org/account/apikeys
-   - Create a new API key with "Push" permissions
-   - Scope it to the NeoUI.* packages
+To recover an unpublished release whose tag already exists, run the workflow
+from `main` with its package and version. The workflow checks out the existing
+release tag and verifies it points to a commit on main.
 
-2. **Add to GitHub Secrets:**
-   - Go to repository Settings → Secrets and variables → Actions
-   - Click "New repository secret"
-   - Name: `NUGET_API_KEY`
-   - Value: (paste your NuGet API key)
-
-3. **Test the workflow:**
-   ```bash
-   ./scripts/release-primitives.sh 1.0.0-beta.1
-   ```
+```bash
+gh workflow run nuget-publish.yml --ref main -f package=components -f version=4.5.4
+```
 
 ## Monitoring Releases
 
@@ -238,7 +279,7 @@ Check:
 ### GitHub Actions failing
 
 Check:
-1. NUGET_API_KEY secret is configured
+1. The Trusted Publishing policy matches the repository, workflow filename and NuGet username
 2. Build succeeds locally: `dotnet build -c Release`
 3. Workflow logs for specific errors
 

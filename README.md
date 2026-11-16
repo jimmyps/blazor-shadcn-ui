@@ -34,9 +34,33 @@ NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor appli
 
 **No Tailwind CSS setup required** - just install the NuGet package and start building!
 
+## v4.5.3 delayed binding patch
+
+Components **4.5.3** accepts asynchronous `Value` updates while Browser inputs are pristine,
+without a loading guard or revision bump. Edited drafts remain protected from late loads
+and stale acknowledgements; `ValueRevision` still forces replacements and same-value resets.
+Text and formatted adapters share this behavior, including exact currency precision.
+The Interaction Mode demo includes delayed loading and typing during the delay.
+The default Blazor path is unchanged. Primitives remains **4.5.2**.
+
+## v4.5.2 menu focus patch
+
+Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
+without adding a first-item highlight alongside the application's current-page selection.
+Keyboard/assistive entry and selected values remain intact. Dropdown, split/pill, menubar,
+context-menu and submenu pointer openings share the policy. Blazor behavior, Select focus
+and Popover autofocus are unchanged.
+
+## v4.5.1 mobile interaction patch
+
+Components and Primitives align at **4.5.1**. Browser-mode informational Tooltips and plain
+HoverCard triggers support completed touch taps, including text/icon triggers that cannot
+receive focus. Action callbacks remain live; scrolling and cancelled touches do not reveal
+content. Late-rendered card content remains supported. The Blazor interaction default is unchanged.
+
 ## ✨ What's New in v4.5.0
 
-**Release target: 4.5.0 for both `NeoUI.Blazor` and `NeoUI.Blazor.Primitives` (unreleased).**
+**Released: 4.5.0 for both `NeoUI.Blazor` and `NeoUI.Blazor.Primitives` on 2026-10-24.**
 This feature upgrade adds opt-in browser ownership of supported interaction states and input
 drafts while Razor content stays live. Application callbacks remain asynchronous; local
 feedback does not confirm a successful server update. The library default remains Blazor.
@@ -65,7 +89,7 @@ builder.Services.ConfigureNeoUIInteractions(options =>
 });
 ```
 
-Components requires Primitives **4.5.0**. Icon packages keep their independent versions.
+Components requires Primitives **4.5.2**. Icon packages keep their independent versions.
 Review heavy/lazy tab content and floating DOM costs before opting those controls in.
 See the [upgrade guide](docs/upgrading-to-4.5.md),
 [interaction/adoption guide](docs/browser-interactions.md),
@@ -700,7 +724,7 @@ NeoUI is an independent project and is not affiliated with or endorsed by shadcn
 
 ## 📊 Version Information
 
-- **Release Target**: 4.5.0 for Components and Primitives (unreleased)
+- **Current Release**: Components 4.5.4; Primitives 4.5.2
 - **Icon Versions**: Independently versioned
 - **Target Framework**: .NET 10
 - **Package IDs**: 

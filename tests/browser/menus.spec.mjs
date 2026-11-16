@@ -56,11 +56,15 @@ test('menubar delayed rejected changes and controlled reset reconcile safely', a
 });
 test('context menu uses pointer coordinates, local checks, nested menus and keyboard context gesture', async () => {
     await blockTransport(); const target = page.getByTestId('family-context'); await target.click({ button: 'right', position: { x: 12, y: 8 } });
-    await item('Context action').waitFor({ state: 'visible' }); await check('Context filter').click(); await checked(check('Context filter'), true);
+    await item('Context action').waitFor({ state: 'visible' });
+    await eventually(async () => assert.equal(await item('Context action').evaluate(e => document.activeElement === e.closest('[role="menu"]')), true));
+    assert.equal(await item('Context action').getAttribute('data-focused'), null);
+    await check('Context filter').click(); await checked(check('Context filter'), true);
     assert.equal(await page.evaluate(() => document.body.style.overflow), 'hidden');
     await item('Context More').hover(); await item('Context nested').waitFor({ state: 'visible' }); await item('Context nested').click();
     await eventually(async () => assert.equal(await page.evaluate(() => document.body.style.overflow), ''));
     await target.locator('..').focus(); await page.keyboard.press('Shift+F10'); await item('Context action').waitFor({ state: 'visible' });
+    await eventually(async () => assert.equal(await item('Context action').evaluate(e => document.activeElement === e), true));
     await page.keyboard.press('Escape'); await item('Context action').waitFor({ state: 'hidden' });
 });
 test('context programmatic opening and controlled reset preserve the browser controller', async () => {
@@ -141,6 +145,8 @@ test('clicking a sibling menubar trigger after hover switching keeps the new men
     const edit = item('Family Edit');
     await edit.click(); await expanded(edit, true); await item('Family Undo').waitFor({ state: 'visible' });
     await pause(250); await expanded(edit, true); await expanded(file(), false);
+    assert.equal(await item('Family Undo').evaluate(e => document.activeElement === e.closest('[role="menu"]')), true);
+    await page.keyboard.press('ArrowDown');
     assert.equal(await item('Family Undo').evaluate(e => document.activeElement === e), true);
     await file().click(); await expanded(file(), true); await expanded(edit, false);
     await file().click(); await expanded(file(), false);

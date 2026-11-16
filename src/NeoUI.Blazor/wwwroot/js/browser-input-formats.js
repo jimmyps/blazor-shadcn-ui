@@ -1,3 +1,4 @@
+import { attachNumericEditing, numericText } from './numeric-edit.js';
 import { initializeMaskedInput } from './masked-input.js';
 import { initializeListContinuation, disposeListContinuation, resetHistory } from './markdown-editor.js';
 // Formatting runs before the shared draft controller observes native input events.
@@ -6,12 +7,9 @@ export function attachFormat(element, getFormat) {
     let composing = false, markdownRevision = getFormat()?.revision;
     const markdown = getFormat()?.kind === 'markdown';
     if (markdown) initializeListContinuation(element,null,true);
-    const numberText = (value, format) => {
-        let result = value.trim();
-        for (const symbol of [format.symbol, format.group]) if (symbol) result = result.split(symbol).join('');
-        if (format.decimal && format.decimal !== '.') result = result.split(format.decimal).join('.');
-        return result.trim();
-    };
+    const numeric = ['number', 'currency'].includes(getFormat()?.kind)
+        ? attachNumericEditing(element, getFormat)
+        : null;
     let maskEditor, maskKey, currencyFormat = getFormat(), currencyDisplay = element.value, currencyEdited = false;
     const configureMask = () => {
         const format = getFormat();
@@ -28,7 +26,7 @@ export function attachFormat(element, getFormat) {
         if (markdown && markdownRevision !== format.revision) { markdownRevision = format.revision; resetHistory(element); }
         let message = '';
         if (format.kind === 'number' || format.kind === 'currency') {
-            const value = numberText(element.value,format);
+            const value = numericText(element.value,format);
             const valid = format.integer ? /^[+-]?\d+$/.test(value) : /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(value);
             if (value && (!valid || !Number.isFinite(Number(value)))) message = 'Enter a valid number.';
             if (format.kind === 'number') {
@@ -70,8 +68,9 @@ export function attachFormat(element, getFormat) {
             // Exact editable text comes from the same C# currency rules as the
             // legacy editor. Never derive it from a rounded display string.
             const accepted = exactCurrency();
-            const text = accepted && currencyFormat?.editValue != null ? currencyFormat.editValue : numberText(element.value,format);
+            const text = accepted && currencyFormat?.editValue != null ? currencyFormat.editValue : numericText(element.value,format);
             element.value = accepted && currencyFormat?.editValue != null || format.decimal === '.' ? text : text.replace('.',format.decimal);
+            numeric?.sync();
         }
     };
     const startComposition = () => composing = true;
@@ -85,9 +84,10 @@ export function attachFormat(element, getFormat) {
     validate();
     return { validate, prepareCommit, reconcile(format) {
         currencyFormat = format ?? getFormat(); currencyDisplay = element.value; currencyEdited = false;
-        configureMask(); maskEditor?.reconcile(); validate();
+        configureMask(); maskEditor?.reconcile(); numeric?.sync(); validate();
     }, isEmpty(value) { return maskEditor ? !maskEditor.rawValue(value).length : value.length === 0; }, dispose() {
         maskEditor?.dispose();
+        numeric?.dispose();
         if (markdown) disposeListContinuation(element);
         element.removeEventListener('keydown',numberKey);
         element.removeEventListener('input',normalize,true);

@@ -1,6 +1,8 @@
 # Browser interaction mode — v4.5.0
 
-**Release target: Components and Primitives 4.5.0 (unreleased).** See the
+**Current patch:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes.
+
+**Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.
 
 `DropdownMenu`, `Popover`, `Select<TValue>`, `Input`, and the composed controls below accept an opt-in interaction mode:
@@ -157,8 +159,12 @@ Command/Combobox and MultiSelect search fields use it when their enclosing contr
 Browser mode. Razor renders a fixed initial `value`; subsequent render batches therefore
 cannot overwrite a live draft. Native typing, selection, caret, paste and IME stay local,
 including while blurred. `UpdateOn=Input` sends versioned edit snapshots out of band;
-`UpdateOn=Change` submits the final value on change/blur, and also sends a snapshot
-when typing crosses between empty and non-empty. Further typing within the same state
+`UpdateOn=Change` submits the final value on change/blur. Inside a cascaded `EditContext`,
+it also sends a snapshot when typing crosses between empty and non-empty. Standalone
+change-mode fields such as table filters submit on commit. Set `NotifyOnEmptinessChange`
+on `Input`, `Textarea`, `NumericInput`, `CurrencyInput`, `MaskedInput`, or the InputGroup
+text fields to opt in outside an edit context. Set it to `false` for a search or table
+filter inside an `EditForm` to wait for commit. Further typing within the same state
 sends **no callbacks**. For example, `"" → "a" → "ab" → "abc" → ""` sends `"a"` and `""`
 while focused; blur sends a final value only if it has changed. Empty means length zero;
 whitespace counts as non-empty. Composition sends a boundary only after it completes.
@@ -179,9 +185,25 @@ value to acknowledge a correction. Field-change validation runs after the callba
        ValueRevision="@revision" UpdateOn="InputUpdateMode.Input" />
 ```
 
+While an input is pristine, incoming `Value` changes synchronize its display automatically.
+For example, `<Input @bind-Value="model.Name" />` can mount with an empty name and display
+an asynchronously loaded name later, without a loading guard or `ValueRevision`.
+The Interaction Mode demo includes **Load values after the inputs appear**
+(`#delayed-input-binding`) to try both cases with text and currency inputs.
+Synchronization does not invoke `ValueChanged` or mark the field pending. This applies to
+Input, Textarea, InputGroup's text adapters, and the NumericInput, CurrencyInput and
+MaskedInput adapters; it is not a new synchronization policy for structured selection fields.
+
+The first local input/composition or observed draft change ends this pristine window,
+including typing before JavaScript initialization. Accepted, rejected or reverted edits do
+not reopen it: later parameter renders still cannot overwrite an edited draft. An explicit
+`ValueRevision` replacement starts a fresh pristine window for the new value/document.
+Applications should still guard asynchronous model writes if the user may edit before a
+load completes; preserving the display cannot prevent application code overwriting its model.
+
 Increment `ValueRevision` together with `Value` for an authoritative replacement or reset,
 **even when resetting to the same accepted value**. Ordinary parameter echoes do not replace
-browser drafts. A changed revision clears queued edits and invalidates in-flight
+edited browser drafts. A changed revision clears queued edits and invalidates in-flight
 acknowledgements. An application callback already running cannot be cancelled by this UI
 protocol; applications must guard their own asynchronous writes against a reset as needed.
 Use `SearchRevision` on standalone CommandContent, or `InteractionRevision` on composed
@@ -789,7 +811,7 @@ TagInput filters static suggestions and handles tokenization, paste, hover and r
 
 MarkdownEditor uses the textarea draft/form adapter. Formatting shortcuts, toolbar actions, list continuation and undo/redo stay local; an explicit ValueRevision starts a new document and clears prior history. Markdown preview rendering and HTML sanitization remain server work. Revealing Preview does not mean that synchronization or rendering has finished.
 
-HoverCard and Tooltip keep their pointer/focus timers, persistence and Escape dismissal local, while action-button callbacks and inner Blazor content remain live. Accordion and Collapsible share the primitive disclosure controller. Tabs share its keyboard/ARIA and controlled reset protocol, with manual/automatic activation and horizontal/vertical navigation.
+HoverCard and Tooltip keep their pointer/focus timers, persistence and Escape dismissal local, while action-button callbacks and inner Blazor content remain live. Browser mode also reveals informational Tooltip and HoverCard triggers on a completed touch tap, including plain text/icon triggers that cannot receive focus on iOS. Scrolling or cancelled touches do not activate them. A NeoUI Button with no click callback used as an AsChild informational trigger also supports tap-to-reveal. Native action buttons, links or inputs retain their action and dismiss the tooltip; a tap is never intercepted to consume the application click. Accordion and Collapsible share the primitive disclosure controller. Tabs share its keyboard/ARIA and controlled reset protocol, with manual/automatic activation and horizontal/vertical navigation.
 
 ### Review Tabs before inheriting a Browser default
 
@@ -912,3 +934,26 @@ does not add per-instance JS calls/references or an IAsyncDisposable contract. T
 lasts for the document lifetime and also covers checkboxes mounted later. Disconnect and
 module-load failures are contained. TagInput logs module-load failures without ending the
 circuit; its existing local editor features require successful initialization.
+
+### Touch triggers and late-rendered hover content
+
+HoverCard/Tooltip content remains live Razor content. Updating that content after the controller mounts, or mounting the entire control later, does not require switching to Blazor interaction mode. A plain HoverCardTrigger renders a div and cannot receive focus; Browser mode handles its completed touch taps directly. On touch devices, a focusable demo button is therefore not sufficient coverage for text/icon triggers used in applications.
+
+For a label that users should reach with Tab, prefer a NeoUI Button trigger:
+
+```razor
+<HoverCard>
+    <HoverCardTrigger AsChild>
+        <Button Variant="ButtonVariant.Outline">Neo Summary</Button>
+    </HoverCardTrigger>
+    <HoverCardContent>@summaryContent</HoverCardContent>
+</HoverCard>
+```
+
+A plain `<HoverCardTrigger>Neo Summary</HoverCardTrigger>` is also a supported composition; it renders its own div. Do not use `AsChild` around an ordinary HTML element expecting it to consume TriggerContext automatically. Components such as NeoUI Button consume that context and apply the trigger ID and keyboard/focus behavior.
+
+### Menu opening: focus is separate from selection
+
+Mouse/touch opening focuses a menu's container, so opening a dropdown, split/pill menu or menubar does not fabricate a first-item highlight alongside an application-owned current-page background. Pointer-opened context menus and submenus use the same policy. `SelectionIndicator Hover="true"` continues to follow deliberate hover and keyboard focus; it does not change the application's selected value or route.
+
+Keyboard/assistive opening retains first/last-item focus. From a pointer-opened container, ArrowDown enters the first enabled item and ArrowUp enters the last; subsequent navigation skips disabled items. Reopening clears stale browser focus markers. This corrects the earlier Browser-only automatic first-item focus on pointer opening. Blazor-mode behavior, Select selected-option focus and Popover autofocus are unchanged.

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
+using NeoUI.Blazor;
+using NeoUI.Blazor.Extensions;
 using NeoUI.Blazor.Primitives;
 using NeoUI.Blazor.Primitives.Extensions;
 
@@ -10,6 +12,7 @@ if (typeof(IAsyncDisposable).IsAssignableFrom(typeof(CheckboxPrimitive))) throw 
 
 var services = new ServiceCollection().AddLogging();
 services.AddNeoUIPrimitives();
+services.AddNeoUIComponents();
 services.AddSingleton<IJSRuntime, NoInterop>();
 await using var provider = services.BuildServiceProvider();
 await using var renderer = new HtmlRenderer(provider, provider.GetRequiredService<ILoggerFactory>());
@@ -24,9 +27,16 @@ await renderer.Dispatcher.InvokeAsync(async () => {
         var html = rendered.ToHtmlString();
         if (!html.Contains("name=\"legacy-field\"") || !html.Contains("required")) throw new Exception("Legacy Name/Required attributes were lost.");
     }
+    var currency = await renderer.RenderComponentAsync<CurrencyInput<decimal?>>(ParameterView.FromDictionary(new Dictionary<string,object?>
+    {
+        ["Value"] = 98.76543m, ["Currency"] = "EUR", ["Culture"] = "de-DE"
+    }));
+    var currencyHtml = currency.ToHtmlString();
+    if (!currencyHtml.Contains("data-neo-currency-edit") || !currencyHtml.Contains("data-neo-number-decimal=\",\""))
+        throw new Exception("Default CurrencyInput did not render localized editing attributes.");
     if (host.ToHtmlString() != "Legacy content") throw new Exception("Disabled host must remain a transparent render wrapper.");
 });
-Console.WriteLine("Passed: default RadioGroup cyclic TValue and disabled shared host with JSON reflection disabled.");
+Console.WriteLine("Passed: default RadioGroup, CurrencyInput and disabled shared host with JSON reflection disabled.");
 public sealed class CyclicValue { public CyclicValue Self => this; }
 public sealed class NoInterop : IJSRuntime {
     public ValueTask<T> InvokeAsync<T>(string identifier, object?[]? args) => throw new Exception("Static rendering must not invoke JavaScript.");

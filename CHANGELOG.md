@@ -2,9 +2,43 @@
 
 All notable changes to this project will be documented in this file.
 
-## 2026-10-22 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
+## 2026-11-13 — v4.5.4 — Change-mode filters and numeric editing
 
-> **Targeting: `v4.5.0` for both Components and Primitives (unreleased)**
+- Browser change-mode inputs report empty/non-empty transitions while typing when they inherit an `EditContext`. Standalone inputs commit on change or blur. Add `NotifyOnEmptinessChange="true"` to preserve early callbacks outside a form, or set it to `false` for a filter inside an `EditForm`.
+- Browser `NumericInput` and `CurrencyInput` in both modes reject invalid text edits. Blazor `NumericInput` uses native number editing. Blazor `CurrencyInput` now edits and parses using the same culture, preventing comma-decimal amounts from losing their decimal separator on commit.
+
+## 2026-10-25 — v4.5.3 — Delayed Browser input binding
+
+> **Components: `v4.5.3`; Primitives remains `v4.5.2`.**
+> This patch changes the Components input adapter only. The Blazor interaction path is unchanged.
+
+- Browser Input and its text/formatted adapters now synchronize asynchronous `Value` initialization while pristine, without requiring a loading guard or `ValueRevision` and without invoking change callbacks. Inputs edited before loading or JavaScript initialization retain their drafts; accepted edits and stale acknowledgements cannot reopen the pristine window. Explicit revisions still replace edited values and perform same-value resets.
+- Added a styled Interaction Mode demo for delayed segment loading, edited-draft protection and currency precision, with restart and mobile gallery coverage.
+- Added delayed-binding, formatted-value/precision, pre-initialization typing, stale-acknowledgement and reset regressions to Server, WASM and WebKit CI. Default Blazor binding behavior is unchanged.
+
+## 2026-10-24 — v4.5.2 — Menu pointer-opening focus
+
+> **Targeting: `v4.5.2` for both Components and Primitives**
+> **Packaging:** Components requires Primitives `4.5.2`; publish Primitives first.
+
+- Browser menus now focus their container when opened by mouse or touch, matching the Blazor path. The first item no longer receives an unsolicited focus/SelectionIndicator highlight alongside an application's current-page selection. Dropdown, split-button, pill-menu, menubar, context-menu and submenu pointer openings share the policy.
+- Keyboard/assistive opening still focuses the first/last enabled item; arrows, typeahead and disabled-item skipping remain local. Reopening clears stale item-focus markers. Select's selected-option focus and Popover autofocus are retained.
+- Added cross-mode mouse/iPhone regressions with a persistent current-page class plus animated SelectionIndicator, and keyboard, assistive, non-looping and submenu cases in Server/WASM/WebKit CI.
+
+
+## 2026-10-24 — v4.5.1 — Mobile Tooltip and HoverCard activation
+
+> **Targeting: `v4.5.1` for both Components and Primitives**
+> **Packaging:** Components requires Primitives `4.5.1`; publish Primitives first.
+
+- Restored Browser-mode tap activation for informational Tooltip triggers, including nonfocusable text/icons; a compatibility click no longer immediately dismisses the tooltip.
+- Added completed-tap support for plain HoverCard triggers such as summary pills, without relying on mobile focus or synthetic hover. Scroll/cancel gestures do not reveal content; native Tooltip action-button/link behavior and callbacks remain intact.
+- Added iPhone WebKit/Chromium regressions for both modes, live content loaded after opening, and delayed mount/remount. The shared suite runs in Server and WASM CI.
+
+
+## 2026-10-24 — v4.5.0 — Browser Interaction Mode, Responsive Input Drafts, and Safe Form Submission
+
+> **Released: `v4.5.0` for both Components and Primitives on 2026-10-24**
 > **Affects `NeoUI.Blazor` and `NeoUI.Blazor.Primitives`.** Major feature upgrade with aligned package versions.
 > **Opt-in — the library default remains `InteractionMode.Blazor`.** Existing applications retain Blazor interaction ownership; review the API/HTML compatibility notes below.
 

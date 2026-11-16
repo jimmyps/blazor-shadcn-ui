@@ -69,7 +69,7 @@
     <section data-testid="composed-exceptions">
         <Combobox TItem="string" InteractionMode="InteractionMode.Blazor" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" Placeholder="Legacy city" />
         <MultiSelect TItem="string" InteractionMode="InteractionMode.Blazor" Items="@choices" ValueSelector="@(x => x)" DisplaySelector="@(x => x)" Placeholder="Legacy cities" />
-        <DatePicker InteractionMode="InteractionMode.Blazor" AriaLabel="Legacy date" />
+        <DatePicker InteractionMode="InteractionMode.Blazor" SelectedDate="@(new DateOnly(2026, 10, 21))" AriaLabel="Legacy date" />
     </section>
 </InteractionModeProvider>
 <button data-testid="composed-reset" @onclick="ResetComposed">Reset composed</button>

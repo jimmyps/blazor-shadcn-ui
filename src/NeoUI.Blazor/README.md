@@ -2,9 +2,33 @@
 
 Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
+## v4.5.3 delayed binding patch
+
+Components **4.5.3** accepts asynchronous `Value` updates while Browser inputs are pristine,
+without a loading guard or revision bump. Edited drafts remain protected from late loads
+and stale acknowledgements; `ValueRevision` still forces replacements and same-value resets.
+Text and formatted adapters share this behavior, including exact currency precision.
+The Interaction Mode demo includes delayed loading and typing during the delay.
+The default Blazor path is unchanged. Primitives remains **4.5.2**.
+
+## v4.5.2 menu focus patch
+
+Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
+without adding a first-item highlight alongside the application's current-page selection.
+Keyboard/assistive entry and selected values remain intact. Dropdown, split/pill, menubar,
+context-menu and submenu pointer openings share the policy. Blazor behavior, Select focus
+and Popover autofocus are unchanged.
+
+## v4.5.1 mobile interaction patch
+
+Components and Primitives align at **4.5.1**. Browser-mode informational Tooltips and plain
+HoverCard triggers support completed touch taps, including text/icon triggers that cannot
+receive focus. Action callbacks remain live; scrolling and cancelled touches do not reveal
+content. Late-rendered card content remains supported. The Blazor interaction default is unchanged.
+
 ## What's new in v4.5.0
 
-**Release target: 4.5.0 (unreleased), aligned with NeoUI.Blazor.Primitives 4.5.0.**
+**Released: 4.5.0 on 2026-10-24, aligned with NeoUI.Blazor.Primitives 4.5.0.**
 Opt-in Browser Interaction Mode keeps supported floating/menu/disclosure states and input
 drafts responsive while Razor content and application callbacks remain live. Newer edits
 survive delayed acknowledgements; supported fields can synchronize before validation with
@@ -27,7 +51,7 @@ builder.Services.ConfigureNeoUIInteractions(options =>
 ```
 
 `Disclosures` is another optional family default; review heavy/lazy Tabs before enabling it.
-Components requires Primitives 4.5.0; icon package versions remain independent.
+Components requires Primitives 4.5.2; icon package versions remain independent.
 See the [upgrade guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/upgrading-to-4.5.md),
 [adoption guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md)
 and [Interaction Mode demo](https://demos.neoui.io/components/browser-interactions).
@@ -494,7 +518,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Release Target**: 4.5.0 (unreleased; Components and Primitives aligned)
+- **Current Release**: 4.5.4 (requires Primitives 4.5.2)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

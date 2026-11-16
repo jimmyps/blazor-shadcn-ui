@@ -1,21 +1,31 @@
 # Upgrading to NeoUI v4.5.0
 
-**Release target: 4.5.0 for both `NeoUI.Blazor` (Components) and
-`NeoUI.Blazor.Primitives` (unreleased).** This is a substantial feature upgrade; existing
+**Released: 4.5.0 for both `NeoUI.Blazor` (Components) and
+`NeoUI.Blazor.Primitives` on 2026-10-24.** This is a substantial feature upgrade; existing
 applications keep Blazor interaction behavior unless they opt in. .NET 10 remains the target.
+
+## Migrating to Components 4.5.4
+
+Browser change-mode fields inside an `EditContext` report empty/non-empty transitions
+while typing. If a standalone field such as an input in a dialog without an `EditForm`
+uses these callbacks to enable an action, add `NotifyOnEmptinessChange="true"`.
+Set `NotifyOnEmptinessChange="false"` for a search or filter inside an `EditForm` so it
+commits on change or blur. Blazor `CurrencyInput` now rejects invalid text and uses the
+field's culture for the editable value as well as parsing. Blazor `NumericInput` uses
+native number editing.
 
 ## Package alignment
 
-After publication, upgrade both packages together if your application references both:
+Use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes. Upgrade both packages together if your application references both:
 
 ```sh
-dotnet add package NeoUI.Blazor --version 4.5.0
-dotnet add package NeoUI.Blazor.Primitives --version 4.5.0
+dotnet add package NeoUI.Blazor --version 4.5.4
+dotnet add package NeoUI.Blazor.Primitives --version 4.5.2
 ```
 
 Components already brings Primitives as a dependency, so a direct Primitives reference is
-optional. Update any direct version pins or central package management entries to 4.5.0;
-Components requires Primitives 4.5.0. Icon packages retain their independent version numbers.
+optional. Update any direct version pins or central package management entries to Components 4.5.4 and Primitives 4.5.2;
+Components 4.5.4 requires Primitives 4.5.2. Icon packages retain their independent version numbers.
 
 ## Adopt Browser mode by family
 
@@ -85,10 +95,10 @@ See the [complete interaction and form adoption guide](browser-interactions.md),
 
 ## Release coordination
 
-The release tag names will be `primitives/v4.5.0` and `components/v4.5.0`, using the existing prefixes.
-When publishing, release Primitives first and wait for its package to become available before
-publishing Components, whose release build consumes the NuGet dependency. These notes do
-not create tags or publish packages; this branch remains unreleased until that release runs.
+Both packages were published on 2026-10-24 from merged commit `1f32a3e4fb238be12433fc62cadd1e98775b14d7`.
+The release tags are `primitives/v4.5.0` and `components/v4.5.0`, using the existing prefixes.
+Primitives was published and verified available on NuGet before Components, whose release
+build consumes that NuGet dependency.
 
 
 ## Compatibility details to audit

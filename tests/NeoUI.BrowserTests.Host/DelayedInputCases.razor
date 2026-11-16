@@ -1,0 +1,39 @@
+<section data-testid="delayed-inputs">
+    <Input @bind-Value:get="name" @bind-Value:set="AcceptName" ValueRevision="revision" Placeholder="Delayed name" UpdateOn="InputUpdateMode.Input" />
+    <Textarea @bind-Value="description" @bind-Value:after="() => adapterCalls++" ValueRevision="revision" Placeholder="Delayed description" />
+    <NumericInput TValue="decimal?" @bind-Value="number" @bind-Value:after="() => adapterCalls++" ValueRevision="revision" Placeholder="Delayed number" />
+    <CurrencyInput TValue="decimal?" @bind-Value="currency" @bind-Value:after="() => adapterCalls++" ValueRevision="revision" Placeholder="Delayed currency" Currency="USD" />
+    <MaskedInput @bind-Value="reference" @bind-Value:after="() => adapterCalls++" Mask="00-00" ValueRevision="revision" Placeholder="Delayed reference" />
+    <Input InteractionMode="InteractionMode.Blazor" @bind-Value="legacy" Placeholder="Delayed legacy" />
+    <button data-testid="load-start" @onclick="LoadAsync">Start load</button>
+    <button data-testid="load-release" @onclick="() => load.TrySetResult()">Complete load</button>
+    <button data-testid="delayed-reset" @onclick="Reset">Reset</button>
+    <output data-testid="load-status">@(loaded ? "Loaded" : loading ? "Loading" : "Idle")</output>
+    <output data-testid="adapter-calls">@adapterCalls</output>
+    <output data-testid="delayed-calls">@calls</output>
+    <output data-testid="delayed-accepted">@name</output>
+</section>
+@code {
+    private string? name = "", description = "", reference = "", legacy = "";
+    private decimal? number, currency;
+    private long revision;
+    private int calls, adapterCalls;
+    private bool loading, loaded;
+    private readonly TaskCompletionSource load = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private async Task LoadAsync()
+    {
+        loading = true;
+        await load.Task;
+        name = "Existing segment"; description = "Loaded description";
+        number = 123.45m; currency = 1234.5678m; reference = "1234"; legacy = "Legacy name";
+        loaded = true;
+    }
+    private async Task AcceptName(string? value)
+    {
+        var current = revision;
+        calls++;
+        await Task.Delay(300);
+        if (current == revision) name = value;
+    }
+    private void Reset() { name = ""; description = ""; number = null; currency = null; reference = ""; revision++; }
+}

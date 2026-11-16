@@ -37,10 +37,16 @@
     <p data-testid="scope-saved">@scopeSaved</p><p data-testid="standalone-status">@standaloneStatus</p>
     <button data-testid="standalone-flush" @onclick="FlushStandalone">Flush input</button>
 </section>
-<section>
+<EditForm Model="@boundaryModel">
     <Input InteractionMode="InteractionMode.Browser" Value="@changeValue" ValueChanged="SetChange" UpdateOn="InputUpdateMode.Change" Placeholder="Boundary input" />
-    <button disabled="@string.IsNullOrEmpty(changeValue)" data-testid="boundary-action">Continue</button>
+    <button type="button" disabled="@string.IsNullOrEmpty(changeValue)" data-testid="boundary-action">Continue</button>
+    <Textarea InteractionMode="InteractionMode.Browser" Value="@filter" ValueChanged="SetFilter" UpdateOn="InputUpdateMode.Change" NotifyOnEmptinessChange="false" Placeholder="Form filter with override" />
     <p data-testid="boundary-accepted">@changeValue</p><p data-testid="boundary-calls">@changeCalls</p>
+</EditForm>
+<section>
+    <Input InteractionMode="InteractionMode.Browser" Value="@filter" ValueChanged="SetFilter" UpdateOn="InputUpdateMode.Change" Placeholder="Standalone filter" />
+    <Input InteractionMode="InteractionMode.Blazor" Value="@filter" ValueChanged="SetFilter" UpdateOn="InputUpdateMode.Change" Placeholder="Blazor standalone filter" />
+    <p data-testid="filter-accepted">@filter</p><p data-testid="filter-calls">@filterCalls</p>
 </section>
 
 @code {
@@ -49,6 +55,10 @@
         [Required] public string? Note { get; set; }
     }
     private readonly FormModel model = new(), scopeModel = new() { Note = "scope" };
+    private readonly object boundaryModel = new();
+    private string? filter;
+    private int filterCalls;
+    private void SetFilter(string? value) { filter = value; filterCalls++; }
     private EditContext context = default!;
     private BrowserInputForm? form;
     private BrowserInputScope? scope;

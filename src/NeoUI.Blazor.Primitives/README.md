@@ -2,9 +2,24 @@
 
 Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.
 
+## v4.5.2 menu focus patch
+
+Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
+without adding a first-item highlight alongside the application's current-page selection.
+Keyboard/assistive entry and selected values remain intact. Dropdown, split/pill, menubar,
+context-menu and submenu pointer openings share the policy. Blazor behavior, Select focus
+and Popover autofocus are unchanged.
+
+## v4.5.1 mobile interaction patch
+
+Components and Primitives align at **4.5.1**. Browser-mode informational Tooltips and plain
+HoverCard triggers support completed touch taps, including text/icon triggers that cannot
+receive focus. Action callbacks remain live; scrolling and cancelled touches do not reveal
+content. Late-rendered card content remains supported. The Blazor interaction default is unchanged.
+
 ## What's new in v4.5.0
 
-**Release target: 4.5.0 (unreleased), aligned with NeoUI.Blazor 4.5.0.**
+**Released: 4.5.0 on 2026-10-24, aligned with NeoUI.Blazor 4.5.0.**
 Shared primitive controllers now support opt-in browser-local floating/menu/disclosure
 interactions and supported field feedback, with versioned acceptance, reset, reconnect and
 initialization-lifetime handling. Floating contents remain live Blazor components; application
@@ -460,7 +475,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Release Target**: 4.5.0 (unreleased; Components and Primitives aligned)
+- **Current Release**: 4.5.2 (Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives

@@ -4,7 +4,7 @@
 {
     <BrowserTextareaInput @ref="browserInput" InteractionMode="NeoUI.Blazor.Primitives.InteractionMode.Browser"
         Id="@EffectiveId" Name="@string.Empty" Class="@CssClass" Rows="@Rows" Value="@Value" ValueChanged="@ValueChanged"
-        ValueExpression="@ValueExpression" ValueRevision="@ValueRevision" AcceptedValueAccessor="@AcceptedValueAccessor"
+        ValueExpression="@ValueExpression" ValueRevision="@ValueRevision" NotifyOnEmptinessChange="@NotifyOnEmptinessChange" AcceptedValueAccessor="@AcceptedValueAccessor"
         UpdateOn="@UpdateOn" DebounceDelay="@DebounceDelay" Placeholder="@Placeholder" Disabled="@Disabled" Readonly="@Readonly"
         Required="@Required" AriaLabel="@AriaLabel" AriaDescribedBy="@AriaDescribedBy" AriaInvalid="@AriaInvalid"
         OnInputRef="@(element => textareaReference = element)" AdditionalAttributes="@BrowserAttributes" />

@@ -478,6 +478,9 @@ test('menu-family gallery supports iPhone touch switching without flicker', asyn
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'true');
             await view.tap(); await page.getByRole('menuitem', { name: 'Compact view', exact: true }).waitFor({ state: 'visible' });
             await pause(400); assert.equal(await view.getAttribute('aria-expanded'), 'true');
+            const row = page.getByRole('menuitem', { name: 'Compact view', exact: true });
+            assert.equal(await row.evaluate(el => document.activeElement === el.closest('[role="menu"]')), true);
+            assert.equal(await row.locator('xpath=ancestor::*[@role="menu"][1]').locator('[data-focused="true"]').count(), 0);
             assert.equal(await inbox.getAttribute('aria-expanded'), 'false');
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'true');
             await inbox.tap(); assert.equal(await inbox.getAttribute('aria-expanded'), 'false');
@@ -713,4 +716,30 @@ test('iPhone taps keep MultiSelect checkbox feedback and tag badges visible',asy
   await input.fill('Des');await page.getByRole('option',{name:'Design',exact:true}).tap();
   await input.locator('xpath=..').getByRole('button',{name:'Remove Design',exact:true}).waitFor();assert.equal(await input.inputValue(),'');assert.deepEqual(errors,[]);
  }finally{await browser.close();}
+});
+
+
+test('iPhone informational Tooltip and summary HoverCard taps retain late-rendered content', async () => {
+    const browser = await (process.env.NEOUI_BROWSER_ENGINE === 'webkit' ? webkit.launch({ headless: true }) : chromium.launch({ headless: true, channel: 'msedge' }));
+    const page = await browser.newPage({ ...devices['iPhone 13'] });
+    const errors = []; page.on('pageerror', error => errors.push(String(error)));
+    const origin = new URL(url).origin;
+    if (origin.includes('.devtunnels.ms')) await page.route(origin + '/**', route => route.continue({ headers: { ...route.request().headers(), 'X-Tunnel-Skip-AntiPhishing-Page': 'true' } }));
+    try {
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const root = page.locator('[data-hover-interaction-demo]');
+        const hint = root.getByRole('button', { name: 'Helpful hint', exact: true });
+        await hint.locator('xpath=self::*[@data-neo-hover-informational="true"]').waitFor();
+        await page.getByRole('tooltip', { includeHidden: true }).filter({ hasText: 'Browser timers and dismissal' }).locator('xpath=self::*[@data-neo-browser-content]').waitFor({ state: 'attached' });
+        await hint.tap();
+        await page.getByRole('tooltip').filter({ hasText: 'Browser timers and dismissal' }).waitFor({ state: 'visible' });
+        await page.getByTestId('summary-hover-details').locator('xpath=ancestor::*[@data-neo-browser-content]').waitFor({ state: 'attached' });
+        await page.getByTestId('summary-hover-trigger').tap();
+        await page.getByTestId('summary-hover-details').waitFor({ state: 'visible' });
+        await page.getByTestId('load-hover-details').tap();
+        await page.getByTestId('late-hover-details').waitFor({ state: 'visible' });
+        await page.touchscreen.tap(5, 5);
+        await page.getByTestId('summary-hover-details').waitFor({ state: 'hidden' });
+        assert.deepEqual(errors, []);
+    } finally { await browser.close(); }
 });

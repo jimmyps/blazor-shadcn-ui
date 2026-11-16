@@ -58,14 +58,14 @@ test('hover and tooltip reveal, persist across pointer transitions and dismiss w
         const tooltip=page.getByRole('button',{name:'Sweep tooltip',exact:true});
         const content=page.getByTestId('sweep-hover-child');
         await content.locator('xpath=ancestor::*[@data-neo-browser-content]').waitFor({state:'attached',timeout:3000});
-        await page.getByRole('tooltip',{includeHidden:true}).locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached',timeout:3000});
+        await page.getByRole('tooltip',{includeHidden:true}).filter({hasText:'Sweep tooltip content'}).locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached',timeout:3000});
         await page.evaluate(()=>{window.__nativeSend=WebSocket.prototype.send;WebSocket.prototype.send=function(){};});
         await hover.hover();await content.waitFor({state:'visible'});
         await content.hover();await pause(150);assert.equal(await content.isVisible(),true);
         await page.mouse.move(5,5);await content.waitFor({state:'hidden'});
-        await tooltip.focus();await page.getByRole('tooltip').waitFor({state:'visible'});
+        await tooltip.focus();await page.getByRole('tooltip').filter({hasText:'Sweep tooltip content'}).waitFor({state:'visible'});
         assert.match(await tooltip.getAttribute('aria-describedby'),/tooltip/);
-        await tooltip.press('Escape');await page.getByRole('tooltip',{includeHidden:true}).waitFor({state:'hidden'});
+        await tooltip.press('Escape');await page.getByRole('tooltip',{includeHidden:true}).filter({hasText:'Sweep tooltip content'}).waitFor({state:'hidden'});
     } finally { await page.evaluate(()=>{if(window.__nativeSend)WebSocket.prototype.send=window.__nativeSend;}).catch(()=>{});await browser.close(); }
 });
 
@@ -97,9 +97,9 @@ test('a browser tooltip preserves its action button callback and closes before a
     const {browser,page}=await open();
     try {
         const button=page.getByRole('button',{name:'Sweep tooltip',exact:true});
-        await page.getByRole('tooltip',{includeHidden:true}).locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});
-        await button.focus();await page.getByRole('tooltip').waitFor();
-        await button.click();await page.getByRole('tooltip',{includeHidden:true}).waitFor({state:'hidden'});
+        await page.getByRole('tooltip',{includeHidden:true}).filter({hasText:'Sweep tooltip content'}).locator('xpath=self::*[@data-neo-browser-content]').waitFor({state:'attached'});
+        await button.focus();await page.getByRole('tooltip').filter({hasText:'Sweep tooltip content'}).waitFor();
+        await button.click();await page.getByRole('tooltip',{includeHidden:true}).filter({hasText:'Sweep tooltip content'}).waitFor({state:'hidden'});
         await page.getByTestId('sweep-tooltip-pending').filter({hasText:'Waiting'}).waitFor();
         assert.equal(await page.getByTestId('sweep-tooltip-actions').textContent(),'0');
         await page.getByTestId('sweep-tooltip-release').click();
