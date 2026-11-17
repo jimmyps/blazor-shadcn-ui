@@ -410,10 +410,13 @@ export function applyPosition(floating, position, makeVisible = false) {
 // and layout-shift updates retain their immediate callback path in both modes.
 function observePosition(lib, reference, floating, update, options) {
   let frame = null, disposed = false;
-  const cleanup = lib.autoUpdate(reference, floating, () => { if (!disposed) void update(); }, { elementResize: false });
+  // A queued observer can outlive its DOM anchor before async owner disposal.
+  // Preserve initial-position validation, but don't position a detached pair.
+  const canUpdate = () => !disposed && isElementReady(reference?.contextElement ?? reference) && isElementReady(floating);
+  const cleanup = lib.autoUpdate(reference, floating, () => { if (canUpdate()) void update(); }, { elementResize: false });
   const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(() => {
     if (disposed || frame !== null) return;
-    frame = requestAnimationFrame(() => { frame = null; if (!disposed) void update(); });
+    frame = requestAnimationFrame(() => { frame = null; if (canUpdate()) void update(); });
   }) : null;
   // Restore only the last computed constraints, without a layout read or a new
   // position calculation. Mutation delivery runs before paint and is outside
@@ -485,7 +488,7 @@ export async function showFloating(floating, reference = null, options = null) {
 
   // Always dispose existing AutoUpdate first (if any)
   const existingCleanupId = floating._autoUpdateCleanupId;
-  if (existingCleanupId) {
+  if (existingCleanupId !== undefined && existingCleanupId !== null) {
     const cleanup = cleanupRegistry.get(existingCleanupId);
     if (cleanup) {
       cleanup();
@@ -559,7 +562,7 @@ export function hideFloating(floating) {
   // Always dispose AutoUpdate immediately (before requestAnimationFrame)
   // This matches upstream's lifecycle: dispose on hide, recreate on show
   const existingCleanupId = floating._autoUpdateCleanupId;
-  if (existingCleanupId) {
+  if (existingCleanupId !== undefined && existingCleanupId !== null) {
     const cleanup = cleanupRegistry.get(existingCleanupId);
     if (cleanup) {
       cleanup();
