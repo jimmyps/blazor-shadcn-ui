@@ -2,7 +2,7 @@
 
 **Released: Components and Primitives 4.5.0 on 2026-10-24.** See [Upgrading to v4.5.0](upgrading-to-4.5.md).
 
-This follow-up implements P1 before P2. P3 (modal Dialog/Sheet/AlertDialog and a complete rich-text editor conversion) is excluded. Existing application defaults and explicit Blazor exceptions remain the adoption policy.
+This follow-up implements P1 before P2. P3 (standalone modal Dialog/Sheet/AlertDialog and a complete rich-text editor conversion) is excluded. A subsequent targeted adapter adds Browser-owned mobile SidebarProvider sheet visibility while retaining live server-rendered navigation content; it does not convert standalone modal components. Existing application defaults and explicit Blazor exceptions remain the adoption policy.
 
 ## Current implementation and validation
 
@@ -271,7 +271,7 @@ mean every configuration was exercised on every browser or device.
 | `match-trigger-width.js` | Replaced for Browser dropdowns by the existing positioning engine's reference-width matching. |
 | `element-utils.js`, `virtualization-scroll.js` | Legacy list paths still use helpers. Browser active-item navigation scrolls locally; Virtualize still materializes content and load-more still invokes application work. |
 | `positioning.js`, `portal.js` | Retained shared positioning/portal machinery. Browser lifecycle changes ownership and timing, not the layout engine. |
-| `dialog.js`, `focus-trap.js` | Dialog/Sheet focus and keyboard setup remain active; Browser popovers replace their Escape adapter with local handling. Modal families were not converted. |
+| `dialog.js`, `focus-trap.js` | Dialog/Sheet focus and keyboard setup remain active; Browser popovers replace their Escape adapter with local handling. Standalone modal families were not converted; the mobile SidebarProvider sheet has a dedicated Browser adapter. |
 | `selection-indicator.js` | Retained; its MutationObserver consumes local data-state/ARIA changes. No initialization bypass found. |
 | `color-picker.js` | Retained, with server-gated cold initialization and shell-only coverage as noted above. |
 | `quill-interop.js` | Retained; no Browser draft conversion or form-flush integration. |

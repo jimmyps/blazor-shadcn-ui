@@ -1,0 +1,28 @@
+@namespace NeoUI.Blazor
+
+<BrowserStateHost Enabled="true" Kind="mobile-sheet" Values="@(Context.OpenMobile ? new[] { "open" } : Array.Empty<string>())" Revision="@Context.InteractionRevision" Changed="Changed">
+    <div data-neo-sheet-owner="@Context.BrowserId" data-neo-sheet-navigate="@CloseOnNavigate.ToString().ToLowerInvariant()" style="display:contents">
+        <div data-neo-sheet-overlay style="display:none" hidden inert data-state="closed" class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"></div>
+        <div id="@(Context.BrowserId + "-sheet")" role="dialog" aria-modal="true" aria-label="@Localizer["Sidebar.ToggleSidebar"]" tabindex="-1" style="display:none" hidden inert data-neo-sheet-panel data-state="closed" data-side="@(Context.Side == SidebarSide.Left ? "left" : "right")" class="@PanelClasses">
+            <CascadingValue Value="Context" IsFixed="true">
+                <CascadingValue Value="StyleVariant" Name="StyleVariant">@ChildContent</CascadingValue>
+            </CascadingValue>
+        </div>
+    </div>
+</BrowserStateHost>
+
+@inject ILocalizer Localizer
+@code {
+    [Parameter, EditorRequired] public SidebarContext Context { get; set; } = null!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool CloseOnNavigate { get; set; }
+    [Parameter] public StyleVariant StyleVariant { get; set; }
+    private Task Changed(string[] values) { Context.SetOpenMobile(values.Contains("open")); return Task.CompletedTask; }
+    private string PanelClasses => ClassNames.cn(
+        "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+        Context.Side == SidebarSide.Left
+            ? "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm"
+            : "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
+        StyleVariant.GetClasses("Sheet.Content"), Class);
+}

@@ -32,7 +32,11 @@
     </NavigationMenu>
     <div class="rounded-lg border p-4 space-y-3" data-neo-sidebar-provider>
         <p class="text-sm text-muted-foreground">Pill navigation shares the policy with embedded dropdowns and split buttons.</p>
-        <CascadingValue Value="pillContext" IsFixed="true">
+        <SidebarProvider InteractionMode="InteractionMode.Browser" InteractionRevision="@revision" CollapsedMode="SidebarCollapsedMode.Pill" DefaultOpen="false" CookieKey="@null" HeightClass="h-auto">
+            <Sidebar Class="!h-auto">
+                <SidebarHeader><strong>Navigation preview</strong><SidebarTrigger /></SidebarHeader>
+                <SidebarContent><Button Variant="ButtonVariant.Outline" OnClick="Save">Server action (@saved)</Button><a href="#composed-controls" class="p-2 underline">Composed controls</a></SidebarContent>
+            </Sidebar>
             <SidebarPillNav InteractionRevision="@revision" Class="!relative !top-0 !left-0 !translate-x-0 !opacity-100 !translate-y-0 !pointer-events-auto w-fit max-w-full">
                 <ChildContent>
                     <SidebarPillNavItem Label="Demo inbox" IsActive="@(activePill == 0)" OnClick="@(() => SetPill(0))"><LucideIcon Name="inbox" Size="16" /></SidebarPillNavItem>
@@ -41,14 +45,14 @@
                 </ChildContent>
                 <TrailingContent><SplitButton Size="ButtonSize.Small" OnClick="Save"><ChildContent>Save</ChildContent><DropdownContent><SplitButtonItem OnClick="Save">Save as new view</SplitButtonItem></DropdownContent></SplitButton></TrailingContent>
             </SidebarPillNav>
-        </CascadingValue>
+        </SidebarProvider>
     </div>
     <div class="flex flex-wrap gap-4 text-sm">
         <label class="flex items-center gap-2"><input type="checkbox" @bind="slow" /> Delay application callbacks (800 ms)</label>
         <label class="flex items-center gap-2"><input type="checkbox" @bind="reject" /> Reject filter changes</label>
     </div>
     <p class="text-sm text-muted-foreground" aria-live="polite">Accepted: @(unread ? "unread only" : "all messages"), @priority priorities · @saved completed actions</p>
-    <p class="text-xs text-muted-foreground">Opening, hover, keyboard navigation and dismissal stay local. Active pill feedback is optimistic; increment InteractionRevision to reset it. Sidebar mobile expansion still uses the existing Sheet behavior.</p>
+    <p class="text-xs text-muted-foreground">Opening, hover, keyboard navigation and dismissal stay local. Active pill feedback is optimistic; increment InteractionRevision to reset it. On mobile, the expand button opens a browser-local sheet instantly. Its content remains live Blazor; the server action above uses the same callback delay.</p>
 </div>
 </InteractionModeProvider>
 @code {
@@ -56,8 +60,6 @@
     private string priority = "all";
     private int saved, activePill;
     private long revision;
-    private readonly SidebarContext pillContext = new();
-    protected override void OnInitialized() => pillContext.Initialize(open: false, collapsedMode: SidebarCollapsedMode.Pill);
     private async Task Wait() { if (slow) await Task.Delay(800); }
     private async Task Save() { await Wait(); saved++; }
     private async Task SetUnread(bool value) { await Wait(); if (!reject) unread = value; }

@@ -41,6 +41,7 @@
         
         triggers.forEach((trigger) => {
             trigger.addEventListener('click', function(e) {
+                if (e.defaultPrevented) return; // Browser mobile sheet already handled it.
                 e.preventDefault();
                 e.stopPropagation();
                 toggleSidebar();

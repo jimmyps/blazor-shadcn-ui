@@ -106,6 +106,7 @@ function setupClickDelegation() {
     
     triggers.forEach((trigger) => {
         const clickHandler = (e) => {
+            if (e.defaultPrevented) return; // Browser mobile sheet already handled it.
             e.preventDefault();
             e.stopPropagation();
             
@@ -195,4 +196,29 @@ export function resetScrollPosition(element) {
     if (element) {
         element.scrollTo(0, 0);
     }
+}
+
+/** Per-provider setup for Browser mobile sheets; never replaces the legacy singleton. */
+export function initializeBrowserSidebar(componentRef, owner, staticRendering) {
+    const media = matchMedia('(max-width:767px)');
+    let disposed=false;
+    const invoke = method => { if (!disposed) void componentRef.invokeMethodAsync(method,...(method==='OnMobileChange'?[media.matches]:[])).catch(()=>{}); };
+    const changed = () => invoke('OnMobileChange');
+    const owns = target => target.closest?.('[data-neo-sidebar-provider]')?.dataset.neoSidebarProvider===owner;
+    const keyboard = event => {
+        if (event.defaultPrevented || media.matches) return;
+        if (!owns(event.target)) {
+            if (event.target.closest?.('[data-neo-sidebar-provider]')) return;
+            if (document.querySelector('[data-neo-sidebar-provider]')?.dataset.neoSidebarProvider !== owner) return;
+        }
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase()==='b') {
+            event.preventDefault();event.stopImmediatePropagation();invoke('OnToggleShortcut');
+        }
+    };
+    const clicked = event => {
+        if (!staticRendering || media.matches || !owns(event.target)) return;
+        if (event.target.closest('[data-sidebar="trigger"]')) invoke('ToggleSidebar');
+    };
+    media.addEventListener('change',changed);document.addEventListener('keydown',keyboard,true);document.addEventListener('click',clicked,true);changed();
+    return {dispose(){disposed=true;media.removeEventListener('change',changed);document.removeEventListener('keydown',keyboard,true);document.removeEventListener('click',clicked,true);}};
 }

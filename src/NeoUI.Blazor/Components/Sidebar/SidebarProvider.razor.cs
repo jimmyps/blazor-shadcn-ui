@@ -10,8 +10,12 @@ namespace NeoUI.Blazor;
 /// </summary>
 public partial class SidebarProvider : ComponentBase
 {
+    [Inject] private Microsoft.Extensions.Options.IOptions<NeoUI.Blazor.Primitives.InteractionOptions> InteractionDefaults { get; set; } = default!;
+    [CascadingParameter] private NeoUI.Blazor.Primitives.InteractionPolicy? InteractionPolicy { get; set; }
     private SidebarContext Context { get; set; } = new();
-    private IJSObjectReference? _module;
+    private IJSObjectReference? _module, _browserController;
+    private readonly SemaphoreSlim _lifecycleGate = new(1, 1);
+    private bool _disposed, _browserSetup, _legacySetup;
     private DotNetObjectReference<SidebarProvider>? _dotNetRef;
     private PersistingComponentStateSubscription _persistingSubscription;
     private IHttpContextAccessor? _httpContextAccessor;
@@ -92,6 +96,8 @@ public partial class SidebarProvider : ComponentBase
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
+        Context.InteractionMode = InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Menus);
+        Context.InteractionRevision = InteractionRevision;
         // Update context when parameters change
         Context.SetVariant(Variant);
         Context.SetSide(Side);
@@ -101,28 +107,27 @@ public partial class SidebarProvider : ComponentBase
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return;
+        await _lifecycleGate.WaitAsync();
+        try
         {
-            try
+            if (_disposed) return;
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor/js/sidebar.js");
+            if (_disposed) return;
+            _dotNetRef = DotNetObjectReference.Create(this);
+            _browserSetup = Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser;
+            if (_browserSetup)
+                _browserController = await _module.InvokeAsync<IJSObjectReference>("initializeBrowserSidebar", _dotNetRef, Context.BrowserId, StaticRendering);
+            else
             {
-                // Load the sidebar JavaScript module
-                _module = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                    "import", "./_content/NeoUI.Blazor/js/sidebar.js");
-
-                // Create a reference to this component for JS callbacks
-                _dotNetRef = DotNetObjectReference.Create(this);
-
-                // Set up mobile detection, keyboard shortcuts, and optional static rendering support
+                _legacySetup = true;
                 await _module.InvokeVoidAsync("initializeSidebar", _dotNetRef, CookieKey, StaticRendering);
-
-                // Subscribe to state changes for persistence
-                Context.StateChanged += OnStateChanged;
             }
-            catch (JSException)
-            {
-                // JS module not available, continue without JS enhancements
-            }
+            if (!_disposed) Context.StateChanged += OnStateChanged;
         }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or TaskCanceledException) { }
+        catch (ObjectDisposedException) when (_disposed) { }
+        finally { _lifecycleGate.Release(); }
     }
 
     /// <summary>
@@ -130,6 +135,7 @@ public partial class SidebarProvider : ComponentBase
     /// </summary>
     private async void OnStateChanged(object? sender, EventArgs e)
     {
+        if (_disposed) return;
         // Persist sidebar state to cookie when it changes
         if (_module != null && !string.IsNullOrEmpty(CookieKey))
         {
@@ -137,14 +143,14 @@ public partial class SidebarProvider : ComponentBase
             {
                 await _module.InvokeVoidAsync("saveSidebarState", CookieKey, Context.Open);
             }
-            catch (JSException)
+            catch (Exception ex) when (ex is JSException or JSDisconnectedException or ObjectDisposedException)
             {
                 // Ignore persistence errors
             }
         }
 
         // Notify UI of state change
-        await InvokeAsync(StateHasChanged);
+        if (!_disposed) await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -153,6 +159,8 @@ public partial class SidebarProvider : ComponentBase
     [JSInvokable]
     public void OnMobileChange(bool isMobile)
     {
+        if (!isMobile && Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser)
+            Context.SetOpenMobile(false);
         Context.SetIsMobile(isMobile);
     }
 
@@ -185,27 +193,26 @@ public partial class SidebarProvider : ComponentBase
     /// <inheritdoc/>
     public async ValueTask DisposeAsync()
     {
-        if (Context != null)
+        _disposed = true;
+        Context.StateChanged -= OnStateChanged;
+        await _lifecycleGate.WaitAsync();
+        try
         {
-            Context.StateChanged -= OnStateChanged;
+            if (_browserController != null)
+            {
+                await _browserController.InvokeVoidAsync("dispose");
+                await _browserController.DisposeAsync();
+            }
+            else if (_legacySetup && _module != null) await _module.InvokeVoidAsync("cleanup");
+            if (_module != null) await _module.DisposeAsync();
         }
-
-        if (_module != null)
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally
         {
-            try
-            {
-                await _module.InvokeVoidAsync("cleanup");
-                await _module.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-                // Circuit disconnected, ignore
-            }
+            _dotNetRef?.Dispose();
+            _persistingSubscription.Dispose();
+            _lifecycleGate.Release();
         }
-
-        _dotNetRef?.Dispose();
-        _persistingSubscription.Dispose();
-
         GC.SuppressFinalize(this);
     }
 }

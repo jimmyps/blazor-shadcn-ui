@@ -8,12 +8,25 @@
 {
     @if (Context.IsMobile)
     {
-        @* Mobile: Render as Sheet *@
-        <Sheet Open="@MobileOpen" OpenChanged="@(value => MobileOpen = value)" Side="@GetSheetSide()">
-            <SheetContent Class="@GetMobileClasses()" ShowClose="false">
-                @ChildContent
-            </SheetContent>
-        </Sheet>
+        @if (Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser)
+        {
+            <Sheet Side="@GetSheetSide()">
+                <SheetPortal ForceMount="true">
+                    <SidebarBrowserSheet Context="@Context" Class="@GetMobileClasses()" CloseOnNavigate="@CloseMobileOnNavigate" StyleVariant="@_styleVariant">
+                        @ChildContent
+                    </SidebarBrowserSheet>
+                </SheetPortal>
+            </Sheet>
+        }
+        else
+        {
+            @* Mobile: Render as Sheet *@
+            <Sheet Open="@MobileOpen" OpenChanged="@(value => MobileOpen = value)" Side="@GetSheetSide()">
+                <SheetContent Class="@GetMobileClasses()" ShowClose="false">
+                    @ChildContent
+                </SheetContent>
+            </Sheet>
+        }
     }
     else
     {

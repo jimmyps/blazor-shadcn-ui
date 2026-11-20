@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- SidebarProvider now supports Browser interaction policy through the Menus family. On mobile, sidebar triggers and pill expansion reveal persistent server-rendered content locally; backdrop/Escape dismissal, focus trapping, scroll locking and existing Tailwind sheet animations stay responsive while callbacks run asynchronously. Explicit Blazor providers retain the existing mount-on-open Sheet path. The Interaction Mode menu gallery includes a live mobile sheet example.
+
 ## 2026-11-13 — v4.5.4 — Change-mode filters and numeric editing
 
 - Browser change-mode inputs report empty/non-empty transitions while typing when they inherit an `EditContext`. Standalone inputs commit on change or blur. Add `NotifyOnEmptinessChange="true"` to preserve early callbacks outside a form, or set it to `false` for a filter inside an `EditForm`.

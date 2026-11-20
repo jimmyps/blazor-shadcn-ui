@@ -108,6 +108,10 @@ public class SidebarState
 public class SidebarContext
 {
     private SidebarState _state = new();
+    internal string BrowserId { get; } = $"neo-sidebar-{Guid.NewGuid():N}";
+    internal NeoUI.Blazor.Primitives.InteractionMode InteractionMode { get; set; }
+    internal long InteractionRevision { get; set; }
+
 
     /// <summary>
     /// Gets the current sidebar state.

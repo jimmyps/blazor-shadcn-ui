@@ -77,7 +77,7 @@
         }
 
         // Normal C# handling...
-        if (Context != null)
+        if (Context != null && !(Context.IsMobile && Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser))
         {
             Context.ToggleSidebar();
             StateHasChanged();
