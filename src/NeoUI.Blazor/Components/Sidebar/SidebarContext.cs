@@ -111,6 +111,7 @@ public class SidebarContext
     internal string BrowserId { get; } = $"neo-sidebar-{Guid.NewGuid():N}";
     internal NeoUI.Blazor.Primitives.InteractionMode InteractionMode { get; set; }
     internal long InteractionRevision { get; set; }
+    internal bool BrowserMobileReady { get; set; }
 
 
     /// <summary>

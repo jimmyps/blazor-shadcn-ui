@@ -42,6 +42,7 @@
         triggers.forEach((trigger) => {
             trigger.addEventListener('click', function(e) {
                 if (e.defaultPrevented) return; // Browser mobile sheet already handled it.
+                if (matchMedia('(max-width:767px)').matches && trigger.closest('[data-neo-sidebar-provider]')?.dataset.neoSidebarProvider) return;
                 e.preventDefault();
                 e.stopPropagation();
                 toggleSidebar();

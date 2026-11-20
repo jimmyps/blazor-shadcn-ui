@@ -128,7 +128,7 @@
 
     private void HandleExpand()
     {
-        if (Context is { IsMobile: true, InteractionMode: NeoUI.Blazor.Primitives.InteractionMode.Browser }) return;
+        if (Context is { IsMobile: true, InteractionMode: NeoUI.Blazor.Primitives.InteractionMode.Browser, BrowserMobileReady: true }) return;
         Context?.ToggleSidebar();
     }
 

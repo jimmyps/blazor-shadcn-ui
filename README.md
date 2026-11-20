@@ -28,6 +28,12 @@ A comprehensive UI component library for Blazor inspired by [shadcn/ui](https://
   </table>
 </p>
 
+## Upcoming v4.5.5: Browser mobile navigation
+
+Components 4.5.5 requires Primitives **4.5.5**; publish/upgrade Primitives first. Existing global Browser or Menus Browser defaults automatically enable the mobile SidebarProvider adapter, keeping navigation content mounted while closed. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior. Visibility becomes local once the adapter is ready; delayed or failed initialization retains a server-controlled fallback. Direct provider mode changes require recreation with `@key`.
+
+See the [interaction guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md) and the Interaction Mode demo's mobile pill example. This is upcoming release guidance; earlier version entries below retain their historical details.
+
 ## 🌟 Overview
 
 NeoUI for Blazor brings the beautiful design system of shadcn/ui to Blazor applications. This library provides **zero-config, plug-and-play UI components** with full shadcn/ui compatibility, featuring pre-built CSS, styled components, and headless primitives that work across all Blazor hosting models (Server, WebAssembly, and Hybrid).
@@ -89,7 +95,7 @@ builder.Services.ConfigureNeoUIInteractions(options =>
 });
 ```
 
-Components requires Primitives **4.5.2**. Icon packages keep their independent versions.
+Components 4.5.4 requires Primitives **4.5.2**; upcoming Components 4.5.5 requires Primitives **4.5.5**. Icon packages keep their independent versions.
 Review heavy/lazy tab content and floating DOM costs before opting those controls in.
 See the [upgrade guide](docs/upgrading-to-4.5.md),
 [interaction/adoption guide](docs/browser-interactions.md),

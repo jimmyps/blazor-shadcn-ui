@@ -7,12 +7,13 @@ const floating=await readFile(new URL('./node_modules/@floating-ui/core/dist/flo
 let browser;
 before(async()=>browser=await(process.env.NEOUI_BROWSER_ENGINE==='webkit'?webkit.launch({headless:true}):chromium.launch({channel:'msedge',headless:true})));
 after(async()=>browser?.close());
-async function setup(mode='Browser',extra='') {
+async function setup(mode='Browser',extra='',configure=null,waitReady=true) {
  const page=await browser.newPage({...devices['iPhone 13']}),errors=[];
  page.setDefaultTimeout(process.env.NEOUI_TEST_RENDERER==='wasm'?40000:10000);page.on('pageerror',e=>errors.push(String(e)));
+ if(configure)await configure(page);
  await page.addInitScript(floating);await page.goto(url+'/?mobilesidebar=true&mode='+mode.toLowerCase()+extra);
  await page.locator('[data-testid="test-host-ready"][data-ready="true"]').waitFor({state:'attached'});
- if(mode==='Browser')await page.getByTestId('sheet-content').locator('xpath=ancestor::*[@data-neo-state-host][@data-neo-state-ready="true"]').waitFor({state:'attached'});
+ if(mode==='Browser'&&waitReady)await page.getByTestId('sheet-content').locator('xpath=ancestor::*[@data-neo-state-host][@data-neo-state-ready="true"]').waitFor({state:'attached'});
  else await page.waitForTimeout(300);
  return {page,errors};
 }
@@ -134,5 +135,40 @@ test('Browser: the pill remains ready at tablet widths without waiting for close
   assert.equal(style.opacity,'1');assert.equal(style.pointerEvents,'auto');
   await expand(page).tap();await panel(page).waitFor({state:'visible'});
   await page.evaluate(()=>release());assert.deepEqual(errors,[]);
+ }finally{await page.close();}
+});
+
+for(const moduleName of ['browser-state','browser-sheet'])for(const triggerKind of ['pill','trigger'])test('Browser: '+triggerKind+' works during delayed '+moduleName+' loading and transfers its open state',async()=>{
+ let release,requested;const hold=new Promise(resolve=>release=resolve),request=new Promise(resolve=>requested=resolve);
+ const {page,errors}=await setup('Browser','',async page=>page.route('**/'+moduleName+'*.js',async route=>{requested();await hold;await route.continue();}),false);
+ try {
+  await request;const button=triggerKind==='pill'?expand(page):page.getByTestId('sheet-trigger');
+  await button.tap();await panel(page).waitFor({state:'visible'});
+  await page.getByTestId('sheet-action').tap();await page.getByTestId('sheet-content').filter({hasText:'Live content 1'}).waitFor();
+  await page.keyboard.press('Escape');await panel(page).waitFor({state:'hidden'});
+  await button.tap();await panel(page).waitFor({state:'visible'});
+  release();await page.locator('[data-neo-state-ready="true"]').waitFor({state:'attached'});
+  assert.equal(await panel(page).isVisible(),true,'handoff retains the server-opened panel');
+  await page.waitForFunction(()=>document.body.style.overflow==='hidden');
+  await page.evaluate(()=>{window.nativeSend=WebSocket.prototype.send;WebSocket.prototype.send=function(){};});
+  await page.keyboard.press('Escape');await panel(page).waitFor({state:'hidden'});
+  assert.equal(await page.evaluate(()=>document.body.style.overflow),'');
+  await button.tap();await panel(page).waitFor({state:'visible'});
+  await page.evaluate(()=>WebSocket.prototype.send=window.nativeSend);assert.deepEqual(errors,[]);
+ }finally{release();await page.close();}
+});
+for(const moduleName of ['browser-state','browser-sheet'])for(const triggerKind of ['pill','trigger'])test('Browser: '+triggerKind+' retains a usable server fallback when '+moduleName+' fails',async()=>{
+ const {page,errors}=await setup('Browser','',async page=>page.route('**/'+moduleName+'*.js',route=>route.abort()),false);
+ try {
+  await page.locator('[data-neo-state-failed="true"]').waitFor({state:'attached'});
+  const button=triggerKind==='pill'?expand(page):page.getByTestId('sheet-trigger');
+  for(let i=0;i<2;i++){
+   await button.tap();await panel(page).waitFor({state:'visible'});
+   assert.equal(await panel(page).getAttribute('aria-label'),'Navigation');
+   await page.getByTestId('sheet-action').tap();await page.getByTestId('sheet-content').filter({hasText:'Live content '+(i+1)}).waitFor();
+   if(i===0)await page.keyboard.press('Escape');else await page.locator('[data-neo-sheet-overlay]').tap({position:{x:380,y:600}});
+   await panel(page).waitFor({state:'hidden'});
+  }
+  await page.getByTestId('sheet-independent').tap();await page.getByTestId('sheet-independent').filter({hasText:'Independent 1'}).waitFor();assert.deepEqual(errors,[]);
  }finally{await page.close();}
 });

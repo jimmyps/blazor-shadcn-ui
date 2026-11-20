@@ -16,6 +16,7 @@ public partial class SidebarProvider : ComponentBase
     private IJSObjectReference? _module, _browserController;
     private readonly SemaphoreSlim _lifecycleGate = new(1, 1);
     private bool _disposed, _browserSetup, _legacySetup;
+    private NeoUI.Blazor.Primitives.InteractionMode? _initialMode;
     private DotNetObjectReference<SidebarProvider>? _dotNetRef;
     private PersistingComponentStateSubscription _persistingSubscription;
     private IHttpContextAccessor? _httpContextAccessor;
@@ -96,7 +97,11 @@ public partial class SidebarProvider : ComponentBase
     /// <inheritdoc/>
     protected override void OnParametersSet()
     {
-        Context.InteractionMode = InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Menus);
+        var mode = InteractionDefaults.Value.Resolve(InteractionMode, InteractionPolicy, NeoUI.Blazor.Primitives.InteractionFamily.Menus);
+        if (_initialMode.HasValue && _initialMode.Value != mode)
+            throw new InvalidOperationException("InteractionMode cannot change after initialization. Recreate SidebarProvider with @key.");
+        _initialMode = mode;
+        Context.InteractionMode = mode;
         Context.InteractionRevision = InteractionRevision;
         // Update context when parameters change
         Context.SetVariant(Variant);

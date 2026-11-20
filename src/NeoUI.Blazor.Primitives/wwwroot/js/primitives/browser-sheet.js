@@ -5,9 +5,12 @@ import { createFocusTrap } from './focus-trap.js';
 // local; versioned server commands use the same protocol as disclosure controls.
 const instances = new Map();
 let removals;
-export function initialize(root, bridge) {
+export async function initialize(root, bridge) {
     if (!root?.isConnected) return null;
     if (instances.has(root)) return instances.get(root);
+    // Release any server-fallback modal resources before acquiring local ones.
+    await bridge.invokeMethodAsync('PrepareAsync');
+    if (!root.isConnected) return null;
     const doc = root.ownerDocument, sheet = root.querySelector('[data-neo-sheet-owner]');
     const panel = sheet?.querySelector('[data-neo-sheet-panel]'), overlay = sheet?.querySelector('[data-neo-sheet-overlay]');
     if (!panel || !overlay) return null;
@@ -31,7 +34,7 @@ export function initialize(root, bridge) {
             element.dataset.state = open ? 'open' : 'closed';
         }
         if (open) {
-            previousFocus = doc.activeElement;
+            previousFocus = panel.contains(doc.activeElement) ? triggers().find(el=>!panel.contains(el)) : doc.activeElement;
             scrollLock = lockBodyScroll(); focusTrap = createFocusTrap(panel);
             if (!panel.contains(doc.activeElement)) panel.focus({preventScroll:true});
         } else {
@@ -91,7 +94,14 @@ export function initialize(root, bridge) {
         if (next.version !== version) { version=next.version; generation++; delete root.dataset.neoStateUncertain; paint(next.values.includes('open')); }
         config=next; paintTriggers();
     });
-    observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-neo-state-host']});
+    observer.observe(root,{attributes:true,attributeFilter:['data-neo-state-host']});
+    // Queue readiness before installing listeners, in the same JS turn. Later
+    // Blazor click callbacks are ordered after this notification and stand down.
+    let readyAcknowledged = false;
+    const reportReady = () => { if (!disposed) void bridge.invokeMethodAsync('ReadyAsync').then(()=>readyAcknowledged=true).catch(()=>{}); };
+    const reconnect = () => { if (!readyAcknowledged && doc.documentElement.dataset.neoConnectionAvailable !== 'false') reportReady(); };
+    reportReady();
+    doc.addEventListener('neoui:input-connection-state',reconnect);
     // Mobile Safari synthesizes clicks on noninteractive elements only when
     // they have a direct click listener. Delegation alone misses backdrop taps.
     const backdropTarget = () => {};
@@ -105,6 +115,7 @@ export function initialize(root, bridge) {
         focusTrap?.apply(); scrollLock?.apply(); observer.disconnect();
         if (open && panel.contains(doc.activeElement) && previousFocus?.isConnected) previousFocus.focus({preventScroll:true});
         for (const element of [overlay,panel]) { element.hidden=true; element.inert=true; element.style.display='none'; }
+        doc.removeEventListener('neoui:input-connection-state',reconnect);
         overlay.removeEventListener('click',backdropTarget);
         doc.removeEventListener('click',click,true); doc.removeEventListener('keydown',keydown); doc.removeEventListener('keydown',shortcut,true);
         doc.defaultView.removeEventListener('popstate',navigated); doc.removeEventListener('enhancedload',navigated); mobile.removeEventListener('change',resized);
@@ -114,5 +125,6 @@ export function initialize(root, bridge) {
     }};
     instances.set(root,controller);
     if (!removals) { removals=new MutationObserver(()=>{for(const [element,instance] of instances)if(!element.isConnected)instance.dispose();});removals.observe(doc.body,{childList:true,subtree:true}); }
-    paint(config.values.includes('open') && mobile.matches); paintTriggers(); root.dataset.neoStateReady='true'; return controller;
+    try { paint(config.values.includes('open') && mobile.matches); paintTriggers(); root.dataset.neoStateReady='true'; return controller; }
+    catch (error) { controller.dispose(); throw error; }
 }

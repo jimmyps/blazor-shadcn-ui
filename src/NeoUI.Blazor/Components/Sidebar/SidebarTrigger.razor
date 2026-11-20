@@ -71,13 +71,13 @@
     {
         // When StaticRendering is enabled, JShandles the click via interop
         // Return early to avoid double-toggling
-        if (Context?.StaticRendering == true)
+        if (Context?.StaticRendering == true && !(Context.IsMobile && Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser && !Context.BrowserMobileReady))
         {
             return;
         }
 
         // Normal C# handling...
-        if (Context != null && !(Context.IsMobile && Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser))
+        if (Context != null && !(Context.IsMobile && Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser && Context.BrowserMobileReady))
         {
             Context.ToggleSidebar();
             StateHasChanged();

@@ -1,6 +1,6 @@
 # Browser interaction mode — v4.5.0
 
-**Current patch:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes.
+**4.5.4 baseline:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes. **Upcoming 4.5.5:** mobile sidebar support requires Components and Primitives 4.5.5 together; an existing global/Menus Browser default opts in automatically.
 
 **Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.
@@ -762,6 +762,10 @@ Pill button active feedback is optimistic and local. `OnClick` continues to run 
     <SidebarInset>...</SidebarInset>
 </SidebarProvider>
 ```
+
+**Upgrade note (paired Components/Primitives 4.5.5):** existing global Browser or Menus Browser defaults opt this provider in automatically after upgrading. Set `InteractionMode="InteractionMode.Blazor"` on the provider to retain mount-on-open behavior. Components now requires Primitives 4.5.5; publish/upgrade Primitives first.
+
+Directly changing SidebarProvider's resolved mode after initialization throws the same immutability error as other controls. Recreate it with `@key`, or change an enclosing InteractionModeProvider, which keys and recreates its subtree. Before the sheet adapter is ready, trigger/pill taps retain the server path. A module-load failure leaves that fallback usable. The handoff retains the content instance and current open state, then local visibility takes ownership without replaying application actions.
 
 The mobile panel remains mounted and server rendered. Taps, backdrop dismissal, Escape, focus trapping, scroll locking and sheet animations do not wait for state callbacks; its links, buttons and newly loaded content retain their normal Blazor behavior. `CloseMobileOnNavigate` still controls navigation dismissal. Widening to desktop releases modal state and clears mobile visibility. `InteractionRevision` on the provider reapplies its current server visibility without replaying application callbacks. This adds a persistent mobile-content rendering cost; use `InteractionMode.Blazor` on a provider to preserve mount-on-open behavior. Standalone Sheet/Dialog components are unchanged.
 

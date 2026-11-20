@@ -2,6 +2,12 @@
 
 Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.
 
+## Upcoming v4.5.5: Browser mobile navigation
+
+Components 4.5.5 requires Primitives **4.5.5**; publish/upgrade Primitives first. Existing global Browser or Menus Browser defaults automatically enable the mobile SidebarProvider adapter, keeping navigation content mounted while closed. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior. Visibility becomes local once the adapter is ready; delayed or failed initialization retains a server-controlled fallback. Direct provider mode changes require recreation with `@key`.
+
+See the [interaction guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md) and the Interaction Mode demo's mobile pill example. This is upcoming release guidance; earlier version entries below retain their historical details.
+
 ## v4.5.2 menu focus patch
 
 Components and Primitives align at **4.5.2**. Mouse/touch menu opening focuses the container
