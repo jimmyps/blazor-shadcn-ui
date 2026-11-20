@@ -73,11 +73,12 @@ function syncWrapperToContent(floating, content) {
   // border-radius races with that render and gets wiped intermittently. Blazor renders NO `class`
   // on the wrapper, so classes we add here are never diffed away, and a rounded-* utility resolves
   // to the same radius as the content (rounded-md default, rounded-3xl in Luma, any custom value).
+  const radiusClasses = new Set([...content.classList].filter(c => c.startsWith('rounded')));
   for (const c of [...floating.classList]) {
-    if (c.startsWith('rounded')) floating.classList.remove(c);
+    if (c.startsWith('rounded') && !radiusClasses.has(c)) floating.classList.remove(c);
   }
-  for (const c of content.className.split(/\s+/)) {
-    if (c.startsWith('rounded')) floating.classList.add(c);
+  for (const c of radiusClasses) {
+    if (!floating.classList.contains(c)) floating.classList.add(c);
   }
 }
 
@@ -340,6 +341,10 @@ export async function computePosition(reference, floating, options = {}) {
  */
 export function applyPosition(floating, position, makeVisible = false) {
   if (!floating || !position) return;
+
+  // Browser controllers position with makeVisible=false and reveal the layer themselves.
+  // Synchronize the blur wrapper in both paths, before either can paint it.
+  syncWrapperToContent(floating, floating.querySelector('[data-state]') || floating);
 
   // Apply all positioning styles atomically to prevent flash.
   // Honor the z-index already assigned to the element (written inline by FloatingPortal

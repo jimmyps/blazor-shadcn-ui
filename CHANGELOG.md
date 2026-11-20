@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Fixed square blur patches outside rounded translucent floating content in Browser interaction mode. Shared positioning now synchronizes the blur wrapper corner classes before reveal and during updates, including reopen and radius changes; existing Blazor synchronization is retained.
+
 ## 2026-11-13 — v4.5.4 — Change-mode filters and numeric editing
 
 - Browser change-mode inputs report empty/non-empty transitions while typing when they inherit an `EditContext`. Standalone inputs commit on change or blur. Add `NotifyOnEmptinessChange="true"` to preserve early callbacks outside a form, or set it to `false` for a filter inside an `EditForm`.
