@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- Fixed square blur patches outside rounded translucent floating content in Browser interaction mode. Shared positioning now synchronizes the blur wrapper corner classes before reveal and during updates, including reopen and radius changes; existing Blazor synchronization is retained.
+- Fixed square blur patches outside rounded translucent Browser-mode portal menus and popovers with `data-state` content. Positioning synchronizes corner classes only on NeoUI `data-portal-content` wrappers, preserving consumer-owned popup classes. Synchronization runs before reveal, on reopen and on subsequent positioning updates; changing radius classes alone does not trigger an update. Existing Blazor synchronization is retained. TagInput suggestions without a content state marker are outside this fix.
 
 ## 2026-11-13 — v4.5.4 — Change-mode filters and numeric editing
 

@@ -99,7 +99,8 @@ for(const mode of ['Blazor','Browser'])test(mode+' synchronizes translucent wrap
         document.getElementById('content').className=radius==='6px'?'rounded-md':'rounded-3xl';
         await openRadius();
       },radius);
-      // No extra animation-frame wait: opening itself must install the radius.
+      // Inspect the settled opening in both modes. Browser opening is the regression;
+      // a page/locator round trip can allow the legacy reveal frame to run.
       assert.equal(await page.locator('#floating').evaluate(el=>getComputedStyle(el).borderTopLeftRadius),radius);
       assert.equal(await page.locator('#floating').evaluate(el=>el.classList.contains('keep-wrapper-class')),true);
       await page.evaluate(async()=>{
@@ -115,8 +116,40 @@ for(const mode of ['Blazor','Browser'])test(mode+' synchronizes translucent wrap
         await Promise.resolve();observer.disconnect();return writes;
       });
       assert.equal(classWrites,0,'unchanged positioning must not rewrite radius classes');
+      await page.evaluate(async radius=>{
+        document.getElementById('content').className=radius==='6px'?'rounded-3xl':'rounded-md';
+        // Class changes alone do not schedule positioning; an existing observer
+        // update must pick up the new radius while the popup stays open.
+        window.observerUpdate();
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      },radius);
+      assert.equal(await page.locator('#floating').evaluate(el=>getComputedStyle(el).borderTopLeftRadius),radius==='6px'?'24px':'6px');
       await page.evaluate(()=>closeRadius());
     }
     assert.deepEqual(errors,[]);
+  }finally{await page.close();}
+});
+
+// Public positioning APIs also accept consumer-owned floating elements. A child
+// state marker must not turn such an element into a NeoUI blur wrapper.
+for(const entry of ['applyPosition','autoUpdate','showFloating'])test(entry+' preserves consumer-owned corner classes',async()=>{
+  const page=await browser.newPage();
+  try {
+    await setup(page);
+    const result=await page.evaluate(async entry=>{
+      const floating=document.getElementById('floating'),anchor=document.getElementById('reference');
+      floating.className='rounded-lg border p-2';
+      floating.innerHTML='<div data-state="open" class="rounded-md">Consumer content</div>';
+      let writes=0;const observer=new MutationObserver(records=>writes+=records.length);
+      observer.observe(floating,{attributes:true,attributeFilter:['class']});
+      if(entry==='applyPosition')positioning.applyPosition(floating,{x:0,y:20});
+      else if(entry==='autoUpdate')await positioning.autoUpdate(anchor,floating);
+      else await positioning.showFloating(floating,anchor,{});
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      window.observerUpdate?.();window.resizeUpdate?.();
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      observer.disconnect();return {classes:floating.className,writes};
+    },entry);
+    assert.equal(result.classes,'rounded-lg border p-2');assert.equal(result.writes,0);
   }finally{await page.close();}
 });

@@ -66,7 +66,7 @@ let cleanupIdCounter = 0;
  * @param {HTMLElement} content  - the .bg-popover content element (the visible menu box)
  */
 function syncWrapperToContent(floating, content) {
-  if (!floating || !content || content === floating) return;
+  if (!floating || !content || content === floating || !floating.hasAttribute('data-portal-content')) return;
 
   // Mirror the content's rounded-* utility classes onto the wrapper as CLASSES, not inline style.
   // Blazor owns (and rewrites) the wrapper's `style` attribute around open, so an inline
@@ -402,9 +402,6 @@ export function applyPosition(floating, position, makeVisible = false) {
       floating.style.setProperty('top', floating.style.top, 'important');
       floating.style.setProperty('left', floating.style.left, 'important');
 
-      // Make the wrapper's translucent blur box match the content's radius + width.
-      syncWrapperToContent(floating, contentElement);
-
       // Dispatch event to signal element is now visible and positioned
       floating.dispatchEvent(new CustomEvent('neoui:visible', { bubbles: true }));
     });
@@ -546,6 +543,8 @@ export async function showFloating(floating, reference = null, options = null) {
     floating.style.setProperty('pointer-events', 'auto', 'important');
 
     // Make the wrapper's translucent blur box match the content's radius + width.
+    // Keep this fallback: showFloating also supports revealing without a
+    // reference/options pair, in which case applyPosition was not called.
     syncWrapperToContent(floating, contentElement);
 
     // Dispatch event to signal element is now visible
