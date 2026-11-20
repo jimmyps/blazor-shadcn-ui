@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile} from 'node:fs/promises';
 const require=createRequire(import.meta.url);
-const {chromium}=require(process.env.NEOUI_PLAYWRIGHT_MODULE || 'playwright');
+const {chromium,webkit}=require(process.env.NEOUI_PLAYWRIGHT_MODULE || 'playwright');
 const source=await readFile(process.env.NEOUI_POSITIONING_MODULE || new URL('../../src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/positioning.js',import.meta.url),'utf8');
 let browser;
-before(async()=>browser=await chromium.launch({channel:'msedge',headless:true}));
+before(async()=>browser=await (process.env.NEOUI_BROWSER_ENGINE==='webkit'?webkit.launch({headless:true}):chromium.launch({channel:'msedge',headless:true})));
 after(async()=>browser?.close());
 async function setup(page) {
   await page.setContent('<button id="reference">Anchor</button><div id="floating">Menu</div>');
@@ -70,5 +70,86 @@ test('attached observers still update and invalid initial anchors still reject',
       return {updates,afterDispose:window.updates,rejected};
     });
     assert.equal(result.updates,3);assert.equal(result.afterDispose,3);assert.equal(result.rejected,true);
+  }finally{await page.close();}
+});
+
+// Exercise the real Browser controller and legacy showFloating path. The blur is
+// on the wrapper, so its radius must match before the first visible paint.
+const browserFloatingSource=await readFile(new URL('../../src/NeoUI.Blazor.Primitives/wwwroot/js/primitives/browser-floating.js',import.meta.url),'utf8');
+for(const mode of ['Blazor','Browser'])test(mode+' synchronizes translucent wrapper corners on open, reopen and resize',async()=>{
+  const page=await browser.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  try {
+    await setup(page);
+    await page.evaluate(async({source,browserFloatingSource,mode})=>{
+      document.head.insertAdjacentHTML('beforeend','<style>.rounded-md{border-radius:6px}.rounded-3xl{border-radius:24px}[data-portal-content]{backdrop-filter:blur(18px)}</style>');
+      const wrapper=document.getElementById('floating');
+      wrapper.setAttribute('data-portal-content','');wrapper.className='keep-wrapper-class';
+      wrapper.innerHTML='<div id="content" data-state="closed" class="rounded-md" tabindex="-1">Menu</div>';
+      const url=URL.createObjectURL(new Blob([source],{type:'text/javascript'}));
+      window.radiusPositioning=await import(url);
+      const controllerUrl=URL.createObjectURL(new Blob([browserFloatingSource.replace("'./positioning.js'",JSON.stringify(url))],{type:'text/javascript'}));
+      const floatingModule=await import(controllerUrl);
+      window.radiusController=mode==='Browser'?floatingModule.createController(wrapper,{kind:'popover',triggerId:'reference',contentId:'content',open:false},{placement:'bottom'}):null;
+      URL.revokeObjectURL(controllerUrl);URL.revokeObjectURL(url);
+      window.openRadius=async()=>{if(radiusController)await radiusController.open('none');else await radiusPositioning.showFloating(wrapper,document.getElementById('reference'),{});};
+      window.closeRadius=()=>{if(radiusController)radiusController.close();else radiusPositioning.hideFloating(wrapper);};
+    },{source,browserFloatingSource,mode});
+    for(const radius of ['6px','24px']){
+      await page.evaluate(async radius=>{
+        document.getElementById('content').className=radius==='6px'?'rounded-md':'rounded-3xl';
+        await openRadius();
+      },radius);
+      // Inspect the settled opening in both modes. Browser opening is the regression;
+      // a page/locator round trip can allow the legacy reveal frame to run.
+      assert.equal(await page.locator('#floating').evaluate(el=>getComputedStyle(el).borderTopLeftRadius),radius);
+      assert.equal(await page.locator('#floating').evaluate(el=>el.classList.contains('keep-wrapper-class')),true);
+      await page.evaluate(async()=>{
+        window.resizeUpdate();window.observerUpdate();
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      });
+      assert.equal(await page.locator('#floating').evaluate(el=>getComputedStyle(el).borderTopLeftRadius),radius);
+      const classWrites=await page.evaluate(async()=>{
+        let writes=0;const wrapper=document.getElementById('floating');
+        const observer=new MutationObserver(records=>writes+=records.length);
+        observer.observe(wrapper,{attributes:true,attributeFilter:['class']});
+        radiusPositioning.applyPosition(wrapper,{x:0,y:20});
+        await Promise.resolve();observer.disconnect();return writes;
+      });
+      assert.equal(classWrites,0,'unchanged positioning must not rewrite radius classes');
+      await page.evaluate(async radius=>{
+        document.getElementById('content').className=radius==='6px'?'rounded-3xl':'rounded-md';
+        // Class changes alone do not schedule positioning; an existing observer
+        // update must pick up the new radius while the popup stays open.
+        window.observerUpdate();
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      },radius);
+      assert.equal(await page.locator('#floating').evaluate(el=>getComputedStyle(el).borderTopLeftRadius),radius==='6px'?'24px':'6px');
+      await page.evaluate(()=>closeRadius());
+    }
+    assert.deepEqual(errors,[]);
+  }finally{await page.close();}
+});
+
+// Public positioning APIs also accept consumer-owned floating elements. A child
+// state marker must not turn such an element into a NeoUI blur wrapper.
+for(const entry of ['applyPosition','autoUpdate','showFloating'])test(entry+' preserves consumer-owned corner classes',async()=>{
+  const page=await browser.newPage();
+  try {
+    await setup(page);
+    const result=await page.evaluate(async entry=>{
+      const floating=document.getElementById('floating'),anchor=document.getElementById('reference');
+      floating.className='rounded-lg border p-2';
+      floating.innerHTML='<div data-state="open" class="rounded-md">Consumer content</div>';
+      let writes=0;const observer=new MutationObserver(records=>writes+=records.length);
+      observer.observe(floating,{attributes:true,attributeFilter:['class']});
+      if(entry==='applyPosition')positioning.applyPosition(floating,{x:0,y:20});
+      else if(entry==='autoUpdate')await positioning.autoUpdate(anchor,floating);
+      else await positioning.showFloating(floating,anchor,{});
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      window.observerUpdate?.();window.resizeUpdate?.();
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      observer.disconnect();return {classes:floating.className,writes};
+    },entry);
+    assert.equal(result.classes,'rounded-lg border p-2');assert.equal(result.writes,0);
   }finally{await page.close();}
 });

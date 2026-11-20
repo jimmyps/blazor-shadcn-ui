@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 > Target: Components and Primitives `4.5.5`. Publish Primitives first; Components requires Primitives `4.5.5`.
 
+- Fixed square blur patches outside rounded translucent Browser-mode portal menus and popovers with `data-state` content. Positioning synchronizes corner classes only on NeoUI `data-portal-content` wrappers, preserving consumer-owned popup classes. Synchronization runs before reveal, on reopen and on subsequent positioning updates; changing radius classes alone does not trigger an update. Existing Blazor synchronization is retained. TagInput suggestions without a content state marker are outside this fix.
+
 - **Upgrade behavior:** an existing application-wide Browser default or `Menus = InteractionMode.Browser` now automatically opts SidebarProvider's mobile sheet into Browser ownership. Mobile navigation content stays mounted while closed, with additional initial DOM/render cost. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior.
 - SidebarProvider mode is immutable after initialization, matching other interaction controls; recreate it with `@key` or change a scoped InteractionModeProvider to switch modes. Before the adapter is ready, or when its module fails, mobile triggers retain server-controlled visibility, focus and scroll locking. Ready handoff preserves the existing content and open state.
 
