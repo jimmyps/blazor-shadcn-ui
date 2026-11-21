@@ -10,6 +10,16 @@ using NeoUI.Blazor.Primitives.Extensions;
 
 if (typeof(IAsyncDisposable).IsAssignableFrom(typeof(CheckboxPrimitive))) throw new Exception("Checkbox must not expose a per-instance asynchronous disposal contract.");
 
+foreach (var initial in new[] { InteractionMode.Blazor, InteractionMode.Browser }) {
+    var sidebar = new SidebarPolicyProbe();
+    typeof(SidebarProvider).GetProperty("InteractionDefaults", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+        .SetValue(sidebar, Microsoft.Extensions.Options.Options.Create(new InteractionOptions()));
+    sidebar.Apply(initial); sidebar.Apply(initial);
+    var rejected = false;
+    try { sidebar.Apply(initial == InteractionMode.Browser ? InteractionMode.Blazor : InteractionMode.Browser); }
+    catch (InvalidOperationException ex) when (ex.Message.Contains("@key")) { rejected = true; }
+    if (!rejected) throw new Exception("SidebarProvider must reject runtime interaction-mode changes.");
+}
 var services = new ServiceCollection().AddLogging();
 services.AddNeoUIPrimitives();
 services.AddNeoUIComponents();
@@ -41,4 +51,8 @@ public sealed class CyclicValue { public CyclicValue Self => this; }
 public sealed class NoInterop : IJSRuntime {
     public ValueTask<T> InvokeAsync<T>(string identifier, object?[]? args) => throw new Exception("Static rendering must not invoke JavaScript.");
     public ValueTask<T> InvokeAsync<T>(string identifier, CancellationToken cancellationToken, object?[]? args) => InvokeAsync<T>(identifier,args);
+}
+
+public sealed class SidebarPolicyProbe : SidebarProvider {
+    public void Apply(InteractionMode mode) { InteractionMode = mode; base.OnParametersSet(); }
 }

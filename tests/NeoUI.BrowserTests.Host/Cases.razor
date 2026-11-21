@@ -1,7 +1,8 @@
 @inject NavigationManager Navigation
 <AppProvider>
     <span hidden data-testid="test-host-ready" data-ready="@(testHostReady ? "true" : "false")"></span>
-    @if (Navigation.Uri.Contains("delayedinput=true"))
+    @if (Navigation.Uri.Contains("mobilesidebar=true")) { <MobileSidebarCases Multiple="@(Navigation.Uri.Contains("multiple=true"))" Mode="@(Navigation.Uri.Contains("mode=browser") ? InteractionMode.Browser : Navigation.Uri.Contains("mode=blazor") ? InteractionMode.Blazor : (InteractionMode?)null)" CloseOnNavigate="@(!Navigation.Uri.Contains("keepopen=true"))" /> }
+    else if (Navigation.Uri.Contains("delayedinput=true"))
     {
         @if (Navigation.Uri.Contains("scope=true")) { <InteractionModeProvider Mode="InteractionMode.Browser"><DelayedInputCases /></InteractionModeProvider> }
         else { <DelayedInputCases /> }

@@ -7,6 +7,8 @@
     <RootNamespace>NeoUI.BrowserTests.Host</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="../NeoUI.BrowserTests.Host/MobileSidebarReset.razor" Link="MobileSidebarReset.razor" />
+    <Content Include="../NeoUI.BrowserTests.Host/MobileSidebarCases.razor" Link="MobileSidebarCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/DelayedInputCases.razor" Link="DelayedInputCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/EditorPreservationCases.razor" Link="EditorPreservationCases.razor" />
     <Content Include="../NeoUI.BrowserTests.Host/InteractionOwnershipCases.razor" Link="InteractionOwnershipCases.razor" />

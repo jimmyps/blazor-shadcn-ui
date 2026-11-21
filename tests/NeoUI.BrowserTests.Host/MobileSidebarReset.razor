@@ -1,0 +1,8 @@
+@namespace NeoUI.BrowserTests.Host
+<button data-testid="sheet-reset" @onclick="Reset">Reset @Revision</button>
+@code {
+    [CascadingParameter] private SidebarContext Context { get; set; } = null!;
+    [Parameter] public long Revision { get; set; }
+    [Parameter] public EventCallback Changed { get; set; }
+    private async Task Reset() { Context.SetOpenMobile(false); await Changed.InvokeAsync(); }
+}

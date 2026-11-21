@@ -5,6 +5,8 @@ const instances = new Map();
 let removals;
 export function initialize(root, bridge) {
     if (!root?.isConnected) return null;
+    if (JSON.parse(root.dataset.neoStateHost).kind === 'mobile-sheet')
+        return import('./browser-sheet.js').then(module => module.initialize(root, bridge));
     if (JSON.parse(root.dataset.neoStateHost).field) return initializeField(root,bridge);
     if (instances.has(root)) return instances.get(root);
     const doc = root.ownerDocument;

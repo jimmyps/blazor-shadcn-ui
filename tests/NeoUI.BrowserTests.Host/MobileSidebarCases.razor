@@ -1,0 +1,38 @@
+@namespace NeoUI.BrowserTests.Host
+@inject NavigationManager Navigation
+<SidebarProvider InteractionMode="@Mode" InteractionRevision="@revision" CookieKey="@null" CollapsedMode="SidebarCollapsedMode.Pill" DefaultOpen="false" HeightClass="h-48">
+    <Sidebar CloseMobileOnNavigate="@CloseOnNavigate">
+        <SidebarContent>
+        <SidebarTrigger data-testid="sheet-close" />
+        <button data-testid="sheet-action" @onclick="ChangeContent">Update content @count</button>
+        <span data-testid="sheet-content">Live content @count</span>
+        <DropdownMenu InteractionMode="InteractionMode.Browser">
+            <DropdownMenuTrigger data-testid="sheet-nested">Nested menu</DropdownMenuTrigger>
+            <DropdownMenuContent><DropdownMenuItem>Nested action</DropdownMenuItem></DropdownMenuContent>
+        </DropdownMenu>
+        <a href="@(Navigation.Uri.Split('#')[0] + "#sidebar-target")" data-testid="sheet-link">Navigate</a>
+        </SidebarContent>
+    </Sidebar>
+    <SidebarPillNav Class="!relative !top-0 !left-0 !translate-x-0 !opacity-100 !translate-y-0 !pointer-events-auto">
+        <SidebarPillNavItem Label="Inbox"><span>Inbox</span></SidebarPillNavItem>
+    </SidebarPillNav>
+    <SidebarTrigger data-testid="sheet-trigger" />
+    <MobileSidebarReset Revision="@revision" Changed="@(() => revision++)" />
+</SidebarProvider>
+@if (Multiple)
+{
+    <SidebarProvider InteractionMode="InteractionMode.Browser" CookieKey="@null" HeightClass="h-48">
+        <Sidebar><SidebarContent><span data-testid="secondary-content">Second provider</span><button data-testid="secondary-action" @onclick="@(() => secondary++)">Secondary @secondary</button></SidebarContent></Sidebar>
+        <SidebarTrigger data-testid="secondary-trigger" />
+    </SidebarProvider>
+}
+<button data-testid="sheet-independent" @onclick="@(() => independent++)">Independent @independent</button>
+
+@code {
+    [Parameter] public InteractionMode? Mode { get; set; }
+    [Parameter] public bool CloseOnNavigate { get; set; } = true;
+    [Parameter] public bool Multiple { get; set; }
+    private int count, independent, secondary;
+    private long revision;
+    private async Task ChangeContent() { await Task.Delay(100); count++; }
+}

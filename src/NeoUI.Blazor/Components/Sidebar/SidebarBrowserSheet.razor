@@ -1,0 +1,92 @@
+@namespace NeoUI.Blazor
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject IFocusManager FocusManager
+@using Microsoft.Extensions.Logging
+@inject ILogger<SidebarBrowserSheet> Logger
+@{ _renderOpen = _owned ? _frozenOpen : Context.OpenMobile; }
+
+<BrowserStateHost Enabled="true" Kind="mobile-sheet" Values="@(Context.OpenMobile ? new[] { "open" } : Array.Empty<string>())" Revision="@Context.InteractionRevision" Changed="Changed" Preparing="Prepare" Ready="Ready" InitializationFailed="Failed">
+    <div data-neo-sheet-owner="@Context.BrowserId" data-neo-sheet-navigate="@CloseOnNavigate.ToString().ToLowerInvariant()" style="display:contents">
+        <button type="button" tabindex="-1" aria-label="@Localizer["Dialog.Close"]" data-neo-sheet-overlay @onclick="@(_owned ? default(EventCallback) : EventCallback.Factory.Create(this, Dismiss))" style="@(_renderOpen ? null : "display:none")" hidden="@(!_renderOpen)" inert="@(!_renderOpen)" data-state="@(_renderOpen ? "open" : "closed")" class="cursor-pointer fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"></button>
+        <div id="@(Context.BrowserId + "-sheet")" role="dialog" aria-modal="true" aria-label="@Localizer["Sidebar.Pill.AriaLabel"]" @ref="_panel" @onkeydown="@(_owned ? default(EventCallback<KeyboardEventArgs>) : EventCallback.Factory.Create<KeyboardEventArgs>(this, KeyDown))" tabindex="-1" style="@(_renderOpen ? null : "display:none")" hidden="@(!_renderOpen)" inert="@(!_renderOpen)" aria-hidden="@(!_renderOpen ? "true" : "false")" data-neo-sheet-panel data-state="@(_renderOpen ? "open" : "closed")" data-side="@(Context.Side == SidebarSide.Left ? "left" : "right")" class="@PanelClasses">
+            <CascadingValue Value="Context" IsFixed="true">
+                <CascadingValue Value="StyleVariant" Name="StyleVariant">@ChildContent</CascadingValue>
+            </CascadingValue>
+        </div>
+    </div>
+</BrowserStateHost>
+
+@inject ILocalizer Localizer
+@code {
+    [Parameter, EditorRequired] public SidebarContext Context { get; set; } = null!;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool CloseOnNavigate { get; set; }
+    [Parameter] public StyleVariant StyleVariant { get; set; }
+    private bool _owned, _preparing, _disposed, _renderOpen, _frozenOpen;
+    private ElementReference _panel;
+    private readonly SemaphoreSlim _fallbackGate = new(1,1);
+    private IAsyncDisposable? _trap;
+    private IJSObjectReference? _portal, _scroll;
+    private void Ready()
+    {
+        if (_disposed) return;
+        _frozenOpen = _renderOpen; _owned = true; Context.BrowserMobileReady = true;
+    }
+    private void Failed()
+    {
+        _preparing = false; _owned = false; Context.BrowserMobileReady = false;
+        Logger.LogWarning("Browser mobile sheet initialization failed; retaining server interaction fallback.");
+    }
+    private async Task Prepare()
+    {
+        _preparing = true;
+        await _fallbackGate.WaitAsync();
+        try { await ReleaseFallback(); }
+        finally { _fallbackGate.Release(); }
+    }
+    private Task Changed(string[] values)
+    {
+        if (_disposed) return Task.CompletedTask;
+        if (!_owned) Ready();
+        Context.SetOpenMobile(values.Contains("open")); return Task.CompletedTask;
+    }
+    private void Dismiss() { if (!_owned) Context.SetOpenMobile(false); }
+    private void KeyDown(KeyboardEventArgs args) { if (args.Key == "Escape") Dismiss(); }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_owned || _preparing || _disposed) return;
+        await _fallbackGate.WaitAsync();
+        try
+        {
+            if (_owned || _preparing || _disposed) return;
+            if (!_renderOpen) { await ReleaseFallback(); return; }
+            if (_trap == null) _trap = await FocusManager.TrapFocus(_panel);
+            if (_preparing || _disposed) { await ReleaseFallback(); return; }
+            _portal ??= await JS.InvokeAsync<IJSObjectReference>("import", "./_content/NeoUI.Blazor.Primitives/js/primitives/portal.js");
+            if (!_preparing && !_disposed && _scroll == null) _scroll = await _portal.InvokeAsync<IJSObjectReference>("lockBodyScroll");
+        }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or TaskCanceledException) { Logger.LogDebug(ex,"Mobile sheet fallback interop unavailable."); }
+        finally { _fallbackGate.Release(); }
+    }
+    private async Task ReleaseFallback()
+    {
+        if (_trap != null) { await _trap.DisposeAsync(); _trap = null; }
+        if (_scroll != null) { await _scroll.InvokeVoidAsync("apply"); await _scroll.DisposeAsync(); _scroll = null; }
+    }
+    public async ValueTask DisposeAsync()
+    {
+        _disposed = true; Context.BrowserMobileReady = false;
+        await _fallbackGate.WaitAsync();
+        try { await ReleaseFallback(); if (_portal != null) await _portal.DisposeAsync(); }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        finally { _fallbackGate.Release(); }
+    }
+    private string PanelClasses => ClassNames.cn(
+        "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+        Context.Side == SidebarSide.Left
+            ? "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm"
+            : "inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
+        StyleVariant.GetClasses("Sheet.Content"), Class);
+}

@@ -16,6 +16,7 @@ public partial class Sidebar : ComponentBase, IDisposable
     /// </summary>
     [CascadingParameter]
     private SidebarContext? Context { get; set; }
+    [CascadingParameter(Name = "StyleVariant")] private StyleVariant _styleVariant { get; set; } = StyleVariant.Default;
 
     /// <summary>
     /// Gets or sets the navigation manager for routing operations.

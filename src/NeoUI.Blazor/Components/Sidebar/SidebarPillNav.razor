@@ -126,7 +126,11 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private void HandleExpand() => Context?.ToggleSidebar();
+    private void HandleExpand()
+    {
+        if (Context is { IsMobile: true, InteractionMode: NeoUI.Blazor.Primitives.InteractionMode.Browser, BrowserMobileReady: true }) return;
+        Context?.ToggleSidebar();
+    }
 
     private string GetExpandButtonClasses() => ClassNames.cn(
         "flex h-9 w-9 items-center justify-center rounded-full text-foreground hover:bg-accent hover:text-accent-foreground transition-colors duration-200 [&>svg]:size-4 [&>svg]:shrink-0",
@@ -141,7 +145,10 @@
         // This also covers desktop browsers resized to a narrow window — it's purely
         // viewport-width based, not tied to IsMobile at all.
         // The Sheet overlay (z-50) naturally covers the pill when the drawer is open.
-        var isOpen = Context?.IsOpen ?? true;
+        // A Browser mobile sheet covers the pill itself. Keep the pill ready behind
+        // it, including 640-767px viewports, so closing never waits for a server echo.
+        var isOpen = Context is { IsMobile: true, InteractionMode: NeoUI.Blazor.Primitives.InteractionMode.Browser }
+            ? false : Context?.IsOpen ?? true;
 
         return ClassNames.cn(
             // Position: fixed, centered at top

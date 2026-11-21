@@ -15,13 +15,18 @@
 
 <TooltipProvider>
     <CascadingValue Value="@Context" IsFixed="false">
-        <div data-neo-sidebar-provider class="@($"flex w-full {HeightClass}")">
+        <div data-neo-sidebar-provider="@(Context.InteractionMode == NeoUI.Blazor.Primitives.InteractionMode.Browser ? Context.BrowserId : string.Empty)" class="@($"flex w-full {HeightClass}")">
             @ChildContent
         </div>
     </CascadingValue>
 </TooltipProvider>
 
 @code {
+    /// <summary>Interaction policy for mobile sheet visibility. Uses the Menus family default.</summary>
+    [Parameter] public NeoUI.Blazor.Primitives.InteractionMode? InteractionMode { get; set; }
+    /// <summary>Increment to reapply controlled mobile visibility, including same-value resets.</summary>
+    [Parameter] public long InteractionRevision { get; set; }
+
     /// <summary>
     /// The content to render inside the sidebar provider.
     /// Should typically contain SidebarLayout with Sidebar and SidebarInset.

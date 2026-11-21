@@ -1,6 +1,6 @@
 # Browser interaction mode — v4.5.0
 
-**Current patch:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes.
+**4.5.4 baseline:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes. **4.5.5:** mobile sidebar support requires Components and Primitives 4.5.5 together; an existing global/Menus Browser default opts in automatically.
 
 **Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.
@@ -70,7 +70,7 @@ form fields into Browser mode.
 | Family | Supported controls |
 | --- | --- |
 | Floating | Popover, HoverCard, Tooltip; ordinary compositions such as ThemeSwitcher |
-| Menus | DropdownMenu, Menubar, ContextMenu, NavigationMenu, SplitButton and SidebarPillNav |
+| Menus | DropdownMenu, Menubar, ContextMenu, NavigationMenu, SplitButton, SidebarPillNav and SidebarProvider mobile sheet |
 | Selection | Select, Combobox, MultiSelect, DatePicker, DateRangePicker, TimePicker and ColorPicker shells |
 | Inputs | Input, Textarea, InputGroup, formatted inputs, standalone Command, Checkbox, Switch, RadioGroup, Toggle/ToggleGroup, Slider/RangeSlider, InputOtp, DateInput/TimeInput, TagInput and MarkdownEditor |
 | Disclosures | Accordion, Collapsible and Tabs |
@@ -753,7 +753,21 @@ Checkbox/radio items in Menubar and ContextMenu support the same delayed/rejecte
 
 ContextMenu opens at the pointer position or with the ContextMenu key / Shift+F10. `OpenAt(x, y)` issues a versioned programmatic command. Its optional backdrop and scroll lock are local and released on dismissal/disposal. Coordinates are sent with the asynchronous `OnOpen` notification. The trigger remains available for ordinary left-click actions.
 
-Pill button active feedback is optimistic and local. `OnClick` continues to run application logic asynchronously; use `InteractionRevision` for controlled resets/rejection. Route-based pill items retain NavLink's router-owned active state. `AsChild` content retains its own interactions; dropdown and SplitButton children inherit the pill's resolved policy, and individual controls can explicitly override it. CSS hover needs no server callback. The already-mounted **desktop** sidebar can be revealed immediately by the pill expand action; mobile expansion still uses the existing server-controlled Sheet. This change does not convert the entire Sidebar/Sheet system to Browser mode.
+Pill button active feedback is optimistic and local. `OnClick` continues to run application logic asynchronously; use `InteractionRevision` for controlled resets/rejection. Route-based pill items retain NavLink's router-owned active state. `AsChild` content retains its own interactions; dropdown and SplitButton children inherit the pill's resolved policy, and individual controls can explicitly override it. CSS hover needs no server callback. The already-mounted **desktop** sidebar can be revealed immediately by the pill expand action; the mobile sidebar also opens and closes locally when its `SidebarProvider` resolves to Browser mode. `SidebarProvider.InteractionMode` follows explicit → scoped → application Menus family → global → library default precedence. A pill-only override does not change the surrounding provider; configure the provider or Menus family to opt its mobile sheet in.
+
+```razor
+<SidebarProvider InteractionMode="InteractionMode.Browser" CollapsedMode="SidebarCollapsedMode.Pill">
+    <Sidebar>...</Sidebar>
+    <SidebarPillNav>...</SidebarPillNav>
+    <SidebarInset>...</SidebarInset>
+</SidebarProvider>
+```
+
+**Upgrade note (paired Components/Primitives 4.5.5):** existing global Browser or Menus Browser defaults opt this provider in automatically after upgrading. Set `InteractionMode="InteractionMode.Blazor"` on the provider to retain mount-on-open behavior. Components now requires Primitives 4.5.5; publish/upgrade Primitives first.
+
+Directly changing SidebarProvider's resolved mode after initialization throws the same immutability error as other controls. Recreate it with `@key`, or change an enclosing InteractionModeProvider, which keys and recreates its subtree. Before the sheet adapter is ready, trigger/pill taps retain the server path. A module-load failure leaves that fallback usable. The handoff retains the content instance and current open state, then local visibility takes ownership without replaying application actions.
+
+The mobile panel remains mounted and server rendered. Taps, backdrop dismissal, Escape, focus trapping, scroll locking and sheet animations do not wait for state callbacks; its links, buttons and newly loaded content retain their normal Blazor behavior. `CloseMobileOnNavigate` still controls navigation dismissal. Widening to desktop releases modal state and clears mobile visibility. `InteractionRevision` on the provider reapplies its current server visibility without replaying application callbacks. This adds a persistent mobile-content rendering cost; use `InteractionMode.Blazor` on a provider to preserve mount-on-open behavior. Standalone Sheet/Dialog components are unchanged.
 
 SplitButton's secondary menu inherits/overrides the policy. Both segments reflect its locally updated `aria-expanded` through CSS; the primary action still invokes application code.
 

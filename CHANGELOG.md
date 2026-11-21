@@ -2,9 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 2026-11-21 — v4.5.5 — Browser mobile navigation and translucent portal clipping
+
+> Components and Primitives: `4.5.5`. Publish Primitives first; Components requires Primitives `4.5.5`.
 
 - Fixed square blur patches outside rounded translucent Browser-mode portal menus and popovers with `data-state` content. Positioning synchronizes corner classes only on NeoUI `data-portal-content` wrappers, preserving consumer-owned popup classes. Synchronization runs before reveal, on reopen and on subsequent positioning updates; changing radius classes alone does not trigger an update. Existing Blazor synchronization is retained. TagInput suggestions without a content state marker are outside this fix.
+
+- **Upgrade behavior:** an existing application-wide Browser default or `Menus = InteractionMode.Browser` now automatically opts SidebarProvider's mobile sheet into Browser ownership. Mobile navigation content stays mounted while closed, with additional initial DOM/render cost. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior.
+- SidebarProvider mode is immutable after initialization, matching other interaction controls; recreate it with `@key` or change a scoped InteractionModeProvider to switch modes. Before the adapter is ready, or when its module fails, mobile triggers retain server-controlled visibility, focus and scroll locking. Ready handoff preserves the existing content and open state.
+
+- SidebarProvider now supports Browser interaction policy through the Menus family. On mobile, sidebar triggers and pill expansion reveal persistent server-rendered content locally; backdrop/Escape dismissal, focus trapping, scroll locking and existing Tailwind sheet animations stay responsive while callbacks run asynchronously. Explicit Blazor providers retain the existing mount-on-open Sheet path. The Interaction Mode menu gallery includes a live mobile sheet example.
 
 ## 2026-11-13 — v4.5.4 — Change-mode filters and numeric editing
 
