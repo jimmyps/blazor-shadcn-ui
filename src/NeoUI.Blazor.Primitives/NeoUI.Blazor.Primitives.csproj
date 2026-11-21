@@ -13,7 +13,7 @@
     <Description>Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.</Description>
     <PackageTags>blazor;primitives;headless;ui;components;accessibility;radix;unstyled;wcag</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>v4.5.5: Browser-mode mobile sidebar sheets retain live Blazor content with local visibility, focus and dismissal. Existing global/Menus Browser defaults opt in automatically; use an explicit Blazor provider to retain mount-on-open behavior. Publish Primitives first; Components requires Primitives 4.5.5.</PackageReleaseNotes>
+    <PackageReleaseNotes>v4.5.5: Correct rounded translucent portal clipping without changing consumer-owned popup classes. Browser-mode mobile sidebar sheets retain live Blazor content with local visibility, focus and dismissal. Existing global/Menus Browser defaults opt in automatically; use an explicit Blazor provider to retain mount-on-open behavior. Publish Primitives first; Components requires Primitives 4.5.5.</PackageReleaseNotes>
     <!-- <PackageIcon>icon.png</PackageIcon> -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jimmyps/blazor-shadcn-ui</PackageProjectUrl>

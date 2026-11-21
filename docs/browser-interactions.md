@@ -1,6 +1,6 @@
 # Browser interaction mode — v4.5.0
 
-**4.5.4 baseline:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes. **Upcoming 4.5.5:** mobile sidebar support requires Components and Primitives 4.5.5 together; an existing global/Menus Browser default opts in automatically.
+**4.5.4 baseline:** use Components 4.5.4 with Primitives 4.5.2 for change-mode filter timing, localized numeric editing and the earlier 4.5.x fixes. **4.5.5:** mobile sidebar support requires Components and Primitives 4.5.5 together; an existing global/Menus Browser default opts in automatically.
 
 **Released: Components and Primitives 4.5.0 on 2026-10-24.** See the
 [upgrade guide](upgrading-to-4.5.md) for package alignment and staged adoption.

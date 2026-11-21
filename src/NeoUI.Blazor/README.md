@@ -2,11 +2,11 @@
 
 Over 100+ production-ready Blazor components with shadcn/ui design and Tailwind CSS. Beautiful defaults that you can customize to match your brand.
 
-## Upcoming v4.5.5: Browser mobile navigation
+## v4.5.5: Browser mobile navigation and translucent portal clipping
 
-Components 4.5.5 requires Primitives **4.5.5**; publish/upgrade Primitives first. Existing global Browser or Menus Browser defaults automatically enable the mobile SidebarProvider adapter, keeping navigation content mounted while closed. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior. Visibility becomes local once the adapter is ready; delayed or failed initialization retains a server-controlled fallback. Direct provider mode changes require recreation with `@key`.
+Components 4.5.5 requires Primitives **4.5.5**; upgrade Primitives first. Existing global Browser or Menus Browser defaults automatically enable the mobile SidebarProvider adapter, keeping navigation content mounted while closed. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior. Visibility becomes local once the adapter is ready; delayed or failed initialization retains a server-controlled fallback. Direct provider mode changes require recreation with `@key`.
 
-See the [interaction guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md) and the Interaction Mode demo's mobile pill example. This is upcoming release guidance; earlier version entries below retain their historical details.
+See the [interaction guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md) and the Interaction Mode demo's mobile pill example. Translucent Browser portal menus/popovers also preserve rounded blur corners, while public positioning calls retain consumer-owned corner classes.
 
 ## v4.5.3 delayed binding patch
 
@@ -57,7 +57,7 @@ builder.Services.ConfigureNeoUIInteractions(options =>
 ```
 
 `Disclosures` is another optional family default; review heavy/lazy Tabs before enabling it.
-Components 4.5.4 requires Primitives 4.5.2; upcoming Components 4.5.5 requires Primitives 4.5.5. Icon package versions remain independent.
+Components 4.5.4 requires Primitives 4.5.2; Components 4.5.5 requires Primitives 4.5.5. Icon package versions remain independent.
 See the [upgrade guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/upgrading-to-4.5.md),
 [adoption guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md)
 and [Interaction Mode demo](https://demos.neoui.io/components/browser-interactions).
@@ -524,7 +524,7 @@ MIT License - see LICENSE file for details
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.4 (requires Primitives 4.5.2)
+- **Current Release**: 4.5.5 (requires Primitives 4.5.5)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor
 - **Assembly Name**: NeoUI.Blazor

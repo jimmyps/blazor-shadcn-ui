@@ -2,9 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 2026-11-21 — v4.5.5 — Browser mobile navigation and translucent portal clipping
 
-> Target: Components and Primitives `4.5.5`. Publish Primitives first; Components requires Primitives `4.5.5`.
+> Components and Primitives: `4.5.5`. Publish Primitives first; Components requires Primitives `4.5.5`.
 
 - Fixed square blur patches outside rounded translucent Browser-mode portal menus and popovers with `data-state` content. Positioning synchronizes corner classes only on NeoUI `data-portal-content` wrappers, preserving consumer-owned popup classes. Synchronization runs before reveal, on reopen and on subsequent positioning updates; changing radius classes alone does not trigger an update. Existing Blazor synchronization is retained. TagInput suggestions without a content state marker are outside this fix.
 

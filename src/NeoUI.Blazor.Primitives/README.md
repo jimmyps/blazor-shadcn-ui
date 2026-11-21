@@ -2,11 +2,11 @@
 
 Headless, unstyled Blazor primitive components with full accessibility support. Build your own component library using these composable primitives.
 
-## Upcoming v4.5.5: Browser mobile navigation
+## v4.5.5: Browser mobile navigation and translucent portal clipping
 
-Components 4.5.5 requires Primitives **4.5.5**; publish/upgrade Primitives first. Existing global Browser or Menus Browser defaults automatically enable the mobile SidebarProvider adapter, keeping navigation content mounted while closed. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior. Visibility becomes local once the adapter is ready; delayed or failed initialization retains a server-controlled fallback. Direct provider mode changes require recreation with `@key`.
+Components 4.5.5 requires Primitives **4.5.5**; upgrade Primitives first. Existing global Browser or Menus Browser defaults automatically enable the mobile SidebarProvider adapter, keeping navigation content mounted while closed. Set `SidebarProvider InteractionMode="InteractionMode.Blazor"` to retain mount-on-open behavior. Visibility becomes local once the adapter is ready; delayed or failed initialization retains a server-controlled fallback. Direct provider mode changes require recreation with `@key`.
 
-See the [interaction guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md) and the Interaction Mode demo's mobile pill example. This is upcoming release guidance; earlier version entries below retain their historical details.
+See the [interaction guide](https://github.com/jimmyps/blazor-shadcn-ui/blob/main/docs/browser-interactions.md) and the Interaction Mode demo's mobile pill example. Translucent Browser portal menus/popovers also preserve rounded blur corners, while public positioning calls retain consumer-owned corner classes.
 
 ## v4.5.2 menu focus patch
 
@@ -481,7 +481,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📊 Version Information
 
-- **Current Release**: 4.5.2 (Components and Primitives aligned)
+- **Current Release**: 4.5.5 (Components and Primitives aligned)
 - **Target Framework**: .NET 10
 - **Package ID**: NeoUI.Blazor.Primitives
 - **Assembly Name**: NeoUI.Blazor.Primitives
