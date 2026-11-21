@@ -66,18 +66,19 @@ let cleanupIdCounter = 0;
  * @param {HTMLElement} content  - the .bg-popover content element (the visible menu box)
  */
 function syncWrapperToContent(floating, content) {
-  if (!floating || !content || content === floating) return;
+  if (!floating || !content || content === floating || !floating.hasAttribute('data-portal-content')) return;
 
   // Mirror the content's rounded-* utility classes onto the wrapper as CLASSES, not inline style.
   // Blazor owns (and rewrites) the wrapper's `style` attribute around open, so an inline
   // border-radius races with that render and gets wiped intermittently. Blazor renders NO `class`
   // on the wrapper, so classes we add here are never diffed away, and a rounded-* utility resolves
   // to the same radius as the content (rounded-md default, rounded-3xl in Luma, any custom value).
+  const radiusClasses = new Set([...content.classList].filter(c => c.startsWith('rounded')));
   for (const c of [...floating.classList]) {
-    if (c.startsWith('rounded')) floating.classList.remove(c);
+    if (c.startsWith('rounded') && !radiusClasses.has(c)) floating.classList.remove(c);
   }
-  for (const c of content.className.split(/\s+/)) {
-    if (c.startsWith('rounded')) floating.classList.add(c);
+  for (const c of radiusClasses) {
+    if (!floating.classList.contains(c)) floating.classList.add(c);
   }
 }
 
@@ -341,6 +342,10 @@ export async function computePosition(reference, floating, options = {}) {
 export function applyPosition(floating, position, makeVisible = false) {
   if (!floating || !position) return;
 
+  // Browser controllers position with makeVisible=false and reveal the layer themselves.
+  // Synchronize the blur wrapper in both paths, before either can paint it.
+  syncWrapperToContent(floating, floating.querySelector('[data-state]') || floating);
+
   // Apply all positioning styles atomically to prevent flash.
   // Honor the z-index already assigned to the element (written inline by FloatingPortal
   // from its ZIndex parameter). Fall back to the default popover level only when nothing
@@ -396,9 +401,6 @@ export function applyPosition(floating, position, makeVisible = false) {
       // Also ensure position is not being reset by CSS
       floating.style.setProperty('top', floating.style.top, 'important');
       floating.style.setProperty('left', floating.style.left, 'important');
-
-      // Make the wrapper's translucent blur box match the content's radius + width.
-      syncWrapperToContent(floating, contentElement);
 
       // Dispatch event to signal element is now visible and positioned
       floating.dispatchEvent(new CustomEvent('neoui:visible', { bubbles: true }));
@@ -541,6 +543,8 @@ export async function showFloating(floating, reference = null, options = null) {
     floating.style.setProperty('pointer-events', 'auto', 'important');
 
     // Make the wrapper's translucent blur box match the content's radius + width.
+    // Keep this fallback: showFloating also supports revealing without a
+    // reference/options pair, in which case applyPosition was not called.
     syncWrapperToContent(floating, contentElement);
 
     // Dispatch event to signal element is now visible

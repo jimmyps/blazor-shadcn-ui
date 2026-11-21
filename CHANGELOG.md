@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- Fixed square blur patches outside rounded translucent Browser-mode portal menus and popovers with `data-state` content. Positioning synchronizes corner classes only on NeoUI `data-portal-content` wrappers, preserving consumer-owned popup classes. Synchronization runs before reveal, on reopen and on subsequent positioning updates; changing radius classes alone does not trigger an update. Existing Blazor synchronization is retained. TagInput suggestions without a content state marker are outside this fix.
+
 ## 2026-11-13 — v4.5.4 — Change-mode filters and numeric editing
 
 - Browser change-mode inputs report empty/non-empty transitions while typing when they inherit an `EditContext`. Standalone inputs commit on change or blur. Add `NotifyOnEmptinessChange="true"` to preserve early callbacks outside a form, or set it to `false` for a filter inside an `EditForm`.
